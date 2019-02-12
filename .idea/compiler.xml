@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="spring-aop-toy" />
         <module name="spring-ioc-toy" />
+        <module name="spring-toy-example" />
       </profile>
     </annotationProcessing>
   </component>

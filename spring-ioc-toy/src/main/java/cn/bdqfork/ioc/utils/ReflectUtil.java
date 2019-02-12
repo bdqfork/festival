@@ -2,16 +2,14 @@ package cn.bdqfork.ioc.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.net.JarURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.stream.Collectors;
 
 /**
  * @author bdq
@@ -22,13 +20,13 @@ public class ReflectUtil {
     private static final String JAR_PROTOCOL = "jar";
     private static final String SUFFIX = ".class";
 
-    public static List<Class<?>> getClasses(String packageName) {
-        if (packageName == null || packageName.equals("")) {
-            return Collections.emptyList();
+    public static Set<Class<?>> getClasses(String packageName) {
+        if (packageName == null || "".equals(packageName)) {
+            return Collections.emptySet();
         }
         String packagePath = packageName.replace(".", "/");
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        List<Class<?>> classes = new ArrayList<>();
+        Set<Class<?>> classes = new HashSet<>();
         try {
             Enumeration<URL> dirs = classLoader.getResources(packagePath);
             while (dirs.hasMoreElements()) {
@@ -48,9 +46,9 @@ public class ReflectUtil {
         return classes;
     }
 
-    private static List<Class<?>> getClassesByFilePath(String filePath, String packagePath) {
+    private static Set<Class<?>> getClassesByFilePath(String filePath, String packagePath) {
         File file = new File(filePath);
-        List<Class<?>> classes = new ArrayList<>();
+        Set<Class<?>> classes = new HashSet<>();
         File[] chirldFiles = file.listFiles();
         if (chirldFiles == null) {
             return classes;
@@ -73,8 +71,8 @@ public class ReflectUtil {
         return classes;
     }
 
-    private static List<Class<?>> getClassesByJar(JarFile jarFile) {
-        List<Class<?>> classes = new ArrayList<>();
+    private static Set<Class<?>> getClassesByJar(JarFile jarFile) {
+        Set<Class<?>> classes = new HashSet<>();
         try {
             Enumeration<JarEntry> jarEntries = jarFile.entries();
             while (jarEntries.hasMoreElements()) {
@@ -93,10 +91,4 @@ public class ReflectUtil {
         return classes;
     }
 
-    public static List<Class<?>> getClassByAnnotation(String packageName, Annotation annotation) {
-        List<Class<?>> classes = getClasses(packageName);
-        return classes.stream()
-                .filter(clazz -> clazz.getAnnotation(annotation.getClass()) != null)
-                .collect(Collectors.toList());
-    }
 }

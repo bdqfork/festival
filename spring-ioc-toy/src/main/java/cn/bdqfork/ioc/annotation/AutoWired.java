@@ -4,11 +4,10 @@ import java.lang.annotation.*;
 
 /**
  * @author bdq
- * @date 2019-02-07
+ * @date 2019-02-12
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
+@Target({ElementType.FIELD, ElementType.TYPE})
 @Documented
-public @interface Repositorty {
-    String value() default "";
+public @interface AutoWired {
 }

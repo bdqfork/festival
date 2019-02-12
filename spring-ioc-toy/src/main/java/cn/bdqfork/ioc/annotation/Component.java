@@ -10,5 +10,5 @@ import java.lang.annotation.*;
 @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
 @Documented
 public @interface Component {
-    String name() default "";
+    String value() default "";
 }

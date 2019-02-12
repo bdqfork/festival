@@ -10,6 +10,7 @@
     <modules>
         <module>spring-aop-toy</module>
         <module>spring-ioc-toy</module>
+        <module>spring-toy-example</module>
     </modules>
     <packaging>pom</packaging>
     <properties>

@@ -6,10 +6,9 @@ import java.lang.annotation.*;
  * @author bdq
  * @date 2019-02-07
  */
-@Component
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
 @Documented
 public @interface Controller {
-    String name() default "";
+    String value() default "";
 }
