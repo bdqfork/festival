@@ -2,25 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="14c45342-daac-47d9-81c9-ba4bcbe2c972" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/common/Const.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/container/DependenceData.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/context/AnnotationApplicationContext.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/spring-toy-example/src/main/java/cn/bdqfork/example/ioc/User.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/spring-toy-example/src/main/java/cn/bdqfork/example/ioc/UserController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/spring-toy-example/src/main/java/cn/bdqfork/example/ioc/UserDao.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/spring-toy-example/src/main/java/cn/bdqfork/example/ioc/UserDaoImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/spring-toy-example/src/main/java/cn/bdqfork/example/ioc/UserDaoImpl2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/annotation/Scope.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/annotation/Scope.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/container/AnnotationInfo.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/container/BeanContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/container/BeanContainer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/container/BeanDefination.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/container/BeanDefination.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/context/ApplicationContext.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/context/ApplicationContext.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/exception/SpringToyException.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/exception/SpringToyException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/generator/BeanNameGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/generator/BeanNameGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/utils/ReflectUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/utils/ReflectUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-toy-example/src/main/java/cn/bdqfork/example/IocDemo.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-toy-example/src/main/java/cn/bdqfork/example/IocDemo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-toy-example/src/main/java/cn/bdqfork/example/ioc/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-toy-example/src/main/java/cn/bdqfork/example/ioc/UserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <ignored path="$PROJECT_DIR$/spring-aop-toy/target/" />
@@ -34,14 +16,26 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/utils/ReflectUtil.java">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/spring-toy-example/src/main/java/cn/bdqfork/example/IocDemo.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="176">
-              <caret line="23" column="20" selection-end-line="100" />
+            <state relative-caret-position="225">
+              <caret line="15" column="8" selection-start-line="15" selection-start-column="8" selection-end-line="15" selection-end-column="8" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="15">
+                <caret line="1" column="32" selection-start-line="1" selection-start-column="32" selection-end-line="1" selection-end-column="32" />
+              </first_editor>
+              <second_editor />
             </state>
           </provider>
         </entry>
@@ -103,6 +97,7 @@
         <option value="$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/exception/SpringToyException.java" />
         <option value="$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/generator/BeanNameGenerator.java" />
         <option value="$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/utils/ReflectUtil.java" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -172,76 +167,6 @@
             <path>
               <item name="spring-toy" type="b2602c69:ProjectViewProjectNode" />
               <item name="spring-toy" type="462c0819:PsiDirectoryNode" />
-              <item name="spring-ioc-toy" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="ioc" type="462c0819:PsiDirectoryNode" />
-              <item name="annotation" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="spring-toy" type="b2602c69:ProjectViewProjectNode" />
-              <item name="spring-toy" type="462c0819:PsiDirectoryNode" />
-              <item name="spring-ioc-toy" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="ioc" type="462c0819:PsiDirectoryNode" />
-              <item name="common" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="spring-toy" type="b2602c69:ProjectViewProjectNode" />
-              <item name="spring-toy" type="462c0819:PsiDirectoryNode" />
-              <item name="spring-ioc-toy" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="ioc" type="462c0819:PsiDirectoryNode" />
-              <item name="container" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="spring-toy" type="b2602c69:ProjectViewProjectNode" />
-              <item name="spring-toy" type="462c0819:PsiDirectoryNode" />
-              <item name="spring-ioc-toy" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="ioc" type="462c0819:PsiDirectoryNode" />
-              <item name="context" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="spring-toy" type="b2602c69:ProjectViewProjectNode" />
-              <item name="spring-toy" type="462c0819:PsiDirectoryNode" />
-              <item name="spring-ioc-toy" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="ioc" type="462c0819:PsiDirectoryNode" />
-              <item name="exception" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="spring-toy" type="b2602c69:ProjectViewProjectNode" />
-              <item name="spring-toy" type="462c0819:PsiDirectoryNode" />
-              <item name="spring-ioc-toy" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="ioc" type="462c0819:PsiDirectoryNode" />
-              <item name="generator" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="spring-toy" type="b2602c69:ProjectViewProjectNode" />
-              <item name="spring-toy" type="462c0819:PsiDirectoryNode" />
-              <item name="spring-ioc-toy" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="ioc" type="462c0819:PsiDirectoryNode" />
-              <item name="utils" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="spring-toy" type="b2602c69:ProjectViewProjectNode" />
-              <item name="spring-toy" type="462c0819:PsiDirectoryNode" />
               <item name="spring-toy-example" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -285,7 +210,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1550041640370" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1550041752184" />
     <property name="configurable.Global.GOPATH.is.expanded" value="true" />
     <property name="configurable.Project.GOPATH.is.expanded" value="true" />
     <property name="extract.method.default.visibility" value="private" />
@@ -385,12 +310,12 @@
       <workItem from="1549608585819" duration="1773000" />
       <workItem from="1549962183790" duration="14052000" />
       <workItem from="1549985704113" duration="5459000" />
-      <workItem from="1550034948228" duration="6459000" />
+      <workItem from="1550034948228" duration="6748000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="41293000" />
+    <option name="totallyTimeSpent" value="41582000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="827" extended-state="0" />
@@ -410,7 +335,7 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Terminal" order="7" weight="0.3286517" />
+      <window_info anchor="bottom" id="Terminal" order="7" visible="true" weight="0.3286517" />
       <window_info anchor="bottom" id="Docker" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Gradle View" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
@@ -712,16 +637,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/spring-toy-example/src/main/java/cn/bdqfork/example/IocDemo.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="21" column="1" lean-forward="true" selection-start-line="21" selection-start-column="1" selection-end-line="21" selection-end-column="1" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/context/ApplicationContext.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
@@ -812,11 +727,31 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/spring-ioc-toy/src/main/java/cn/bdqfork/ioc/utils/ReflectUtil.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="176">
-          <caret line="23" column="20" selection-end-line="100" />
+        <state relative-caret-position="131">
+          <caret line="20" column="38" lean-forward="true" selection-start-line="20" selection-start-column="38" selection-end-line="20" selection-end-column="38" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spring-toy-example/src/main/java/cn/bdqfork/example/IocDemo.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="8" selection-start-line="15" selection-start-column="8" selection-end-line="15" selection-end-column="8" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="15">
+            <caret line="1" column="32" selection-start-line="1" selection-start-column="32" selection-end-line="1" selection-end-column="32" />
+          </first_editor>
+          <second_editor />
         </state>
       </provider>
     </entry>
