@@ -1,8 +1,11 @@
 package cn.bdqfork.example;
 
-import cn.bdqfork.example.ioc.UserService;
-import cn.bdqfork.ioc.context.ApplicationContext;
+import cn.bdqfork.example.ioc.UserController;
+import cn.bdqfork.example.ioc.UserDao;
+import cn.bdqfork.ioc.context.AnnotationApplicationContext;
 import cn.bdqfork.ioc.exception.SpringToyException;
+
+import java.util.Map;
 
 /**
  * @author bdq
@@ -10,8 +13,10 @@ import cn.bdqfork.ioc.exception.SpringToyException;
  */
 public class IocDemo {
     public static void main(String[] args) throws SpringToyException {
-        ApplicationContext ctx = new ApplicationContext("cn.bdqfork.example");
-        UserService userService = ctx.getBean(UserService.class);
-        System.out.println(userService.getUserName());
+        AnnotationApplicationContext ctx = new AnnotationApplicationContext("cn.bdqfork.example");
+        Map<String, UserDao> userDaoMap = ctx.getBeans(UserDao.class);
+        userDaoMap.forEach((k, v) -> System.out.println(k + "-" + v.getUser()));
+        UserController userController = ctx.getBean(UserController.class);
+        System.out.println(userController.getUserName());
     }
 }

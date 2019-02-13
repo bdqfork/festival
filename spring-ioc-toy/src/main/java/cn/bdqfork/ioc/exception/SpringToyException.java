@@ -1,6 +1,8 @@
 package cn.bdqfork.ioc.exception;
 
 /**
+ * 自定义异常
+ *
  * @author bdq
  * @date 2019-02-12
  */

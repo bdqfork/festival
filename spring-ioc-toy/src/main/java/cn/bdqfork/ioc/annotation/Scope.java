@@ -1,5 +1,7 @@
 package cn.bdqfork.ioc.annotation;
 
+import cn.bdqfork.ioc.common.Const;
+
 import java.lang.annotation.*;
 
 /**
@@ -10,5 +12,5 @@ import java.lang.annotation.*;
 @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
 @Documented
 public @interface Scope {
-    String value() default "";
+    String value() default Const.SINGLETON;
 }

@@ -20,6 +20,12 @@ public class ReflectUtil {
     private static final String JAR_PROTOCOL = "jar";
     private static final String SUFFIX = ".class";
 
+    /**
+     * 根据包名获取获取Class
+     *
+     * @param packageName
+     * @return
+     */
     public static Set<Class<?>> getClasses(String packageName) {
         if (packageName == null || "".equals(packageName)) {
             return Collections.emptySet();
