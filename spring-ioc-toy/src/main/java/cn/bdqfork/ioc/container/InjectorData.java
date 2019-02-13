@@ -48,4 +48,11 @@ public interface InjectorData {
      * @return
      */
     boolean isMatch(BeanDefination beanDefination);
+
+    /**
+     * 是否必须
+     *
+     * @return
+     */
+    boolean isRequired();
 }

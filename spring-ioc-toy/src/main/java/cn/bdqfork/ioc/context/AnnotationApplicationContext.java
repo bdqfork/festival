@@ -1,7 +1,7 @@
 package cn.bdqfork.ioc.context;
 
 import cn.bdqfork.ioc.annotation.*;
-import cn.bdqfork.ioc.common.Const;
+import cn.bdqfork.ioc.common.ScopeType;
 import cn.bdqfork.ioc.container.*;
 import cn.bdqfork.ioc.exception.SpringToyException;
 import cn.bdqfork.ioc.exception.UnsatisfiedBeanException;
@@ -49,9 +49,9 @@ public class AnnotationApplicationContext implements ApplicationContext {
 
                 Scope scope = candidate.getAnnotation(Scope.class);
                 if (scope != null) {
-                    if (Const.PROTOTYPE.equals(scope.value())) {
+                    if (ScopeType.PROTOTYPE.equals(scope.value())) {
                         isSingleton = false;
-                    } else if (!Const.SINGLETON.equals(scope.value())) {
+                    } else if (!ScopeType.SINGLETON.equals(scope.value())) {
                         throw new SpringToyException("the value of scope is error !");
                     }
                 }
@@ -97,14 +97,26 @@ public class AnnotationApplicationContext implements ApplicationContext {
 
             Injector injector = beanDefination.getInjector();
             if (injector != null) {
+
                 if (injector.getConstructorParameterDatas() != null) {
                     for (ParameterInjectorData parameterInjectorData : injector.getConstructorParameterDatas()) {
                         doResolving(beanDefination, injector, parameterInjectorData);
                     }
                 }
+
                 if (injector.getFieldInjectorDatas() != null) {
                     for (FieldInjectorData fieldInjectorData : injector.getFieldInjectorDatas()) {
                         doResolving(beanDefination, injector, fieldInjectorData);
+                    }
+                }
+
+                if (injector.getMethodInjectorAttributes() != null) {
+                    for (MethodInjectorAttribute methodInjectorAttributes : injector.getMethodInjectorAttributes()) {
+                        if (methodInjectorAttributes.getParameterInjectorDatas() != null) {
+                            for (ParameterInjectorData parameterInjectorData : methodInjectorAttributes.getParameterInjectorDatas()) {
+                                doResolving(beanDefination, injector, parameterInjectorData);
+                            }
+                        }
                     }
                 }
             }

@@ -8,10 +8,12 @@ public abstract class AbstractInjectorData implements InjectorData {
     private String defalultName;
     private String refName;
     private BeanDefination bean;
+    private boolean required;
 
-    public AbstractInjectorData(String defalultName, String refName) {
+    public AbstractInjectorData(String defalultName, String refName, boolean required) {
         this.defalultName = defalultName;
         this.refName = refName;
+        this.required = required;
     }
 
     @Override
@@ -32,6 +34,11 @@ public abstract class AbstractInjectorData implements InjectorData {
     @Override
     public BeanDefination getBean() {
         return this.bean;
+    }
+
+    @Override
+    public boolean isRequired() {
+        return required;
     }
 
     @Override

@@ -15,7 +15,7 @@ public class IocDemo {
     public static void main(String[] args) throws SpringToyException {
         AnnotationApplicationContext ctx = new AnnotationApplicationContext("cn.bdqfork.example");
         Map<String, UserDao> userDaoMap = ctx.getBeans(UserDao.class);
-        userDaoMap.forEach((k, v) -> System.out.println(k + "-" + v.getUser()));
+        userDaoMap.forEach((k, v) -> System.out.println(k + "-" + v.getClass().getName() + "-" + v.getUser()));
         UserController userController = ctx.getBean(UserController.class);
         System.out.println(userController.getUserName());
     }

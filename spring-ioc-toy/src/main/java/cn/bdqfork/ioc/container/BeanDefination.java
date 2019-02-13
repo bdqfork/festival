@@ -1,6 +1,7 @@
 package cn.bdqfork.ioc.container;
 
 import cn.bdqfork.ioc.exception.SpringToyException;
+import cn.bdqfork.ioc.proxy.JdkInvocationHandler;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -63,7 +64,13 @@ public class BeanDefination {
     }
 
     private Object newBean() throws SpringToyException {
-        return injector.doInject(this);
+        Object instance = injector.doInject(this);
+        Class<?>[] classes = clazz.getInterfaces();
+        if (classes.length != 0) {
+            JdkInvocationHandler jdkInvocationHandler = new JdkInvocationHandler();
+            return jdkInvocationHandler.newProxyInstance(instance);
+        }
+        return instance;
     }
 
     public String getName() {

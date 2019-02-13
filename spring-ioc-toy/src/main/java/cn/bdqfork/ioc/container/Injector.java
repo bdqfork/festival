@@ -7,6 +7,7 @@ import cn.bdqfork.ioc.generator.BeanNameGenerator;
 
 import java.lang.reflect.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -17,6 +18,7 @@ public class Injector {
     private Constructor<?> constructor;
     private List<ParameterInjectorData> constructorParameterDatas;
     private List<FieldInjectorData> fieldInjectorDatas;
+    private List<MethodInjectorAttribute> methodInjectorAttributes;
 
     public Injector(Class<?> clazz, BeanNameGenerator beanNameGenerator) throws SpringToyException {
         init(clazz, beanNameGenerator);
@@ -24,35 +26,26 @@ public class Injector {
 
     private void init(Class<?> candidate, BeanNameGenerator beanNameGenerator) throws SpringToyException {
         initConstructorInfo(candidate, beanNameGenerator);
-        fieldInjectorDatas(candidate, beanNameGenerator);
+        initFieldInjectorDatas(candidate, beanNameGenerator);
+        initMethodInjectorAttributes(candidate, beanNameGenerator);
     }
 
     private void initConstructorInfo(Class<?> candidate, BeanNameGenerator beanNameGenerator) throws SpringToyException {
         int count = 0;
-        List<ParameterInjectorData> parameterInjectorDatas = new ArrayList<>();
         for (Constructor<?> constructor : candidate.getDeclaredConstructors()) {
-            Parameter[] parameters = constructor.getParameters();
-            if (parameters.length == 0) {
-                continue;
-            }
             AutoWired autoWired = constructor.getAnnotation(AutoWired.class);
             if (autoWired != null) {
                 count++;
                 if (count > 1) {
                     throw new SpringToyException("");
                 }
-                for (Parameter parameter : parameters) {
-                    String defaultNmae = beanNameGenerator.generateBeanName(parameter.getType());
-                    String refName = parameter.getName();
-                    parameterInjectorDatas.add(new ParameterInjectorData(defaultNmae, refName, parameter));
-                }
+                this.constructorParameterDatas = getParameterInjectDatas(beanNameGenerator, autoWired.required(), constructor.getParameters());
                 this.constructor = constructor;
             }
         }
-        this.constructorParameterDatas = parameterInjectorDatas;
     }
 
-    private void fieldInjectorDatas(Class<?> candidate, BeanNameGenerator beanNameGenerator) throws SpringToyException {
+    private void initFieldInjectorDatas(Class<?> candidate, BeanNameGenerator beanNameGenerator) throws SpringToyException {
         List<FieldInjectorData> fieldInjectorDatas = new ArrayList<>();
 
         for (Field field : candidate.getDeclaredFields()) {
@@ -71,18 +64,40 @@ public class Injector {
                 }
 
                 String defaultName = beanNameGenerator.generateBeanName(field.getType());
-                fieldInjectorDatas.add(new FieldInjectorData(defaultName, refName, field));
+                fieldInjectorDatas.add(new FieldInjectorData(defaultName, refName, autoWired.required(), field));
             }
         }
         this.fieldInjectorDatas = fieldInjectorDatas;
     }
 
-    public List<ParameterInjectorData> getConstructorParameterDatas() {
-        return constructorParameterDatas;
+    private void initMethodInjectorAttributes(Class<?> candidate, BeanNameGenerator beanNameGenerator) throws SpringToyException {
+        Method[] methods = candidate.getDeclaredMethods();
+        List<MethodInjectorAttribute> methodInjectorAttributes = new ArrayList<>();
+        for (Method method : methods) {
+            method.setAccessible(true);
+            AutoWired autoWired = method.getAnnotation(AutoWired.class);
+            if (autoWired != null) {
+                if (Modifier.isAbstract(method.getModifiers())) {
+                    throw new SpringToyException("the method: " + method.getName() + "is abstract , it can't be injected !");
+                }
+                List<ParameterInjectorData> parameterInjectorDatas = getParameterInjectDatas(beanNameGenerator, autoWired.required(), method.getParameters());
+                methodInjectorAttributes.add(new MethodInjectorAttribute(method, parameterInjectorDatas));
+            }
+        }
+        this.methodInjectorAttributes = methodInjectorAttributes;
     }
 
-    public List<FieldInjectorData> getFieldInjectorDatas() {
-        return fieldInjectorDatas;
+    private List<ParameterInjectorData> getParameterInjectDatas(BeanNameGenerator beanNameGenerator, boolean required, Parameter[] parameters) {
+        List<ParameterInjectorData> parameterInjectorDatas = new ArrayList<>();
+        if (parameters.length == 0) {
+            return parameterInjectorDatas;
+        }
+        for (Parameter parameter : parameters) {
+            String defaultNmae = beanNameGenerator.generateBeanName(parameter.getType());
+            String refName = parameter.getName();
+            parameterInjectorDatas.add(new ParameterInjectorData(defaultNmae, refName, required, parameter));
+        }
+        return parameterInjectorDatas;
     }
 
     public Object doInject(BeanDefination beanDefination) throws SpringToyException {
@@ -90,13 +105,11 @@ public class Injector {
         if (constructor != null) {
             List<Object> args = new ArrayList<>(constructorParameterDatas.size());
             for (ParameterInjectorData parameterInjectorData : constructorParameterDatas) {
-                BeanDefination bean = parameterInjectorData.getBean();
-                args.add(bean.getInstance());
+                injectParameters(beanDefination, args, parameterInjectorData);
             }
             try {
                 instance = constructor.newInstance(args.toArray());
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
                 throw new SpringToyException("failed to init bean : " + beanDefination.getName(), e);
             }
         } else {
@@ -114,9 +127,40 @@ public class Injector {
                 field.set(instance, bean.getInstance());
             } catch (IllegalAccessException e) {
                 throw new SpringToyException("failed to init bean : " + beanDefination.getName(), e);
+            } catch (SpringToyException e) {
+                if (!fieldInjectorData.isRequired()) {
+                    throw new SpringToyException("failed to init bean : " + beanDefination.getName(), e);
+                }
+            }
+        }
+        for (MethodInjectorAttribute methodInjectorAttribute : methodInjectorAttributes) {
+            List<Object> args = new LinkedList<>();
+            for (ParameterInjectorData parameterInjectorData : methodInjectorAttribute.getParameterInjectorDatas()) {
+                injectParameters(beanDefination, args, parameterInjectorData);
+            }
+            Method method = methodInjectorAttribute.getMethod();
+            String methodName = method.getName();
+            if (!methodName.startsWith("set")) {
+                throw new SpringToyException("failed to init bean : " + beanDefination.getName());
+            }
+            try {
+                method.invoke(instance, args.toArray());
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new SpringToyException("failed to init bean : " + beanDefination.getName(), e);
             }
         }
         return instance;
+    }
+
+    private void injectParameters(BeanDefination beanDefination, List<Object> args, ParameterInjectorData parameterInjectorData) throws SpringToyException {
+        BeanDefination bean = parameterInjectorData.getBean();
+        try {
+            args.add(bean.getInstance());
+        } catch (SpringToyException e) {
+            if (!parameterInjectorData.isRequired()) {
+                throw new SpringToyException("failed to init bean : " + beanDefination.getName(), e);
+            }
+        }
     }
 
     /**
@@ -139,5 +183,17 @@ public class Injector {
             }
         }
         return false;
+    }
+
+    public List<ParameterInjectorData> getConstructorParameterDatas() {
+        return constructorParameterDatas;
+    }
+
+    public List<FieldInjectorData> getFieldInjectorDatas() {
+        return fieldInjectorDatas;
+    }
+
+    public List<MethodInjectorAttribute> getMethodInjectorAttributes() {
+        return methodInjectorAttributes;
     }
 }

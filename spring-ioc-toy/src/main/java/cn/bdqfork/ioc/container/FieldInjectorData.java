@@ -11,13 +11,13 @@ import java.lang.reflect.Field;
 public class FieldInjectorData extends AbstractInjectorData {
     private Field field;
 
-    public FieldInjectorData(String defalultName, String refName, Field field) {
-        super(defalultName,refName);
+    public FieldInjectorData(String defalultName, String refName, boolean required, Field field) {
+        super(defalultName, refName, required);
         this.field = field;
     }
 
     @Override
-    public Class<?> getType(){
+    public Class<?> getType() {
         return field.getType();
     }
 
