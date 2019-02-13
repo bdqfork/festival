@@ -6,11 +6,14 @@ import cn.bdqfork.ioc.container.BeanContainer;
 import cn.bdqfork.ioc.container.BeanDefination;
 import cn.bdqfork.ioc.container.DependenceData;
 import cn.bdqfork.ioc.exception.SpringToyException;
+import cn.bdqfork.ioc.exception.UnsatisfiedBeanException;
 import cn.bdqfork.ioc.generator.BeanNameGenerator;
 import cn.bdqfork.ioc.generator.SimpleBeanNameGenerator;
 import cn.bdqfork.ioc.utils.ReflectUtil;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -35,7 +38,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
         this.beanContainer = new BeanContainer();
         this.scanPaths = scanPaths;
         this.scan();
-        this.inject();
+        this.resolving();
     }
 
     private void scan() throws SpringToyException {
@@ -44,7 +47,10 @@ public class AnnotationApplicationContext implements ApplicationContext {
             candidates.addAll(ReflectUtil.getClasses(scanPath));
         }
         for (Class<?> candidate : candidates) {
-            String name = match(candidate);
+            if (candidate.isAnnotation() || candidate.isInterface() || Modifier.isAbstract(candidate.getModifiers())) {
+                continue;
+            }
+            String name = getName(candidate);
             if (name != null) {
                 Map<String, DependenceData> dependenceDataMap = getDependenceDataMap(candidate);
                 register(candidate, name, dependenceDataMap);
@@ -52,7 +58,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
         }
     }
 
-    private String match(Class<?> candidate) {
+    private String getName(Class<?> candidate) {
         Component component = candidate.getAnnotation(Component.class);
         if (component != null) {
             return component.value();
@@ -72,15 +78,17 @@ public class AnnotationApplicationContext implements ApplicationContext {
         return null;
     }
 
-    private Map<String, DependenceData> getDependenceDataMap(Class<?> candidate) {
-        Field[] fields = candidate.getDeclaredFields();
+    private Map<String, DependenceData> getDependenceDataMap(Class<?> candidate) throws SpringToyException {
         Map<String, DependenceData> dependenceDatas = new HashMap<>(8);
 
-        for (Field field : fields) {
+        for (Field field : candidate.getDeclaredFields()) {
             field.setAccessible(true);
 
             AutoWired autoWired = field.getAnnotation(AutoWired.class);
             if (autoWired != null) {
+                if (Modifier.isFinal(field.getModifiers())) {
+                    throw new SpringToyException("the field: " + field.getName() + "is final , it can't be injected !");
+                }
                 String refName = null;
 
                 Qualifier qualifier = field.getAnnotation(Qualifier.class);
@@ -91,6 +99,10 @@ public class AnnotationApplicationContext implements ApplicationContext {
                 String defaultName = beanNameGenerator.generateBeanName(field.getType());
                 dependenceDatas.put(field.getName(), new DependenceData(defaultName, refName, field));
             }
+        }
+
+        for (Method method : candidate.getDeclaredMethods()) {
+
         }
         return dependenceDatas;
     }
@@ -117,7 +129,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
     }
 
 
-    private void inject() throws SpringToyException {
+    private void resolving() throws UnsatisfiedBeanException {
         Map<String, BeanDefination> beanDefinationMap = beanContainer.getBeanDefinations();
 
         for (Map.Entry<String, BeanDefination> entry : beanDefinationMap.entrySet()) {
@@ -132,9 +144,9 @@ public class AnnotationApplicationContext implements ApplicationContext {
                 BeanDefination ref = getRefBeanDefination(beanDefinationMap, dependenceData, field);
 
                 if (ref == null) {
-                    throw new SpringToyException("the bean named" + dependenceData.getRefName() + " don't exists");
+                    throw new UnsatisfiedBeanException("unsatisfied bean , the bean named" + dependenceData.getRefName() + " don't exists");
                 } else if (ref.hasDependence(beanDefination)) {
-                    throw new SpringToyException("there two bean ref each other !");
+                    throw new UnsatisfiedBeanException("unsatisfied bean , there two bean ref each other !");
                 } else {
                     dependenceData.setBean(ref);
                 }

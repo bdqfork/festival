@@ -7,7 +7,8 @@ import java.lang.annotation.*;
  * @date 2019-02-12
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.TYPE})
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.TYPE})
 @Documented
 public @interface AutoWired {
+    boolean required() default true;
 }
