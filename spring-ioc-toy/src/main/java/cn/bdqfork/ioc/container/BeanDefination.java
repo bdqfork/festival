@@ -2,8 +2,10 @@ package cn.bdqfork.ioc.container;
 
 import cn.bdqfork.ioc.exception.SpringToyException;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 /**
  * bean的定义，用来描述bean的信息
@@ -16,7 +18,7 @@ public class BeanDefination {
     private String name;
     private Object instance;
     private boolean isSingleton;
-    private Map<String, DependenceData> dependenceDataMap;
+    private Injector injector;
 
     public BeanDefination(Class<?> clazz, boolean isSingleton, String name) {
         this.clazz = clazz;
@@ -61,47 +63,23 @@ public class BeanDefination {
     }
 
     private Object newBean() throws SpringToyException {
-        try {
-            Object instance = clazz.newInstance();
-            doInject(instance);
-            return instance;
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new SpringToyException("failed to init bean : " + name, e);
-        }
-    }
-
-    private void doInject(Object instance) throws IllegalAccessException, SpringToyException {
-        for (DependenceData dependenceData : dependenceDataMap.values()) {
-            BeanDefination bean = dependenceData.getBean();
-            Field field = dependenceData.getField();
-            field.setAccessible(true);
-            field.set(instance, bean.getInstance());
-        }
-    }
-
-    /**
-     * 判断当前bean是否依赖beanDefination，如果是，返回true，否则返回false
-     *
-     * @param beanDefination
-     * @return boolean
-     */
-    public boolean hasDependence(BeanDefination beanDefination) {
-        for (DependenceData dependenceData : dependenceDataMap.values()) {
-            return dependenceData.isMatch(beanDefination);
-        }
-        return false;
+        return injector.doInject(this);
     }
 
     public String getName() {
         return name;
     }
 
-    public void setDependenceDataMap(Map<String, DependenceData> dependenceDataMap) {
-        this.dependenceDataMap = dependenceDataMap;
+    public Class<?> getClazz() {
+        return clazz;
     }
 
-    public Map<String, DependenceData> getDependenceDataMap() {
-        return dependenceDataMap;
+    public void setInjector(Injector injector) {
+        this.injector = injector;
+    }
+
+    public Injector getInjector() {
+        return injector;
     }
 
 }

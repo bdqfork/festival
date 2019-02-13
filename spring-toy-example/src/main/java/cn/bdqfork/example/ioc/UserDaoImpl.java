@@ -7,7 +7,7 @@ import cn.bdqfork.ioc.annotation.Scope;
  * @author bdq
  * @date 2019-02-13
  */
-@Scope("")
+@Scope
 @Repositorty
 public class UserDaoImpl implements UserDao {
     @Override

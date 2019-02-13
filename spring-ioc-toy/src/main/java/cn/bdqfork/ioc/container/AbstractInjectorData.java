@@ -1,54 +1,48 @@
 package cn.bdqfork.ioc.container;
 
-import java.lang.reflect.Field;
-
 /**
- * bean的依赖信息
- *
  * @author bdq
- * @date 2019-02-12
+ * @date 2019-02-13
  */
-public class DependenceData {
+public abstract class AbstractInjectorData implements InjectorData {
     private String defalultName;
     private String refName;
-    private Field field;
     private BeanDefination bean;
 
-    public DependenceData(String defalultName, String refName, Field field) {
+    public AbstractInjectorData(String defalultName, String refName) {
         this.defalultName = defalultName;
         this.refName = refName;
-        this.field = field;
     }
 
+    @Override
     public String getDefalultName() {
         return defalultName;
     }
 
+    @Override
     public String getRefName() {
         return refName;
     }
 
-    public Field getField() {
-        return field;
-    }
-
-    public BeanDefination getBean() {
-        return bean;
-    }
-
+    @Override
     public void setBean(BeanDefination bean) {
         this.bean = bean;
     }
 
+    @Override
+    public BeanDefination getBean() {
+        return this.bean;
+    }
+
+    @Override
     public boolean isMatch(BeanDefination beanDefination) {
         if (refName != null && refName.equals(beanDefination.getName())) {
             return true;
         } else if (defalultName.equals(beanDefination.getName())) {
             return true;
         } else {
-            Class<?> type = field.getType();
+            Class<?> type = getType();
             return beanDefination.isType(type);
         }
     }
-
 }

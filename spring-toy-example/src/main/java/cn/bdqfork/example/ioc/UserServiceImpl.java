@@ -1,7 +1,6 @@
 package cn.bdqfork.example.ioc;
 
 import cn.bdqfork.ioc.annotation.AutoWired;
-import cn.bdqfork.ioc.annotation.Qualifier;
 import cn.bdqfork.ioc.annotation.Service;
 
 /**
@@ -10,9 +9,12 @@ import cn.bdqfork.ioc.annotation.Service;
  */
 @Service
 public class UserServiceImpl implements UserService {
-    @Qualifier("userDao")
-    @AutoWired
     private UserDao userDao;
+
+    @AutoWired
+    public UserServiceImpl(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     @Override
     public String getUserName() {
