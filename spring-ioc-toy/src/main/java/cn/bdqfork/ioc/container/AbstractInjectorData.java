@@ -52,4 +52,5 @@ public abstract class AbstractInjectorData implements InjectorData {
             return beanDefination.isType(type);
         }
     }
+
 }

@@ -3,11 +3,6 @@ package cn.bdqfork.ioc.container;
 import cn.bdqfork.ioc.exception.SpringToyException;
 import cn.bdqfork.ioc.proxy.JdkInvocationHandler;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-
 /**
  * bean的定义，用来描述bean的信息
  *
@@ -19,7 +14,7 @@ public class BeanDefination {
     private String name;
     private Object instance;
     private boolean isSingleton;
-    private Injector injector;
+    private InjectorProvider injectorManager;
 
     public BeanDefination(Class<?> clazz, boolean isSingleton, String name) {
         this.clazz = clazz;
@@ -64,7 +59,7 @@ public class BeanDefination {
     }
 
     private Object newBean() throws SpringToyException {
-        Object instance = injector.doInject(this);
+        Object instance = injectorManager.doInject(this);
         Class<?>[] classes = clazz.getInterfaces();
         if (classes.length != 0) {
             JdkInvocationHandler jdkInvocationHandler = new JdkInvocationHandler();
@@ -81,12 +76,12 @@ public class BeanDefination {
         return clazz;
     }
 
-    public void setInjector(Injector injector) {
-        this.injector = injector;
+    public void setInjectorManager(InjectorProvider injectorManager) {
+        this.injectorManager = injectorManager;
     }
 
-    public Injector getInjector() {
-        return injector;
+    public InjectorProvider getInjectorManager() {
+        return injectorManager;
     }
 
 }

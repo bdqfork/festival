@@ -9,18 +9,24 @@ import java.util.List;
  */
 public class MethodInjectorAttribute {
     private Method method;
-    private List<ParameterInjectorData> parameterInjectorDatas;
+    private List<InjectorData> parameterInjectorDatas;
+    private boolean isRequired;
 
-    public MethodInjectorAttribute(Method method, List<ParameterInjectorData> parameterInjectorDatas) {
+    public MethodInjectorAttribute(Method method, List<InjectorData> parameterInjectorDatas, boolean isRequired) {
         this.method = method;
         this.parameterInjectorDatas = parameterInjectorDatas;
+        this.isRequired = isRequired;
     }
 
     public Method getMethod() {
         return method;
     }
 
-    public List<ParameterInjectorData> getParameterInjectorDatas() {
+    public boolean isRequired() {
+        return isRequired;
+    }
+
+    public List<InjectorData> getParameterInjectorDatas() {
         return parameterInjectorDatas;
     }
 }
