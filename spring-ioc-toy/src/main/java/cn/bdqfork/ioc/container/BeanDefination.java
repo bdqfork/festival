@@ -30,9 +30,26 @@ public class BeanDefination {
      * @return boolean
      */
     public boolean isType(Class<?> clazz) {
-        if (this.clazz == clazz) {
-            return true;
-        }
+        return this.clazz==clazz;
+    }
+
+    /**
+     * 判断当前bean是否为clazz的父类型，如果是，返回true，否则返回false
+     *
+     * @param clazz
+     * @return boolean
+     */
+    public boolean isSuperType(Class<?> clazz) {
+        return this.clazz.isAssignableFrom(clazz);
+    }
+
+    /**
+     * 判断当前bean是否为clazz的子类型，如果是，返回true，否则返回false
+     *
+     * @param clazz
+     * @return boolean
+     */
+    public boolean isSubType(Class<?> clazz) {
         return clazz.isAssignableFrom(this.clazz);
     }
 
