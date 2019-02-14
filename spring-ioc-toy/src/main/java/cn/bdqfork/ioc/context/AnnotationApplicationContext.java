@@ -61,7 +61,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
                 }
 
                 BeanDefination beanDefination = new BeanDefination(candidate, isSingleton, name);
-                beanDefination.setInjectorManager(new InjectorProvider(candidate, this.beanNameGenerator));
+                beanDefination.setInjectorProvider(new InjectorProvider(candidate, this.beanNameGenerator));
 
                 beanContainer.register(beanDefination.getName(), beanDefination);
             }
@@ -95,26 +95,26 @@ public class AnnotationApplicationContext implements ApplicationContext {
 
             BeanDefination beanDefination = entry.getValue();
 
-            InjectorProvider injectorManager = beanDefination.getInjectorManager();
-            if (injectorManager != null) {
+            InjectorProvider injectorProvider = beanDefination.getInjectorProvider();
+            if (injectorProvider != null) {
 
-                if (injectorManager.getConstructorParameterDatas() != null) {
-                    for (InjectorData parameterInjectorData : injectorManager.getConstructorParameterDatas()) {
-                        doResolving(beanDefination, injectorManager, parameterInjectorData);
+                if (injectorProvider.getConstructorParameterDatas() != null) {
+                    for (InjectorData parameterInjectorData : injectorProvider.getConstructorParameterDatas()) {
+                        doResolving(beanDefination, injectorProvider, parameterInjectorData, parameterInjectorData.isRequired());
                     }
                 }
 
-                if (injectorManager.getFieldInjectorDatas() != null) {
-                    for (InjectorData fieldInjectorData : injectorManager.getFieldInjectorDatas()) {
-                        doResolving(beanDefination, injectorManager, fieldInjectorData);
+                if (injectorProvider.getFieldInjectorDatas() != null) {
+                    for (InjectorData fieldInjectorData : injectorProvider.getFieldInjectorDatas()) {
+                        doResolving(beanDefination, injectorProvider, fieldInjectorData, fieldInjectorData.isRequired());
                     }
                 }
 
-                if (injectorManager.getMethodInjectorAttributes() != null) {
-                    for (MethodInjectorAttribute methodInjectorAttributes : injectorManager.getMethodInjectorAttributes()) {
-                        if (methodInjectorAttributes.getParameterInjectorDatas() != null) {
-                            for (InjectorData parameterInjectorData : methodInjectorAttributes.getParameterInjectorDatas()) {
-                                doResolving(beanDefination, injectorManager, parameterInjectorData);
+                if (injectorProvider.getMethodInjectorAttributes() != null) {
+                    for (MethodInjectorAttribute methodInjectorAttribute : injectorProvider.getMethodInjectorAttributes()) {
+                        if (methodInjectorAttribute.getParameterInjectorDatas() != null) {
+                            for (InjectorData parameterInjectorData : methodInjectorAttribute.getParameterInjectorDatas()) {
+                                doResolving(beanDefination, injectorProvider, parameterInjectorData, methodInjectorAttribute.isRequired());
                             }
                         }
                     }
@@ -124,7 +124,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
         }
     }
 
-    private void doResolving(BeanDefination beanDefination, InjectorProvider injectorManager, InjectorData injectorData) throws UnsatisfiedBeanException {
+    private void doResolving(BeanDefination beanDefination, InjectorProvider injectorProvider, InjectorData injectorData, boolean isRequired) throws UnsatisfiedBeanException {
         BeanDefination ref = null;
 
         Map<String, BeanDefination> beanDefinationMap = beanContainer.getBeanDefinations();
@@ -142,8 +142,10 @@ public class AnnotationApplicationContext implements ApplicationContext {
         }
 
         if (ref == null) {
-            throw new UnsatisfiedBeanException("unsatisfied bean , the bean named" + injectorData.getRefName() + " don't exists");
-        } else if (injectorManager.hasDependence(beanDefination)) {
+            if (isRequired) {
+                throw new UnsatisfiedBeanException("unsatisfied bean , the bean named " + injectorData.getType() + " don't exists");
+            }
+        } else if (injectorProvider.hasDependence(beanDefination)) {
             throw new UnsatisfiedBeanException("unsatisfied bean , there two bean ref each other !");
         } else {
             injectorData.setBean(ref);

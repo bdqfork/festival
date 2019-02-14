@@ -14,7 +14,7 @@ public class BeanDefination {
     private String name;
     private Object instance;
     private boolean isSingleton;
-    private InjectorProvider injectorManager;
+    private InjectorProvider injectorProvider;
 
     public BeanDefination(Class<?> clazz, boolean isSingleton, String name) {
         this.clazz = clazz;
@@ -59,7 +59,7 @@ public class BeanDefination {
     }
 
     private Object newBean() throws SpringToyException {
-        Object instance = injectorManager.doInject(this);
+        Object instance = injectorProvider.doInject(this);
         Class<?>[] classes = clazz.getInterfaces();
         if (classes.length != 0) {
             JdkInvocationHandler jdkInvocationHandler = new JdkInvocationHandler();
@@ -76,12 +76,12 @@ public class BeanDefination {
         return clazz;
     }
 
-    public void setInjectorManager(InjectorProvider injectorManager) {
-        this.injectorManager = injectorManager;
+    public void setInjectorProvider(InjectorProvider injectorProvider) {
+        this.injectorProvider = injectorProvider;
     }
 
-    public InjectorProvider getInjectorManager() {
-        return injectorManager;
+    public InjectorProvider getInjectorProvider() {
+        return injectorProvider;
     }
 
 }

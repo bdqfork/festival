@@ -3,7 +3,6 @@ package cn.bdqfork.ioc.container;
 import cn.bdqfork.ioc.exception.SpringToyException;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.List;
 
 /**
@@ -21,14 +20,14 @@ public class FieldInjector extends AbstractInjector {
             for (InjectorData injectorData : injectorDatas) {
                 FieldInjectorData fieldInjectorData = (FieldInjectorData) injectorData;
                 Field field = fieldInjectorData.getField();
-                if (Modifier.isFinal(field.getModifiers())) {
-                    throw new SpringToyException("failed to init bean : " + beanDefination.getName());
-                }
                 field.setAccessible(true);
                 try {
-                    field.set(instance, injectorData.getBean().getInstance());
+                    BeanDefination bean = injectorData.getBean();
+                    if (bean != null) {
+                        field.set(instance, bean.getInstance());
+                    }
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    throw new SpringToyException("failed to init bean : " + beanDefination.getName(), e);
                 }
             }
         }

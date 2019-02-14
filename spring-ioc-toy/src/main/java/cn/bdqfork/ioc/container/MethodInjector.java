@@ -4,8 +4,7 @@ import cn.bdqfork.ioc.exception.SpringToyException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -31,19 +30,21 @@ public class MethodInjector extends AbstractInjector {
                 }
                 List<InjectorData> parameterInjectorDatas = attribute.getParameterInjectorDatas();
                 if (parameterInjectorDatas != null && parameterInjectorDatas.size() > 0) {
-                    List<Object> args = new ArrayList<>(parameterInjectorDatas.size());
+                    List<Object> args = new LinkedList<>();
                     for (InjectorData injectorData : parameterInjectorDatas) {
                         BeanDefination bean = injectorData.getBean();
                         try {
-                            args.add(bean.getInstance());
-                        } catch (SpringToyException e) {
-                            if (!injectorData.isRequired()) {
-                                throw new SpringToyException("failed to init bean : " + beanDefination.getName(), e);
+                            if (bean != null) {
+                                args.add(bean.getInstance());
                             }
+                        } catch (SpringToyException e) {
+                            throw new SpringToyException("failed to init bean : " + beanDefination.getName(), e);
                         }
                     }
                     try {
-                        method.invoke(instance, args.toArray());
+                        if (args.size() > 0) {
+                            method.invoke(instance, args.toArray());
+                        }
                     } catch (IllegalAccessException | InvocationTargetException e) {
                         throw new SpringToyException("failed to init bean : " + beanDefination.getName(), e);
                     }
