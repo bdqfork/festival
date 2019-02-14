@@ -1,5 +1,6 @@
 package cn.bdqfork.ioc.container;
 
+import cn.bdqfork.ioc.exception.InjectedException;
 import cn.bdqfork.ioc.exception.SpringToyException;
 import cn.bdqfork.ioc.proxy.JdkInvocationHandler;
 
@@ -40,14 +41,14 @@ public class BeanDefination {
      *
      * @return Object
      */
-    public Object getInstance() throws SpringToyException {
+    public Object getInstance() throws InjectedException {
         if (isSingleton) {
             return getSingleInstance();
         }
         return newBean();
     }
 
-    private Object getSingleInstance() throws SpringToyException {
+    private Object getSingleInstance() throws InjectedException {
         if (instance == null) {
             synchronized (Object.class) {
                 if (instance == null) {
@@ -58,7 +59,7 @@ public class BeanDefination {
         return instance;
     }
 
-    private Object newBean() throws SpringToyException {
+    private Object newBean() throws InjectedException {
         Object instance = injectorProvider.doInject(this);
         Class<?>[] classes = clazz.getInterfaces();
         if (classes.length != 0) {

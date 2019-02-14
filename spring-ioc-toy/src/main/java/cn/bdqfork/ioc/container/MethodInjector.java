@@ -1,5 +1,7 @@
 package cn.bdqfork.ioc.container;
 
+import cn.bdqfork.ioc.exception.InjectedException;
+import cn.bdqfork.ioc.exception.MethodInjectedException;
 import cn.bdqfork.ioc.exception.SpringToyException;
 
 import java.lang.reflect.InvocationTargetException;
@@ -20,14 +22,10 @@ public class MethodInjector extends AbstractInjector {
     }
 
     @Override
-    public Object inject(Object instance, BeanDefination beanDefination) throws SpringToyException {
+    public Object inject(Object instance, BeanDefination beanDefination) throws InjectedException {
         if (methodInjectorAttributes != null && methodInjectorAttributes.size() > 0) {
             for (MethodInjectorAttribute attribute : methodInjectorAttributes) {
                 Method method = attribute.getMethod();
-                String methodName = method.getName();
-                if (!methodName.startsWith("set")) {
-                    throw new SpringToyException("failed to init bean : " + beanDefination.getName());
-                }
                 List<InjectorData> parameterInjectorDatas = attribute.getParameterInjectorDatas();
                 if (parameterInjectorDatas != null && parameterInjectorDatas.size() > 0) {
                     List<Object> args = new LinkedList<>();
@@ -37,8 +35,8 @@ public class MethodInjector extends AbstractInjector {
                             if (bean != null) {
                                 args.add(bean.getInstance());
                             }
-                        } catch (SpringToyException e) {
-                            throw new SpringToyException("failed to init bean : " + beanDefination.getName(), e);
+                        } catch (InjectedException e) {
+                            throw new MethodInjectedException(beanDefination.getName(), e);
                         }
                     }
                     try {
@@ -46,7 +44,7 @@ public class MethodInjector extends AbstractInjector {
                             method.invoke(instance, args.toArray());
                         }
                     } catch (IllegalAccessException | InvocationTargetException e) {
-                        throw new SpringToyException("failed to init bean : " + beanDefination.getName(), e);
+                        throw new MethodInjectedException(beanDefination.getName(), e);
                     }
                 }
             }

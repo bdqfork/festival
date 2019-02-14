@@ -1,5 +1,6 @@
 package cn.bdqfork.ioc.container;
 
+import cn.bdqfork.ioc.exception.InjectedException;
 import cn.bdqfork.ioc.exception.SpringToyException;
 
 /**
@@ -21,7 +22,7 @@ public interface Injector {
      * @param instance
      * @param beanDefination
      * @return
-     * @throws SpringToyException
+     * @throws InjectedException
      */
-    Object inject(Object instance, BeanDefination beanDefination) throws SpringToyException;
+    Object inject(Object instance, BeanDefination beanDefination) throws InjectedException;
 }

@@ -2,6 +2,8 @@ package cn.bdqfork.ioc.container;
 
 import cn.bdqfork.ioc.annotation.AutoWired;
 import cn.bdqfork.ioc.annotation.Qualifier;
+import cn.bdqfork.ioc.exception.InjectedException;
+import cn.bdqfork.ioc.exception.ResolvedException;
 import cn.bdqfork.ioc.exception.SpringToyException;
 import cn.bdqfork.ioc.generator.BeanNameGenerator;
 
@@ -28,17 +30,17 @@ public class InjectorProvider {
         resolveMethodInfo(candidate, beanNameGenerator);
     }
 
-    private void resolveConstructorInfo(Class<?> candidate, BeanNameGenerator beanNameGenerator) throws SpringToyException {
+    private void resolveConstructorInfo(Class<?> candidate, BeanNameGenerator beanNameGenerator) throws ResolvedException {
         int count = 0;
         for (Constructor<?> constructor : candidate.getDeclaredConstructors()) {
             AutoWired autoWired = constructor.getAnnotation(AutoWired.class);
             if (autoWired != null) {
                 count++;
                 if (count > 1) {
-                    throw new SpringToyException("");
+                    throw new ResolvedException("the bean: " + candidate.getName() + " has more than one constructor to be injected , it can't be injected !");
                 }
-                List<InjectorData> parameterInjectorDatas = getParameterInjectDatas(beanNameGenerator, autoWired.required(), constructor.getParameters());
-                this.constructorInjector = new ConstructorInjector(constructor, parameterInjectorDatas);
+                List<InjectorData> injectorDataInfo = getParameterInjectDatas(beanNameGenerator, autoWired.required(), constructor.getParameters());
+                this.constructorInjector = new ConstructorInjector(constructor, injectorDataInfo);
             }
         }
     }
@@ -52,7 +54,7 @@ public class InjectorProvider {
             AutoWired autoWired = field.getAnnotation(AutoWired.class);
             if (autoWired != null) {
                 if (Modifier.isFinal(field.getModifiers())) {
-                    throw new SpringToyException("the field: " + field.getName() + "is final , it can't be injected !");
+                    throw new ResolvedException("the field: " + field.getName() + "is final , it can't be injected !");
                 }
                 String refName = null;
 
@@ -68,7 +70,7 @@ public class InjectorProvider {
         this.fieldInjector = new FieldInjector(fieldInjectorDatas);
     }
 
-    private void resolveMethodInfo(Class<?> candidate, BeanNameGenerator beanNameGenerator) throws SpringToyException {
+    private void resolveMethodInfo(Class<?> candidate, BeanNameGenerator beanNameGenerator) throws ResolvedException {
         Method[] methods = candidate.getDeclaredMethods();
         List<MethodInjectorAttribute> methodInjectorAttributes = new ArrayList<>();
         List<InjectorData> injectorDatas = new ArrayList<>();
@@ -77,21 +79,29 @@ public class InjectorProvider {
             AutoWired autoWired = method.getAnnotation(AutoWired.class);
             if (autoWired != null) {
                 if (Modifier.isAbstract(method.getModifiers())) {
-                    throw new SpringToyException("the method: " + method.getName() + "is abstract , it can't be injected !");
+                    throw new ResolvedException("the method: " + method.getName() + "is abstract , it can't be injected !");
                 }
-                List<InjectorData> parameterInjectorDatas = getParameterInjectDatas(beanNameGenerator, autoWired.required(), method.getParameters());
-                methodInjectorAttributes.add(new MethodInjectorAttribute(method, parameterInjectorDatas, autoWired.required()));
-                injectorDatas.addAll(parameterInjectorDatas);
+
+                String methodName = method.getName();
+                if (!methodName.startsWith("set")) {
+                    throw new ResolvedException("the method: " + method.getName() + "is not setter , it can't be injected !");
+                }
+
+                List<InjectorData> injectorDataInfo = getParameterInjectDatas(beanNameGenerator, autoWired.required(), method.getParameters());
+                methodInjectorAttributes.add(new MethodInjectorAttribute(method, injectorDataInfo, autoWired.required()));
+                injectorDatas.addAll(injectorDataInfo);
             }
         }
         this.methodInjector = new MethodInjector(methodInjectorAttributes, injectorDatas);
     }
 
     private List<InjectorData> getParameterInjectDatas(BeanNameGenerator beanNameGenerator, boolean required, Parameter[] parameters) {
+
         List<InjectorData> parameterInjectorDatas = new ArrayList<>();
         if (parameters.length == 0) {
             return parameterInjectorDatas;
         }
+
         for (Parameter parameter : parameters) {
             String defaultNmae = beanNameGenerator.generateBeanName(parameter.getType());
             String refName = parameter.getName();
@@ -105,26 +115,31 @@ public class InjectorProvider {
      *
      * @param beanDefination
      * @return
-     * @throws SpringToyException
+     * @throws InjectedException
      */
-    public Object doInject(BeanDefination beanDefination) throws SpringToyException {
+    public Object doInject(BeanDefination beanDefination) throws InjectedException {
         Object instance = null;
+
         if (constructorInjector != null) {
             instance = this.constructorInjector.inject(beanDefination);
         }
+
         if (instance == null) {
             try {
                 instance = beanDefination.getClazz().newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
-                throw new SpringToyException("failed to doResolve bean : " + beanDefination.getName(), e);
+                throw new InjectedException("failed to init bean : " + beanDefination.getName(), e);
             }
         }
+
         if (fieldInjector != null) {
             instance = this.fieldInjector.inject(instance, beanDefination);
         }
+
         if (methodInjector != null) {
             instance = this.methodInjector.inject(instance, beanDefination);
         }
+
         return instance;
     }
 
@@ -135,12 +150,15 @@ public class InjectorProvider {
      * @return boolean
      */
     public boolean hasDependence(BeanDefination beanDefination) {
+
         if (constructorInjector != null && constructorInjector.hasDependence(beanDefination)) {
             return true;
         }
+
         if (fieldInjector != null && fieldInjector.hasDependence(beanDefination)) {
             return true;
         }
+
         if (methodInjector != null && methodInjector.hasDependence(beanDefination)) {
             return true;
         }

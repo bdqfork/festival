@@ -1,6 +1,7 @@
 package cn.bdqfork.ioc.container;
 
-import cn.bdqfork.ioc.exception.SpringToyException;
+import cn.bdqfork.ioc.exception.ConstructorInjectedException;
+import cn.bdqfork.ioc.exception.InjectedException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -24,14 +25,14 @@ public class ConstructorInjector extends AbstractInjector {
      *
      * @param beanDefination
      * @return
-     * @throws SpringToyException
+     * @throws ConstructorInjectedException
      */
-    public Object inject(BeanDefination beanDefination) throws SpringToyException {
+    public Object inject(BeanDefination beanDefination) throws ConstructorInjectedException {
         return inject(null, beanDefination);
     }
 
     @Override
-    public Object inject(Object instance, BeanDefination beanDefination) throws SpringToyException {
+    public Object inject(Object instance, BeanDefination beanDefination) throws ConstructorInjectedException {
         if (constructor != null) {
             if (injectorDatas != null && injectorDatas.size() > 0) {
                 List<Object> args = new LinkedList<>();
@@ -41,8 +42,8 @@ public class ConstructorInjector extends AbstractInjector {
                         if (bean != null) {
                             args.add(bean.getInstance());
                         }
-                    } catch (SpringToyException e) {
-                        throw new SpringToyException("failed to init bean : " + beanDefination.getName(), e);
+                    } catch (InjectedException e) {
+                        throw new ConstructorInjectedException(beanDefination.getName(), e);
                     }
                 }
                 try {
@@ -50,7 +51,7 @@ public class ConstructorInjector extends AbstractInjector {
                         instance = constructor.newInstance(args.toArray());
                     }
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                    throw new SpringToyException("failed to init bean : " + beanDefination.getName(), e);
+                    throw new ConstructorInjectedException(beanDefination.getName(), e);
                 }
             }
         }

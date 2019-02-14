@@ -1,5 +1,6 @@
 package cn.bdqfork.ioc.container;
 
+import cn.bdqfork.ioc.exception.ConflictedBeanException;
 import cn.bdqfork.ioc.exception.SpringToyException;
 
 import java.util.HashMap;
@@ -14,9 +15,9 @@ import java.util.Map;
 public class BeanContainer {
     private Map<String, BeanDefination> beans = new HashMap<>();
 
-    public void register(String beanName, BeanDefination beanDefination) throws SpringToyException {
+    public void register(String beanName, BeanDefination beanDefination) throws ConflictedBeanException {
         if (beans.containsKey(beanName)) {
-            throw new SpringToyException("there are two bean has same name ! ");
+            throw new ConflictedBeanException(beanName);
         }
         beans.put(beanName, beanDefination);
     }

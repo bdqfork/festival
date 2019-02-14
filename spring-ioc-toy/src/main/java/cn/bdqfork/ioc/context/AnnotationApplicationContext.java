@@ -31,7 +31,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
         this.beanContainer = new BeanContainer();
         this.scanPaths = scanPaths;
         this.scan();
-        this.resolving();
+        this.preResolve();
     }
 
     private void scan() throws SpringToyException {
@@ -88,7 +88,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
         return null;
     }
 
-    private void resolving() throws UnsatisfiedBeanException {
+    private void preResolve() throws UnsatisfiedBeanException {
         Map<String, BeanDefination> beanDefinationMap = beanContainer.getBeanDefinations();
 
         for (Map.Entry<String, BeanDefination> entry : beanDefinationMap.entrySet()) {
@@ -100,13 +100,13 @@ public class AnnotationApplicationContext implements ApplicationContext {
 
                 if (injectorProvider.getConstructorParameterDatas() != null) {
                     for (InjectorData parameterInjectorData : injectorProvider.getConstructorParameterDatas()) {
-                        doResolving(beanDefination, injectorProvider, parameterInjectorData, parameterInjectorData.isRequired());
+                        doPreResolve(beanDefination, injectorProvider, parameterInjectorData, parameterInjectorData.isRequired());
                     }
                 }
 
                 if (injectorProvider.getFieldInjectorDatas() != null) {
                     for (InjectorData fieldInjectorData : injectorProvider.getFieldInjectorDatas()) {
-                        doResolving(beanDefination, injectorProvider, fieldInjectorData, fieldInjectorData.isRequired());
+                        doPreResolve(beanDefination, injectorProvider, fieldInjectorData, fieldInjectorData.isRequired());
                     }
                 }
 
@@ -114,7 +114,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
                     for (MethodInjectorAttribute methodInjectorAttribute : injectorProvider.getMethodInjectorAttributes()) {
                         if (methodInjectorAttribute.getParameterInjectorDatas() != null) {
                             for (InjectorData parameterInjectorData : methodInjectorAttribute.getParameterInjectorDatas()) {
-                                doResolving(beanDefination, injectorProvider, parameterInjectorData, methodInjectorAttribute.isRequired());
+                                doPreResolve(beanDefination, injectorProvider, parameterInjectorData, methodInjectorAttribute.isRequired());
                             }
                         }
                     }
@@ -124,7 +124,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
         }
     }
 
-    private void doResolving(BeanDefination beanDefination, InjectorProvider injectorProvider, InjectorData injectorData, boolean isRequired) throws UnsatisfiedBeanException {
+    private void doPreResolve(BeanDefination beanDefination, InjectorProvider injectorProvider, InjectorData injectorData, boolean isRequired) throws UnsatisfiedBeanException {
         BeanDefination ref = null;
 
         Map<String, BeanDefination> beanDefinationMap = beanContainer.getBeanDefinations();

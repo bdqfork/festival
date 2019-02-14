@@ -10,7 +10,7 @@ import cn.bdqfork.ioc.annotation.Service;
 @Service
 public class UserServiceImpl implements UserService {
     private UserDao userDao;
-    @AutoWired
+    @AutoWired(required = false)
     private UserInfoDao userInfoDao;
 
     @AutoWired

@@ -1,5 +1,6 @@
 package cn.bdqfork.ioc.container;
 
+import cn.bdqfork.ioc.exception.FieldInjectedException;
 import cn.bdqfork.ioc.exception.SpringToyException;
 
 import java.lang.reflect.Field;
@@ -15,7 +16,7 @@ public class FieldInjector extends AbstractInjector {
     }
 
     @Override
-    public Object inject(Object instance, BeanDefination beanDefination) throws SpringToyException {
+    public Object inject(Object instance, BeanDefination beanDefination) throws FieldInjectedException {
         if (injectorDatas != null && injectorDatas.size() > 0) {
             for (InjectorData injectorData : injectorDatas) {
                 FieldInjectorData fieldInjectorData = (FieldInjectorData) injectorData;
@@ -26,8 +27,8 @@ public class FieldInjector extends AbstractInjector {
                     if (bean != null) {
                         field.set(instance, bean.getInstance());
                     }
-                } catch (IllegalAccessException e) {
-                    throw new SpringToyException("failed to init bean : " + beanDefination.getName(), e);
+                } catch (IllegalAccessException | SpringToyException e) {
+                    throw new FieldInjectedException(beanDefination.getName(), e);
                 }
             }
         }
