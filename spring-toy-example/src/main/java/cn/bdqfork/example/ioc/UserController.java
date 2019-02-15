@@ -1,7 +1,8 @@
 package cn.bdqfork.example.ioc;
 
-import cn.bdqfork.ioc.annotation.AutoWired;
-import cn.bdqfork.ioc.annotation.Controller;
+
+import cn.bdqfork.core.annotation.AutoWired;
+import cn.bdqfork.core.annotation.Controller;
 
 /**
  * @author bdq

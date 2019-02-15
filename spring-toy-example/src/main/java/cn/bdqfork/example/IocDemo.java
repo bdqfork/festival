@@ -2,8 +2,8 @@ package cn.bdqfork.example;
 
 import cn.bdqfork.example.ioc.UserController;
 import cn.bdqfork.example.ioc.UserDao;
-import cn.bdqfork.ioc.context.AnnotationApplicationContext;
-import cn.bdqfork.ioc.exception.SpringToyException;
+import cn.bdqfork.core.context.AnnotationApplicationContext;
+import cn.bdqfork.core.exception.SpringToyException;
 
 import java.util.Map;
 

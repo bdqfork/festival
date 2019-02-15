@@ -1,7 +1,8 @@
 package cn.bdqfork.example.ioc;
 
-import cn.bdqfork.ioc.annotation.Repositorty;
-import cn.bdqfork.ioc.annotation.Scope;
+
+import cn.bdqfork.core.annotation.Repositorty;
+import cn.bdqfork.core.annotation.Scope;
 
 /**
  * @author bdq
