@@ -1,6 +1,6 @@
-#### Self-made Spring toys
-you can run example to test it !
+#### 自己动手实现的类Spring框架的玩具
+你可以运行示例来进行测试！
 
 ##### todolist:
 1. 兼容JSR330注解
-2. 引入日志
+2. aop实现
