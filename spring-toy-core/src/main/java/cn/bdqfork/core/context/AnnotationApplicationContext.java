@@ -141,9 +141,6 @@ public class AnnotationApplicationContext implements ApplicationContext {
                 } else if (bean.isSubType(injectorData.getType())) {
                     ref = bean;
                     break;
-                } else if (bean.isSuperType(injectorData.getType())) {
-                    ref = bean;
-                    break;
                 }
             }
         }

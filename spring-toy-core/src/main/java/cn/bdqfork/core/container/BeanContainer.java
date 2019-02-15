@@ -64,7 +64,7 @@ public class BeanContainer {
         Map<String, T> beans = new HashMap<>(8);
         for (Map.Entry<String, BeanDefination> entry : this.beans.entrySet()) {
             BeanDefination beanDefination = entry.getValue();
-            if (beanDefination.isType(clazz) || beanDefination.isSuperType(clazz) || beanDefination.isSubType(clazz)) {
+            if (beanDefination.isType(clazz) || beanDefination.isSubType(clazz)) {
                 beans.put(entry.getKey(), (T) beanDefination.getInstance());
             }
         }
