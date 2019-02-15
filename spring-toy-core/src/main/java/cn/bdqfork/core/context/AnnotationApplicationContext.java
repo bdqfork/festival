@@ -32,7 +32,6 @@ public class AnnotationApplicationContext implements ApplicationContext {
         this.beanContainer = new BeanContainer();
         this.scanPaths = scanPaths;
         this.scan();
-        this.preResolve();
     }
 
     private void scan() throws SpringToyException {
@@ -44,7 +43,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
             if (candidate.isAnnotation() || candidate.isInterface() || Modifier.isAbstract(candidate.getModifiers())) {
                 continue;
             }
-            String name = getName(candidate);
+            String name = getComponentName(candidate);
             if (name != null) {
                 boolean isSingleton = true;
 
@@ -67,65 +66,61 @@ public class AnnotationApplicationContext implements ApplicationContext {
                 beanContainer.register(beanDefination.getName(), beanDefination);
             }
         }
-    }
 
-    private String getName(Class<?> candidate) {
-        Component component = candidate.getAnnotation(Component.class);
-        if (component != null) {
-            return component.value();
-        }
-        Service service = candidate.getAnnotation(Service.class);
-        if (service != null) {
-            return service.value();
-        }
-        Repositorty repositorty = candidate.getAnnotation(Repositorty.class);
-        if (repositorty != null) {
-            return repositorty.value();
-        }
-        Controller controller = candidate.getAnnotation(Controller.class);
-        if (controller != null) {
-            return controller.value();
-        }
-        return null;
-    }
-
-    private void preResolve() throws UnsatisfiedBeanException {
         Map<String, BeanDefination> beanDefinationMap = beanContainer.getBeanDefinations();
-
         for (Map.Entry<String, BeanDefination> entry : beanDefinationMap.entrySet()) {
+            preResolve(entry.getValue());
+        }
 
-            BeanDefination beanDefination = entry.getValue();
+    }
 
-            InjectorProvider injectorProvider = beanDefination.getInjectorProvider();
-            if (injectorProvider != null) {
+    private void preResolve(BeanDefination beanDefination) throws SpringToyException {
 
-                if (injectorProvider.getConstructorParameterDatas() != null) {
-                    for (InjectorData parameterInjectorData : injectorProvider.getConstructorParameterDatas()) {
-                        doPreResolve(beanDefination, injectorProvider, parameterInjectorData, parameterInjectorData.isRequired());
-                    }
+        if (beanDefination.isPreSolved()) {
+            return;
+        }
+        Class<?> superClass = beanDefination.getClazz().getSuperclass();
+        if (superClass != null && superClass != Object.class) {
+
+            for (BeanDefination bean : beanContainer.getBeans(superClass).values()) {
+                if (bean != beanDefination) {
+                    preResolve(bean);
                 }
+            }
+        }
 
-                if (injectorProvider.getFieldInjectorDatas() != null) {
-                    for (InjectorData fieldInjectorData : injectorProvider.getFieldInjectorDatas()) {
-                        doPreResolve(beanDefination, injectorProvider, fieldInjectorData, fieldInjectorData.isRequired());
-                    }
+        InjectorProvider injectorProvider = beanDefination.getInjectorProvider();
+        if (injectorProvider != null) {
+
+            if (injectorProvider.getConstructorParameterDatas() != null) {
+                for (InjectorData parameterInjectorData : injectorProvider.getConstructorParameterDatas()) {
+                    preInjector(beanDefination, injectorProvider, parameterInjectorData, parameterInjectorData.isRequired());
                 }
+            }
 
-                if (injectorProvider.getMethodInjectorAttributes() != null) {
-                    for (MethodInjectorAttribute methodInjectorAttribute : injectorProvider.getMethodInjectorAttributes()) {
-                        if (methodInjectorAttribute.getParameterInjectorDatas() != null) {
-                            for (InjectorData parameterInjectorData : methodInjectorAttribute.getParameterInjectorDatas()) {
-                                doPreResolve(beanDefination, injectorProvider, parameterInjectorData, methodInjectorAttribute.isRequired());
-                            }
+            if (injectorProvider.getFieldInjectorDatas() != null) {
+                for (InjectorData fieldInjectorData : injectorProvider.getFieldInjectorDatas()) {
+                    preInjector(beanDefination, injectorProvider, fieldInjectorData, fieldInjectorData.isRequired());
+                }
+            }
+
+            if (injectorProvider.getMethodInjectorAttributes() != null) {
+                for (MethodInjectorAttribute methodInjectorAttribute : injectorProvider.getMethodInjectorAttributes()) {
+                    if (methodInjectorAttribute.getParameterInjectorDatas() != null) {
+                        for (InjectorData parameterInjectorData : methodInjectorAttribute.getParameterInjectorDatas()) {
+                            preInjector(beanDefination, injectorProvider, parameterInjectorData, methodInjectorAttribute.isRequired());
                         }
                     }
                 }
             }
 
         }
+
+        beanDefination.setPreSolved(true);
+
     }
 
-    private void doPreResolve(BeanDefination beanDefination, InjectorProvider injectorProvider, InjectorData injectorData, boolean isRequired) throws UnsatisfiedBeanException {
+    private void preInjector(BeanDefination beanDefination, InjectorProvider injectorProvider, InjectorData injectorData, boolean isRequired) throws UnsatisfiedBeanException {
         BeanDefination ref = null;
 
         Map<String, BeanDefination> beanDefinationMap = beanContainer.getBeanDefinations();
@@ -154,7 +149,6 @@ public class AnnotationApplicationContext implements ApplicationContext {
         } else {
             injectorData.setBean(ref);
         }
-
     }
 
     @Override
@@ -164,17 +158,45 @@ public class AnnotationApplicationContext implements ApplicationContext {
 
     @Override
     public <T> T getBean(Class<T> clazz) throws SpringToyException {
-        return beanContainer.getBean(clazz);
+        BeanDefination beanDefination = beanContainer.getBean(clazz);
+        if (beanDefination != null) {
+            return (T) beanDefination.getInstance();
+        }
+        return null;
     }
 
     @Override
     public <T> Map<String, T> getBeans(Class<T> clazz) throws SpringToyException {
-        return beanContainer.getBeans(clazz);
+        Map<String, T> beanMap = new HashMap<>(8);
+        for (Map.Entry<String, BeanDefination> entry : beanContainer.getBeans(clazz).entrySet()) {
+            beanMap.put(entry.getKey(), (T) entry.getValue().getInstance());
+        }
+        return beanMap;
     }
 
     @Override
     public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
         this.beanNameGenerator = beanNameGenerator;
+    }
+
+    private String getComponentName(Class<?> candidate) {
+        Component component = candidate.getAnnotation(Component.class);
+        if (component != null) {
+            return component.value();
+        }
+        Service service = candidate.getAnnotation(Service.class);
+        if (service != null) {
+            return service.value();
+        }
+        Repositorty repositorty = candidate.getAnnotation(Repositorty.class);
+        if (repositorty != null) {
+            return repositorty.value();
+        }
+        Controller controller = candidate.getAnnotation(Controller.class);
+        if (controller != null) {
+            return controller.value();
+        }
+        return null;
     }
 
 }

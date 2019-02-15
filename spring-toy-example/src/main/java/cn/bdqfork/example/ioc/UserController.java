@@ -9,11 +9,12 @@ import cn.bdqfork.core.annotation.Controller;
  * @date 2019-02-13
  */
 @Controller
-public class UserController {
+public class UserController extends BaseController{
     @AutoWired
     private UserService userService;
 
     public String getUserName() {
         return userService.getUserName();
     }
+
 }

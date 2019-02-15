@@ -39,14 +39,13 @@ public class BeanContainer {
      * 获取第一个与clazz匹配的实例
      *
      * @param clazz
-     * @param <T>
      * @return
      * @throws SpringToyException
      */
-    public <T> T getBean(Class<T> clazz) throws SpringToyException {
+    public BeanDefination getBean(Class<?> clazz) throws SpringToyException {
         for (BeanDefination beanDefination : beans.values()) {
             if (beanDefination.isType(clazz)) {
-                return (T) beanDefination.getInstance();
+                return beanDefination;
             }
         }
         return null;
@@ -56,16 +55,15 @@ public class BeanContainer {
      * 获取所有与clazz匹配的实例
      *
      * @param clazz
-     * @param <T>
      * @return
      * @throws SpringToyException
      */
-    public <T> Map<String, T> getBeans(Class<T> clazz) throws SpringToyException {
-        Map<String, T> beans = new HashMap<>(8);
+    public Map<String, BeanDefination> getBeans(Class<?> clazz) throws SpringToyException {
+        Map<String, BeanDefination> beans = new HashMap<>(8);
         for (Map.Entry<String, BeanDefination> entry : this.beans.entrySet()) {
             BeanDefination beanDefination = entry.getValue();
             if (beanDefination.isType(clazz) || beanDefination.isSubType(clazz)) {
-                beans.put(entry.getKey(), (T) beanDefination.getInstance());
+                beans.put(entry.getKey(), beanDefination);
             }
         }
         return beans;
@@ -79,4 +77,5 @@ public class BeanContainer {
     public Map<String, BeanDefination> getBeanDefinations() {
         return beans;
     }
+
 }

@@ -16,6 +16,7 @@ public class BeanDefination {
     private String name;
     private Object instance;
     private boolean isSingleton;
+    private boolean isPreSolved;
     private InjectorProvider injectorProvider;
 
     public BeanDefination(Class<?> clazz, boolean isSingleton, String name) {
@@ -87,6 +88,14 @@ public class BeanDefination {
             CglibMethodInterceptor cglibMethodInterceptor = new CglibMethodInterceptor();
             return cglibMethodInterceptor.newProxyInstance(instance);
         }
+    }
+
+    public void setPreSolved(boolean preSolved) {
+        isPreSolved = preSolved;
+    }
+
+    public boolean isPreSolved() {
+        return isPreSolved;
     }
 
     public String getName() {
