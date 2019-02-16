@@ -18,7 +18,7 @@ public class BeanDefination {
     private String name;
     private Object instance;
     private boolean isSingleton;
-    private boolean isPreSolved;
+    private boolean isPreInjected;
     private InjectorProvider injectorProvider;
 
     public BeanDefination(Class<?> clazz, boolean isSingleton, String name) {
@@ -92,12 +92,12 @@ public class BeanDefination {
         }
     }
 
-    public void setPreSolved(boolean preSolved) {
-        isPreSolved = preSolved;
+    public void setPreInjected(boolean preInjected) {
+        isPreInjected = preInjected;
     }
 
-    public boolean isPreSolved() {
-        return isPreSolved;
+    public boolean isPreInjected() {
+        return isPreInjected;
     }
 
     public String getName() {
@@ -126,7 +126,7 @@ public class BeanDefination {
         }
         BeanDefination that = (BeanDefination) o;
         return isSingleton == that.isSingleton &&
-                isPreSolved == that.isPreSolved &&
+                isPreInjected == that.isPreInjected &&
                 Objects.equals(clazz, that.clazz) &&
                 Objects.equals(name, that.name) &&
                 Objects.equals(instance, that.instance) &&
@@ -135,6 +135,6 @@ public class BeanDefination {
 
     @Override
     public int hashCode() {
-        return Objects.hash(clazz, name, instance, isSingleton, isPreSolved, injectorProvider);
+        return Objects.hash(clazz, name, instance, isSingleton, isPreInjected, injectorProvider);
     }
 }

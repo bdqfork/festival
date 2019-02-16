@@ -76,7 +76,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
 
     private void preInject(BeanDefination beanDefination) throws SpringToyException {
 
-        if (beanDefination.isPreSolved()) {
+        if (beanDefination.isPreInjected()) {
             return;
         }
         Class<?> superClass = beanDefination.getClazz().getSuperclass();
@@ -116,7 +116,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
 
         }
 
-        beanDefination.setPreSolved(true);
+        beanDefination.setPreInjected(true);
 
     }
 
