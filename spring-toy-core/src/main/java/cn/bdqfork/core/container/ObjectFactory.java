@@ -1,6 +1,5 @@
 package cn.bdqfork.core.container;
 
-import cn.bdqfork.core.exception.InjectedException;
 
 /**
  * @author bdq

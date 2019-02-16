@@ -3,7 +3,8 @@ package cn.bdqfork.example.ioc;
 
 import cn.bdqfork.core.annotation.AutoWired;
 import cn.bdqfork.core.annotation.Service;
-import cn.bdqfork.core.container.BeanFactory;
+
+import javax.inject.Provider;
 
 /**
  * @author bdq
@@ -16,7 +17,7 @@ public class UserServiceImpl implements UserService {
     private UserInfoDao userInfoDao;
 
     @AutoWired
-    public void setUserDao(BeanFactory<UserDao> userDao) {
+    public void setUserDao(Provider<UserDao> userDao) {
         this.userDao = userDao.get();
         System.out.println(userDao);
     }
