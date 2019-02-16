@@ -8,7 +8,6 @@
     <artifactId>spring-toy</artifactId>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>spring-aop-toy</module>
         <module>spring-toy-example</module>
         <module>spring-toy-core</module>
     </modules>
