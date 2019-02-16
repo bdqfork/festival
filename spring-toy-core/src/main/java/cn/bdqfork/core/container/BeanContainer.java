@@ -18,7 +18,7 @@ public class BeanContainer {
 
     public void register(String beanName, BeanDefination beanDefination) throws ConflictedBeanException {
         if (beans.containsKey(beanName)) {
-            throw new ConflictedBeanException(beanName);
+            throw new ConflictedBeanException(String.format("the bean named: %s has conflicted ! ", beanName));
         }
         beans.put(beanName, beanDefination);
     }

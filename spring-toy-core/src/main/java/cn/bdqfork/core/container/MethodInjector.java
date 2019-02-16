@@ -34,13 +34,13 @@ public class MethodInjector extends AbstractInjector {
                         try {
                             if (bean != null) {
                                 if (injectorData.isProvider()) {
-                                    args.add(new ObjectFactory<>(bean));
+                                    args.add(new ObjectFactory<>(bean.getInstance()));
                                 } else {
                                     args.add(bean.getInstance());
                                 }
                             }
                         } catch (InjectedException e) {
-                            throw new MethodInjectedException(beanDefination.getName(), e);
+                            throw new MethodInjectedException(String.format("failed to inject bean: %s by method!", beanDefination.getName()), e);
                         }
                     }
                     try {
@@ -48,7 +48,7 @@ public class MethodInjector extends AbstractInjector {
                             method.invoke(instance, args.toArray());
                         }
                     } catch (IllegalAccessException | InvocationTargetException e) {
-                        throw new MethodInjectedException(beanDefination.getName(), e);
+                        throw new MethodInjectedException(String.format("failed to inject bean: %s by method!", beanDefination.getName()), e);
                     }
                 }
             }

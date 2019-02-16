@@ -18,9 +18,6 @@ public abstract class AbstractInjector implements Injector {
         for (InjectorData injectorData : injectorDatas) {
             if (injectorData.isMatch(beanDefination)) {
                 return true;
-            } else {
-                BeanDefination bean = injectorData.getBean();
-                return bean.getInjectorProvider().hasDependence(beanDefination);
             }
         }
         return false;

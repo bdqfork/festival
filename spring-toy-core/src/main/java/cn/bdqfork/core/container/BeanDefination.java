@@ -5,6 +5,8 @@ import cn.bdqfork.core.exception.InjectedException;
 import cn.bdqfork.core.proxy.CglibMethodInterceptor;
 import cn.bdqfork.core.proxy.JdkInvocationHandler;
 
+import java.util.Objects;
+
 /**
  * bean的定义，用来描述bean的信息
  *
@@ -114,4 +116,25 @@ public class BeanDefination {
         return injectorProvider;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        BeanDefination that = (BeanDefination) o;
+        return isSingleton == that.isSingleton &&
+                isPreSolved == that.isPreSolved &&
+                Objects.equals(clazz, that.clazz) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(instance, that.instance) &&
+                Objects.equals(injectorProvider, that.injectorProvider);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(clazz, name, instance, isSingleton, isPreSolved, injectorProvider);
+    }
 }

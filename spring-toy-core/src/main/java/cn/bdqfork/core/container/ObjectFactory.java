@@ -7,19 +7,14 @@ import cn.bdqfork.core.exception.InjectedException;
  * @date 2019-02-16
  */
 public class ObjectFactory<T> implements BeanFactory<T> {
-    private BeanDefination beanDefination;
+    private T instance;
 
-    public ObjectFactory(BeanDefination beanDefination) {
-        this.beanDefination = beanDefination;
+    public ObjectFactory(T instance) {
+        this.instance = instance;
     }
 
     @Override
     public T get() {
-        try {
-            return (T) beanDefination.getInstance();
-        } catch (InjectedException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return instance;
     }
 }

@@ -26,13 +26,13 @@ public class FieldInjector extends AbstractInjector {
                     BeanDefination bean = injectorData.getBean();
                     if (bean != null) {
                         if (injectorData.isProvider()) {
-                            field.set(instance, new ObjectFactory<>(bean));
+                            field.set(instance, new ObjectFactory<>(bean.getInstance()));
                         } else {
                             field.set(instance, bean.getInstance());
                         }
                     }
                 } catch (IllegalAccessException | SpringToyException e) {
-                    throw new FieldInjectedException(beanDefination.getName(), e);
+                    throw new FieldInjectedException(String.format("failed to inject bean: %s by field!", beanDefination.getName()), e);
                 }
             }
         }

@@ -42,13 +42,13 @@ public class ConstructorInjector extends AbstractInjector {
                     try {
                         if (bean != null) {
                             if (injectorData.isProvider()) {
-                                args.add(new ObjectFactory<>(bean));
+                                args.add(new ObjectFactory<>(bean.getInstance()));
                             } else {
                                 args.add(bean.getInstance());
                             }
                         }
                     } catch (InjectedException e) {
-                        throw new ConstructorInjectedException(beanDefination.getName(), e);
+                        throw new ConstructorInjectedException(String.format("failed to inject bean: %s by constructor!", beanDefination.getName()), e);
                     }
                 }
                 try {
@@ -56,7 +56,7 @@ public class ConstructorInjector extends AbstractInjector {
                         instance = constructor.newInstance(args.toArray());
                     }
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                    throw new ConstructorInjectedException(beanDefination.getName(), e);
+                    throw new ConstructorInjectedException(String.format("failed to inject bean: %s by constructor!", beanDefination.getName()), e);
                 }
             }
         }
