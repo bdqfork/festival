@@ -4,6 +4,7 @@ package cn.bdqfork.example.ioc;
 import cn.bdqfork.core.annotation.AutoWired;
 import cn.bdqfork.core.annotation.Service;
 
+import javax.inject.Inject;
 import javax.inject.Provider;
 
 /**
@@ -16,7 +17,7 @@ public class UserServiceImpl implements UserService {
     @AutoWired(required = false)
     private UserInfoDao userInfoDao;
 
-    @AutoWired
+    @Inject
     public void setUserDao(Provider<UserDao> userDao) {
         this.userDao = userDao.get();
         System.out.println(userDao);

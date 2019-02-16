@@ -10,6 +10,8 @@ import cn.bdqfork.core.generator.BeanNameGenerator;
 import cn.bdqfork.core.generator.SimpleBeanNameGenerator;
 import cn.bdqfork.core.utils.ReflectUtil;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.lang.reflect.*;
 import java.util.*;
 
@@ -45,15 +47,17 @@ public class AnnotationApplicationContext implements ApplicationContext {
             }
             String name = getComponentName(candidate);
             if (name != null) {
-                boolean isSingleton = true;
+                boolean isSingleton = false;
 
                 Scope scope = candidate.getAnnotation(Scope.class);
                 if (scope != null) {
-                    if (ScopeType.PROTOTYPE.equals(scope.value())) {
-                        isSingleton = false;
-                    } else if (!ScopeType.SINGLETON.equals(scope.value())) {
+                    if (ScopeType.SINGLETON.equals(scope.value())) {
+                        isSingleton = true;
+                    } else if (!ScopeType.PROTOTYPE.equals(scope.value())) {
                         throw new SpringToyException("the value of scope is error !");
                     }
+                } else if (candidate.getAnnotation(Singleton.class) != null) {
+                    isSingleton = true;
                 }
 
                 if ("".equals(name)) {
@@ -195,6 +199,10 @@ public class AnnotationApplicationContext implements ApplicationContext {
         Controller controller = candidate.getAnnotation(Controller.class);
         if (controller != null) {
             return controller.value();
+        }
+        Named named = candidate.getAnnotation(Named.class);
+        if (named != null) {
+            return named.value();
         }
         return null;
     }

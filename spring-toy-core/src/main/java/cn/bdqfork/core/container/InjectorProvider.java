@@ -8,6 +8,8 @@ import cn.bdqfork.core.exception.ResolvedException;
 import cn.bdqfork.core.exception.SpringToyException;
 import cn.bdqfork.core.generator.BeanNameGenerator;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Provider;
 import java.lang.reflect.*;
 import java.util.ArrayList;
@@ -36,7 +38,8 @@ public class InjectorProvider {
         int count = 0;
         for (Constructor<?> constructor : candidate.getDeclaredConstructors()) {
             AutoWired autoWired = constructor.getAnnotation(AutoWired.class);
-            if (autoWired != null) {
+            Inject inject = constructor.getAnnotation(Inject.class);
+            if (autoWired != null || inject != null) {
                 count++;
                 if (count > 1) {
                     throw new ResolvedException("the bean: " + candidate.getName() + " has more than one constructor to be injected , it can't be injected !");
@@ -54,22 +57,37 @@ public class InjectorProvider {
             field.setAccessible(true);
 
             AutoWired autoWired = field.getAnnotation(AutoWired.class);
-            if (autoWired != null) {
+            Inject inject = field.getAnnotation(Inject.class);
+            if (autoWired != null || inject != null) {
+
                 if (Modifier.isFinal(field.getModifiers())) {
                     throw new ResolvedException("the field: " + field.getName() + "is final , it can't be injected !");
                 }
+
                 String refName = null;
 
                 Qualifier qualifier = field.getAnnotation(Qualifier.class);
+                Named named = field.getAnnotation(Named.class);
                 if (qualifier != null) {
                     refName = qualifier.value();
+                } else if (named != null) {
+                    refName = named.value();
                 }
+
+                boolean isRequire = false;
+                if (autoWired != null) {
+                    isRequire = autoWired.required();
+                }
+
                 String defaultName = beanNameGenerator.generateBeanName(field.getType());
-                InjectorData injectorData = new FieldInjectorData(defaultName, refName, autoWired.required(), field);
+
+                InjectorData injectorData = new FieldInjectorData(defaultName, refName, isRequire, field);
+
                 if (field.getType() == BeanFactory.class || field.getType() == Provider.class) {
                     Type type = field.getGenericType();
                     setProviderInfo(beanNameGenerator, injectorData, (ParameterizedType) type);
                 }
+
                 fieldInjectorDatas.add(injectorData);
             }
         }
@@ -97,7 +115,8 @@ public class InjectorProvider {
         for (Method method : methods) {
             method.setAccessible(true);
             AutoWired autoWired = method.getAnnotation(AutoWired.class);
-            if (autoWired != null) {
+            Inject inject = method.getAnnotation(Inject.class);
+            if (autoWired != null || inject != null) {
                 if (Modifier.isAbstract(method.getModifiers())) {
                     throw new ResolvedException("the method: " + method.getName() + "is abstract , it can't be injected !");
                 }
@@ -106,9 +125,12 @@ public class InjectorProvider {
                 if (!methodName.startsWith("set")) {
                     throw new ResolvedException("the method: " + method.getName() + "is not setter , it can't be injected !");
                 }
-
-                List<InjectorData> injectorDataInfo = getParameterInjectDatas(beanNameGenerator, autoWired.required(), method.getParameters());
-                methodInjectorAttributes.add(new MethodInjectorAttribute(method, injectorDataInfo, autoWired.required()));
+                boolean isRequire = false;
+                if (autoWired != null) {
+                    isRequire = true;
+                }
+                List<InjectorData> injectorDataInfo = getParameterInjectDatas(beanNameGenerator, isRequire, method.getParameters());
+                methodInjectorAttributes.add(new MethodInjectorAttribute(method, injectorDataInfo, isRequire));
                 injectorDatas.addAll(injectorDataInfo);
             }
         }

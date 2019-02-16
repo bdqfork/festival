@@ -1,17 +1,16 @@
 package cn.bdqfork.example.ioc;
 
 
-import cn.bdqfork.core.annotation.AutoWired;
-import cn.bdqfork.core.annotation.Controller;
-import cn.bdqfork.core.container.BeanFactory;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author bdq
  * @date 2019-02-13
  */
-@Controller
-public class UserController extends BaseController{
-    @AutoWired
+@Named
+public class UserController extends BaseController {
+    @Inject
     private UserService userService;
 
     public String getUserName() {
