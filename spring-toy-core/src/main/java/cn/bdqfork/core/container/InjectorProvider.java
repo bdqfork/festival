@@ -22,10 +22,10 @@ public class InjectorProvider {
     private MethodInjector methodInjector;
 
     public InjectorProvider(Class<?> clazz, BeanNameGenerator beanNameGenerator) throws SpringToyException {
-        doResolve(clazz, beanNameGenerator);
+        resolve(clazz, beanNameGenerator);
     }
 
-    private void doResolve(Class<?> candidate, BeanNameGenerator beanNameGenerator) throws SpringToyException {
+    private void resolve(Class<?> candidate, BeanNameGenerator beanNameGenerator) throws SpringToyException {
         resolveConstructorInfo(candidate, beanNameGenerator);
         resolveFieldInfo(candidate, beanNameGenerator);
         resolveMethodInfo(candidate, beanNameGenerator);
@@ -110,6 +110,8 @@ public class InjectorProvider {
         }
         return parameterInjectorDatas;
     }
+
+
 
     /**
      * 注入依赖
