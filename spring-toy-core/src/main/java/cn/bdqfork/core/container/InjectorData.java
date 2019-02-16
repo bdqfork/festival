@@ -21,11 +21,18 @@ public interface InjectorData {
     BeanDefination getBean();
 
     /**
+     * 设置依赖的默认名称
+     *
+     * @param defaultName
+     */
+    void setDefaultName(String defaultName);
+
+    /**
      * 获取依赖的默认名称
      *
      * @return
      */
-    String getDefalultName();
+    String getDefaultName();
 
     /**
      * 获取指定的依赖的名称
@@ -55,4 +62,26 @@ public interface InjectorData {
      * @return
      */
     boolean isRequired();
+
+    /**
+     * 设置是否是注入器
+     *
+     * @param provider
+     */
+    void setProvider(boolean provider);
+
+    /**
+     * 是否是注入器
+     *
+     * @return
+     */
+    boolean isProvider();
+
+    /**
+     * 设置注入器类型
+     *
+     * @param providedType
+     */
+    void setProvidedType(Class<?> providedType);
+
 }

@@ -3,6 +3,7 @@ package cn.bdqfork.example.ioc;
 
 import cn.bdqfork.core.annotation.AutoWired;
 import cn.bdqfork.core.annotation.Controller;
+import cn.bdqfork.core.container.BeanFactory;
 
 /**
  * @author bdq

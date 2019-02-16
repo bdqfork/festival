@@ -18,6 +18,9 @@ public class FieldInjectorData extends AbstractInjectorData {
 
     @Override
     public Class<?> getType() {
+        if (isProvider()) {
+            return getProvidedType();
+        }
         return field.getType();
     }
 

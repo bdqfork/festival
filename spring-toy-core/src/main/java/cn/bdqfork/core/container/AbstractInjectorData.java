@@ -8,16 +8,23 @@ public abstract class AbstractInjectorData implements InjectorData {
     private String defalultName;
     private String refName;
     private BeanDefination bean;
-    private boolean required;
+    private boolean isRequired;
+    private boolean isProvider;
+    private Class<?> providedType;
 
-    public AbstractInjectorData(String defalultName, String refName, boolean required) {
+    public AbstractInjectorData(String defalultName, String refName, boolean isRequired) {
         this.defalultName = defalultName;
         this.refName = refName;
-        this.required = required;
+        this.isRequired = isRequired;
     }
 
     @Override
-    public String getDefalultName() {
+    public void setDefaultName(String defaultName) {
+        this.defalultName = defaultName;
+    }
+
+    @Override
+    public String getDefaultName() {
         return defalultName;
     }
 
@@ -38,7 +45,7 @@ public abstract class AbstractInjectorData implements InjectorData {
 
     @Override
     public boolean isRequired() {
-        return required;
+        return isRequired;
     }
 
     @Override
@@ -53,4 +60,22 @@ public abstract class AbstractInjectorData implements InjectorData {
         }
     }
 
+    @Override
+    public void setProvider(boolean provider) {
+        isProvider = provider;
+    }
+
+    @Override
+    public boolean isProvider() {
+        return isProvider;
+    }
+
+    @Override
+    public void setProvidedType(Class<?> providedType) {
+        this.providedType = providedType;
+    }
+
+    protected Class<?> getProvidedType() {
+        return providedType;
+    }
 }

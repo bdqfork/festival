@@ -6,12 +6,11 @@ import cn.bdqfork.core.exception.InjectedException;
  * @author bdq
  * @date 2019-02-16
  */
-public class ObjectFactory<T> implements BeanFactory {
-    private String beanName;
+public class ObjectFactory<T> implements BeanFactory<T> {
     private BeanDefination beanDefination;
 
-    public ObjectFactory(String beanName) {
-        this.beanName = beanName;
+    public ObjectFactory(BeanDefination beanDefination) {
+        this.beanDefination = beanDefination;
     }
 
     @Override
@@ -22,9 +21,5 @@ public class ObjectFactory<T> implements BeanFactory {
             e.printStackTrace();
             return null;
         }
-    }
-
-    public void setBeanDefination(BeanDefination beanDefination) {
-        this.beanDefination = beanDefination;
     }
 }

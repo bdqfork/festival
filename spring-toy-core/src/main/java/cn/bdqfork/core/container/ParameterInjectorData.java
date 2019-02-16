@@ -16,6 +16,9 @@ public class ParameterInjectorData extends AbstractInjectorData {
 
     @Override
     public Class<?> getType() {
+        if (isProvider()) {
+            return getProvidedType();
+        }
         return parameter.getType();
     }
 

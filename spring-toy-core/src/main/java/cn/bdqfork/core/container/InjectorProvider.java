@@ -8,6 +8,7 @@ import cn.bdqfork.core.exception.ResolvedException;
 import cn.bdqfork.core.exception.SpringToyException;
 import cn.bdqfork.core.generator.BeanNameGenerator;
 
+import javax.inject.Provider;
 import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,12 +64,30 @@ public class InjectorProvider {
                 if (qualifier != null) {
                     refName = qualifier.value();
                 }
-
                 String defaultName = beanNameGenerator.generateBeanName(field.getType());
-                fieldInjectorDatas.add(new FieldInjectorData(defaultName, refName, autoWired.required(), field));
+                InjectorData injectorData = new FieldInjectorData(defaultName, refName, autoWired.required(), field);
+                if (field.getType() == BeanFactory.class || field.getType() == Provider.class) {
+                    Type type = field.getGenericType();
+                    setProviderInfo(beanNameGenerator, injectorData, (ParameterizedType) type);
+                }
+                fieldInjectorDatas.add(injectorData);
             }
         }
         this.fieldInjector = new FieldInjector(fieldInjectorDatas);
+    }
+
+    private void setProviderInfo(BeanNameGenerator beanNameGenerator, InjectorData injectorData, ParameterizedType type) throws ResolvedException {
+        String defaultName;
+        Class<?> providedType;
+        try {
+            providedType = Class.forName(type.getActualTypeArguments()[0].getTypeName());
+        } catch (ClassNotFoundException e) {
+            throw new ResolvedException(String.format("class %s is not found !", type.getTypeName()), e);
+        }
+        injectorData.setProvider(true);
+        defaultName = beanNameGenerator.generateBeanName(providedType);
+        injectorData.setDefaultName(defaultName);
+        injectorData.setProvidedType(providedType);
     }
 
     private void resolveMethodInfo(Class<?> candidate, BeanNameGenerator beanNameGenerator) throws ResolvedException {
@@ -96,7 +115,7 @@ public class InjectorProvider {
         this.methodInjector = new MethodInjector(methodInjectorAttributes, injectorDatas);
     }
 
-    private List<InjectorData> getParameterInjectDatas(BeanNameGenerator beanNameGenerator, boolean required, Parameter[] parameters) {
+    private List<InjectorData> getParameterInjectDatas(BeanNameGenerator beanNameGenerator, boolean required, Parameter[] parameters) throws ResolvedException {
 
         List<InjectorData> parameterInjectorDatas = new ArrayList<>();
         if (parameters.length == 0) {
@@ -104,13 +123,17 @@ public class InjectorProvider {
         }
 
         for (Parameter parameter : parameters) {
-            String defaultNmae = beanNameGenerator.generateBeanName(parameter.getType());
+            String defaultName = beanNameGenerator.generateBeanName(parameter.getType());
             String refName = parameter.getName();
-            parameterInjectorDatas.add(new ParameterInjectorData(defaultNmae, refName, required, parameter));
+            InjectorData injectorData = new ParameterInjectorData(defaultName, refName, required, parameter);
+            if (parameter.getType() == BeanFactory.class || parameter.getType() == Provider.class) {
+                Type type = parameter.getParameterizedType();
+                setProviderInfo(beanNameGenerator, injectorData, (ParameterizedType) type);
+            }
+            parameterInjectorDatas.add(injectorData);
         }
         return parameterInjectorDatas;
     }
-
 
 
     /**

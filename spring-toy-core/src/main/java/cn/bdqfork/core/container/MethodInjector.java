@@ -33,7 +33,11 @@ public class MethodInjector extends AbstractInjector {
                         BeanDefination bean = injectorData.getBean();
                         try {
                             if (bean != null) {
-                                args.add(bean.getInstance());
+                                if (injectorData.isProvider()) {
+                                    args.add(new ObjectFactory<>(bean));
+                                } else {
+                                    args.add(bean.getInstance());
+                                }
                             }
                         } catch (InjectedException e) {
                             throw new MethodInjectedException(beanDefination.getName(), e);

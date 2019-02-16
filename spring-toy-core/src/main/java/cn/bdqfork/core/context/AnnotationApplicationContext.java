@@ -126,8 +126,8 @@ public class AnnotationApplicationContext implements ApplicationContext {
         Map<String, BeanDefination> beanDefinationMap = beanContainer.getBeanDefinations();
         if (injectorData.getRefName() != null && beanDefinationMap.containsKey(injectorData.getRefName())) {
             ref = beanDefinationMap.get(injectorData.getRefName());
-        } else if (beanDefinationMap.containsKey(injectorData.getDefalultName())) {
-            ref = beanDefinationMap.get(injectorData.getDefalultName());
+        } else if (beanDefinationMap.containsKey(injectorData.getDefaultName())) {
+            ref = beanDefinationMap.get(injectorData.getDefaultName());
         } else {
             for (BeanDefination bean : beanDefinationMap.values()) {
                 if (bean.isType(injectorData.getType())) {
