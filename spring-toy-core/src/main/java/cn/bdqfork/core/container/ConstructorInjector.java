@@ -48,7 +48,7 @@ public class ConstructorInjector extends AbstractInjector {
                             }
                         }
                     } catch (InjectedException e) {
-                        throw new ConstructorInjectedException(String.format("failed to inject bean: %s by constructor!", beanDefination.getName()), e);
+                        throw new ConstructorInjectedException(String.format("failed to inject entity: %s by constructor!", beanDefination.getName()), e);
                     }
                 }
                 try {
@@ -56,7 +56,7 @@ public class ConstructorInjector extends AbstractInjector {
                         instance = constructor.newInstance(args.toArray());
                     }
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                    throw new ConstructorInjectedException(String.format("failed to inject bean: %s by constructor!", beanDefination.getName()), e);
+                    throw new ConstructorInjectedException(String.format("failed to inject entity: %s by constructor!", beanDefination.getName()), e);
                 }
             }
         }

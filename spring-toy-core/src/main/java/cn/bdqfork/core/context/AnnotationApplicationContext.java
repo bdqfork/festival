@@ -146,10 +146,10 @@ public class AnnotationApplicationContext implements ApplicationContext {
 
         if (ref == null) {
             if (isRequired) {
-                throw new UnsatisfiedBeanException("unsatisfied bean , the bean named " + injectorData.getType() + " don't exists");
+                throw new UnsatisfiedBeanException("unsatisfied entity , the entity named " + injectorData.getType() + " don't exists");
             }
         } else if (beanDefination == ref || injectorProvider.hasDependence(beanDefination)) {
-            throw new UnsatisfiedBeanException("unsatisfied bean , there two bean ref each other !");
+            throw new UnsatisfiedBeanException("unsatisfied entity , there two entity ref each other !");
         } else {
             injectorData.setBean(ref);
         }

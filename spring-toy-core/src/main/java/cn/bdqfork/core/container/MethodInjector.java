@@ -40,7 +40,7 @@ public class MethodInjector extends AbstractInjector {
                                 }
                             }
                         } catch (InjectedException e) {
-                            throw new MethodInjectedException(String.format("failed to inject bean: %s by method!", beanDefination.getName()), e);
+                            throw new MethodInjectedException(String.format("failed to inject entity: %s by method!", beanDefination.getName()), e);
                         }
                     }
                     try {
@@ -48,7 +48,7 @@ public class MethodInjector extends AbstractInjector {
                             method.invoke(instance, args.toArray());
                         }
                     } catch (IllegalAccessException | InvocationTargetException e) {
-                        throw new MethodInjectedException(String.format("failed to inject bean: %s by method!", beanDefination.getName()), e);
+                        throw new MethodInjectedException(String.format("failed to inject entity: %s by method!", beanDefination.getName()), e);
                     }
                 }
             }

@@ -41,7 +41,7 @@ public class InjectorProvider {
             if (autoWired != null || inject != null) {
                 count++;
                 if (count > 1) {
-                    throw new ResolvedException("the bean: " + candidate.getName() + " has more than one constructor to be injected , it can't be injected !");
+                    throw new ResolvedException("the entity: " + candidate.getName() + " has more than one constructor to be injected , it can't be injected !");
                 }
                 List<InjectorData> injectorDataInfo = getParameterInjectDatas(beanNameGenerator, autoWired.required(), constructor.getParameters());
                 this.constructorInjector = new ConstructorInjector(constructor, injectorDataInfo);
@@ -175,7 +175,7 @@ public class InjectorProvider {
             try {
                 instance = beanDefination.getClazz().newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
-                throw new InjectedException("failed to init bean : " + beanDefination.getName(), e);
+                throw new InjectedException("failed to init entity : " + beanDefination.getName(), e);
             }
         }
 

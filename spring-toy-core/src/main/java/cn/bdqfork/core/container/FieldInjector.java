@@ -32,7 +32,7 @@ public class FieldInjector extends AbstractInjector {
                         }
                     }
                 } catch (IllegalAccessException | SpringToyException e) {
-                    throw new FieldInjectedException(String.format("failed to inject bean: %s by field!", beanDefination.getName()), e);
+                    throw new FieldInjectedException(String.format("failed to inject entity: %s by field!", beanDefination.getName()), e);
                 }
             }
         }
