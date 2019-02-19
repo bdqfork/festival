@@ -1,4 +1,4 @@
-package cn.bdqfork.example.ioc;
+package cn.bdqfork.example;
 
 import cn.bdqfork.example.ioc.UserController;
 import cn.bdqfork.example.ioc.UserDao;
