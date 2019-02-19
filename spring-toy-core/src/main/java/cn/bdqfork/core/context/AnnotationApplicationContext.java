@@ -2,12 +2,12 @@ package cn.bdqfork.core.context;
 
 
 import cn.bdqfork.core.annotation.*;
-import cn.bdqfork.core.common.ScopeType;
+import cn.bdqfork.core.annotation.ScopeType;
 import cn.bdqfork.core.container.*;
 import cn.bdqfork.core.exception.SpringToyException;
 import cn.bdqfork.core.exception.UnsatisfiedBeanException;
-import cn.bdqfork.core.generator.BeanNameGenerator;
-import cn.bdqfork.core.generator.SimpleBeanNameGenerator;
+import cn.bdqfork.core.container.BeanNameGenerator;
+import cn.bdqfork.core.container.SimpleBeanNameGenerator;
 import cn.bdqfork.core.utils.ReflectUtil;
 
 import javax.inject.Named;

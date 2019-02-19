@@ -6,7 +6,6 @@ import cn.bdqfork.core.annotation.Qualifier;
 import cn.bdqfork.core.exception.InjectedException;
 import cn.bdqfork.core.exception.ResolvedException;
 import cn.bdqfork.core.exception.SpringToyException;
-import cn.bdqfork.core.generator.BeanNameGenerator;
 
 import javax.inject.Inject;
 import javax.inject.Named;

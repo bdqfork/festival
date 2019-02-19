@@ -1,4 +1,4 @@
-package cn.bdqfork.core.generator;
+package cn.bdqfork.core.container;
 
 /**
  * @author bdq

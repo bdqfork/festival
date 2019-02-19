@@ -1,7 +1,7 @@
 package cn.bdqfork.core.context;
 
 import cn.bdqfork.core.exception.SpringToyException;
-import cn.bdqfork.core.generator.BeanNameGenerator;
+import cn.bdqfork.core.container.BeanNameGenerator;
 
 import java.util.Map;
 

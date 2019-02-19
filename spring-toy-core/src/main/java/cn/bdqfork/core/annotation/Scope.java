@@ -1,8 +1,6 @@
 package cn.bdqfork.core.annotation;
 
 
-import cn.bdqfork.core.common.ScopeType;
-
 import java.lang.annotation.*;
 
 /**
