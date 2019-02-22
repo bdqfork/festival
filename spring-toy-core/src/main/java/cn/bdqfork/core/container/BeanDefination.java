@@ -14,12 +14,30 @@ import java.util.Objects;
  * @date 2019-02-12
  */
 public class BeanDefination {
+    /**
+     * Class类
+     */
     private Class<?> clazz;
+    /**
+     * Bean的名称
+     */
     private String name;
+    /**
+     * 单实例
+     */
     private Object instance;
+    /**
+     * 是否单例
+     */
     private boolean isSingleton;
-    private boolean isPreInjected;
+    /**
+     * 依赖信息提供者
+     */
     private InjectorProvider injectorProvider;
+    /**
+     * 是否已预注册
+     */
+    private boolean isPreInjected;
 
     public BeanDefination(Class<?> clazz, boolean isSingleton, String name) {
         this.clazz = clazz;

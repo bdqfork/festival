@@ -30,17 +30,22 @@ public class ReflectUtil {
         if (packageName == null || "".equals(packageName)) {
             return Collections.emptySet();
         }
+        //将包名改为相对路径
         String packagePath = packageName.replace(".", "/");
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Set<Class<?>> classes = new HashSet<>();
         try {
+            //扫描包路径，返回资源的枚举
             Enumeration<URL> dirs = classLoader.getResources(packagePath);
             while (dirs.hasMoreElements()) {
                 URL fileUrl = dirs.nextElement();
                 String filePath = fileUrl.getPath();
+                //判断资源类型
                 if (FILE_PROTOCOL.equals(fileUrl.getProtocol())) {
+                    //处理文件类型的Class
                     classes.addAll(getClassesByFilePath(filePath, packagePath));
                 } else if (JAR_PROTOCOL.equals(fileUrl.getProtocol())) {
+                    //处理Jar包中的Class
                     JarURLConnection jarURLConnection = (JarURLConnection) fileUrl.openConnection();
                     JarFile jarFile = jarURLConnection.getJarFile();
                     classes.addAll(getClassesByJar(jarFile));

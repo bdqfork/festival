@@ -4,6 +4,8 @@ import cn.bdqfork.core.annotation.AutoWired;
 import cn.bdqfork.core.annotation.Service;
 import cn.bdqfork.ioc.example.dao.UserDao;
 
+import javax.inject.Inject;
+
 /**
  * @author bdq
  * @date 2019-02-19
