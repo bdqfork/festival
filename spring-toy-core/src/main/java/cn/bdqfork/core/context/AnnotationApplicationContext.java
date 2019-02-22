@@ -72,87 +72,11 @@ public class AnnotationApplicationContext implements ApplicationContext {
         }
 
         Map<String, BeanDefination> beanDefinationMap = beanContainer.getBeanDefinations();
+        Resolver resolver = new Resolver(beanContainer);
         for (Map.Entry<String, BeanDefination> entry : beanDefinationMap.entrySet()) {
-            preInject(entry.getValue());
+            resolver.resolve(entry.getValue());
         }
 
-    }
-
-    private void preInject(BeanDefination beanDefination) throws SpringToyException {
-
-        if (beanDefination.isPreInjected()) {
-            return;
-        }
-        Class<?> superClass = beanDefination.getClazz().getSuperclass();
-        if (superClass != null && superClass != Object.class) {
-
-            for (BeanDefination bean : beanContainer.getBeans(superClass).values()) {
-                if (bean != beanDefination) {
-                    preInject(bean);
-                }
-            }
-        }
-
-        InjectorProvider injectorProvider = beanDefination.getInjectorProvider();
-        if (injectorProvider != null) {
-
-            if (injectorProvider.getConstructorParameterDatas() != null) {
-                for (InjectorData parameterInjectorData : injectorProvider.getConstructorParameterDatas()) {
-                    doPreInject(beanDefination, injectorProvider, parameterInjectorData, parameterInjectorData.isRequired());
-                }
-            }
-
-            if (injectorProvider.getFieldInjectorDatas() != null) {
-                for (InjectorData fieldInjectorData : injectorProvider.getFieldInjectorDatas()) {
-                    doPreInject(beanDefination, injectorProvider, fieldInjectorData, fieldInjectorData.isRequired());
-                }
-            }
-
-            if (injectorProvider.getMethodInjectorAttributes() != null) {
-                for (MethodInjectorAttribute methodInjectorAttribute : injectorProvider.getMethodInjectorAttributes()) {
-                    if (methodInjectorAttribute.getParameterInjectorDatas() != null) {
-                        for (InjectorData parameterInjectorData : methodInjectorAttribute.getParameterInjectorDatas()) {
-                            doPreInject(beanDefination, injectorProvider, parameterInjectorData, methodInjectorAttribute.isRequired());
-                        }
-                    }
-                }
-            }
-
-        }
-
-        beanDefination.setPreInjected(true);
-
-    }
-
-    private void doPreInject(BeanDefination beanDefination, InjectorProvider injectorProvider, InjectorData injectorData, boolean isRequired) throws UnsatisfiedBeanException {
-        BeanDefination ref = null;
-
-        Map<String, BeanDefination> beanDefinationMap = beanContainer.getBeanDefinations();
-        if (injectorData.getRefName() != null && beanDefinationMap.containsKey(injectorData.getRefName())) {
-            ref = beanDefinationMap.get(injectorData.getRefName());
-        } else if (beanDefinationMap.containsKey(injectorData.getDefaultName())) {
-            ref = beanDefinationMap.get(injectorData.getDefaultName());
-        } else {
-            for (BeanDefination bean : beanDefinationMap.values()) {
-                if (bean.isType(injectorData.getType())) {
-                    ref = bean;
-                    break;
-                } else if (bean.isSubType(injectorData.getType())) {
-                    ref = bean;
-                    break;
-                }
-            }
-        }
-
-        if (ref == null) {
-            if (isRequired) {
-                throw new UnsatisfiedBeanException("unsatisfied entity , the entity named " + injectorData.getType() + " don't exists");
-            }
-        } else if (beanDefination == ref || injectorProvider.hasDependence(beanDefination)) {
-            throw new UnsatisfiedBeanException("unsatisfied entity , there two entity ref each other !");
-        } else {
-            injectorData.setBean(ref);
-        }
     }
 
     @Override

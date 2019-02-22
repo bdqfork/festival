@@ -5,11 +5,29 @@ package cn.bdqfork.core.container;
  * @date 2019-02-13
  */
 public abstract class AbstractInjectorData implements InjectorData {
+    /**
+     * 默认依赖名称
+     */
     private String defalultName;
+    /**
+     * 指定依赖名称
+     */
     private String refName;
+    /**
+     * 依赖的BeanDefination实例
+     */
     private BeanDefination bean;
+    /**
+     * 是否必须
+     */
     private boolean isRequired;
+    /**
+     * 是否是Provider或者BeanFactory依赖
+     */
     private boolean isProvider;
+    /**
+     * Provider或者BeanFactory提供的依赖类
+     */
     private Class<?> providedType;
 
     public AbstractInjectorData(String defalultName, String refName, boolean isRequired) {

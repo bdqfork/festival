@@ -37,13 +37,17 @@ public class ConstructorInjector extends AbstractInjector {
         if (constructor != null) {
             if (injectorDatas != null && injectorDatas.size() > 0) {
                 List<Object> args = new LinkedList<>();
+                //遍历构造函数的参数依赖信息
                 for (InjectorData injectorData : injectorDatas) {
                     BeanDefination bean = injectorData.getBean();
                     try {
                         if (bean != null) {
+                            //判断是否是Provider
                             if (injectorData.isProvider()) {
+                                //添加实例到Provider参数
                                 args.add(new ObjectFactory<>(bean.getInstance()));
                             } else {
+                                //添加实例作为参数
                                 args.add(bean.getInstance());
                             }
                         }
@@ -53,6 +57,7 @@ public class ConstructorInjector extends AbstractInjector {
                 }
                 try {
                     if (args.size() > 0) {
+                        //反射调用构造器，构造对象实例
                         instance = constructor.newInstance(args.toArray());
                     }
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
