@@ -7,6 +7,8 @@
 
 该框架遵从jsr330规范，实现了基本的依赖注入功能！
 你可以运行示例来进行测试！
+框架原理可以[点此查看](https://github.com/bdqfork/spring-toy)。
 
 ##### todolist:
 1. aop实现
+
