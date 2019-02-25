@@ -24,22 +24,22 @@ public class ConstructorInjector extends AbstractInjector {
     /**
      * 构造器注入
      *
-     * @param beanDefination
+     * @param beanDefinition
      * @return
      * @throws ConstructorInjectedException
      */
-    public Object inject(BeanDefination beanDefination) throws ConstructorInjectedException {
-        return inject(null, beanDefination);
+    public Object inject(BeanDefinition beanDefinition) throws ConstructorInjectedException {
+        return inject(null, beanDefinition);
     }
 
     @Override
-    public Object inject(Object instance, BeanDefination beanDefination) throws ConstructorInjectedException {
+    public Object inject(Object instance, BeanDefinition beanDefinition) throws ConstructorInjectedException {
         if (constructor != null) {
             if (injectorDatas != null && injectorDatas.size() > 0) {
                 List<Object> args = new LinkedList<>();
                 //遍历构造函数的参数依赖信息
                 for (InjectorData injectorData : injectorDatas) {
-                    BeanDefination bean = injectorData.getBean();
+                    BeanDefinition bean = injectorData.getBean();
                     try {
                         if (bean != null) {
                             //判断是否是Provider
@@ -52,7 +52,7 @@ public class ConstructorInjector extends AbstractInjector {
                             }
                         }
                     } catch (InjectedException e) {
-                        throw new ConstructorInjectedException(String.format("failed to inject entity: %s by constructor!", beanDefination.getName()), e);
+                        throw new ConstructorInjectedException(String.format("failed to inject entity: %s by constructor!", beanDefinition.getName()), e);
                     }
                 }
                 try {
@@ -61,7 +61,7 @@ public class ConstructorInjector extends AbstractInjector {
                         instance = constructor.newInstance(args.toArray());
                     }
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                    throw new ConstructorInjectedException(String.format("failed to inject entity: %s by constructor!", beanDefination.getName()), e);
+                    throw new ConstructorInjectedException(String.format("failed to inject entity: %s by constructor!", beanDefinition.getName()), e);
                 }
             }
         }

@@ -14,13 +14,13 @@ import java.util.Map;
  * @date 2019-02-07
  */
 public class BeanContainer {
-    private Map<String, BeanDefination> beans = new HashMap<>();
+    private Map<String, BeanDefinition> beans = new HashMap<>();
 
-    public void register(String beanName, BeanDefination beanDefination) throws ConflictedBeanException {
+    public void register(String beanName, BeanDefinition beanDefinition) throws ConflictedBeanException {
         if (beans.containsKey(beanName)) {
             throw new ConflictedBeanException(String.format("the entity named: %s has conflicted ! ", beanName));
         }
-        beans.put(beanName, beanDefination);
+        beans.put(beanName, beanDefinition);
     }
 
     /**
@@ -31,8 +31,8 @@ public class BeanContainer {
      * @throws SpringToyException
      */
     public Object getBean(String beanName) throws SpringToyException {
-        BeanDefination beanDefination = beans.get(beanName);
-        return beanDefination.getInstance();
+        BeanDefinition beanDefinition = beans.get(beanName);
+        return beanDefinition.getInstance();
     }
 
     /**
@@ -42,10 +42,10 @@ public class BeanContainer {
      * @return
      * @throws SpringToyException
      */
-    public BeanDefination getBean(Class<?> clazz) throws SpringToyException {
-        for (BeanDefination beanDefination : beans.values()) {
-            if (beanDefination.isType(clazz)) {
-                return beanDefination;
+    public BeanDefinition getBean(Class<?> clazz) throws SpringToyException {
+        for (BeanDefinition beanDefinition : beans.values()) {
+            if (beanDefinition.isType(clazz)) {
+                return beanDefinition;
             }
         }
         return null;
@@ -58,12 +58,12 @@ public class BeanContainer {
      * @return
      * @throws SpringToyException
      */
-    public Map<String, BeanDefination> getBeans(Class<?> clazz) throws SpringToyException {
-        Map<String, BeanDefination> beans = new HashMap<>(8);
-        for (Map.Entry<String, BeanDefination> entry : this.beans.entrySet()) {
-            BeanDefination beanDefination = entry.getValue();
-            if (beanDefination.isType(clazz) || beanDefination.isSubType(clazz)) {
-                beans.put(entry.getKey(), beanDefination);
+    public Map<String, BeanDefinition> getBeans(Class<?> clazz) throws SpringToyException {
+        Map<String, BeanDefinition> beans = new HashMap<>(8);
+        for (Map.Entry<String, BeanDefinition> entry : this.beans.entrySet()) {
+            BeanDefinition beanDefinition = entry.getValue();
+            if (beanDefinition.isType(clazz) || beanDefinition.isSubType(clazz)) {
+                beans.put(entry.getKey(), beanDefinition);
             }
         }
         return beans;
@@ -74,7 +74,7 @@ public class BeanContainer {
      *
      * @return
      */
-    public Map<String, BeanDefination> getBeanDefinations() {
+    public Map<String, BeanDefinition> getBeanDefinations() {
         return beans;
     }
 

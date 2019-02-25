@@ -16,7 +16,7 @@ public abstract class AbstractInjectorData implements InjectorData {
     /**
      * 依赖的BeanDefination实例
      */
-    private BeanDefination bean;
+    private BeanDefinition bean;
     /**
      * 是否必须
      */
@@ -52,12 +52,12 @@ public abstract class AbstractInjectorData implements InjectorData {
     }
 
     @Override
-    public void setBean(BeanDefination bean) {
+    public void setBean(BeanDefinition bean) {
         this.bean = bean;
     }
 
     @Override
-    public BeanDefination getBean() {
+    public BeanDefinition getBean() {
         return this.bean;
     }
 
@@ -67,14 +67,14 @@ public abstract class AbstractInjectorData implements InjectorData {
     }
 
     @Override
-    public boolean isMatch(BeanDefination beanDefination) {
-        if (refName != null && refName.equals(beanDefination.getName())) {
+    public boolean isMatch(BeanDefinition beanDefinition) {
+        if (refName != null && refName.equals(beanDefinition.getName())) {
             return true;
-        } else if (defalultName.equals(beanDefination.getName())) {
+        } else if (defalultName.equals(beanDefinition.getName())) {
             return true;
         } else {
             Class<?> type = getType();
-            return beanDefination.isType(type);
+            return beanDefinition.isType(type);
         }
     }
 

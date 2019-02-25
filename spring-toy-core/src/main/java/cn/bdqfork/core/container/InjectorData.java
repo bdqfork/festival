@@ -11,14 +11,14 @@ public interface InjectorData {
      *
      * @param bean
      */
-    void setBean(BeanDefination bean);
+    void setBean(BeanDefinition bean);
 
     /**
      * 返回依赖的bean
      *
      * @return
      */
-    BeanDefination getBean();
+    BeanDefinition getBean();
 
     /**
      * 设置依赖的默认名称
@@ -51,10 +51,10 @@ public interface InjectorData {
     /**
      * 判断依赖是否匹配
      *
-     * @param beanDefination
+     * @param beanDefinition
      * @return
      */
-    boolean isMatch(BeanDefination beanDefination);
+    boolean isMatch(BeanDefinition beanDefinition);
 
     /**
      * 是否必须

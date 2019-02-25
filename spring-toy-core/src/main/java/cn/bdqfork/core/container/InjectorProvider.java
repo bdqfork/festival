@@ -160,31 +160,31 @@ public class InjectorProvider {
     /**
      * 注入依赖
      *
-     * @param beanDefination
+     * @param beanDefinition
      * @return
      * @throws InjectedException
      */
-    public Object doInject(BeanDefination beanDefination) throws InjectedException {
+    public Object doInject(BeanDefinition beanDefinition) throws InjectedException {
         Object instance = null;
 
         if (constructorInjector != null) {
-            instance = this.constructorInjector.inject(beanDefination);
+            instance = this.constructorInjector.inject(beanDefinition);
         }
 
         if (instance == null) {
             try {
-                instance = beanDefination.getClazz().newInstance();
+                instance = beanDefinition.getClazz().newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
-                throw new InjectedException("failed to init entity : " + beanDefination.getName(), e);
+                throw new InjectedException("failed to init entity : " + beanDefinition.getName(), e);
             }
         }
 
         if (fieldInjector != null) {
-            instance = this.fieldInjector.inject(instance, beanDefination);
+            instance = this.fieldInjector.inject(instance, beanDefinition);
         }
 
         if (methodInjector != null) {
-            instance = this.methodInjector.inject(instance, beanDefination);
+            instance = this.methodInjector.inject(instance, beanDefinition);
         }
 
         return instance;
@@ -193,20 +193,20 @@ public class InjectorProvider {
     /**
      * 判断当前bean是否依赖beanDefination，如果是，返回true，否则返回false
      *
-     * @param beanDefination
+     * @param beanDefinition
      * @return boolean
      */
-    public boolean hasDependence(BeanDefination beanDefination) {
+    public boolean hasDependence(BeanDefinition beanDefinition) {
 
-        if (constructorInjector != null && constructorInjector.hasDependence(beanDefination)) {
+        if (constructorInjector != null && constructorInjector.hasDependence(beanDefinition)) {
             return true;
         }
 
-        if (fieldInjector != null && fieldInjector.hasDependence(beanDefination)) {
+        if (fieldInjector != null && fieldInjector.hasDependence(beanDefinition)) {
             return true;
         }
 
-        if (methodInjector != null && methodInjector.hasDependence(beanDefination)) {
+        if (methodInjector != null && methodInjector.hasDependence(beanDefinition)) {
             return true;
         }
         return false;

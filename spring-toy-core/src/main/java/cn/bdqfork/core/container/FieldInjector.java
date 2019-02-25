@@ -16,14 +16,14 @@ public class FieldInjector extends AbstractInjector {
     }
 
     @Override
-    public Object inject(Object instance, BeanDefination beanDefination) throws FieldInjectedException {
+    public Object inject(Object instance, BeanDefinition beanDefinition) throws FieldInjectedException {
         if (injectorDatas != null && injectorDatas.size() > 0) {
             for (InjectorData injectorData : injectorDatas) {
                 FieldInjectorData fieldInjectorData = (FieldInjectorData) injectorData;
                 Field field = fieldInjectorData.getField();
                 field.setAccessible(true);
                 try {
-                    BeanDefination bean = injectorData.getBean();
+                    BeanDefinition bean = injectorData.getBean();
                     if (bean != null) {
                         if (injectorData.isProvider()) {
                             field.set(instance, new ObjectFactory<>(bean.getInstance()));
@@ -32,7 +32,7 @@ public class FieldInjector extends AbstractInjector {
                         }
                     }
                 } catch (IllegalAccessException | SpringToyException e) {
-                    throw new FieldInjectedException(String.format("failed to inject entity: %s by field!", beanDefination.getName()), e);
+                    throw new FieldInjectedException(String.format("failed to inject entity: %s by field!", beanDefinition.getName()), e);
                 }
             }
         }

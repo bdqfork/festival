@@ -22,7 +22,7 @@ public class MethodInjector extends AbstractInjector {
     }
 
     @Override
-    public Object inject(Object instance, BeanDefination beanDefination) throws InjectedException {
+    public Object inject(Object instance, BeanDefinition beanDefinition) throws InjectedException {
         if (methodInjectorAttributes != null && methodInjectorAttributes.size() > 0) {
             for (MethodInjectorAttribute attribute : methodInjectorAttributes) {
                 Method method = attribute.getMethod();
@@ -30,7 +30,7 @@ public class MethodInjector extends AbstractInjector {
                 if (parameterInjectorDatas != null && parameterInjectorDatas.size() > 0) {
                     List<Object> args = new LinkedList<>();
                     for (InjectorData injectorData : parameterInjectorDatas) {
-                        BeanDefination bean = injectorData.getBean();
+                        BeanDefinition bean = injectorData.getBean();
                         try {
                             if (bean != null) {
                                 if (injectorData.isProvider()) {
@@ -40,7 +40,7 @@ public class MethodInjector extends AbstractInjector {
                                 }
                             }
                         } catch (InjectedException e) {
-                            throw new MethodInjectedException(String.format("failed to inject entity: %s by method!", beanDefination.getName()), e);
+                            throw new MethodInjectedException(String.format("failed to inject entity: %s by method!", beanDefinition.getName()), e);
                         }
                     }
                     try {
@@ -48,7 +48,7 @@ public class MethodInjector extends AbstractInjector {
                             method.invoke(instance, args.toArray());
                         }
                     } catch (IllegalAccessException | InvocationTargetException e) {
-                        throw new MethodInjectedException(String.format("failed to inject entity: %s by method!", beanDefination.getName()), e);
+                        throw new MethodInjectedException(String.format("failed to inject entity: %s by method!", beanDefinition.getName()), e);
                     }
                 }
             }

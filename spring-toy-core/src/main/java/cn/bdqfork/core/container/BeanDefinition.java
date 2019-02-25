@@ -13,7 +13,7 @@ import java.util.Objects;
  * @author bdq
  * @date 2019-02-12
  */
-public class BeanDefination {
+public class BeanDefinition {
     /**
      * Class类
      */
@@ -39,7 +39,7 @@ public class BeanDefination {
      */
     private boolean isResolved;
 
-    public BeanDefination(Class<?> clazz, boolean isSingleton, String name) {
+    public BeanDefinition(Class<?> clazz, boolean isSingleton, String name) {
         this.clazz = clazz;
         this.isSingleton = isSingleton;
         this.name = name;
@@ -142,7 +142,7 @@ public class BeanDefination {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        BeanDefination that = (BeanDefination) o;
+        BeanDefinition that = (BeanDefinition) o;
         return isSingleton == that.isSingleton &&
                 isResolved == that.isResolved &&
                 Objects.equals(clazz, that.clazz) &&

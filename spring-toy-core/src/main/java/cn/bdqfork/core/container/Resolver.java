@@ -16,37 +16,37 @@ public class Resolver {
         this.beanContainer = beanContainer;
     }
 
-    public void resolve(BeanDefination beanDefination) throws SpringToyException {
+    public void resolve(BeanDefinition beanDefinition) throws SpringToyException {
         //如果已经解析过了，则返回
-        if (beanDefination.isResolved()) {
+        if (beanDefinition.isResolved()) {
             return;
         }
         //优先解析父类
-        Class<?> superClass = beanDefination.getClazz().getSuperclass();
+        Class<?> superClass = beanDefinition.getClazz().getSuperclass();
         if (superClass != null && superClass != Object.class) {
 
-            for (BeanDefination bean : beanContainer.getBeans(superClass).values()) {
-                if (bean != beanDefination) {
+            for (BeanDefinition bean : beanContainer.getBeans(superClass).values()) {
+                if (bean != beanDefinition) {
                     //递归解析父类
                     resolve(bean);
                 }
             }
         }
 
-        InjectorProvider injectorProvider = beanDefination.getInjectorProvider();
+        InjectorProvider injectorProvider = beanDefinition.getInjectorProvider();
         if (injectorProvider != null) {
 
             //如果有构造器注入，则先解析构造器注入依赖
             if (injectorProvider.getConstructorParameterDatas() != null) {
                 for (InjectorData parameterInjectorData : injectorProvider.getConstructorParameterDatas()) {
-                    doResolve(beanDefination, injectorProvider, parameterInjectorData, parameterInjectorData.isRequired());
+                    doResolve(beanDefinition, injectorProvider, parameterInjectorData, parameterInjectorData.isRequired());
                 }
             }
 
             //如果有字段注入，则解析字段注入依赖
             if (injectorProvider.getFieldInjectorDatas() != null) {
                 for (InjectorData fieldInjectorData : injectorProvider.getFieldInjectorDatas()) {
-                    doResolve(beanDefination, injectorProvider, fieldInjectorData, fieldInjectorData.isRequired());
+                    doResolve(beanDefinition, injectorProvider, fieldInjectorData, fieldInjectorData.isRequired());
                 }
             }
 
@@ -55,7 +55,7 @@ public class Resolver {
                 for (MethodInjectorAttribute methodInjectorAttribute : injectorProvider.getMethodInjectorAttributes()) {
                     if (methodInjectorAttribute.getParameterInjectorDatas() != null) {
                         for (InjectorData parameterInjectorData : methodInjectorAttribute.getParameterInjectorDatas()) {
-                            doResolve(beanDefination, injectorProvider, parameterInjectorData, methodInjectorAttribute.isRequired());
+                            doResolve(beanDefinition, injectorProvider, parameterInjectorData, methodInjectorAttribute.isRequired());
                         }
                     }
                 }
@@ -63,21 +63,21 @@ public class Resolver {
 
         }
 
-        beanDefination.setResolved(true);
+        beanDefinition.setResolved(true);
 
     }
 
-    private void doResolve(BeanDefination beanDefination, InjectorProvider injectorProvider, InjectorData injectorData, boolean isRequired) throws UnsatisfiedBeanException {
-        BeanDefination ref = null;
+    private void doResolve(BeanDefinition beanDefinition, InjectorProvider injectorProvider, InjectorData injectorData, boolean isRequired) throws UnsatisfiedBeanException {
+        BeanDefinition ref = null;
 
-        Map<String, BeanDefination> beanDefinationMap = beanContainer.getBeanDefinations();
+        Map<String, BeanDefinition> beanDefinationMap = beanContainer.getBeanDefinations();
         //判断依赖组件是否存在，先查找指定名称的依赖，如果不存在，则按找默认名称去查找，仍然不存在，则再按类型匹配
         if (injectorData.getRefName() != null && beanDefinationMap.containsKey(injectorData.getRefName())) {
             ref = beanDefinationMap.get(injectorData.getRefName());
         } else if (beanDefinationMap.containsKey(injectorData.getDefaultName())) {
             ref = beanDefinationMap.get(injectorData.getDefaultName());
         } else {
-            for (BeanDefination bean : beanDefinationMap.values()) {
+            for (BeanDefinition bean : beanDefinationMap.values()) {
                 if (bean.isType(injectorData.getType())) {
                     ref = bean;
                     break;
@@ -93,7 +93,7 @@ public class Resolver {
             if (isRequired) {
                 throw new UnsatisfiedBeanException("unsatisfied entity , the entity named " + injectorData.getType() + " don't exists");
             }
-        } else if (beanDefination == ref || injectorProvider.hasDependence(beanDefination)) {
+        } else if (beanDefinition == ref || injectorProvider.hasDependence(beanDefinition)) {
             throw new UnsatisfiedBeanException("unsatisfied entity , there two entity ref each other !");
         } else {
             //设置依赖信息

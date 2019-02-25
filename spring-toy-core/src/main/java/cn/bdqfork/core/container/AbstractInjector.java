@@ -14,9 +14,9 @@ public abstract class AbstractInjector implements Injector {
     }
 
     @Override
-    public boolean hasDependence(BeanDefination beanDefination) {
+    public boolean hasDependence(BeanDefinition beanDefinition) {
         for (InjectorData injectorData : injectorDatas) {
-            if (injectorData.isMatch(beanDefination)) {
+            if (injectorData.isMatch(beanDefinition)) {
                 return true;
             }
         }

@@ -5,7 +5,6 @@ import cn.bdqfork.core.annotation.*;
 import cn.bdqfork.core.annotation.ScopeType;
 import cn.bdqfork.core.container.*;
 import cn.bdqfork.core.exception.SpringToyException;
-import cn.bdqfork.core.exception.UnsatisfiedBeanException;
 import cn.bdqfork.core.container.BeanNameGenerator;
 import cn.bdqfork.core.container.SimpleBeanNameGenerator;
 import cn.bdqfork.core.utils.ReflectUtil;
@@ -64,16 +63,16 @@ public class AnnotationApplicationContext implements ApplicationContext {
                     name = this.beanNameGenerator.generateBeanName(candidate);
                 }
 
-                BeanDefination beanDefination = new BeanDefination(candidate, isSingleton, name);
-                beanDefination.setInjectorProvider(new InjectorProvider(candidate, this.beanNameGenerator));
+                BeanDefinition beanDefinition = new BeanDefinition(candidate, isSingleton, name);
+                beanDefinition.setInjectorProvider(new InjectorProvider(candidate, this.beanNameGenerator));
 
-                beanContainer.register(beanDefination.getName(), beanDefination);
+                beanContainer.register(beanDefinition.getName(), beanDefinition);
             }
         }
 
-        Map<String, BeanDefination> beanDefinationMap = beanContainer.getBeanDefinations();
+        Map<String, BeanDefinition> beanDefinationMap = beanContainer.getBeanDefinations();
         Resolver resolver = new Resolver(beanContainer);
-        for (Map.Entry<String, BeanDefination> entry : beanDefinationMap.entrySet()) {
+        for (Map.Entry<String, BeanDefinition> entry : beanDefinationMap.entrySet()) {
             resolver.resolve(entry.getValue());
         }
 
@@ -86,9 +85,9 @@ public class AnnotationApplicationContext implements ApplicationContext {
 
     @Override
     public <T> T getBean(Class<T> clazz) throws SpringToyException {
-        BeanDefination beanDefination = beanContainer.getBean(clazz);
-        if (beanDefination != null) {
-            return (T) beanDefination.getInstance();
+        BeanDefinition beanDefinition = beanContainer.getBean(clazz);
+        if (beanDefinition != null) {
+            return (T) beanDefinition.getInstance();
         }
         return null;
     }
@@ -96,7 +95,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
     @Override
     public <T> Map<String, T> getBeans(Class<T> clazz) throws SpringToyException {
         Map<String, T> beanMap = new HashMap<>(8);
-        for (Map.Entry<String, BeanDefination> entry : beanContainer.getBeans(clazz).entrySet()) {
+        for (Map.Entry<String, BeanDefinition> entry : beanContainer.getBeans(clazz).entrySet()) {
             beanMap.put(entry.getKey(), (T) entry.getValue().getInstance());
         }
         return beanMap;
