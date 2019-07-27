@@ -1,10 +1,7 @@
 package cn.bdqfork.core.container;
 
 
-import cn.bdqfork.core.exception.InjectedException;
-import cn.bdqfork.core.proxy.CglibMethodInterceptor;
-import cn.bdqfork.core.proxy.JdkInvocationHandler;
-
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -15,7 +12,7 @@ import java.util.Objects;
  */
 public class BeanDefinition {
     /**
-     * Class类
+     * Class类型
      */
     private Class<?> clazz;
     /**
@@ -23,26 +20,35 @@ public class BeanDefinition {
      */
     private String name;
     /**
-     * 单实例
+     * Bean的作用域
      */
-    private Object instance;
+    private String scope;
     /**
-     * 是否单例
+     * 构造器属性
      */
-    private boolean isSingleton;
+    private ConstructorAttribute constructorAttribute;
     /**
-     * 依赖信息提供者
+     * 待直接注入依赖属性
      */
-    private InjectorProvider injectorProvider;
+    private List<FieldAttribute> fieldAttributes;
+    /**
+     * 属性注入方法属性
+     */
+    private List<MethodAttribute> methodAttributes;
+    /**
+     * 是否延迟初始化
+     */
+    private boolean lazy;
     /**
      * 是否已预注册
      */
     private boolean isResolved;
 
-    public BeanDefinition(Class<?> clazz, boolean isSingleton, String name) {
+    public BeanDefinition(Class<?> clazz, String scope, String name, boolean lazy) {
         this.clazz = clazz;
-        this.isSingleton = isSingleton;
+        this.scope = scope;
         this.name = name;
+        this.lazy = lazy;
     }
 
     /**
@@ -75,49 +81,6 @@ public class BeanDefinition {
         return clazz.isAssignableFrom(this.clazz);
     }
 
-    /**
-     * 获取对象实例，如果bean是单例的，则每次都返回同一个实例，如果不是，则每次都创建一个新的实例。
-     *
-     * @return Object
-     */
-    public Object getInstance() throws InjectedException {
-        if (isSingleton) {
-            return getSingleInstance();
-        }
-        return newBean();
-    }
-
-    private Object getSingleInstance() throws InjectedException {
-        if (instance == null) {
-            synchronized (Object.class) {
-                if (instance == null) {
-                    instance = newBean();
-                }
-            }
-        }
-        return instance;
-    }
-
-    private Object newBean() throws InjectedException {
-        Object instance = injectorProvider.doInject(this);
-        Class<?>[] classes = clazz.getInterfaces();
-        if (classes.length != 0) {
-            JdkInvocationHandler jdkInvocationHandler = new JdkInvocationHandler();
-            return jdkInvocationHandler.newProxyInstance(instance);
-        } else {
-            CglibMethodInterceptor cglibMethodInterceptor = new CglibMethodInterceptor();
-            return cglibMethodInterceptor.newProxyInstance(instance);
-        }
-    }
-
-    public void setResolved(boolean resolved) {
-        isResolved = resolved;
-    }
-
-    public boolean isResolved() {
-        return isResolved;
-    }
-
     public String getName() {
         return name;
     }
@@ -126,12 +89,53 @@ public class BeanDefinition {
         return clazz;
     }
 
-    public void setInjectorProvider(InjectorProvider injectorProvider) {
-        this.injectorProvider = injectorProvider;
+    public String getScope() {
+        return scope;
     }
 
-    public InjectorProvider getInjectorProvider() {
-        return injectorProvider;
+    public BeanDefinition setScope(String scope) {
+        this.scope = scope;
+        return this;
+    }
+
+    public ConstructorAttribute getConstructorAttribute() {
+        return constructorAttribute;
+    }
+
+    public void setConstructorAttribute(ConstructorAttribute constructorAttribute) {
+        this.constructorAttribute = constructorAttribute;
+    }
+
+    public List<FieldAttribute> getFieldAttributes() {
+        return fieldAttributes;
+    }
+
+    public void setFieldAttributes(List<FieldAttribute> fieldAttributes) {
+        this.fieldAttributes = fieldAttributes;
+    }
+
+    public List<MethodAttribute> getMethodAttributes() {
+        return methodAttributes;
+    }
+
+    public void setMethodAttributes(List<MethodAttribute> methodAttributes) {
+        this.methodAttributes = methodAttributes;
+    }
+
+    public boolean isLazy() {
+        return lazy;
+    }
+
+    public void setLazy(boolean lazy) {
+        this.lazy = lazy;
+    }
+
+    public void setResolved(boolean resolved) {
+        isResolved = resolved;
+    }
+
+    public boolean isResolved() {
+        return isResolved;
     }
 
     @Override
@@ -143,16 +147,13 @@ public class BeanDefinition {
             return false;
         }
         BeanDefinition that = (BeanDefinition) o;
-        return isSingleton == that.isSingleton &&
-                isResolved == that.isResolved &&
-                Objects.equals(clazz, that.clazz) &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(instance, that.instance) &&
-                Objects.equals(injectorProvider, that.injectorProvider);
+        return clazz.equals(that.clazz) &&
+                name.equals(that.name) &&
+                scope.equals(that.scope);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(clazz, name, instance, isSingleton, isResolved, injectorProvider);
+        return Objects.hash(clazz, name, scope);
     }
 }

@@ -7,6 +7,9 @@ package cn.bdqfork.core.container;
 public class SimpleBeanNameGenerator implements BeanNameGenerator {
     @Override
     public String generateBeanName(Class<?> clazz) {
-        return clazz.getSimpleName();
+        String className = clazz.getSimpleName();
+        char[] chars = className.toCharArray();
+        chars[0] += 32;
+        return String.valueOf(chars);
     }
 }

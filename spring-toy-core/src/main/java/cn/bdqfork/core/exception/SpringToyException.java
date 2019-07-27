@@ -6,7 +6,7 @@ package cn.bdqfork.core.exception;
  * @author bdq
  * @date 2019-02-12
  */
-public class SpringToyException extends Exception {
+public class SpringToyException extends RuntimeException {
     public SpringToyException() {
     }
 

@@ -4,8 +4,7 @@ package cn.bdqfork.core.container;
 import cn.bdqfork.core.exception.ConflictedBeanException;
 import cn.bdqfork.core.exception.SpringToyException;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 容器类，负责管理bean
@@ -14,13 +13,13 @@ import java.util.Map;
  * @date 2019-02-07
  */
 public class BeanContainer {
-    private Map<String, BeanDefinition> beans = new HashMap<>();
+    private Map<String, BeanFactory> beans = new HashMap<>();
 
     public void register(String beanName, BeanDefinition beanDefinition) throws ConflictedBeanException {
         if (beans.containsKey(beanName)) {
             throw new ConflictedBeanException(String.format("the entity named: %s has conflicted ! ", beanName));
         }
-        beans.put(beanName, beanDefinition);
+        beans.put(beanName, new BeanFactory(this, beanDefinition));
     }
 
     /**
@@ -30,9 +29,8 @@ public class BeanContainer {
      * @return
      * @throws SpringToyException
      */
-    public Object getBean(String beanName) throws SpringToyException {
-        BeanDefinition beanDefinition = beans.get(beanName);
-        return beanDefinition.getInstance();
+    public BeanFactory getBean(String beanName) throws SpringToyException {
+        return beans.get(beanName);
     }
 
     /**
@@ -42,10 +40,10 @@ public class BeanContainer {
      * @return
      * @throws SpringToyException
      */
-    public BeanDefinition getBean(Class<?> clazz) throws SpringToyException {
-        for (BeanDefinition beanDefinition : beans.values()) {
-            if (beanDefinition.isType(clazz)) {
-                return beanDefinition;
+    public BeanFactory getBean(Class<?> clazz) throws SpringToyException {
+        for (BeanFactory beanFactory : beans.values()) {
+            if (beanFactory.getBeanDefinition().isType(clazz)) {
+                return beanFactory;
             }
         }
         return null;
@@ -58,14 +56,26 @@ public class BeanContainer {
      * @return
      * @throws SpringToyException
      */
-    public Map<String, BeanDefinition> getBeans(Class<?> clazz) throws SpringToyException {
-        Map<String, BeanDefinition> beans = new HashMap<>(8);
-        for (Map.Entry<String, BeanDefinition> entry : this.beans.entrySet()) {
-            BeanDefinition beanDefinition = entry.getValue();
+    public Map<String, BeanFactory> getBeans(Class<?> clazz) throws SpringToyException {
+        Map<String, BeanFactory> beans = new HashMap<>(8);
+        for (Map.Entry<String, BeanFactory> entry : this.beans.entrySet()) {
+            BeanFactory beanFactory = entry.getValue();
+
+            BeanDefinition beanDefinition = beanFactory.getBeanDefinition();
             if (beanDefinition.isType(clazz) || beanDefinition.isSubType(clazz)) {
-                beans.put(entry.getKey(), beanDefinition);
+                beans.put(entry.getKey(), beanFactory);
             }
         }
+        return beans;
+    }
+
+    /**
+     * 获取所有与clazz匹配的实例
+     *
+     * @return
+     * @throws SpringToyException
+     */
+    public Map<String, BeanFactory> getAllBeans() throws SpringToyException {
         return beans;
     }
 
@@ -75,6 +85,10 @@ public class BeanContainer {
      * @return
      */
     public Map<String, BeanDefinition> getBeanDefinations() {
+        Map<String, BeanDefinition> beans = new HashMap<>(this.beans.size());
+        for (Map.Entry<String, BeanFactory> entry : this.beans.entrySet()) {
+            beans.put(entry.getKey(), entry.getValue().getBeanDefinition());
+        }
         return beans;
     }
 

@@ -46,57 +46,119 @@ public class AnnotationApplicationContext implements ApplicationContext {
             }
             String name = getComponentName(candidate);
             if (name != null) {
-                boolean isSingleton = false;
+                String beanScope = "singleton";
+                if (candidate.getAnnotation(Singleton.class) == null) {
 
-                Scope scope = candidate.getAnnotation(Scope.class);
-                if (scope != null) {
-                    if (ScopeType.SINGLETON.equals(scope.value())) {
-                        isSingleton = true;
-                    } else if (!ScopeType.PROTOTYPE.equals(scope.value())) {
-                        throw new SpringToyException("the value of scope is error !");
+                    Scope scope = candidate.getAnnotation(Scope.class);
+
+                    if (scope != null) {
+                        if (!ScopeType.PROTOTYPE.equals(scope.value())) {
+                            throw new SpringToyException("the value of scope is error !");
+                        } else {
+                            beanScope = scope.value();
+                        }
                     }
-                } else if (candidate.getAnnotation(Singleton.class) != null) {
-                    isSingleton = true;
-                }
 
+                }
                 if ("".equals(name)) {
                     name = this.beanNameGenerator.generateBeanName(candidate);
                 }
 
-                BeanDefinition beanDefinition = new BeanDefinition(candidate, isSingleton, name);
-                beanDefinition.setInjectorProvider(new InjectorProvider(candidate, this.beanNameGenerator));
+                Lazy lazy = candidate.getAnnotation(Lazy.class);
+                boolean isLazy = false;
+                if (lazy != null) {
+                    isLazy = lazy.value();
+                }
+                BeanDefinition beanDefinition = new BeanDefinition(candidate, beanScope, name, isLazy);
 
                 beanContainer.register(beanDefinition.getName(), beanDefinition);
             }
         }
 
         Map<String, BeanDefinition> beanDefinationMap = beanContainer.getBeanDefinations();
-        Resolver resolver = new Resolver(beanContainer);
+        Resolver resolver = new Resolver(beanContainer, this.beanNameGenerator);
         for (Map.Entry<String, BeanDefinition> entry : beanDefinationMap.entrySet()) {
             resolver.resolve(entry.getValue());
         }
 
+        instantiate();
+        processField();
+        processMethod();
+    }
+
+    /**
+     * 实例化Bean
+     */
+    private void instantiate() {
+        beanContainer.getAllBeans()
+                .values()
+                .stream()
+                .filter(beanFactory -> !beanFactory.isLazy())
+                .forEach(BeanFactory::newBean);
+    }
+
+    /**
+     * 字段依赖注入
+     */
+    private void processField() {
+        beanContainer.getAllBeans()
+                .values()
+                .stream()
+                .filter(beanFactory -> !beanFactory.isLazy())
+                .forEach(BeanFactory::doFieldInject);
+    }
+
+    /**
+     * 方法注入
+     */
+    private void processMethod() {
+        beanContainer.getAllBeans()
+                .values()
+                .stream()
+                .filter(beanFactory -> !beanFactory.isLazy() || !beanFactory.isSingleton())
+                .forEach(BeanFactory::doMethodInject);
     }
 
     @Override
     public Object getBean(String beanName) throws SpringToyException {
-        return beanContainer.getBean(beanName);
+        BeanFactory beanFactory = beanContainer.getBean(beanName);
+        if (ifNeedNewBean(beanFactory)) {
+            newBean(beanFactory);
+        }
+        return beanFactory.get();
+    }
+
+    private void newBean(BeanFactory beanFactory) {
+        beanFactory.newBean();
+        beanFactory.doFieldInject();
+        beanFactory.doMethodInject();
     }
 
     @Override
     public <T> T getBean(Class<T> clazz) throws SpringToyException {
-        BeanDefinition beanDefinition = beanContainer.getBean(clazz);
-        if (beanDefinition != null) {
-            return (T) beanDefinition.getInstance();
+        BeanFactory beanFactory = beanContainer.getBean(clazz);
+        if (beanFactory != null) {
+            if (ifNeedNewBean(beanFactory)) {
+                newBean(beanFactory);
+            }
+            return (T) beanFactory.get();
         }
         return null;
+    }
+
+    private boolean ifNeedNewBean(BeanFactory beanFactory) {
+        return beanFactory.get() == null && beanFactory.isLazy();
     }
 
     @Override
     public <T> Map<String, T> getBeans(Class<T> clazz) throws SpringToyException {
         Map<String, T> beanMap = new HashMap<>(8);
-        for (Map.Entry<String, BeanDefinition> entry : beanContainer.getBeans(clazz).entrySet()) {
-            beanMap.put(entry.getKey(), (T) entry.getValue().getInstance());
+        for (Map.Entry<String, BeanFactory> entry : beanContainer.getBeans(clazz).entrySet()) {
+            BeanFactory beanFactory = entry.getValue();
+            if (ifNeedNewBean(beanFactory)) {
+                newBean(beanFactory);
+            }
+            beanMap.put(entry.getKey(), (T) beanFactory.get());
         }
         return beanMap;
     }

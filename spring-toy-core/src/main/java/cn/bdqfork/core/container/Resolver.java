@@ -1,9 +1,16 @@
 package cn.bdqfork.core.container;
 
+import cn.bdqfork.core.annotation.AutoWired;
+import cn.bdqfork.core.annotation.Qualifier;
+import cn.bdqfork.core.exception.ResolvedException;
 import cn.bdqfork.core.exception.SpringToyException;
 import cn.bdqfork.core.exception.UnsatisfiedBeanException;
 
-import java.util.Map;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
+import java.lang.reflect.*;
+import java.util.*;
 
 /**
  * @author bdq
@@ -11,9 +18,11 @@ import java.util.Map;
  */
 public class Resolver {
     private BeanContainer beanContainer;
+    private BeanNameGenerator beanNameGenerator;
 
-    public Resolver(BeanContainer beanContainer) {
+    public Resolver(BeanContainer beanContainer, BeanNameGenerator beanNameGenerator) {
         this.beanContainer = beanContainer;
+        this.beanNameGenerator = beanNameGenerator;
     }
 
     public void resolve(BeanDefinition beanDefinition) throws SpringToyException {
@@ -25,7 +34,8 @@ public class Resolver {
         Class<?> superClass = beanDefinition.getClazz().getSuperclass();
         if (superClass != null && superClass != Object.class) {
 
-            for (BeanDefinition bean : beanContainer.getBeans(superClass).values()) {
+            for (BeanFactory beanFactory : beanContainer.getBeans(superClass).values()) {
+                BeanDefinition bean = beanFactory.getBeanDefinition();
                 if (bean != beanDefinition) {
                     //递归解析父类
                     resolve(bean);
@@ -33,71 +43,136 @@ public class Resolver {
             }
         }
 
-        InjectorProvider injectorProvider = beanDefinition.getInjectorProvider();
-        if (injectorProvider != null) {
+        resolveConstructorInfo(beanDefinition);
 
-            //如果有构造器注入，则先解析构造器注入依赖
-            if (injectorProvider.getConstructorParameterDatas() != null) {
-                for (InjectorData parameterInjectorData : injectorProvider.getConstructorParameterDatas()) {
-                    doResolve(beanDefinition, injectorProvider, parameterInjectorData, parameterInjectorData.isRequired());
-                }
-            }
+        resolveFieldInfo(beanDefinition);
 
-            //如果有字段注入，则解析字段注入依赖
-            if (injectorProvider.getFieldInjectorDatas() != null) {
-                for (InjectorData fieldInjectorData : injectorProvider.getFieldInjectorDatas()) {
-                    doResolve(beanDefinition, injectorProvider, fieldInjectorData, fieldInjectorData.isRequired());
-                }
-            }
-
-            //如果有方法注入，则解析方法注入依赖
-            if (injectorProvider.getMethodInjectorAttributes() != null) {
-                for (MethodInjectorAttribute methodInjectorAttribute : injectorProvider.getMethodInjectorAttributes()) {
-                    if (methodInjectorAttribute.getParameterInjectorDatas() != null) {
-                        for (InjectorData parameterInjectorData : methodInjectorAttribute.getParameterInjectorDatas()) {
-                            doResolve(beanDefinition, injectorProvider, parameterInjectorData, methodInjectorAttribute.isRequired());
-                        }
-                    }
-                }
-            }
-
-        }
+        resolveMethodInfo(beanDefinition);
 
         beanDefinition.setResolved(true);
 
     }
 
-    private void doResolve(BeanDefinition beanDefinition, InjectorProvider injectorProvider, InjectorData injectorData, boolean isRequired) throws UnsatisfiedBeanException {
-        BeanDefinition ref = null;
-
-        Map<String, BeanDefinition> beanDefinationMap = beanContainer.getBeanDefinations();
-        //判断依赖组件是否存在，先查找指定名称的依赖，如果不存在，则按找默认名称去查找，仍然不存在，则再按类型匹配
-        if (injectorData.getRefName() != null && beanDefinationMap.containsKey(injectorData.getRefName())) {
-            ref = beanDefinationMap.get(injectorData.getRefName());
-        } else if (beanDefinationMap.containsKey(injectorData.getDefaultName())) {
-            ref = beanDefinationMap.get(injectorData.getDefaultName());
-        } else {
-            for (BeanDefinition bean : beanDefinationMap.values()) {
-                if (bean.isType(injectorData.getType())) {
-                    ref = bean;
-                    break;
-                } else if (bean.isSubType(injectorData.getType())) {
-                    ref = bean;
-                    break;
+    private void resolveConstructorInfo(BeanDefinition beanDefinition) throws ResolvedException {
+        Class<?> candidate = beanDefinition.getClazz();
+        int count = 0;
+        for (Constructor<?> constructor : candidate.getDeclaredConstructors()) {
+            AutoWired autoWired = constructor.getAnnotation(AutoWired.class);
+            Inject inject = constructor.getAnnotation(Inject.class);
+            if (autoWired != null || inject != null) {
+                count++;
+                if (count > 1) {
+                    throw new ResolvedException("the entity: " + candidate.getName() + " has more than one constructor to be injected , it can't be injected !");
                 }
+                List<ParameterAttribute> parameterAttributes = resolveParameterAttributes(constructor.getParameters());
+                ConstructorAttribute attribute = new ConstructorAttribute(constructor, parameterAttributes);
+                beanDefinition.setConstructorAttribute(attribute);
             }
-        }
-
-        //判断依赖是否存在，如果不存在，则抛出异常。如果依赖存在，但有相互引用的情况，也抛出异常
-        if (ref == null) {
-            if (isRequired) {
-                throw new UnsatisfiedBeanException("unsatisfied entity , the entity named " + injectorData.getType() + " don't exists");
-            }
-        } else if (beanDefinition == ref || injectorProvider.hasDependence(beanDefinition)) {
-            throw new UnsatisfiedBeanException("unsatisfied entity , there two entity ref each other !");
-        } else {
-            //设置依赖信息
-            injectorData.setBean(ref);
         }
     }
+
+    private void resolveFieldInfo(BeanDefinition beanDefinition) throws SpringToyException {
+        Class<?> candidate = beanDefinition.getClazz();
+        List<FieldAttribute> fieldAttributes = new LinkedList<>();
+
+        for (Field field : candidate.getDeclaredFields()) {
+            field.setAccessible(true);
+
+            AutoWired autoWired = field.getAnnotation(AutoWired.class);
+            Inject inject = field.getAnnotation(Inject.class);
+            if (autoWired != null || inject != null) {
+
+                if (Modifier.isFinal(field.getModifiers())) {
+                    throw new ResolvedException("the field: " + field.getName() + "is final , it can't be injected !");
+                }
+
+                boolean isRequire = autoWired != null && autoWired.required();
+
+                String refName = field.getName();
+                //Qualifier优先级比Named高
+                Named named = field.getAnnotation(Named.class);
+                if (named != null) {
+                    refName = named.value();
+                }
+                Qualifier qualifier = field.getAnnotation(Qualifier.class);
+                if (qualifier != null) {
+                    refName = qualifier.value();
+                }
+                Class<?> type = field.getType();
+                boolean isProvider = isProvider(type);
+                if (isProvider) {
+                    type = getActualType((ParameterizedType) field.getGenericType());
+                }
+                FieldAttribute fieldAttribute = new FieldAttribute(refName, field, type, isRequire, isProvider(field.getType()));
+
+                fieldAttributes.add(fieldAttribute);
+            }
+        }
+        beanDefinition.setFieldAttributes(fieldAttributes);
+    }
+
+    private void resolveMethodInfo(BeanDefinition beanDefinition) throws ResolvedException {
+        Class<?> candidate = beanDefinition.getClazz();
+        Method[] methods = candidate.getDeclaredMethods();
+        List<MethodAttribute> methodAttributes = new LinkedList<>();
+        for (Method method : methods) {
+            method.setAccessible(true);
+            AutoWired autoWired = method.getAnnotation(AutoWired.class);
+            Inject inject = method.getAnnotation(Inject.class);
+            if (autoWired != null || inject != null) {
+                if (Modifier.isAbstract(method.getModifiers())) {
+                    throw new ResolvedException("the method: " + method.getName() + "is abstract , it can't be injected !");
+                }
+
+                String methodName = method.getName();
+                if (!methodName.startsWith("set")) {
+                    throw new ResolvedException("the method: " + method.getName() + "is not setter , it can't be injected !");
+                }
+
+                List<ParameterAttribute> parameterAttributes = resolveParameterAttributes(method.getParameters());
+
+                boolean isRequire = false;
+                if (autoWired != null) {
+                    isRequire = true;
+                }
+                MethodAttribute methodAttribute = new MethodAttribute(method, parameterAttributes, isRequire);
+                methodAttributes.add(methodAttribute);
+            }
+        }
+        beanDefinition.setMethodAttributes(methodAttributes);
+    }
+
+    private List<ParameterAttribute> resolveParameterAttributes(Parameter[] parameters) {
+        List<ParameterAttribute> parameterAttributes = new ArrayList<>(parameters.length);
+        for (Parameter parameter : parameters) {
+            String beanName = parameter.getName();
+            Named named = parameter.getAnnotation(Named.class);
+            if (named != null) {
+                beanName = named.value();
+            }
+            Class<?> type = parameter.getType();
+            boolean isProvider = isProvider(type);
+            if (isProvider) {
+                type = getActualType((ParameterizedType) parameter.getParameterizedType());
+            }
+            ParameterAttribute parameterAttribute = new ParameterAttribute(beanName, parameter, type, isProvider(parameter.getType()));
+            parameterAttributes.add(parameterAttribute);
+        }
+        return parameterAttributes;
+    }
+
+    private Class<?> getActualType(ParameterizedType type) {
+        Class<?> providedType;
+        try {
+            providedType = Class.forName(type.getActualTypeArguments()[0].getTypeName());
+        } catch (ClassNotFoundException e) {
+            throw new ResolvedException(String.format("class %s is not found !", type.getTypeName()), e);
+        }
+        return providedType;
+    }
+
+    private boolean isProvider(Class<?> clazz) {
+        return clazz == ObjectFactory.class || clazz == Provider.class;
+    }
+
 }

@@ -11,7 +11,7 @@ import cn.bdqfork.ioc.example.controller.UserController;
  */
 public class TestIoc {
     public static void main(String[] args) throws SpringToyException {
-        ApplicationContext applicationContext = new AnnotationApplicationContext("cn.bdqfork.ioc.example");
+        ApplicationContext applicationContext = new AnnotationApplicationContext("cn");
         UserController userController = applicationContext.getBean(UserController.class);
         System.out.println(userController.getUsername());
     }

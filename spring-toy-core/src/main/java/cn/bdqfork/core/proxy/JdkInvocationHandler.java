@@ -26,4 +26,8 @@ public class JdkInvocationHandler implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         return method.invoke(target, args);
     }
+
+    public Object getTarget() {
+        return target;
+    }
 }

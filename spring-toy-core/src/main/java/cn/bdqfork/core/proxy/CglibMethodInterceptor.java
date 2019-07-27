@@ -31,4 +31,8 @@ public class CglibMethodInterceptor implements MethodInterceptor {
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
         return proxy.invoke(target, args);
     }
+
+    public Object getTarget() {
+        return target;
+    }
 }
