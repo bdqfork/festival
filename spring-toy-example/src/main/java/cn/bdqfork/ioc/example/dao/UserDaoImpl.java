@@ -7,11 +7,12 @@ import cn.bdqfork.core.annotation.ScopeType;
 import cn.bdqfork.ioc.example.entity.User;
 import cn.bdqfork.ioc.example.service.UserService;
 
+import java.util.Date;
+
 /**
  * @author bdq
  * @date 2019-02-19
  */
-@Scope(ScopeType.PROTOTYPE)
 @Repositorty
 public class UserDaoImpl implements UserDao {
     private UserService userService;
@@ -23,7 +24,10 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User getUser() {
-        System.out.println(userService.getCreateTime().toString() + "yyyyyy");
         return new User("test", "pass");
+    }
+    @Override
+    public void getDate(){
+        System.out.println(userService.getCreateTime().toString() + "yyyyyy");
     }
 }

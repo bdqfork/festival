@@ -13,7 +13,6 @@ import java.util.Date;
  * @author bdq
  * @date 2019-02-19
  */
-@Scope(ScopeType.PROTOTYPE)
 @Service
 public class UserServiceImpl implements UserService {
     private UserDao userDao;
@@ -26,7 +25,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String getUsername() {
-
+        userDao.getDate();
         return userDao.getUser().getUsername();
     }
 

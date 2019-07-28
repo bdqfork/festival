@@ -1,6 +1,8 @@
 package cn.bdqfork.ioc.example.controller;
 
 import cn.bdqfork.core.annotation.Component;
+import cn.bdqfork.core.annotation.Scope;
+import cn.bdqfork.core.annotation.ScopeType;
 import cn.bdqfork.ioc.example.service.UserService;
 import cn.bdqfork.ioc.example.service.UserServiceImpl;
 
@@ -12,6 +14,7 @@ import java.util.Date;
  * @author bdq
  * @date 2019-02-19
  */
+@Scope(ScopeType.PROTOTYPE)
 @Component
 public class UserController {
     @Inject

@@ -8,4 +8,5 @@ import cn.bdqfork.ioc.example.entity.User;
  */
 public interface UserDao {
     User getUser();
+    void getDate();
 }

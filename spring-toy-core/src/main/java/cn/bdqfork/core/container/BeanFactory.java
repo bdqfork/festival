@@ -36,10 +36,6 @@ public class BeanFactory implements ObjectFactory<Object> {
      * 是否单例
      */
     private boolean isSingleton;
-    /**
-     * 是否正在实例化
-     */
-    private boolean instanting;
 
     public BeanFactory(BeanContainer beanContainer, BeanDefinition beanDefinition) {
         this.beanContainer = beanContainer;
@@ -86,14 +82,11 @@ public class BeanFactory implements ObjectFactory<Object> {
     }
 
     private Object doConstructorInject(ConstructorAttribute constructorAttribute) throws ConstructorInjectedException {
-        instanting = true;
         Constructor<?> constructor = constructorAttribute.getConstructor();
         //反射调用构造器，构造对象实例
         try {
             List<Object> args = getArguments(constructorAttribute.getArgs(), true);
-            Object instance = constructor.newInstance(args.toArray());
-            instanting = false;
-            return instance;
+            return constructor.newInstance(args.toArray());
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | UnsatisfiedBeanException e) {
             throw new ConstructorInjectedException(String.format("failed to do constructor inject for entity %s !",
                     beanDefinition.getBeanName()), e);
@@ -150,9 +143,6 @@ public class BeanFactory implements ObjectFactory<Object> {
                 throw new UnsatisfiedBeanException(String.format("there is no match reference bean named %s !",
                         parameterAttribute.getBeanName()));
             }
-            if (isConstructor && beanFactory.isInstanting()) {
-                throw new UnsatisfiedBeanException("there has circular reference !");
-            }
             //判断是否是Provider
             if (parameterAttribute.isProvider()) {
                 //添加实例到Provider参数
@@ -193,10 +183,6 @@ public class BeanFactory implements ObjectFactory<Object> {
 
     private boolean checkIfNeedInit() {
         return isLazy() || !isSingleton;
-    }
-
-    public boolean isInstanting() {
-        return instanting;
     }
 
     public boolean isLazy() {
