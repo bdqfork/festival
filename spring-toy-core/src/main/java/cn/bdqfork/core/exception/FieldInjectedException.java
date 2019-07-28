@@ -5,6 +5,9 @@ package cn.bdqfork.core.exception;
  * @date 2019-02-14
  */
 public class FieldInjectedException extends InjectedException {
+    public FieldInjectedException(String message) {
+        super(message);
+    }
 
     public FieldInjectedException(String message, Throwable cause) {
         super(message, cause);

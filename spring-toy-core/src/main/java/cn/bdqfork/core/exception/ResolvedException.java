@@ -5,6 +5,7 @@ package cn.bdqfork.core.exception;
  * @date 2019-02-14
  */
 public class ResolvedException extends SpringToyException {
+
     public ResolvedException(String message) {
         super(message);
     }

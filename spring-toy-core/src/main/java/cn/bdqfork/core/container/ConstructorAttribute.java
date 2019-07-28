@@ -1,11 +1,11 @@
 package cn.bdqfork.core.container;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Parameter;
 import java.util.List;
-import java.util.Map;
 
 /**
+ * 构造器属性描述
+ *
  * @author bdq
  * @date 2019-07-26
  */
@@ -15,7 +15,7 @@ public class ConstructorAttribute {
      */
     private Constructor<?> constructor;
     /**
-     * 参数
+     * 构造方法参数
      */
     private List<ParameterAttribute> args;
 
@@ -28,15 +28,9 @@ public class ConstructorAttribute {
         return constructor;
     }
 
-    public void setConstructor(Constructor<?> constructor) {
-        this.constructor = constructor;
-    }
 
     public List<ParameterAttribute> getArgs() {
         return args;
     }
 
-    public void setArgs(List<ParameterAttribute> args) {
-        this.args = args;
-    }
 }

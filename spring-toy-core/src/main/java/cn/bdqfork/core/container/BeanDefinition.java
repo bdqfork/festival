@@ -8,7 +8,7 @@ import java.util.Objects;
  * bean的定义，用来描述bean的信息
  *
  * @author bdq
- * @date 2019-02-12
+ * @since 2019-02-12
  */
 public class BeanDefinition {
     /**
@@ -38,23 +38,23 @@ public class BeanDefinition {
     /**
      * 是否延迟初始化
      */
-    private boolean lazy;
+    private boolean isLazy;
     /**
-     * 是否已预注册
+     * 是否已注册
      */
     private boolean isResolved;
 
-    public BeanDefinition(Class<?> clazz, String scope, String name, boolean lazy) {
+    public BeanDefinition(Class<?> clazz, String scope, String name, boolean isLazy) {
         this.clazz = clazz;
         this.scope = scope;
         this.name = name;
-        this.lazy = lazy;
+        this.isLazy = isLazy;
     }
 
     /**
      * 判断当前bean是否是clazz的类型，如果是，返回true，否则返回false
      *
-     * @param clazz
+     * @param clazz 目标类型
      * @return boolean
      */
     public boolean isType(Class<?> clazz) {
@@ -62,26 +62,16 @@ public class BeanDefinition {
     }
 
     /**
-     * 判断当前bean是否为clazz的父类型，如果是，返回true，否则返回false
-     *
-     * @param clazz
-     * @return boolean
-     */
-    public boolean isSuperType(Class<?> clazz) {
-        return this.clazz.isAssignableFrom(clazz);
-    }
-
-    /**
      * 判断当前bean是否为clazz的子类型，如果是，返回true，否则返回false
      *
-     * @param clazz
+     * @param clazz 目标类型
      * @return boolean
      */
     public boolean isSubType(Class<?> clazz) {
         return clazz.isAssignableFrom(this.clazz);
     }
 
-    public String getName() {
+    public String getBeanName() {
         return name;
     }
 
@@ -91,11 +81,6 @@ public class BeanDefinition {
 
     public String getScope() {
         return scope;
-    }
-
-    public BeanDefinition setScope(String scope) {
-        this.scope = scope;
-        return this;
     }
 
     public ConstructorAttribute getConstructorAttribute() {
@@ -123,11 +108,7 @@ public class BeanDefinition {
     }
 
     public boolean isLazy() {
-        return lazy;
-    }
-
-    public void setLazy(boolean lazy) {
-        this.lazy = lazy;
+        return isLazy;
     }
 
     public void setResolved(boolean resolved) {

@@ -1,12 +1,16 @@
 package cn.bdqfork.core.proxy;
 
 import cn.bdqfork.core.container.BeanFactory;
+import cn.bdqfork.core.exception.InjectedException;
+import cn.bdqfork.core.exception.InstantiateException;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 /**
+ * jdk动态代理
+ *
  * @author bdq
  * @date 2019-02-13
  */
@@ -17,13 +21,13 @@ public class JdkInvocationHandler implements InvocationHandler {
     /**
      * 创建代理实例
      *
-     * @param beanFactory
-     * @return
+     * @param beanFactory Bean工厂实例
+     * @return Object 代理实例
      */
     public Object newProxyInstance(BeanFactory beanFactory) {
         this.beanFactory = beanFactory;
-        Object target = beanFactory.getInstance();
-        return Proxy.newProxyInstance(target.getClass().getClassLoader(), target.getClass().getInterfaces(), this);
+        Class<?> clazz = beanFactory.getBeanDefinition().getClazz();
+        return Proxy.newProxyInstance(clazz.getClassLoader(), clazz.getInterfaces(), this);
     }
 
     @Override

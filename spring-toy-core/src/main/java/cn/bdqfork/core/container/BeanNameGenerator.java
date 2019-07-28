@@ -10,8 +10,8 @@ public interface BeanNameGenerator {
     /**
      * 生成beanName
      *
-     * @param clazz
-     * @return
+     * @param clazz 目标类型
+     * @return String beanName
      */
     String generateBeanName(Class<?> clazz);
 }

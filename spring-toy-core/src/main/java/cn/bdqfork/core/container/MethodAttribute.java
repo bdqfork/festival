@@ -1,46 +1,44 @@
 package cn.bdqfork.core.container;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.List;
-import java.util.Map;
 
 /**
+ * 注入方法描述
+ *
  * @author bdq
  * @date 2019-07-27
  */
 public class MethodAttribute {
+    /**
+     * 注入方法
+     */
     private Method method;
+    /**
+     * 方法参数描述
+     */
     private List<ParameterAttribute> args;
-    private boolean required;
+    /**
+     * 是否强制需要
+     */
+    private boolean isRequired;
 
-    public MethodAttribute(Method method, List<ParameterAttribute> args, boolean required) {
+    public MethodAttribute(Method method, List<ParameterAttribute> args, boolean isRequired) {
         this.method = method;
         this.args = args;
-        this.required = required;
+        this.isRequired = isRequired;
     }
 
     public Method getMethod() {
         return method;
     }
 
-    public void setMethod(Method method) {
-        this.method = method;
-    }
-
     public List<ParameterAttribute> getArgs() {
         return args;
     }
 
-    public void setArgs(List<ParameterAttribute> args) {
-        this.args = args;
-    }
-
     public boolean isRequired() {
-        return required;
+        return isRequired;
     }
 
-    public void setRequired(boolean required) {
-        this.required = required;
-    }
 }

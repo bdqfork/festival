@@ -3,36 +3,33 @@ package cn.bdqfork.core.container;
 import java.lang.reflect.Parameter;
 
 /**
+ * 注入方法（构造方法）参数描述
+ *
  * @author bdq
  * @date 2019-07-27
  */
 public class ParameterAttribute {
+    /**
+     * 依赖Bean名称
+     */
     private String beanName;
-    private Parameter parameter;
+    /**
+     * 参数类型
+     */
     private Class<?> type;
-    private boolean provider;
+    /**
+     * 是否为provider
+     */
+    private boolean isProvider;
 
-    public ParameterAttribute(String beanName, Parameter parameter, Class<?> type, boolean provider) {
+    public ParameterAttribute(String beanName, Class<?> type, boolean isProvider) {
         this.beanName = beanName;
-        this.parameter = parameter;
         this.type = type;
-        this.provider = provider;
+        this.isProvider = isProvider;
     }
 
     public String getBeanName() {
         return beanName;
-    }
-
-    public void setBeanName(String beanName) {
-        this.beanName = beanName;
-    }
-
-    public Parameter getParameter() {
-        return parameter;
-    }
-
-    public void setParameter(Parameter parameter) {
-        this.parameter = parameter;
     }
 
     public Class<?> getType() {
@@ -44,10 +41,7 @@ public class ParameterAttribute {
     }
 
     public boolean isProvider() {
-        return provider;
+        return isProvider;
     }
 
-    public void setProvider(boolean provider) {
-        this.provider = provider;
-    }
 }

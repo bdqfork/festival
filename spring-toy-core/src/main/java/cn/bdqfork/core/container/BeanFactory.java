@@ -2,10 +2,7 @@ package cn.bdqfork.core.container;
 
 
 import cn.bdqfork.core.annotation.ScopeType;
-import cn.bdqfork.core.exception.ConstructorInjectedException;
-import cn.bdqfork.core.exception.FieldInjectedException;
-import cn.bdqfork.core.exception.InjectedException;
-import cn.bdqfork.core.exception.SpringToyException;
+import cn.bdqfork.core.exception.*;
 import cn.bdqfork.core.proxy.CglibMethodInterceptor;
 import cn.bdqfork.core.proxy.JdkInvocationHandler;
 
@@ -56,7 +53,7 @@ public class BeanFactory implements ObjectFactory<Object> {
      *
      * @return Object
      */
-    public synchronized Object getInstance() throws InjectedException {
+    public synchronized Object getInstance() throws InjectedException, InstantiateException {
         if (checkIfNeedInstantiate()) {
             newBean();
         }
@@ -67,96 +64,112 @@ public class BeanFactory implements ObjectFactory<Object> {
         return instance;
     }
 
-    public void newBean() {
+    public void newBean() throws InstantiateException {
         ConstructorAttribute constructorAttribute = beanDefinition.getConstructorAttribute();
         if (constructorAttribute != null) {
-            instance = doConstructorInject(constructorAttribute);
+            //执行构造器注入
+            try {
+                instance = doConstructorInject(constructorAttribute);
+            } catch (ConstructorInjectedException e) {
+                throw new InstantiateException(String.format("failed to instantiate entity %s !",
+                        beanDefinition.getBeanName()), e);
+            }
         } else {
             try {
                 instance = beanDefinition.getClazz().newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
-                throw new InjectedException("failed to init entity : " + beanDefinition.getName(), e);
+                throw new InstantiateException(String.format("failed to instantiate entity %s !",
+                        beanDefinition.getBeanName()), e);
             }
         }
 
     }
 
-    private Object doConstructorInject(ConstructorAttribute constructorAttribute) {
+    private Object doConstructorInject(ConstructorAttribute constructorAttribute) throws ConstructorInjectedException {
         instanting = true;
         Constructor<?> constructor = constructorAttribute.getConstructor();
-        List<Object> args = getArguments(constructorAttribute.getArgs(), true);
         //反射调用构造器，构造对象实例
         try {
+            List<Object> args = getArguments(constructorAttribute.getArgs(), true);
             Object instance = constructor.newInstance(args.toArray());
             instanting = false;
             return instance;
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new ConstructorInjectedException(String.format("failed to do constructor inject for entity %s !", beanDefinition.getName()), e);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | UnsatisfiedBeanException e) {
+            throw new ConstructorInjectedException(String.format("failed to do constructor inject for entity %s !",
+                    beanDefinition.getBeanName()), e);
         }
     }
 
-    public void doFieldInject() {
+    public void doFieldInject() throws FieldInjectedException {
         for (FieldAttribute fieldAttribute : beanDefinition.getFieldAttributes()) {
             Field field = fieldAttribute.getField();
             field.setAccessible(true);
             try {
+                //获取依赖Bean的工厂实例
                 BeanFactory beanFactory = getReference(fieldAttribute.getBeanName(), fieldAttribute.getType());
                 if (beanFactory != null) {
-
                     if (fieldAttribute.isProvider()) {
                         field.set(instance, beanFactory);
                     } else {
                         field.set(instance, beanFactory.get());
                     }
                 } else if (fieldAttribute.isRequired()) {
-                    throw new FieldInjectedException(String.format("failed to inject entity: %s by field , " +
-                            "there is no match reference bean type %s !", beanDefinition.getName(), fieldAttribute.getType().getSimpleName()), null);
+                    //如果依赖Bean不存在则抛出异常
+                    throw new UnsatisfiedBeanException(String.format("there is no match reference bean named %s !", fieldAttribute.getBeanName()));
                 }
-            } catch (IllegalAccessException | SpringToyException e) {
-                throw new FieldInjectedException(String.format("failed to inject entity: %s by field!", beanDefinition.getName()), e);
+            } catch (IllegalAccessException | UnsatisfiedBeanException e) {
+                throw new FieldInjectedException(String.format("failed to inject entity: %s by field!",
+                        beanDefinition.getBeanName()), e);
             }
         }
     }
 
-    public void doMethodInject() {
+    public void doMethodInject() throws MethodInjectedException {
         for (MethodAttribute methodAttribute : beanDefinition.getMethodAttributes()) {
             Method method = methodAttribute.getMethod();
             method.setAccessible(true);
-            List<Object> args = getArguments(methodAttribute.getArgs(), false);
             try {
+                List<Object> args = getArguments(methodAttribute.getArgs(), false);
                 method.invoke(instance, args);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new FieldInjectedException(String.format("failed to inject entity: %s by method!", beanDefinition.getName()), e);
+            } catch (IllegalAccessException | InvocationTargetException | UnsatisfiedBeanException e) {
+                if (methodAttribute.isRequired()) {
+                    throw new MethodInjectedException(String.format("failed to inject entity %s by method !",
+                            beanDefinition.getBeanName()), e);
+                }
             }
         }
     }
 
-    private List<Object> getArguments(List<ParameterAttribute> parameterAttributes, boolean isConstructor) {
+    private List<Object> getArguments(List<ParameterAttribute> parameterAttributes, boolean isConstructor) throws UnsatisfiedBeanException {
         List<Object> args = new ArrayList<>(parameterAttributes.size());
-        //遍历构造函数的参数依赖信息
+        //遍历方法的参数依赖信息
         for (ParameterAttribute parameterAttribute : parameterAttributes) {
             BeanFactory beanFactory = getReference(parameterAttribute.getBeanName(), parameterAttribute.getType());
+            //依赖不存在，则抛出异常
+            if (beanFactory == null) {
+                throw new UnsatisfiedBeanException(String.format("there is no match reference bean named %s !",
+                        parameterAttribute.getBeanName()));
+            }
             if (isConstructor && beanFactory.isInstanting()) {
-                throw new FieldInjectedException(String.format("failed to inject entity: %s by field , there has circular reference !", beanDefinition.getName()), null);
+                throw new UnsatisfiedBeanException("there has circular reference !");
             }
             //判断是否是Provider
             if (parameterAttribute.isProvider()) {
                 //添加实例到Provider参数
                 args.add(beanFactory);
-            } else {
-                //添加实例作为参数
-                args.add(beanFactory.get());
+                continue;
             }
+            //添加代理实例作为参数
+            args.add(beanFactory.get());
         }
         return args;
     }
 
-    private BeanFactory getReference(String beanName, Class<?> type) {
+    private BeanFactory getReference(String beanName, Class<?> type) throws UnsatisfiedBeanException {
         BeanFactory beanFactory = beanContainer.getBean(beanName);
 
         if (beanFactory != null && !beanFactory.getBeanDefinition().isType(type)) {
-            throw new FieldInjectedException(String.format("failed to inject entity: %s by field , " +
-                    "there is no match reference bean named %s !", beanDefinition.getName(), beanName), null);
+            throw new UnsatisfiedBeanException(String.format("there is no match reference bean named %s !", beanName));
         } else if (beanFactory == null) {
             //如果指定依赖名和默认依赖名都没有找到Bean，则按类型进行匹配
             Map<String, BeanFactory> beanFactories = beanContainer.getBeans(type);
@@ -182,10 +195,6 @@ public class BeanFactory implements ObjectFactory<Object> {
         return isLazy() || !isSingleton;
     }
 
-    public boolean isSingleton() {
-        return isSingleton;
-    }
-
     public boolean isInstanting() {
         return instanting;
     }
@@ -198,13 +207,7 @@ public class BeanFactory implements ObjectFactory<Object> {
         return beanDefinition;
     }
 
-    @Override
-    public Object get() {
-        proxyInstance();
-        return proxyInstance;
-    }
-
-    private void proxyInstance() {
+    public Object getObject() {
         if (proxyInstance == null) {
             Class<?>[] classes = beanDefinition.getClazz().getInterfaces();
             if (classes.length != 0) {
@@ -215,5 +218,12 @@ public class BeanFactory implements ObjectFactory<Object> {
                 proxyInstance = cglibMethodInterceptor.newProxyInstance(this);
             }
         }
+        return proxyInstance;
     }
+
+    @Override
+    public Object get() {
+        return getObject();
+    }
+
 }

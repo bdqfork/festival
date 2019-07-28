@@ -23,8 +23,8 @@ public class ReflectUtil {
     /**
      * 根据包名获取获取Class
      *
-     * @param packageName
-     * @return
+     * @param packageName 包名
+     * @return Set<Class < ?>> 包名为null或者空字符串，则返回空集合
      */
     public static Set<Class<?>> getClasses(String packageName) {
         if (packageName == null || "".equals(packageName)) {

@@ -3,49 +3,51 @@ package cn.bdqfork.core.container;
 import java.lang.reflect.Field;
 
 /**
+ * 属性依赖描述
+ *
  * @author bdq
  * @date 2019-07-27
  */
 public class FieldAttribute {
+    /**
+     * 依赖的Bean名称
+     */
     private String beanName;
+    /**
+     * 依赖属性
+     */
     private Field field;
     /**
-     * 类型，如果provider为true，则为真实类型
+     * 依赖类型，如果isProvider为true，则为获取真实类型
      */
     private Class<?> type;
-    private boolean required;
-    private boolean provider;
+    /**
+     * 是否强制需要
+     */
+    private boolean isRequired;
+    /**
+     * 是否是provider
+     */
+    private boolean isProvider;
 
-    public FieldAttribute(String beanName, Field field, Class<?> type, boolean required, boolean provider) {
+    public FieldAttribute(String beanName, Field field, Class<?> type, boolean isRequired, boolean isProvider) {
         this.beanName = beanName;
         this.field = field;
         this.type = type;
-        this.required = required;
-        this.provider = provider;
+        this.isRequired = isRequired;
+        this.isProvider = isProvider;
     }
 
     public String getBeanName() {
         return beanName;
     }
 
-    public void setBeanName(String beanName) {
-        this.beanName = beanName;
-    }
-
     public Field getField() {
         return field;
     }
 
-    public void setField(Field field) {
-        this.field = field;
-    }
-
     public boolean isRequired() {
-        return required;
-    }
-
-    public void setRequired(boolean required) {
-        this.required = required;
+        return isRequired;
     }
 
     public Class<?> getType() {
@@ -57,11 +59,7 @@ public class FieldAttribute {
     }
 
     public boolean isProvider() {
-        return provider;
-    }
-
-    public void setProvider(boolean provider) {
-        this.provider = provider;
+        return isProvider;
     }
 
 }

@@ -16,9 +16,13 @@ import java.util.Date;
 @Scope(ScopeType.PROTOTYPE)
 @Service
 public class UserServiceImpl implements UserService {
-    @AutoWired
     private UserDao userDao;
     private Date createTime = new Date();
+
+    @AutoWired
+    public UserServiceImpl(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     @Override
     public String getUsername() {

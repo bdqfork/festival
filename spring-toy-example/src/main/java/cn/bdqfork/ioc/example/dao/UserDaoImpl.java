@@ -2,6 +2,8 @@ package cn.bdqfork.ioc.example.dao;
 
 import cn.bdqfork.core.annotation.AutoWired;
 import cn.bdqfork.core.annotation.Repositorty;
+import cn.bdqfork.core.annotation.Scope;
+import cn.bdqfork.core.annotation.ScopeType;
 import cn.bdqfork.ioc.example.entity.User;
 import cn.bdqfork.ioc.example.service.UserService;
 
@@ -9,10 +11,15 @@ import cn.bdqfork.ioc.example.service.UserService;
  * @author bdq
  * @date 2019-02-19
  */
+@Scope(ScopeType.PROTOTYPE)
 @Repositorty
 public class UserDaoImpl implements UserDao {
-    @AutoWired
     private UserService userService;
+
+    @AutoWired
+    public UserDaoImpl(UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     public User getUser() {

@@ -4,6 +4,9 @@ package cn.bdqfork.core.context;
 import cn.bdqfork.core.annotation.*;
 import cn.bdqfork.core.annotation.ScopeType;
 import cn.bdqfork.core.container.*;
+import cn.bdqfork.core.exception.FieldInjectedException;
+import cn.bdqfork.core.exception.InstantiateException;
+import cn.bdqfork.core.exception.MethodInjectedException;
 import cn.bdqfork.core.exception.SpringToyException;
 import cn.bdqfork.core.container.BeanNameGenerator;
 import cn.bdqfork.core.container.SimpleBeanNameGenerator;
@@ -71,12 +74,12 @@ public class AnnotationApplicationContext implements ApplicationContext {
                 }
                 BeanDefinition beanDefinition = new BeanDefinition(candidate, beanScope, name, isLazy);
 
-                beanContainer.register(beanDefinition.getName(), beanDefinition);
+                beanContainer.register(beanDefinition.getBeanName(), beanDefinition);
             }
         }
 
         Map<String, BeanDefinition> beanDefinationMap = beanContainer.getBeanDefinations();
-        Resolver resolver = new Resolver(beanContainer, this.beanNameGenerator);
+        Resolver resolver = new Resolver(beanContainer);
         for (Map.Entry<String, BeanDefinition> entry : beanDefinationMap.entrySet()) {
             resolver.resolve(entry.getValue());
         }
@@ -89,45 +92,48 @@ public class AnnotationApplicationContext implements ApplicationContext {
     /**
      * 实例化Bean
      */
-    private void instantiate() {
-        beanContainer.getAllBeans()
-                .values()
-                .forEach(BeanFactory::newBean);
+    private void instantiate() throws InstantiateException {
+        for (BeanFactory beanFactory : beanContainer.getAllBeans()
+                .values()) {
+            beanFactory.newBean();
+        }
     }
 
     /**
      * 字段依赖注入
      */
-    private void processField() {
-        beanContainer.getAllBeans()
-                .values()
-                .stream()
-                .filter(beanFactory -> !beanFactory.isLazy())
-                .forEach(BeanFactory::doFieldInject);
+    private void processField() throws FieldInjectedException {
+        for (BeanFactory beanFactory : beanContainer.getAllBeans()
+                .values()) {
+            if (!beanFactory.isLazy()) {
+                beanFactory.doFieldInject();
+            }
+        }
     }
 
     /**
      * 方法注入
      */
-    private void processMethod() {
-        beanContainer.getAllBeans()
-                .values()
-                .stream()
-                .filter(beanFactory -> !beanFactory.isLazy())
-                .forEach(BeanFactory::doMethodInject);
+    private void processMethod() throws MethodInjectedException {
+        for (BeanFactory beanFactory : beanContainer.getAllBeans()
+                .values()) {
+            if (!beanFactory.isLazy()) {
+                beanFactory.doMethodInject();
+            }
+        }
     }
 
     @Override
     public Object getBean(String beanName) throws SpringToyException {
         BeanFactory beanFactory = beanContainer.getBean(beanName);
-        return beanFactory.get();
+        return beanFactory.getObject();
     }
 
     @Override
     public <T> T getBean(Class<T> clazz) throws SpringToyException {
         BeanFactory beanFactory = beanContainer.getBean(clazz);
         if (beanFactory != null) {
-            return (T) beanFactory.get();
+            return (T) beanFactory.getObject();
         }
         return null;
     }
@@ -137,7 +143,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
         Map<String, T> beanMap = new HashMap<>(8);
         for (Map.Entry<String, BeanFactory> entry : beanContainer.getBeans(clazz).entrySet()) {
             BeanFactory beanFactory = entry.getValue();
-            beanMap.put(entry.getKey(), (T) beanFactory.get());
+            beanMap.put(entry.getKey(), (T) beanFactory.getObject());
         }
         return beanMap;
     }
