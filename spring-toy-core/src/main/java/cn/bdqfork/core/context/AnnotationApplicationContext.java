@@ -92,8 +92,6 @@ public class AnnotationApplicationContext implements ApplicationContext {
     private void instantiate() {
         beanContainer.getAllBeans()
                 .values()
-                .stream()
-                .filter(beanFactory -> !beanFactory.isLazy())
                 .forEach(BeanFactory::newBean);
     }
 
@@ -115,39 +113,23 @@ public class AnnotationApplicationContext implements ApplicationContext {
         beanContainer.getAllBeans()
                 .values()
                 .stream()
-                .filter(beanFactory -> !beanFactory.isLazy() || !beanFactory.isSingleton())
+                .filter(beanFactory -> !beanFactory.isLazy())
                 .forEach(BeanFactory::doMethodInject);
     }
 
     @Override
     public Object getBean(String beanName) throws SpringToyException {
         BeanFactory beanFactory = beanContainer.getBean(beanName);
-        if (ifNeedNewBean(beanFactory)) {
-            newBean(beanFactory);
-        }
         return beanFactory.get();
-    }
-
-    private void newBean(BeanFactory beanFactory) {
-        beanFactory.newBean();
-        beanFactory.doFieldInject();
-        beanFactory.doMethodInject();
     }
 
     @Override
     public <T> T getBean(Class<T> clazz) throws SpringToyException {
         BeanFactory beanFactory = beanContainer.getBean(clazz);
         if (beanFactory != null) {
-            if (ifNeedNewBean(beanFactory)) {
-                newBean(beanFactory);
-            }
             return (T) beanFactory.get();
         }
         return null;
-    }
-
-    private boolean ifNeedNewBean(BeanFactory beanFactory) {
-        return beanFactory.get() == null && beanFactory.isLazy();
     }
 
     @Override
@@ -155,9 +137,6 @@ public class AnnotationApplicationContext implements ApplicationContext {
         Map<String, T> beanMap = new HashMap<>(8);
         for (Map.Entry<String, BeanFactory> entry : beanContainer.getBeans(clazz).entrySet()) {
             BeanFactory beanFactory = entry.getValue();
-            if (ifNeedNewBean(beanFactory)) {
-                newBean(beanFactory);
-            }
             beanMap.put(entry.getKey(), (T) beanFactory.get());
         }
         return beanMap;

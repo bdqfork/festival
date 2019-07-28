@@ -1,5 +1,6 @@
 package cn.bdqfork.core.proxy;
 
+import cn.bdqfork.core.container.BeanFactory;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
@@ -11,28 +12,25 @@ import java.lang.reflect.Method;
  * @date 2019-02-14
  */
 public class CglibMethodInterceptor implements MethodInterceptor {
-    private Object target;
+    private BeanFactory beanFactory;
 
     /**
      * 创建代理实例
      *
-     * @param target
+     * @param beanFactory
      * @return
      */
-    public Object newProxyInstance(Object target) {
-        this.target = target;
+    public Object newProxyInstance(BeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
         Enhancer enhancer = new Enhancer();
         enhancer.setCallback(this);
-        enhancer.setSuperclass(target.getClass());
+        enhancer.setSuperclass(beanFactory.getInstance().getClass());
         return enhancer.create();
     }
 
     @Override
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-        return proxy.invoke(target, args);
+        return proxy.invoke(beanFactory.getInstance(), args);
     }
 
-    public Object getTarget() {
-        return target;
-    }
 }

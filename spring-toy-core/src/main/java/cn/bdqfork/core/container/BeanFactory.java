@@ -52,45 +52,39 @@ public class BeanFactory implements ObjectFactory<Object> {
 
     /**
      * 获取对象实例，如果bean是单例的，则每次都返回同一个实例，如果不是，则每次都创建一个新的实例。
+     * synchronized 待优化
      *
      * @return Object
      */
-    public Object getInstance() throws InjectedException {
-        if (!isSingleton()) {
+    public synchronized Object getInstance() throws InjectedException {
+        if (checkIfNeedInstantiate()) {
             newBean();
+        }
+        if (checkIfNeedInit()) {
             doFieldInject();
             doMethodInject();
         }
-        return proxyInstance;
+        return instance;
     }
 
     public void newBean() {
         ConstructorAttribute constructorAttribute = beanDefinition.getConstructorAttribute();
         if (constructorAttribute != null) {
             instance = doConstructorInject(constructorAttribute);
-        }
-
-        if (instance == null) {
+        } else {
             try {
                 instance = beanDefinition.getClazz().newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new InjectedException("failed to init entity : " + beanDefinition.getName(), e);
             }
         }
-        Class<?>[] classes = beanDefinition.getClazz().getInterfaces();
-        if (classes.length != 0) {
-            JdkInvocationHandler jdkInvocationHandler = new JdkInvocationHandler();
-            proxyInstance = jdkInvocationHandler.newProxyInstance(instance);
-        } else {
-            CglibMethodInterceptor cglibMethodInterceptor = new CglibMethodInterceptor();
-            proxyInstance = cglibMethodInterceptor.newProxyInstance(instance);
-        }
+
     }
 
     private Object doConstructorInject(ConstructorAttribute constructorAttribute) {
         instanting = true;
         Constructor<?> constructor = constructorAttribute.getConstructor();
-        List<Object> args = getArguments(constructorAttribute.getArgs());
+        List<Object> args = getArguments(constructorAttribute.getArgs(), true);
         //反射调用构造器，构造对象实例
         try {
             Object instance = constructor.newInstance(args.toArray());
@@ -102,21 +96,17 @@ public class BeanFactory implements ObjectFactory<Object> {
     }
 
     public void doFieldInject() {
-        instanting = true;
         for (FieldAttribute fieldAttribute : beanDefinition.getFieldAttributes()) {
             Field field = fieldAttribute.getField();
             field.setAccessible(true);
             try {
                 BeanFactory beanFactory = getReference(fieldAttribute.getBeanName(), fieldAttribute.getType());
                 if (beanFactory != null) {
-                    if (beanFactory.isInstanting()) {
-                        throw new FieldInjectedException(String.format("failed to inject entity: %s by field , there is circular reference !", beanDefinition.getName()), null);
-                    }
 
                     if (fieldAttribute.isProvider()) {
                         field.set(instance, beanFactory);
                     } else {
-                        field.set(instance, beanFactory.getInstance());
+                        field.set(instance, beanFactory.get());
                     }
                 } else if (fieldAttribute.isRequired()) {
                     throw new FieldInjectedException(String.format("failed to inject entity: %s by field , " +
@@ -126,14 +116,13 @@ public class BeanFactory implements ObjectFactory<Object> {
                 throw new FieldInjectedException(String.format("failed to inject entity: %s by field!", beanDefinition.getName()), e);
             }
         }
-        instanting = false;
     }
 
     public void doMethodInject() {
         for (MethodAttribute methodAttribute : beanDefinition.getMethodAttributes()) {
             Method method = methodAttribute.getMethod();
             method.setAccessible(true);
-            List<Object> args = getArguments(methodAttribute.getArgs());
+            List<Object> args = getArguments(methodAttribute.getArgs(), false);
             try {
                 method.invoke(instance, args);
             } catch (IllegalAccessException | InvocationTargetException e) {
@@ -142,12 +131,12 @@ public class BeanFactory implements ObjectFactory<Object> {
         }
     }
 
-    private List<Object> getArguments(List<ParameterAttribute> parameterAttributes) {
+    private List<Object> getArguments(List<ParameterAttribute> parameterAttributes, boolean isConstructor) {
         List<Object> args = new ArrayList<>(parameterAttributes.size());
         //遍历构造函数的参数依赖信息
         for (ParameterAttribute parameterAttribute : parameterAttributes) {
             BeanFactory beanFactory = getReference(parameterAttribute.getBeanName(), parameterAttribute.getType());
-            if (beanFactory.isInstanting()) {
+            if (isConstructor && beanFactory.isInstanting()) {
                 throw new FieldInjectedException(String.format("failed to inject entity: %s by field , there has circular reference !", beanDefinition.getName()), null);
             }
             //判断是否是Provider
@@ -156,7 +145,7 @@ public class BeanFactory implements ObjectFactory<Object> {
                 args.add(beanFactory);
             } else {
                 //添加实例作为参数
-                args.add(beanFactory.getInstance());
+                args.add(beanFactory.get());
             }
         }
         return args;
@@ -185,6 +174,14 @@ public class BeanFactory implements ObjectFactory<Object> {
         return beanFactory;
     }
 
+    private boolean checkIfNeedInstantiate() {
+        return !isSingleton;
+    }
+
+    private boolean checkIfNeedInit() {
+        return isLazy() || !isSingleton;
+    }
+
     public boolean isSingleton() {
         return isSingleton;
     }
@@ -203,6 +200,20 @@ public class BeanFactory implements ObjectFactory<Object> {
 
     @Override
     public Object get() {
-        return getInstance();
+        proxyInstance();
+        return proxyInstance;
+    }
+
+    private void proxyInstance() {
+        if (proxyInstance == null) {
+            Class<?>[] classes = beanDefinition.getClazz().getInterfaces();
+            if (classes.length != 0) {
+                JdkInvocationHandler jdkInvocationHandler = new JdkInvocationHandler();
+                proxyInstance = jdkInvocationHandler.newProxyInstance(this);
+            } else {
+                CglibMethodInterceptor cglibMethodInterceptor = new CglibMethodInterceptor();
+                proxyInstance = cglibMethodInterceptor.newProxyInstance(this);
+            }
+        }
     }
 }

@@ -2,8 +2,10 @@ package cn.bdqfork.ioc.example.controller;
 
 import cn.bdqfork.core.annotation.Component;
 import cn.bdqfork.ioc.example.service.UserService;
+import cn.bdqfork.ioc.example.service.UserServiceImpl;
 
 import javax.inject.Inject;
+import java.util.Date;
 
 
 /**
@@ -17,5 +19,9 @@ public class UserController {
 
     public String getUsername() {
         return userService.getUsername();
+    }
+
+    public Date getCreateTime() {
+        return userService.getCreateTime();
     }
 }

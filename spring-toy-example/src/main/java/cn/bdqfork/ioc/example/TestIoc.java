@@ -10,9 +10,12 @@ import cn.bdqfork.ioc.example.controller.UserController;
  * @date 2019-02-19
  */
 public class TestIoc {
-    public static void main(String[] args) throws SpringToyException {
+    public static void main(String[] args) throws SpringToyException, InterruptedException {
         ApplicationContext applicationContext = new AnnotationApplicationContext("cn");
         UserController userController = applicationContext.getBean(UserController.class);
         System.out.println(userController.getUsername());
+        System.out.println(userController.getCreateTime().toString());
+        Thread.sleep(10000);
+        System.out.println(userController.getCreateTime().toString());
     }
 }
