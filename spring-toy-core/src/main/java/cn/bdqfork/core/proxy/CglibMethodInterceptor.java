@@ -1,8 +1,6 @@
 package cn.bdqfork.core.proxy;
 
 import cn.bdqfork.core.container.BeanFactory;
-import cn.bdqfork.core.exception.InjectedException;
-import cn.bdqfork.core.exception.InstantiateException;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
