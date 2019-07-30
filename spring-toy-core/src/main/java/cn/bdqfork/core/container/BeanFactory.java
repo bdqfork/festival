@@ -3,10 +3,12 @@ package cn.bdqfork.core.container;
 
 import cn.bdqfork.core.annotation.ScopeType;
 import cn.bdqfork.core.exception.*;
-import cn.bdqfork.core.proxy.CglibMethodInterceptor;
-import cn.bdqfork.core.proxy.JdkInvocationHandler;
+import cn.bdqfork.core.proxy.ProxyFactory;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -195,14 +197,14 @@ public class BeanFactory implements ObjectFactory<Object> {
 
     public Object getObject() {
         if (proxyInstance == null) {
-            Class<?>[] classes = beanDefinition.getClazz().getInterfaces();
-            if (classes.length != 0) {
-                JdkInvocationHandler jdkInvocationHandler = new JdkInvocationHandler();
-                proxyInstance = jdkInvocationHandler.newProxyInstance(this);
+            ProxyFactory proxyFactory;
+            if (isSingleton) {
+                proxyFactory = new ProxyFactory();
+                proxyFactory.setTarget(instance);
             } else {
-                CglibMethodInterceptor cglibMethodInterceptor = new CglibMethodInterceptor();
-                proxyInstance = cglibMethodInterceptor.newProxyInstance(this);
+                proxyFactory = new ProxyFactory(this);
             }
+            proxyInstance = proxyFactory.getProxy();
         }
         return proxyInstance;
     }

@@ -7,24 +7,21 @@ import java.lang.reflect.Method;
  * @since 2019-07-29
  */
 public class RegexpMethodPointcutAdvisor implements PointcutAdvisor {
-    private Advice advice;
     private String pointcut;
+    private Advice advice;
 
-    public RegexpMethodPointcutAdvisor(Advice advice, String pointcut) {
-        this.advice = advice;
+    public RegexpMethodPointcutAdvisor(String pointcut, Advice advice) {
         this.pointcut = pointcut;
+        this.advice = advice;
     }
 
     public Advice getAdvice() {
         return advice;
     }
 
-    public String getPointcut() {
-        return pointcut;
+    @Override
+    public boolean isMatch(Method method, Class<?> adviceType) {
+        return adviceType.isAssignableFrom(advice.getClass()) && method.getName().matches(pointcut);
     }
 
-    @Override
-    public boolean isMatch(Method method) {
-        return method.getName().matches(pointcut);
-    }
 }

@@ -7,5 +7,7 @@ import java.lang.reflect.Method;
  * @since 2019-07-29
  */
 public interface PointcutAdvisor {
-    boolean isMatch(Method method);
+    Advice getAdvice();
+
+    boolean isMatch(Method method, Class<?> adviceType);
 }

@@ -15,19 +15,17 @@ import java.util.Date;
  */
 @Repositorty
 public class UserDaoImpl implements UserDao {
-    private UserService userService;
-
     @AutoWired
-    public UserDaoImpl(UserService userService) {
-        this.userService = userService;
-    }
+    private UserService userService;
 
     @Override
     public User getUser() {
+        System.out.println("processing");
         return new User("test", "pass");
     }
+
     @Override
-    public void getDate(){
+    public void getDate() {
         System.out.println(userService.getCreateTime().toString() + "yyyyyy");
     }
 }
