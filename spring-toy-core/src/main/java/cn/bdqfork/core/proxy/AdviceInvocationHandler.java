@@ -14,7 +14,7 @@ public abstract class AdviceInvocationHandler {
     /**
      * 切面
      */
-    private List<PointcutAdvisor> pointcutAdvisors;
+    private List<Advisor> advisors;
 
     protected Object invoke(Object target, Method method, Object[] args) throws Throwable {
         MethodBeforeAdvice[] beforeAdvices = getMethodBeforeAdvices(method);
@@ -44,16 +44,16 @@ public abstract class AdviceInvocationHandler {
     }
 
     private MethodInterceptor[] getAroundAdvices(Method method) {
-        return pointcutAdvisors.stream()
-                .filter(pointcutAdvisor -> pointcutAdvisor.isMatch(method, MethodInterceptor.class))
-                .map(pointcutAdvisor -> (MethodInterceptor) pointcutAdvisor.getAdvice())
+        return advisors.stream()
+                .filter(advisor -> advisor.isMatch(method, MethodInterceptor.class))
+                .map(advisor -> (MethodInterceptor) advisor.getAdvice())
                 .toArray(MethodInterceptor[]::new);
     }
 
     private MethodBeforeAdvice[] getMethodBeforeAdvices(Method method) {
-        return pointcutAdvisors.stream()
-                .filter(pointcutAdvisor -> pointcutAdvisor.isMatch(method, MethodBeforeAdvice.class))
-                .map(pointcutAdvisor -> (MethodBeforeAdvice) pointcutAdvisor.getAdvice())
+        return advisors.stream()
+                .filter(advisor -> advisor.isMatch(method, MethodBeforeAdvice.class))
+                .map(advisor -> (MethodBeforeAdvice) advisor.getAdvice())
                 .toArray(MethodBeforeAdvice[]::new);
     }
 
@@ -63,9 +63,9 @@ public abstract class AdviceInvocationHandler {
     }
 
     private void doAfterReturning(MethodInvocation methodInvocation, Object returnValue) throws Throwable {
-        for (PointcutAdvisor pointcutAdvisor : pointcutAdvisors) {
-            if (pointcutAdvisor.isMatch(methodInvocation.getMethod(), AfterReturningAdvice.class)) {
-                AfterReturningAdvice advice = (AfterReturningAdvice) pointcutAdvisor.getAdvice();
+        for (Advisor advisor : advisors) {
+            if (advisor.isMatch(methodInvocation.getMethod(), AfterReturningAdvice.class)) {
+                AfterReturningAdvice advice = (AfterReturningAdvice) advisor.getAdvice();
                 if (advice instanceof AspectAdvice) {
                     ((AspectAdvice) advice).setJoinPoint(methodInvocation);
                 }
@@ -76,13 +76,13 @@ public abstract class AdviceInvocationHandler {
     }
 
     private void doThrows(MethodInvocation methodInvocation, Exception e) throws Exception {
-        long count = pointcutAdvisors.stream()
-                .filter(pointcutAdvisor -> pointcutAdvisor.isMatch(methodInvocation.getMethod(), ThrowsAdvice.class))
+        long count = advisors.stream()
+                .filter(advisor -> advisor.isMatch(methodInvocation.getMethod(), ThrowsAdvice.class))
                 .count();
         if (count > 0) {
-            pointcutAdvisors.stream()
-                    .filter(pointcutAdvisor -> pointcutAdvisor.isMatch(methodInvocation.getMethod(), ThrowsAdvice.class))
-                    .map(pointcutAdvisor -> (ThrowsAdvice) pointcutAdvisor.getAdvice())
+            advisors.stream()
+                    .filter(advisor -> advisor.isMatch(methodInvocation.getMethod(), ThrowsAdvice.class))
+                    .map(advisor -> (ThrowsAdvice) advisor.getAdvice())
                     .forEach(advice -> advice.afterThrowing(methodInvocation.getMethod(), methodInvocation.getArgs(),
                             methodInvocation.getTarget(), e));
         } else {
@@ -90,8 +90,8 @@ public abstract class AdviceInvocationHandler {
         }
     }
 
-    public void setPointcutAdvisors(List<PointcutAdvisor> pointcutAdvisors) {
-        this.pointcutAdvisors = pointcutAdvisors;
+    public void setAdvisors(List<Advisor> advisors) {
+        this.advisors = advisors;
     }
 
 }

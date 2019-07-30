@@ -6,11 +6,11 @@ import java.lang.reflect.Method;
  * @author bdq
  * @since 2019-07-29
  */
-public class RegexpMethodPointcutAdvisor implements PointcutAdvisor {
+public class RegexpMethodAdvisor implements Advisor {
     private String pointcut;
     private Advice advice;
 
-    public RegexpMethodPointcutAdvisor(String pointcut, Advice advice) {
+    public RegexpMethodAdvisor(String pointcut, Advice advice) {
         this.pointcut = pointcut;
         this.advice = advice;
     }

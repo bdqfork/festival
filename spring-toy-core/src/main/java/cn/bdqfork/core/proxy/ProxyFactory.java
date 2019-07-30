@@ -14,15 +14,16 @@ import java.util.List;
  */
 public class ProxyFactory {
     private Object target;
-    private List<PointcutAdvisor> pointcutAdvisors;
+    private List<Advisor> advisors;
     private BeanFactory beanFactory;
+    private Class<?>[] interfaces;
 
     public ProxyFactory() {
         this(null);
     }
 
     public ProxyFactory(BeanFactory beanFactory) {
-        this.pointcutAdvisors = new LinkedList<>();
+        this.advisors = new LinkedList<>();
         this.beanFactory = beanFactory;
     }
 
@@ -41,7 +42,7 @@ public class ProxyFactory {
             } else {
                 jdkInvocationHandler = new JdkInvocationHandler(beanFactory);
             }
-            jdkInvocationHandler.setPointcutAdvisors(pointcutAdvisors);
+            jdkInvocationHandler.setAdvisors(advisors);
             proxyInstance = jdkInvocationHandler.newProxyInstance();
         } else {
             CglibMethodInterceptor cglibMethodInterceptor = new CglibMethodInterceptor(beanFactory);
@@ -51,13 +52,21 @@ public class ProxyFactory {
     }
 
     public void addAdvice(Advice advice) {
-        PointcutAdvisor pointcutAdvisor;
-        if (advice instanceof AspectAdvice) {
-            pointcutAdvisor = new AspectAdvisor(".*", (AspectAdvice) advice);
-        } else {
-            pointcutAdvisor = new RegexpMethodPointcutAdvisor(".*", advice);
+        if (advice instanceof Advisor) {
+            advisors.add((Advisor) advice);
+            return;
         }
-        pointcutAdvisors.add(pointcutAdvisor);
+        Advisor advisor;
+        if (advice instanceof AspectAdvice) {
+            advisor = new AspectAdvisor(".*", (AspectAdvice) advice);
+        } else {
+            advisor = new RegexpMethodAdvisor(".*", advice);
+        }
+        advisors.add(advisor);
+    }
+
+    public void setInterfaces(Class<?>[] interfaces) {
+        this.interfaces = interfaces;
     }
 
     public void setTarget(Object target) {

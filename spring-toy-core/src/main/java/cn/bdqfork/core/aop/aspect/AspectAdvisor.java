@@ -1,7 +1,7 @@
 package cn.bdqfork.core.aop.aspect;
 
 import cn.bdqfork.core.aop.Advice;
-import cn.bdqfork.core.aop.PointcutAdvisor;
+import cn.bdqfork.core.aop.Advisor;
 
 import java.lang.reflect.Method;
 
@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
  * @author bdq
  * @since 2019-07-29
  */
-public class AspectAdvisor implements PointcutAdvisor {
+public class AspectAdvisor implements Advisor {
     private String pointcut;
     private AspectAdvice aspectAdvice;
 
