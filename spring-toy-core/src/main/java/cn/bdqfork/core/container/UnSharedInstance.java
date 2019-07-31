@@ -3,6 +3,8 @@ package cn.bdqfork.core.container;
 import cn.bdqfork.core.exception.BeansException;
 
 /**
+ * 多实例包装类
+ *
  * @author bdq
  * @since 2019-07-31
  */

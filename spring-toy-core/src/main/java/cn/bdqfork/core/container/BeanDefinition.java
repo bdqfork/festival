@@ -2,7 +2,6 @@ package cn.bdqfork.core.container;
 
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * bean的定义，用来描述bean的信息
@@ -99,22 +98,4 @@ public class BeanDefinition {
         return isResolved;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        BeanDefinition that = (BeanDefinition) o;
-        return clazz.equals(that.clazz) &&
-                name.equals(that.name) &&
-                scope.equals(that.scope);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(clazz, name, scope);
-    }
 }

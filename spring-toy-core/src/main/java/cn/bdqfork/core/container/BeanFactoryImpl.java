@@ -20,8 +20,17 @@ import java.util.Map;
  * @since 2019-07-30
  */
 public class BeanFactoryImpl implements BeanFactory {
+    /**
+     * BeanDefinition容器，key为beanName
+     */
     private Map<String, BeanDefinition> beanDefinitions;
+    /**
+     * 正在实例化的Bean，key为beanName
+     */
     private Map<String, Class> instantiatingFlag;
+    /**
+     * 已经实例化的Bean，key为beanName
+     */
     private Map<String, Object> instances;
 
     public BeanFactoryImpl() {
@@ -30,13 +39,6 @@ public class BeanFactoryImpl implements BeanFactory {
         instances = new HashMap<>();
     }
 
-    /**
-     * 将Bean描述注册到容器中
-     *
-     * @param beanName       Bean名称
-     * @param beanDefinition Bean的描述信息
-     * @throws ConflictedBeanException Bean冲突异常
-     */
     @Override
     public void register(String beanName, BeanDefinition beanDefinition) throws ConflictedBeanException {
         if (beanDefinitions.containsKey(beanName)) {
@@ -55,13 +57,6 @@ public class BeanFactoryImpl implements BeanFactory {
         if (ScopeType.SINGLETON.equals(beanDefinition.getScope())) {
             instantiateIfNeed(beanName, beanDefinition);
             target = instances.get(beanName);
-
-            if (target != null && ScopeType.SINGLETON.equals(beanDefinition.getScope())) {
-                if (beanDefinition.isLazy()) {
-                    processField(beanName, beanDefinition);
-                    processMethod(beanName, beanDefinition);
-                }
-            }
         } else {
             UnSharedInstance unSharedInstance = new UnSharedInstance(beanDefinition.getClazz(),
                     () -> getConstructorArgs(beanName, beanDefinition));
@@ -102,10 +97,16 @@ public class BeanFactoryImpl implements BeanFactory {
 
     @Override
     public void instantiateIfNeed(String beanName, BeanDefinition beanDefinition) throws BeansException {
-        if (instances.containsKey(beanName)){
+        if (instances.containsKey(beanName)) {
             return;
         }
         Object[] args = getConstructorArgs(beanName, beanDefinition);
+        Object instance;
+        instance = doInstantiate(beanDefinition, args);
+        instances.put(beanName, instance);
+    }
+
+    private Object doInstantiate(BeanDefinition beanDefinition, Object[] args) throws InstantiateException {
         Object instance;
         ConstructorAttribute constructorAttribute = beanDefinition.getConstructorAttribute();
         if (constructorAttribute != null) {
@@ -125,7 +126,7 @@ public class BeanFactoryImpl implements BeanFactory {
                         beanDefinition.getBeanName()), e);
             }
         }
-        instances.put(beanName, instance);
+        return instance;
     }
 
     private Object[] getConstructorArgs(String beanName, BeanDefinition beanDefinition) throws BeansException {
@@ -152,24 +153,7 @@ public class BeanFactoryImpl implements BeanFactory {
             }
             return instances.get(beanName);
         }
-        ConstructorAttribute constructorAttribute = beanDefinition.getConstructorAttribute();
-        if (constructorAttribute != null) {
-            //执行构造器注入
-            Constructor<?> constructor = constructorAttribute.getConstructor();
-            try {
-                instance = constructor.newInstance(args);
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                throw new InstantiateException(String.format("failed to instantiate entity %s !",
-                        beanDefinition.getBeanName()), e);
-            }
-        } else {
-            try {
-                instance = beanDefinition.getClazz().newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new InstantiateException(String.format("failed to instantiate entity %s !",
-                        beanDefinition.getBeanName()), e);
-            }
-        }
+        instance = doInstantiate(beanDefinition, args);
         instances.put(beanName, instance);
         if (!ScopeType.SINGLETON.equals(beanDefinition.getScope())) {
             processField(beanName, beanDefinition);

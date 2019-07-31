@@ -1,12 +1,10 @@
 package cn.bdqfork.core.container;
 
-import java.lang.reflect.Parameter;
-
 /**
  * 注入方法（构造方法）参数描述
  *
  * @author bdq
- * @date 2019-07-27
+ * @since 2019-07-27
  */
 public class ParameterAttribute {
     /**

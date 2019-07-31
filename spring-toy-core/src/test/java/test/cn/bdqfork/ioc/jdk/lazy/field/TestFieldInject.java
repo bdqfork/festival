@@ -1,4 +1,4 @@
-package test.cn.bdqfork.ioc.jdk.single.field;
+package test.cn.bdqfork.ioc.jdk.lazy.field;
 
 import cn.bdqfork.core.context.AnnotationApplicationContext;
 import cn.bdqfork.core.context.ApplicationContext;
@@ -13,7 +13,7 @@ public class TestFieldInject {
 
     @Test
     public void testJdkFieldInject() throws ApplicationContextException {
-        ApplicationContext applicationContext = new AnnotationApplicationContext("test.cn.bdqfork.ioc.jdk.single.field");
+        ApplicationContext applicationContext = new AnnotationApplicationContext("test.cn.bdqfork.ioc.jdk.lazy.field");
         UserService userService = applicationContext.getBean(UserService.class);
         System.out.println(userService.hashCode());
     }

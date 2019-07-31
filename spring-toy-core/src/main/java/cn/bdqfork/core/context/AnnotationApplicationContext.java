@@ -18,7 +18,7 @@ import java.util.*;
  * ApplicationContext的实现类，负责扫描注解，并将bean注册到容器中
  *
  * @author bdq
- * @date 2019-02-12
+ * @since 2019-02-12
  */
 public class AnnotationApplicationContext implements ApplicationContext {
     private String[] scanPaths;
@@ -77,7 +77,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
 
         Map<String, BeanDefinition> beanDefinationMap = beanFactory.getBeanDefinations();
 
-        Resolver resolver = new Resolver(beanNameGenerator,beanDefinationMap.values());
+        Resolver resolver = new Resolver(beanNameGenerator, beanDefinationMap.values());
         resolver.resolve();
 
         instantiate(beanDefinationMap);
@@ -99,7 +99,10 @@ public class AnnotationApplicationContext implements ApplicationContext {
      */
     private void processField(Map<String, BeanDefinition> beanDefinationMap) throws BeansException {
         for (Map.Entry<String, BeanDefinition> entry : beanDefinationMap.entrySet()) {
-            beanFactory.processField(entry.getKey(), entry.getValue());
+            BeanDefinition beanDefinition = entry.getValue();
+            if (!beanDefinition.isLazy()) {
+                beanFactory.processField(entry.getKey(), beanDefinition);
+            }
         }
     }
 
@@ -108,23 +111,50 @@ public class AnnotationApplicationContext implements ApplicationContext {
      */
     private void processMethod(Map<String, BeanDefinition> beanDefinationMap) throws BeansException {
         for (Map.Entry<String, BeanDefinition> entry : beanDefinationMap.entrySet()) {
-            beanFactory.processMethod(entry.getKey(), entry.getValue());
+            BeanDefinition beanDefinition = entry.getValue();
+            if (!beanDefinition.isLazy()) {
+                beanFactory.processMethod(entry.getKey(), beanDefinition);
+            }
         }
     }
 
     @Override
     public Object getBean(String beanName) throws BeansException {
+        BeanDefinition beanDefinition = beanFactory.getBeanDefinations().get(beanName);
+        if (beanDefinition == null) {
+            return null;
+        }
+        doProcessLazy(beanName, beanDefinition);
         return beanFactory.getBean(beanName);
     }
 
     @Override
     public <T> T getBean(Class<T> clazz) throws BeansException {
+        processLazyIfNeed(clazz);
         return (T) beanFactory.getBean(clazz);
     }
 
     @Override
     public <T> Map<String, T> getBeans(Class<T> clazz) throws BeansException {
+        processLazyIfNeed(clazz);
         return (Map<String, T>) beanFactory.getBeans(clazz);
+    }
+
+    private <T> void processLazyIfNeed(Class<T> clazz) throws BeansException {
+        for (Map.Entry<String, BeanDefinition> entry : beanFactory.getBeanDefinations().entrySet()) {
+            String beanName = entry.getKey();
+            BeanDefinition beanDefinition = entry.getValue();
+            if (beanDefinition.getClazz() == clazz) {
+                doProcessLazy(beanName, beanDefinition);
+            }
+        }
+    }
+
+    private void doProcessLazy(String beanName, BeanDefinition beanDefinition) throws BeansException {
+        if (ScopeType.SINGLETON.equals(beanDefinition.getScope()) && beanDefinition.isLazy()) {
+            beanFactory.processField(beanName, beanDefinition);
+            beanFactory.processMethod(beanName, beanDefinition);
+        }
     }
 
     @Override

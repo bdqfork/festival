@@ -3,8 +3,6 @@ package cn.bdqfork.core.container;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.ConflictedBeanException;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,10 +43,31 @@ public interface BeanFactory {
      */
     Map<String, Object> getBeans(Class<?> clazz) throws BeansException;
 
+    /**
+     * 实例化Bean
+     *
+     * @param beanName       bean名称
+     * @param beanDefinition BeanDefinition
+     * @throws BeansException bean异常
+     */
     void instantiateIfNeed(String beanName, BeanDefinition beanDefinition) throws BeansException;
 
+    /**
+     * 字段注入
+     *
+     * @param beanName       bean名称
+     * @param beanDefinition BeanDefinition
+     * @throws BeansException bean异常
+     */
     void processField(String beanName, BeanDefinition beanDefinition) throws BeansException;
 
+    /**
+     * 方法注入
+     *
+     * @param beanName       bean名称
+     * @param beanDefinition BeanDefinition
+     * @throws BeansException bean异常
+     */
     void processMethod(String beanName, BeanDefinition beanDefinition) throws BeansException;
 
     /**

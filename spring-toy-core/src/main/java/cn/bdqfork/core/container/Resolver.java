@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * @author bdq
- * @date 2019-02-22
+ * @since 2019-02-22
  */
 public class Resolver {
     private BeanNameGenerator beanNameGenerator;

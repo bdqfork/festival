@@ -1,4 +1,4 @@
-package test.cn.bdqfork.ioc.jdk.single.field;
+package test.cn.bdqfork.ioc.jdk.lazy.setter;
 
 import cn.bdqfork.core.context.AnnotationApplicationContext;
 import cn.bdqfork.core.context.ApplicationContext;
@@ -9,12 +9,11 @@ import org.junit.Test;
  * @author bdq
  * @since 2019-07-31
  */
-public class TestFieldInject {
+public class TestSetterInject {
 
     @Test
-    public void testJdkFieldInject() throws ApplicationContextException {
-        ApplicationContext applicationContext = new AnnotationApplicationContext("test.cn.bdqfork.ioc.jdk.single.field");
+    public void testJdkSetterInject() throws ApplicationContextException {
+        ApplicationContext applicationContext = new AnnotationApplicationContext("test.cn.bdqfork.ioc.cglib.single.setter");
         UserService userService = applicationContext.getBean(UserService.class);
-        System.out.println(userService.hashCode());
     }
 }
