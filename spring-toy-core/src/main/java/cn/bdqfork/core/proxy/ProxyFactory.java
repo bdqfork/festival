@@ -25,7 +25,7 @@ public class ProxyFactory {
 
     public Object getProxy() throws BeansException {
         AdviceInvocationHandler invocationHandler;
-        if (interfaces.length != 0) {
+        if (interfaces != null) {
             invocationHandler = new JdkInvocationHandler();
         } else {
             invocationHandler = new CglibMethodInterceptor();
