@@ -24,23 +24,21 @@ public class ProxyFactory {
     }
 
     public Object getProxy() throws BeansException {
-        Object proxyInstance;
+        AdviceInvocationHandler invocationHandler;
         if (interfaces.length != 0) {
-            JdkInvocationHandler jdkInvocationHandler = new JdkInvocationHandler();
-            jdkInvocationHandler.setTarget(target);
-            jdkInvocationHandler.setInterfaces(interfaces);
-            jdkInvocationHandler.setAdvisors(advisors);
-            proxyInstance = jdkInvocationHandler.newProxyInstance();
+            invocationHandler = new JdkInvocationHandler();
         } else {
-            CglibMethodInterceptor cglibMethodInterceptor = new CglibMethodInterceptor();
-            cglibMethodInterceptor.setTarget(target);
-            cglibMethodInterceptor.setAdvisors(advisors);
-            proxyInstance = cglibMethodInterceptor.newProxyInstance();
+            invocationHandler = new CglibMethodInterceptor();
+        }
+        invocationHandler.setTarget(target);
+        invocationHandler.setInterfaces(interfaces);
+        if (advisors.size() > 0) {
+            invocationHandler.setAdvisors(advisors);
         }
         if (beanFactory != null) {
             beanFactory.getBeans(Advice.class).forEach((beanName, advice) -> addAdvice((Advice) advice));
         }
-        return proxyInstance;
+        return invocationHandler.newProxyInstance();
     }
 
     public void addAdvice(Advice advice) {
