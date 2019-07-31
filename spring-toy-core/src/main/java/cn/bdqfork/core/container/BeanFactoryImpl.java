@@ -51,18 +51,25 @@ public class BeanFactoryImpl implements BeanFactory {
         if (beanDefinition == null) {
             return null;
         }
-        ProxyFactory proxyFactory = new ProxyFactory();
-        proxyFactory.setTarget(new ObjectFactory<Object>() {
-            @Override
-            public Object getObject() throws BeansException {
-                try {
-                    Object[] args = getConstructorArgs(beanName, beanDefinition);
-                    return createBean(beanName, beanDefinition, args);
-                } catch (InstantiateException e) {
-                    throw e;
+        Object target;
+        if (ScopeType.SINGLETON.equals(beanDefinition.getScope())) {
+            instantiateIfNeed(beanName, beanDefinition);
+            target = instances.get(beanName);
+
+            if (target != null && ScopeType.SINGLETON.equals(beanDefinition.getScope())) {
+                if (beanDefinition.isLazy()) {
+                    processField(beanName, beanDefinition);
+                    processMethod(beanName, beanDefinition);
                 }
             }
-        });
+        } else {
+            UnSharedInstance unSharedInstance = new UnSharedInstance(beanDefinition.getClazz(),
+                    () -> getConstructorArgs(beanName, beanDefinition));
+            unSharedInstance.setObjectFactory(() -> createBean(beanName, beanDefinition, unSharedInstance.getArgs()));
+            target = unSharedInstance;
+        }
+        ProxyFactory proxyFactory = new ProxyFactory();
+        proxyFactory.setTarget(target);
         proxyFactory.setBeanFactory(this);
         proxyFactory.setInterfaces(beanDefinition.getClazz().getInterfaces());
         return proxyFactory.getProxy();
@@ -94,9 +101,31 @@ public class BeanFactoryImpl implements BeanFactory {
     }
 
     @Override
-    public void instantiate(String beanName, BeanDefinition beanDefinition) throws BeansException {
+    public void instantiateIfNeed(String beanName, BeanDefinition beanDefinition) throws BeansException {
+        if (instances.containsKey(beanName)){
+            return;
+        }
         Object[] args = getConstructorArgs(beanName, beanDefinition);
-        createBean(beanName, beanDefinition, args);
+        Object instance;
+        ConstructorAttribute constructorAttribute = beanDefinition.getConstructorAttribute();
+        if (constructorAttribute != null) {
+            //执行构造器注入
+            Constructor<?> constructor = constructorAttribute.getConstructor();
+            try {
+                instance = constructor.newInstance(args);
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                throw new InstantiateException(String.format("failed to instantiate entity %s !",
+                        beanDefinition.getBeanName()), e);
+            }
+        } else {
+            try {
+                instance = beanDefinition.getClazz().newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new InstantiateException(String.format("failed to instantiate entity %s !",
+                        beanDefinition.getBeanName()), e);
+            }
+        }
+        instances.put(beanName, instance);
     }
 
     private Object[] getConstructorArgs(String beanName, BeanDefinition beanDefinition) throws BeansException {
@@ -253,4 +282,5 @@ public class BeanFactoryImpl implements BeanFactory {
     public Map<String, BeanDefinition> getBeanDefinations() {
         return this.beanDefinitions;
     }
+
 }

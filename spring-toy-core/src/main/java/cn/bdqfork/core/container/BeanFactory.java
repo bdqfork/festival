@@ -45,7 +45,7 @@ public interface BeanFactory {
      */
     Map<String, Object> getBeans(Class<?> clazz) throws BeansException;
 
-    void instantiate(String beanName,BeanDefinition beanDefinition) throws BeansException;
+    void instantiateIfNeed(String beanName, BeanDefinition beanDefinition) throws BeansException;
 
     void processField(String beanName, BeanDefinition beanDefinition) throws BeansException;
 

@@ -4,6 +4,7 @@ import cn.bdqfork.core.annotation.AutoWired;
 import cn.bdqfork.core.annotation.Scope;
 import cn.bdqfork.core.annotation.ScopeType;
 import cn.bdqfork.core.annotation.Service;
+import cn.bdqfork.ioc.example.controller.UserController;
 import cn.bdqfork.ioc.example.dao.UserDao;
 
 import javax.inject.Inject;
@@ -18,6 +19,13 @@ import java.util.Date;
 public class UserServiceImpl implements UserService {
     private UserDao userDao;
     private Date createTime = new Date();
+
+    public UserServiceImpl() {
+    }
+
+    public UserServiceImpl(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     @Override
     public String getUsername() {

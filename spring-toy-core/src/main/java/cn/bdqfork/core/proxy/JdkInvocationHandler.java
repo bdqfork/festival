@@ -1,6 +1,7 @@
 package cn.bdqfork.core.proxy;
 
 import cn.bdqfork.core.container.ObjectFactory;
+import cn.bdqfork.core.container.UnSharedInstance;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.utils.BeanUtils;
 
@@ -24,10 +25,10 @@ public class JdkInvocationHandler extends AdviceInvocationHandler implements Inv
      * @return Object 代理实例
      */
     public Object newProxyInstance() throws BeansException {
-        Class targetClass = target.getClass();
-        if (BeanUtils.isSubType(target.getClass(), ObjectFactory.class)) {
-            ObjectFactory factory = (ObjectFactory) target;
-            targetClass = factory.getObject().getClass();
+        Class<?> targetClass = target.getClass();
+        if (target.getClass() == UnSharedInstance.class) {
+            UnSharedInstance unSharedInstance = (UnSharedInstance) target;
+            targetClass = unSharedInstance.getClazz();
         }
         return Proxy.newProxyInstance(targetClass.getClassLoader(), interfaces, this);
     }
@@ -35,9 +36,18 @@ public class JdkInvocationHandler extends AdviceInvocationHandler implements Inv
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Object targetObject = target;
-        if (BeanUtils.isSubType(target.getClass(), ObjectFactory.class)) {
-            ObjectFactory factory = (ObjectFactory) target;
-            targetObject = factory.getObject();
+        if (target.getClass() == UnSharedInstance.class) {
+            UnSharedInstance unSharedInstance = (UnSharedInstance) target;
+            targetObject = unSharedInstance.getObjectFactory().getObject();
+        }
+        if ("toString".equals(method.getName())) {
+            return targetObject.toString();
+        }
+        if ("equals".equals(method.getName())) {
+            return targetObject.equals(args[0]);
+        }
+        if ("hashCode".equals(method.getName())) {
+            return targetObject.hashCode();
         }
         return super.invoke(targetObject, method, args);
     }

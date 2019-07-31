@@ -19,6 +19,13 @@ public class UserDaoImpl implements UserDao {
 
     private UserService userService;
 
+    public UserDaoImpl() {
+    }
+
+    public UserDaoImpl(UserService userService) {
+        this.userService = userService;
+    }
+
     @Override
     public User getUser() {
         System.out.println("processing");

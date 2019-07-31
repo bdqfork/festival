@@ -13,7 +13,6 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import java.lang.reflect.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * ApplicationContext的实现类，负责扫描注解，并将bean注册到容器中
@@ -91,7 +90,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
      */
     private void instantiate(Map<String, BeanDefinition> beanDefinations) throws BeansException {
         for (Map.Entry<String, BeanDefinition> entry : beanDefinations.entrySet()) {
-            beanFactory.instantiate(entry.getKey(), entry.getValue());
+            beanFactory.instantiateIfNeed(entry.getKey(), entry.getValue());
         }
     }
 
