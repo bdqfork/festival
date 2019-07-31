@@ -13,18 +13,9 @@ import java.lang.reflect.Method;
  * @since 2019-07-29
  */
 public class AspectAroundAdvice implements AspectAdvice, MethodInterceptor {
-    /**
-     * 执行优先级
-     */
-    private int order;
     private Object adviceInstance;
     private Method adviceMethod;
     private JoinPoint joinPoint;
-
-    public AspectAroundAdvice(Object adviceInstance, Method adviceMethod) {
-        this.adviceInstance = adviceInstance;
-        this.adviceMethod = adviceMethod;
-    }
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
@@ -43,5 +34,20 @@ public class AspectAroundAdvice implements AspectAdvice, MethodInterceptor {
     @Override
     public void setJoinPoint(JoinPoint joinPoint) {
         this.joinPoint = joinPoint;
+    }
+
+    @Override
+    public void setAdviceInstance(Object adviceInstance) {
+        this.adviceInstance = adviceInstance;
+    }
+
+    @Override
+    public Object getAdviceInstance() {
+        return adviceInstance;
+    }
+
+    @Override
+    public void setAdviceMethod(Method adviceMethod) {
+        this.adviceMethod = adviceMethod;
     }
 }

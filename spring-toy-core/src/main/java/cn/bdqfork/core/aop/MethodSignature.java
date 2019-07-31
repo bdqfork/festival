@@ -3,6 +3,9 @@ package cn.bdqfork.core.aop;
 import org.aspectj.lang.Signature;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * @author bdq
@@ -19,12 +22,24 @@ public class MethodSignature implements Signature {
 
     @Override
     public String toShortString() {
-        return null;
+        return targetClass.getName() + "." + getName();
     }
 
     @Override
     public String toLongString() {
-        return null;
+        String[] paramterNames = Arrays.stream(method.getParameters())
+                .map(Parameter::getName)
+                .toArray(String[]::new);
+        StringBuilder sb = new StringBuilder();
+        sb.append("(");
+        if (paramterNames.length > 0) {
+            sb.append(paramterNames[0]);
+            for (int i = 1; i < paramterNames.length; i++) {
+                sb.append(",").append(paramterNames[i]);
+            }
+        }
+        sb.append(")");
+        return targetClass.getTypeName() + "." + getName() + sb.toString();
     }
 
     @Override
@@ -49,9 +64,6 @@ public class MethodSignature implements Signature {
 
     @Override
     public String toString() {
-        return "MethodSignature{" +
-                "targetClass=" + targetClass +
-                ", method=" + method +
-                '}';
+        return toLongString();
     }
 }

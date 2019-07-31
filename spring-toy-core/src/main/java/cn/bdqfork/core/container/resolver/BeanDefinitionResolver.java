@@ -1,34 +1,69 @@
-package cn.bdqfork.core.container;
+package cn.bdqfork.core.container.resolver;
 
-import cn.bdqfork.core.annotation.AutoWired;
-import cn.bdqfork.core.annotation.Qualifier;
+import cn.bdqfork.core.annotation.*;
+import cn.bdqfork.core.container.*;
+import cn.bdqfork.core.container.resolver.Resolver;
 import cn.bdqfork.core.exception.ResolvedException;
+import cn.bdqfork.core.exception.ScopeException;
+import cn.bdqfork.core.utils.ComponentUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 import java.lang.reflect.*;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author bdq
  * @since 2019-02-22
  */
-public class Resolver {
+public class BeanDefinitionResolver implements Resolver<Map<String, BeanDefinition>> {
     private BeanNameGenerator beanNameGenerator;
-    private Collection<BeanDefinition> beanDefinitions;
+    private Collection<Class<?>> classes;
 
-    public Resolver(BeanNameGenerator beanNameGenerator, Collection<BeanDefinition> beanDefinitions) {
+    public BeanDefinitionResolver(BeanNameGenerator beanNameGenerator, Collection<Class<?>> classes) {
         this.beanNameGenerator = beanNameGenerator;
-        this.beanDefinitions = beanDefinitions;
+        this.classes = classes;
     }
 
-    public void resolve() throws ResolvedException {
-        for (BeanDefinition beanDefinition : beanDefinitions) {
+    @Override
+    public Map<String, BeanDefinition> resolve() throws ResolvedException {
+        Map<String, BeanDefinition> beanDefinitions = new HashMap<>();
+        for (Class<?> clazz : classes) {
+            BeanDefinition beanDefinition = createBeanDefinition(clazz);
             doResolve(beanDefinition);
+            beanDefinitions.put(beanDefinition.getBeanName(), beanDefinition);
         }
+        return beanDefinitions;
+    }
+
+    private BeanDefinition createBeanDefinition(Class<?> clazz) throws ScopeException {
+        String name = ComponentUtils.getComponentName(clazz);
+        String beanScope = "singleton";
+        if (clazz.getAnnotation(Singleton.class) == null) {
+
+            Scope scope = clazz.getAnnotation(Scope.class);
+
+            if (scope != null) {
+                if (!ScopeType.PROTOTYPE.equals(scope.value())) {
+                    throw new ScopeException("the value of scope is error !");
+                } else {
+                    beanScope = scope.value();
+                }
+            }
+
+        }
+        if ("".equals(name)) {
+            name = this.beanNameGenerator.generateBeanName(clazz);
+        }
+
+        Lazy lazy = clazz.getAnnotation(Lazy.class);
+        boolean isLazy = false;
+        if (lazy != null) {
+            isLazy = lazy.value();
+        }
+        return new BeanDefinition(clazz, beanScope, name, isLazy);
     }
 
     private void doResolve(BeanDefinition beanDefinition) throws ResolvedException {
@@ -39,9 +74,9 @@ public class Resolver {
         //优先解析父类
         Class<?> superClass = beanDefinition.getClazz().getSuperclass();
         if (superClass != null && superClass != Object.class) {
-            for (BeanDefinition defination : beanDefinitions) {
-                if (defination.getClazz() == superClass) {
-                    doResolve(defination);
+            for (Class<?> clazz : classes) {
+                if (clazz == superClass) {
+                    doResolve(createBeanDefinition(clazz));
                 }
             }
         }

@@ -17,7 +17,7 @@ public interface BeanFactory {
      * @param beanDefinition Bean的描述信息
      * @throws ConflictedBeanException Bean冲突异常
      */
-    void register(String beanName, BeanDefinition beanDefinition) throws ConflictedBeanException;
+    void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) throws ConflictedBeanException;
 
     /**
      * 根据beanName获取代理实例

@@ -13,8 +13,14 @@ import cn.bdqfork.core.annotation.ScopeType;
 public class UserDaoImpl {
 
 
-    public void test() {
+    public String testAop() {
         System.out.println("processing");
+        return "ok";
+    }
+
+    public String testThrowing() {
+        System.out.println(1 / 0);
+        return "ok";
     }
 
 }

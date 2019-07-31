@@ -1,16 +1,17 @@
 package cn.bdqfork.core.context;
 
 
-import cn.bdqfork.core.annotation.*;
 import cn.bdqfork.core.annotation.ScopeType;
+import cn.bdqfork.core.aop.Advisor;
 import cn.bdqfork.core.container.*;
+import cn.bdqfork.core.container.resolver.AspectResolver;
+import cn.bdqfork.core.container.resolver.BeanDefinitionResolver;
 import cn.bdqfork.core.exception.*;
 import cn.bdqfork.core.container.BeanNameGenerator;
 import cn.bdqfork.core.container.SimpleBeanNameGenerator;
+import cn.bdqfork.core.utils.ComponentUtils;
 import cn.bdqfork.core.utils.ReflectUtil;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
 import java.lang.reflect.*;
 import java.util.*;
 
@@ -30,7 +31,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
             throw new ApplicationContextException("the length of scanPaths is less than one ");
         }
         this.beanNameGenerator = new SimpleBeanNameGenerator();
-        this.beanFactory = new BeanFactoryImpl();
+        this.beanFactory = new BeanFactoryImplAspect();
         this.scanPaths = scanPaths;
         this.scan();
     }
@@ -40,49 +41,35 @@ public class AnnotationApplicationContext implements ApplicationContext {
         for (String scanPath : scanPaths) {
             candidates.addAll(ReflectUtil.getClasses(scanPath));
         }
+        Set<Class<?>> beanClasses = new HashSet<>();
         for (Class<?> candidate : candidates) {
             if (candidate.isAnnotation() || candidate.isInterface() || Modifier.isAbstract(candidate.getModifiers())) {
                 continue;
             }
-            String name = getComponentName(candidate);
-            if (name != null) {
-                String beanScope = "singleton";
-                if (candidate.getAnnotation(Singleton.class) == null) {
-
-                    Scope scope = candidate.getAnnotation(Scope.class);
-
-                    if (scope != null) {
-                        if (!ScopeType.PROTOTYPE.equals(scope.value())) {
-                            throw new ScopeException("the value of scope is error !");
-                        } else {
-                            beanScope = scope.value();
-                        }
-                    }
-
-                }
-                if ("".equals(name)) {
-                    name = this.beanNameGenerator.generateBeanName(candidate);
-                }
-
-                Lazy lazy = candidate.getAnnotation(Lazy.class);
-                boolean isLazy = false;
-                if (lazy != null) {
-                    isLazy = lazy.value();
-                }
-                BeanDefinition beanDefinition = new BeanDefinition(candidate, beanScope, name, isLazy);
-
-                beanFactory.register(beanDefinition.getBeanName(), beanDefinition);
+            if (ComponentUtils.isComponent(candidate)) {
+                beanClasses.add(candidate);
             }
         }
+        //解析BeanDefinition
+        BeanDefinitionResolver beanDefinitionResolver = new BeanDefinitionResolver(beanNameGenerator, beanClasses);
+        Map<String, BeanDefinition> beanDefinitions = beanDefinitionResolver.resolve();
 
-        Map<String, BeanDefinition> beanDefinationMap = beanFactory.getBeanDefinations();
+        //注册BeanDefinition
+        for (Map.Entry<String, BeanDefinition> entry : beanDefinitions.entrySet()) {
+            String beanName = entry.getKey();
+            BeanDefinition beanDefinition = entry.getValue();
+            beanFactory.registerBeanDefinition(beanName, beanDefinition);
+        }
 
-        Resolver resolver = new Resolver(beanNameGenerator, beanDefinationMap.values());
-        resolver.resolve();
+        //容器初始化
+        instantiate(beanDefinitions);
+        processField(beanDefinitions);
+        processMethod(beanDefinitions);
 
-        instantiate(beanDefinationMap);
-        processField(beanDefinationMap);
-        processMethod(beanDefinationMap);
+        //解析aspect
+        AspectResolver aspectResolver = new AspectResolver(beanDefinitions.values());
+        Map<String, List<Advisor>> beanAdvisorMapper = aspectResolver.resolve();
+        beanAdvisorMapper.forEach(this::registerAdvisors);
     }
 
     /**
@@ -118,6 +105,16 @@ public class AnnotationApplicationContext implements ApplicationContext {
         }
     }
 
+    /**
+     * 注册Advisor
+     */
+    private void registerAdvisors(String beanName, List<Advisor> advisors) {
+        AspectAopBeanFactory aspectAopBeanFactory = (AspectAopBeanFactory) beanFactory;
+        advisors.forEach(advisor -> {
+            aspectAopBeanFactory.registerAdvisor(beanName, advisor);
+        });
+    }
+
     @Override
     public Object getBean(String beanName) throws BeansException {
         BeanDefinition beanDefinition = beanFactory.getBeanDefinations().get(beanName);
@@ -131,7 +128,8 @@ public class AnnotationApplicationContext implements ApplicationContext {
     @Override
     public <T> T getBean(Class<T> clazz) throws BeansException {
         processLazyIfNeed(clazz);
-        return (T) beanFactory.getBean(clazz);
+        Object bean = beanFactory.getBean(clazz);
+        return (T) bean;
     }
 
     @Override
@@ -160,30 +158,6 @@ public class AnnotationApplicationContext implements ApplicationContext {
     @Override
     public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
         this.beanNameGenerator = beanNameGenerator;
-    }
-
-    private String getComponentName(Class<?> candidate) {
-        Component component = candidate.getAnnotation(Component.class);
-        if (component != null) {
-            return component.value();
-        }
-        Service service = candidate.getAnnotation(Service.class);
-        if (service != null) {
-            return service.value();
-        }
-        Repositorty repositorty = candidate.getAnnotation(Repositorty.class);
-        if (repositorty != null) {
-            return repositorty.value();
-        }
-        Controller controller = candidate.getAnnotation(Controller.class);
-        if (controller != null) {
-            return controller.value();
-        }
-        Named named = candidate.getAnnotation(Named.class);
-        if (named != null) {
-            return named.value();
-        }
-        return null;
     }
 
 }

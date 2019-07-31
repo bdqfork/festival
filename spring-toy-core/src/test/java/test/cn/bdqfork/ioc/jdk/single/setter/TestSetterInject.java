@@ -13,7 +13,7 @@ public class TestSetterInject {
 
     @Test
     public void testJdkSetterInject() throws ApplicationContextException {
-        ApplicationContext applicationContext = new AnnotationApplicationContext("test.cn.bdqfork.ioc.cglib.single.setter");
+        ApplicationContext applicationContext = new AnnotationApplicationContext("test.cn.bdqfork.ioc.jdk.single.setter");
         UserService userService = applicationContext.getBean(UserService.class);
     }
 }

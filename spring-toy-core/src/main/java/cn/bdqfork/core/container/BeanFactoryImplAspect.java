@@ -1,6 +1,9 @@
 package cn.bdqfork.core.container;
 
 import cn.bdqfork.core.annotation.ScopeType;
+import cn.bdqfork.core.aop.Advisor;
+import cn.bdqfork.core.aop.aspect.AspectAdvice;
+import cn.bdqfork.core.aop.aspect.AspectAdvisor;
 import cn.bdqfork.core.exception.*;
 import cn.bdqfork.core.proxy.ProxyFactory;
 import cn.bdqfork.core.utils.BeanUtils;
@@ -10,16 +13,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author bdq
  * @since 2019-07-30
  */
-public class BeanFactoryImpl implements BeanFactory {
+public class BeanFactoryImplAspect implements AspectAopBeanFactory {
     /**
      * BeanDefinition容器，key为beanName
      */
@@ -32,19 +32,29 @@ public class BeanFactoryImpl implements BeanFactory {
      * 已经实例化的Bean，key为beanName
      */
     private Map<String, Object> instances;
+    /**
+     * 代理实例
+     */
+    private Map<String, Object> proxyInstances;
+    private List<Advisor> advisors;
 
-    public BeanFactoryImpl() {
+    public BeanFactoryImplAspect() {
         beanDefinitions = new HashMap<>();
         instantiatingFlag = new HashMap<>();
         instances = new HashMap<>();
+        advisors = new LinkedList<>();
     }
 
     @Override
-    public void register(String beanName, BeanDefinition beanDefinition) throws ConflictedBeanException {
+    public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) throws ConflictedBeanException {
         if (beanDefinitions.containsKey(beanName)) {
             throw new ConflictedBeanException(String.format("the entity named %s has conflicted ! ", beanName));
         }
         beanDefinitions.put(beanName, beanDefinition);
+    }
+
+    public void registerSingleInstance() {
+
     }
 
     @Override
@@ -267,4 +277,19 @@ public class BeanFactoryImpl implements BeanFactory {
         return this.beanDefinitions;
     }
 
+    @Override
+    public void registerAdvisor(String beanName, Advisor advisor) {
+        Object instance = instances.get(beanName);
+        if (advisor instanceof AspectAdvisor) {
+            AspectAdvisor aspectAdvisor = (AspectAdvisor) advisor;
+            AspectAdvice aspectAdvice = aspectAdvisor.getAspectAdvice();
+            aspectAdvice.setAdviceInstance(instance);
+        }
+        advisors.add(advisor);
+    }
+
+    @Override
+    public List<Advisor> getAdvisors() {
+        return advisors;
+    }
 }

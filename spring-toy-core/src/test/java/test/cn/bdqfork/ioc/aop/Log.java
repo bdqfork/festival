@@ -1,8 +1,10 @@
 package test.cn.bdqfork.ioc.aop;
 
+import cn.bdqfork.core.annotation.Component;
+import org.apache.tools.ant.taskdefs.Echo;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 
@@ -10,13 +12,20 @@ import org.aspectj.lang.annotation.Before;
  * @author bdq
  * @since 2019-07-28
  */
+@Component
 @Aspect
 public class Log {
-    @Before("execution(* *..SomeService.doSecond(..))")
+    @Before("pointcut()")
     public void before(JoinPoint joinPoint) {
+        System.out.println("执行前置通知方法");
     }
 
-    @Around("execution(* *..SomeService.doSecond(..))")
+    @AfterReturning(value = "pointcut()", returning = "result")
+    public void after(JoinPoint joinPoint, Object result) {
+        System.out.println("执行后置通知方法，return : " + result);
+    }
+
+    @Around("execution(test.cn.bdqfork.ioc.aop.*)")
     public Object myAround(ProceedingJoinPoint pjp) throws Throwable {
         System.out.println("执行环绕通知方法，目标方法执行之前");
         Object result = pjp.proceed();
@@ -25,6 +34,16 @@ public class Log {
             result = ((String) result).toUpperCase();
         }
         return result;
+    }
+
+    @AfterThrowing(value = "pointcut()", throwing = "ex")
+    public void afterThrowing(JoinPoint joinPoint, Exception ex) {
+        System.out.println("执行异常抛出通知方法，Exception : " + ex);
+    }
+
+    @Pointcut("execution(test.cn.bdqfork.ioc.aop.*)")
+    public void pointcut() {
+
     }
 
 }

@@ -3,6 +3,7 @@ package cn.bdqfork.core.proxy;
 import cn.bdqfork.core.aop.*;
 import cn.bdqfork.core.aop.aspect.AspectAdvice;
 import cn.bdqfork.core.aop.aspect.AspectAdvisor;
+import cn.bdqfork.core.container.AspectAopBeanFactory;
 import cn.bdqfork.core.container.BeanFactory;
 import cn.bdqfork.core.exception.BeansException;
 
@@ -25,7 +26,7 @@ public class ProxyFactory {
 
     public Object getProxy() throws BeansException {
         AdviceInvocationHandler invocationHandler;
-        if (interfaces != null) {
+        if (interfaces != null && interfaces.length > 0) {
             invocationHandler = new JdkInvocationHandler();
         } else {
             invocationHandler = new CglibMethodInterceptor();
@@ -36,7 +37,8 @@ public class ProxyFactory {
             invocationHandler.setAdvisors(advisors);
         }
         if (beanFactory != null) {
-            beanFactory.getBeans(Advice.class).forEach((beanName, advice) -> addAdvice((Advice) advice));
+            AspectAopBeanFactory aspectAopBeanFactory = (AspectAopBeanFactory) beanFactory;
+            invocationHandler.setAdvisors(aspectAopBeanFactory.getAdvisors());
         }
         return invocationHandler.newProxyInstance();
     }
