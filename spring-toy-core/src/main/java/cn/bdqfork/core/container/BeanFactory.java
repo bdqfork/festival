@@ -3,20 +3,6 @@ package cn.bdqfork.core.container;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.ConflictedBeanException;
 
-<<<<<<< HEAD
-import cn.bdqfork.core.annotation.ScopeType;
-import cn.bdqfork.core.exception.*;
-import cn.bdqfork.core.proxy.CglibMethodInterceptor;
-import cn.bdqfork.core.proxy.JdkInvocationHandler;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-=======
->>>>>>> spring-aop
 import java.util.Map;
 
 /**

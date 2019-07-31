@@ -1,11 +1,8 @@
 package cn.bdqfork.core.proxy;
 
-<<<<<<< HEAD
 import cn.bdqfork.core.container.BeanFactory;
-=======
 import cn.bdqfork.core.container.UnSharedInstance;
 import cn.bdqfork.core.exception.BeansException;
->>>>>>> spring-aop
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
