@@ -1,9 +1,8 @@
 package cn.bdqfork.core.proxy;
 
-import cn.bdqfork.core.aop.MethodBeforeAdvice;
-import cn.bdqfork.core.aop.MethodInterceptor;
-import cn.bdqfork.core.aop.MethodInvocation;
-import cn.bdqfork.core.container.BeanFactory;
+import cn.bdqfork.core.container.ObjectFactory;
+import cn.bdqfork.core.exception.BeansException;
+import cn.bdqfork.core.utils.BeanUtils;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -17,41 +16,37 @@ import java.lang.reflect.Proxy;
  */
 public class JdkInvocationHandler extends AdviceInvocationHandler implements InvocationHandler {
     private Object target;
-    /**
-     * Bean工厂实例
-     */
-    private BeanFactory beanFactory;
-
-    public JdkInvocationHandler(Object target) {
-        this.target = target;
-    }
-
-    public JdkInvocationHandler(BeanFactory beanFactory) {
-        this.beanFactory = beanFactory;
-    }
+    private Class[] interfaces;
 
     /**
      * 创建代理实例
      *
      * @return Object 代理实例
      */
-    public Object newProxyInstance() {
-        Class<?> clazz;
-        if (target == null) {
-            clazz = beanFactory.getBeanDefinition().getClazz();
-        } else {
-            clazz = target.getClass();
+    public Object newProxyInstance() throws BeansException {
+        Class targetClass = target.getClass();
+        if (BeanUtils.isSubType(target.getClass(), ObjectFactory.class)) {
+            ObjectFactory factory = (ObjectFactory) target;
+            targetClass = factory.getObject().getClass();
         }
-        return Proxy.newProxyInstance(clazz.getClassLoader(), clazz.getInterfaces(), this);
+        return Proxy.newProxyInstance(targetClass.getClassLoader(), interfaces, this);
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        //target == null表示非单例
-        if (target == null) {
-            target = beanFactory.getInstance();
+        Object targetObject = target;
+        if (BeanUtils.isSubType(target.getClass(), ObjectFactory.class)) {
+            ObjectFactory factory = (ObjectFactory) target;
+            targetObject = factory.getObject();
         }
-        return super.invoke(target, method, args);
+        return super.invoke(targetObject, method, args);
     }
 
+    public void setTarget(Object target) {
+        this.target = target;
+    }
+
+    public void setInterfaces(Class<?>... interfaces) {
+        this.interfaces = interfaces;
+    }
 }

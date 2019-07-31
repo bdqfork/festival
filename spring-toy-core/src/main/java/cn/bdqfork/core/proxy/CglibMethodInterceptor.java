@@ -1,8 +1,8 @@
 package cn.bdqfork.core.proxy;
 
-import cn.bdqfork.core.aop.MethodBeforeAdvice;
-import cn.bdqfork.core.aop.MethodInvocation;
-import cn.bdqfork.core.container.BeanFactory;
+import cn.bdqfork.core.container.ObjectFactory;
+import cn.bdqfork.core.exception.BeansException;
+import cn.bdqfork.core.utils.BeanUtils;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
@@ -17,40 +17,36 @@ import java.lang.reflect.Method;
  */
 public class CglibMethodInterceptor extends AdviceInvocationHandler implements MethodInterceptor {
     private Object target;
-    /**
-     * Bean工厂实例
-     */
-    private BeanFactory beanFactory;
-
-    public CglibMethodInterceptor(BeanFactory beanFactory) {
-        this.beanFactory = beanFactory;
-    }
 
     /**
      * 创建代理实例
      *
      * @return Object 代理实例
      */
-    public Object newProxyInstance() {
+    public Object newProxyInstance() throws BeansException {
         Enhancer enhancer = new Enhancer();
         enhancer.setCallback(this);
-        Class<?> clazz;
-        if (target == null) {
-            clazz = beanFactory.getBeanDefinition().getClazz();
-        } else {
-            clazz = target.getClass();
+        Class targetClass = target.getClass();
+        if (BeanUtils.isSubType(target.getClass(), ObjectFactory.class)) {
+            ObjectFactory factory = (ObjectFactory) target;
+            targetClass = factory.getObject().getClass();
         }
-        enhancer.setSuperclass(clazz);
+        enhancer.setSuperclass(targetClass);
         return enhancer.create();
     }
 
     @Override
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-        //target == null表示非单例
-        if (target == null) {
-            target = beanFactory.getInstance();
+        Object targetObject = target;
+        if (BeanUtils.isSubType(target.getClass(), ObjectFactory.class)) {
+            ObjectFactory factory = (ObjectFactory) target;
+            targetObject = factory.getObject();
         }
-        return super.invoke(target, method, args);
+        return super.invoke(targetObject, method, args);
+    }
+
+    public void setTarget(Object target) {
+        this.target = target;
     }
 
 }

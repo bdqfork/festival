@@ -4,6 +4,7 @@ import cn.bdqfork.core.aop.*;
 import cn.bdqfork.core.aop.aspect.AspectAdvice;
 import cn.bdqfork.core.aop.aspect.AspectAdvisor;
 import cn.bdqfork.core.container.BeanFactory;
+import cn.bdqfork.core.exception.BeansException;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -19,34 +20,25 @@ public class ProxyFactory {
     private Class<?>[] interfaces;
 
     public ProxyFactory() {
-        this(null);
-    }
-
-    public ProxyFactory(BeanFactory beanFactory) {
         this.advisors = new LinkedList<>();
-        this.beanFactory = beanFactory;
     }
 
-    public Object getProxy() {
-        Class<?>[] classes;
-        if (target != null) {
-            classes = target.getClass().getInterfaces();
-        } else {
-            classes = beanFactory.getBeanDefinition().getClazz().getInterfaces();
-        }
+    public Object getProxy() throws BeansException {
         Object proxyInstance;
-        if (classes.length != 0) {
-            JdkInvocationHandler jdkInvocationHandler;
-            if (target != null) {
-                jdkInvocationHandler = new JdkInvocationHandler(target);
-            } else {
-                jdkInvocationHandler = new JdkInvocationHandler(beanFactory);
-            }
+        if (interfaces.length != 0) {
+            JdkInvocationHandler jdkInvocationHandler = new JdkInvocationHandler();
+            jdkInvocationHandler.setTarget(target);
+            jdkInvocationHandler.setInterfaces(interfaces);
             jdkInvocationHandler.setAdvisors(advisors);
             proxyInstance = jdkInvocationHandler.newProxyInstance();
         } else {
-            CglibMethodInterceptor cglibMethodInterceptor = new CglibMethodInterceptor(beanFactory);
+            CglibMethodInterceptor cglibMethodInterceptor = new CglibMethodInterceptor();
+            cglibMethodInterceptor.setTarget(target);
+            cglibMethodInterceptor.setAdvisors(advisors);
             proxyInstance = cglibMethodInterceptor.newProxyInstance();
+        }
+        if (beanFactory != null) {
+            beanFactory.getBeans(Advice.class).forEach((beanName, advice) -> addAdvice((Advice) advice));
         }
         return proxyInstance;
     }
@@ -71,5 +63,9 @@ public class ProxyFactory {
 
     public void setTarget(Object target) {
         this.target = target;
+    }
+
+    public void setBeanFactory(BeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
     }
 }

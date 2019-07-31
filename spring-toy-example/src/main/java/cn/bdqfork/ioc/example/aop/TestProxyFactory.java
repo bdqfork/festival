@@ -4,6 +4,7 @@ import cn.bdqfork.core.aop.aspect.AspectAfterReturningAdvice;
 import cn.bdqfork.core.aop.aspect.AspectAroundAdvice;
 import cn.bdqfork.core.aop.aspect.AspectMethodBeforeAdvice;
 import cn.bdqfork.core.aop.aspect.AspectThrowsAdvice;
+import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.proxy.ProxyFactory;
 import cn.bdqfork.ioc.example.dao.UserDao;
 import cn.bdqfork.ioc.example.dao.UserDaoImpl;
@@ -21,7 +22,7 @@ import java.util.Optional;
  * @since 2019-07-30
  */
 public class TestProxyFactory {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws BeansException {
         ProxyFactory proxyFactory = new ProxyFactory();
         UserDao userDao = new UserDaoImpl();
         proxyFactory.setTarget(userDao);

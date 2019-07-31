@@ -13,9 +13,10 @@ import java.util.Date;
  * @author bdq
  * @date 2019-02-19
  */
+@Scope(ScopeType.PROTOTYPE)
 @Repositorty
 public class UserDaoImpl implements UserDao {
-    @AutoWired
+
     private UserService userService;
 
     @Override
@@ -27,5 +28,10 @@ public class UserDaoImpl implements UserDao {
     @Override
     public void getDate() {
         System.out.println(userService.getCreateTime().toString() + "yyyyyy");
+    }
+
+    @AutoWired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 }

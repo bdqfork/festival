@@ -1,7 +1,7 @@
 package cn.bdqfork.core.context;
 
-import cn.bdqfork.core.exception.SpringToyException;
 import cn.bdqfork.core.container.BeanNameGenerator;
+import cn.bdqfork.core.exception.BeansException;
 
 import java.util.Map;
 
@@ -18,9 +18,9 @@ public interface ApplicationContext {
      *
      * @param beanName
      * @return
-     * @throws SpringToyException
+     * @throws BeansException
      */
-    Object getBean(String beanName) throws SpringToyException;
+    Object getBean(String beanName) throws BeansException;
 
     /**
      * 获取第一个与clazz匹配的实例
@@ -28,9 +28,9 @@ public interface ApplicationContext {
      * @param clazz
      * @param <T>
      * @return
-     * @throws SpringToyException
+     * @throws BeansException
      */
-    <T> T getBean(Class<T> clazz) throws SpringToyException;
+    <T> T getBean(Class<T> clazz) throws BeansException;
 
     /**
      * 获取所有与clazz匹配的实例
@@ -38,9 +38,9 @@ public interface ApplicationContext {
      * @param clazz
      * @param <T>
      * @return
-     * @throws SpringToyException
+     * @throws BeansException
      */
-    <T> Map<String, T> getBeans(Class<T> clazz) throws SpringToyException;
+    <T> Map<String, T> getBeans(Class<T> clazz) throws BeansException;
 
     void setBeanNameGenerator(BeanNameGenerator beanNameGenerator);
 }

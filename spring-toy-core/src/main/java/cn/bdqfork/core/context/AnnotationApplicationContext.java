@@ -4,10 +4,7 @@ package cn.bdqfork.core.context;
 import cn.bdqfork.core.annotation.*;
 import cn.bdqfork.core.annotation.ScopeType;
 import cn.bdqfork.core.container.*;
-import cn.bdqfork.core.exception.FieldInjectedException;
-import cn.bdqfork.core.exception.InstantiateException;
-import cn.bdqfork.core.exception.MethodInjectedException;
-import cn.bdqfork.core.exception.SpringToyException;
+import cn.bdqfork.core.exception.*;
 import cn.bdqfork.core.container.BeanNameGenerator;
 import cn.bdqfork.core.container.SimpleBeanNameGenerator;
 import cn.bdqfork.core.utils.ReflectUtil;
@@ -16,6 +13,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * ApplicationContext的实现类，负责扫描注解，并将bean注册到容器中
@@ -25,20 +23,20 @@ import java.util.*;
  */
 public class AnnotationApplicationContext implements ApplicationContext {
     private String[] scanPaths;
-    private BeanContainer beanContainer;
+    private BeanFactory beanFactory;
     private BeanNameGenerator beanNameGenerator;
 
-    public AnnotationApplicationContext(String... scanPaths) throws SpringToyException {
+    public AnnotationApplicationContext(String... scanPaths) throws ApplicationContextException {
         if (scanPaths.length < 1) {
-            throw new SpringToyException("the length of scanPaths is less than 1 ");
+            throw new ApplicationContextException("the length of scanPaths is less than one ");
         }
         this.beanNameGenerator = new SimpleBeanNameGenerator();
-        this.beanContainer = new BeanContainer();
+        this.beanFactory = new BeanFactoryImpl();
         this.scanPaths = scanPaths;
         this.scan();
     }
 
-    private void scan() throws SpringToyException {
+    private void scan() throws ResolvedException, BeansException {
         Set<Class<?>> candidates = new HashSet<>();
         for (String scanPath : scanPaths) {
             candidates.addAll(ReflectUtil.getClasses(scanPath));
@@ -56,7 +54,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
 
                     if (scope != null) {
                         if (!ScopeType.PROTOTYPE.equals(scope.value())) {
-                            throw new SpringToyException("the value of scope is error !");
+                            throw new ScopeException("the value of scope is error !");
                         } else {
                             beanScope = scope.value();
                         }
@@ -74,78 +72,60 @@ public class AnnotationApplicationContext implements ApplicationContext {
                 }
                 BeanDefinition beanDefinition = new BeanDefinition(candidate, beanScope, name, isLazy);
 
-                beanContainer.register(beanDefinition.getBeanName(), beanDefinition);
+                beanFactory.register(beanDefinition.getBeanName(), beanDefinition);
             }
         }
 
-        Map<String, BeanDefinition> beanDefinationMap = beanContainer.getBeanDefinations();
-        Resolver resolver = new Resolver(beanContainer);
-        for (Map.Entry<String, BeanDefinition> entry : beanDefinationMap.entrySet()) {
-            resolver.resolve(entry.getValue());
-        }
+        Map<String, BeanDefinition> beanDefinationMap = beanFactory.getBeanDefinations();
 
-        instantiate();
-        processField();
-        processMethod();
+        Resolver resolver = new Resolver(beanNameGenerator,beanDefinationMap.values());
+        resolver.resolve();
+
+        instantiate(beanDefinationMap);
+        processField(beanDefinationMap);
+        processMethod(beanDefinationMap);
     }
 
     /**
-     * 实例化Bean
+     * 实例化
      */
-    private void instantiate() throws InstantiateException {
-        for (BeanFactory beanFactory : beanContainer.getAllBeans()
-                .values()) {
-            beanFactory.newBean();
+    private void instantiate(Map<String, BeanDefinition> beanDefinations) throws BeansException {
+        for (Map.Entry<String, BeanDefinition> entry : beanDefinations.entrySet()) {
+            beanFactory.instantiate(entry.getKey(), entry.getValue());
         }
     }
 
     /**
      * 字段依赖注入
      */
-    private void processField() throws FieldInjectedException {
-        for (BeanFactory beanFactory : beanContainer.getAllBeans()
-                .values()) {
-            if (!beanFactory.isLazy()) {
-                beanFactory.doFieldInject();
-            }
+    private void processField(Map<String, BeanDefinition> beanDefinationMap) throws BeansException {
+        for (Map.Entry<String, BeanDefinition> entry : beanDefinationMap.entrySet()) {
+            beanFactory.processField(entry.getKey(), entry.getValue());
         }
     }
 
     /**
      * 方法注入
      */
-    private void processMethod() throws MethodInjectedException {
-        for (BeanFactory beanFactory : beanContainer.getAllBeans()
-                .values()) {
-            if (!beanFactory.isLazy()) {
-                beanFactory.doMethodInject();
-            }
+    private void processMethod(Map<String, BeanDefinition> beanDefinationMap) throws BeansException {
+        for (Map.Entry<String, BeanDefinition> entry : beanDefinationMap.entrySet()) {
+            beanFactory.processMethod(entry.getKey(), entry.getValue());
         }
     }
 
     @Override
-    public Object getBean(String beanName) throws SpringToyException {
-        BeanFactory beanFactory = beanContainer.getBean(beanName);
-        return beanFactory.getObject();
+    public Object getBean(String beanName) throws BeansException {
+        return beanFactory.getBean(beanName);
     }
 
     @Override
-    public <T> T getBean(Class<T> clazz) throws SpringToyException {
-        BeanFactory beanFactory = beanContainer.getBean(clazz);
-        if (beanFactory != null) {
-            return (T) beanFactory.getObject();
-        }
-        return null;
+    public <T> T getBean(Class<T> clazz) throws BeansException {
+        return (T) beanFactory.getBean(clazz);
     }
 
     @Override
-    public <T> Map<String, T> getBeans(Class<T> clazz) throws SpringToyException {
-        Map<String, T> beanMap = new HashMap<>(8);
-        for (Map.Entry<String, BeanFactory> entry : beanContainer.getBeans(clazz).entrySet()) {
-            BeanFactory beanFactory = entry.getValue();
-            beanMap.put(entry.getKey(), (T) beanFactory.getObject());
-        }
-        return beanMap;
+    public <T> Map<String, T> getBeans(Class<T> clazz) throws BeansException {
+        return (Map<String, T>) beanFactory.getBeans(clazz);
     }
 
     @Override

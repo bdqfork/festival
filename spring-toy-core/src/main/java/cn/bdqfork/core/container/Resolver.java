@@ -3,12 +3,12 @@ package cn.bdqfork.core.container;
 import cn.bdqfork.core.annotation.AutoWired;
 import cn.bdqfork.core.annotation.Qualifier;
 import cn.bdqfork.core.exception.ResolvedException;
-import cn.bdqfork.core.exception.SpringToyException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
 import java.lang.reflect.*;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,13 +17,21 @@ import java.util.List;
  * @date 2019-02-22
  */
 public class Resolver {
-    private BeanContainer beanContainer;
+    private BeanNameGenerator beanNameGenerator;
+    private Collection<BeanDefinition> beanDefinitions;
 
-    public Resolver(BeanContainer beanContainer) {
-        this.beanContainer = beanContainer;
+    public Resolver(BeanNameGenerator beanNameGenerator, Collection<BeanDefinition> beanDefinitions) {
+        this.beanNameGenerator = beanNameGenerator;
+        this.beanDefinitions = beanDefinitions;
     }
 
-    public void resolve(BeanDefinition beanDefinition) throws SpringToyException {
+    public void resolve() throws ResolvedException {
+        for (BeanDefinition beanDefinition : beanDefinitions) {
+            doResolve(beanDefinition);
+        }
+    }
+
+    private void doResolve(BeanDefinition beanDefinition) throws ResolvedException {
         //如果已经解析过了，则返回
         if (beanDefinition.isResolved()) {
             return;
@@ -31,12 +39,9 @@ public class Resolver {
         //优先解析父类
         Class<?> superClass = beanDefinition.getClazz().getSuperclass();
         if (superClass != null && superClass != Object.class) {
-
-            for (BeanFactory beanFactory : beanContainer.getBeans(superClass).values()) {
-                BeanDefinition bean = beanFactory.getBeanDefinition();
-                if (bean != beanDefinition) {
-                    //递归解析父类
-                    resolve(bean);
+            for (BeanDefinition defination : beanDefinitions) {
+                if (defination.getClazz() == superClass) {
+                    doResolve(defination);
                 }
             }
         }
@@ -71,7 +76,7 @@ public class Resolver {
         }
     }
 
-    private void resolveFieldInfo(BeanDefinition beanDefinition) throws SpringToyException {
+    private void resolveFieldInfo(BeanDefinition beanDefinition) throws ResolvedException {
         Class<?> candidate = beanDefinition.getClazz();
         List<FieldAttribute> fieldAttributes = new LinkedList<>();
 
@@ -88,19 +93,19 @@ public class Resolver {
 
                 boolean isRequire = autoWired != null && autoWired.required();
 
-                //Qualifier优先级比Named高
-                String refName = getIfNamed(field.getName(), field.getAnnotation(Named.class));
-
-                Qualifier qualifier = field.getAnnotation(Qualifier.class);
-                if (qualifier != null) {
-                    refName = qualifier.value();
-                }
-
                 //获取依赖类型
                 Class<?> type = field.getType();
                 boolean isProvider = isProvider(type);
                 if (isProvider) {
                     type = getActualType((ParameterizedType) field.getGenericType());
+                }
+
+                //Qualifier优先级比Named高
+                String refName = getIfNamed(type, field.getAnnotation(Named.class));
+
+                Qualifier qualifier = field.getAnnotation(Qualifier.class);
+                if (qualifier != null) {
+                    refName = qualifier.value();
                 }
 
                 FieldAttribute fieldAttribute = new FieldAttribute(refName, field, type, isRequire, isProvider(field.getType()));
@@ -110,9 +115,9 @@ public class Resolver {
         beanDefinition.setFieldAttributes(fieldAttributes);
     }
 
-    private String getIfNamed(String defaultName, Named named) {
+    private String getIfNamed(Class<?> clazz, Named named) {
         //获取依赖的BeanName
-        String refName = defaultName;
+        String refName = beanNameGenerator.generateBeanName(clazz);
         if (named != null) {
             refName = named.value();
         }
@@ -157,14 +162,14 @@ public class Resolver {
         List<ParameterAttribute> parameterAttributes = new LinkedList<>();
 
         for (Parameter parameter : parameters) {
-            //获取依赖BeanName
-            String refName = getIfNamed(parameter.getName(), parameter.getAnnotation(Named.class));
             //获取依赖类型
             Class<?> type = parameter.getType();
             boolean isProvider = isProvider(type);
             if (isProvider) {
                 type = getActualType((ParameterizedType) parameter.getParameterizedType());
             }
+            //获取依赖BeanName
+            String refName = getIfNamed(type, parameter.getAnnotation(Named.class));
 
             ParameterAttribute parameterAttribute = new ParameterAttribute(refName, type, isProvider(parameter.getType()));
             parameterAttributes.add(parameterAttribute);
