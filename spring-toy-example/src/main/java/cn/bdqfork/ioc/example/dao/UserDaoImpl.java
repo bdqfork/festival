@@ -13,21 +13,32 @@ import java.util.Date;
  * @author bdq
  * @date 2019-02-19
  */
+@Scope(ScopeType.PROTOTYPE)
 @Repositorty
 public class UserDaoImpl implements UserDao {
+
     private UserService userService;
 
-    @AutoWired
+    public UserDaoImpl() {
+    }
+
     public UserDaoImpl(UserService userService) {
         this.userService = userService;
     }
 
     @Override
     public User getUser() {
+        System.out.println("processing");
         return new User("test", "pass");
     }
+
     @Override
-    public void getDate(){
+    public void getDate() {
         System.out.println(userService.getCreateTime().toString() + "yyyyyy");
+    }
+
+    @AutoWired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 }

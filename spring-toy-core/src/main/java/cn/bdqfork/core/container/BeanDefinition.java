@@ -2,7 +2,6 @@ package cn.bdqfork.core.container;
 
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * bean的定义，用来描述bean的信息
@@ -49,26 +48,6 @@ public class BeanDefinition {
         this.scope = scope;
         this.name = name;
         this.isLazy = isLazy;
-    }
-
-    /**
-     * 判断当前bean是否是clazz的类型，如果是，返回true，否则返回false
-     *
-     * @param clazz 目标类型
-     * @return boolean
-     */
-    public boolean isType(Class<?> clazz) {
-        return this.clazz == clazz;
-    }
-
-    /**
-     * 判断当前bean是否为clazz的子类型，如果是，返回true，否则返回false
-     *
-     * @param clazz 目标类型
-     * @return boolean
-     */
-    public boolean isSubType(Class<?> clazz) {
-        return clazz.isAssignableFrom(this.clazz);
     }
 
     public String getBeanName() {
@@ -119,22 +98,4 @@ public class BeanDefinition {
         return isResolved;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        BeanDefinition that = (BeanDefinition) o;
-        return clazz.equals(that.clazz) &&
-                name.equals(that.name) &&
-                scope.equals(that.scope);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(clazz, name, scope);
-    }
 }

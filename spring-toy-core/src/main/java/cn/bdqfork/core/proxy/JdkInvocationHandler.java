@@ -1,8 +1,7 @@
 package cn.bdqfork.core.proxy;
 
-import cn.bdqfork.core.container.BeanFactory;
-import cn.bdqfork.core.exception.InjectedException;
-import cn.bdqfork.core.exception.InstantiateException;
+import cn.bdqfork.core.container.UnSharedInstance;
+import cn.bdqfork.core.exception.BeansException;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -12,27 +11,27 @@ import java.lang.reflect.Proxy;
  * jdk动态代理
  *
  * @author bdq
- * @date 2019-02-13
+ * @since 2019-02-13
  */
-public class JdkInvocationHandler implements InvocationHandler {
-
-    private BeanFactory beanFactory;
-
+public class JdkInvocationHandler extends AbstractAopInvocationHandler implements InvocationHandler {
     /**
      * 创建代理实例
      *
-     * @param beanFactory Bean工厂实例
      * @return Object 代理实例
      */
-    public Object newProxyInstance(BeanFactory beanFactory) {
-        this.beanFactory = beanFactory;
-        Class<?> clazz = beanFactory.getBeanDefinition().getClazz();
-        return Proxy.newProxyInstance(clazz.getClassLoader(), clazz.getInterfaces(), this);
+    @Override
+    public Object newProxyInstance() throws BeansException {
+        Class<?> targetClass = target.getClass();
+        if (target.getClass() == UnSharedInstance.class) {
+            UnSharedInstance unSharedInstance = (UnSharedInstance) target;
+            targetClass = unSharedInstance.getClazz();
+        }
+        return Proxy.newProxyInstance(targetClass.getClassLoader(), interfaces, this);
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        return method.invoke(beanFactory.getInstance(), args);
+        return invoke(method, args);
     }
 
 }

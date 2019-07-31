@@ -2,15 +2,18 @@ package cn.bdqfork.core.exception;
 
 /**
  * @author bdq
- * @date 2019-02-14
+ * @since 2019-07-30
  */
-public class ResolvedException extends SpringToyException {
-
+public class ResolvedException extends ApplicationContextException {
     public ResolvedException(String message) {
         super(message);
     }
 
     public ResolvedException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    public ResolvedException(Throwable cause) {
+        super(cause);
     }
 }
