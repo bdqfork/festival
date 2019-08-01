@@ -1,6 +1,7 @@
 package cn.bdqfork.core.context;
 
 import cn.bdqfork.core.container.BeanNameGenerator;
+import cn.bdqfork.core.container.FactoryBean;
 import cn.bdqfork.core.exception.BeansException;
 
 import java.util.Map;
@@ -41,6 +42,8 @@ public interface ApplicationContext {
      * @throws BeansException
      */
     <T> Map<String, T> getBeans(Class<T> clazz) throws BeansException;
+
+    void registerSingleBean(FactoryBean factoryBean) throws BeansException;
 
     void setBeanNameGenerator(BeanNameGenerator beanNameGenerator);
 }

@@ -1,11 +1,13 @@
 package cn.bdqfork.core.container;
 
 import cn.bdqfork.core.annotation.ScopeType;
+import cn.bdqfork.core.aop.Advice;
 import cn.bdqfork.core.aop.Advisor;
 import cn.bdqfork.core.aop.aspect.AspectAdvice;
 import cn.bdqfork.core.aop.aspect.AspectAdvisor;
 import cn.bdqfork.core.exception.*;
 import cn.bdqfork.core.proxy.ProxyFactory;
+import cn.bdqfork.core.proxy.ProxyFactoryBean;
 import cn.bdqfork.core.utils.BeanUtils;
 
 import javax.inject.Provider;
@@ -19,7 +21,7 @@ import java.util.*;
  * @author bdq
  * @since 2019-07-30
  */
-public class BeanFactoryImplAspect implements AspectAopBeanFactory {
+public abstract class AbstractBeanFactory implements BeanFactory {
     /**
      * BeanDefinition容器，key为beanName
      */
@@ -32,29 +34,24 @@ public class BeanFactoryImplAspect implements AspectAopBeanFactory {
      * 已经实例化的Bean，key为beanName
      */
     private Map<String, Object> instances;
-    /**
-     * 代理实例
-     */
-    private Map<String, Object> proxyInstances;
-    private List<Advisor> advisors;
 
-    public BeanFactoryImplAspect() {
+    public AbstractBeanFactory() {
         beanDefinitions = new HashMap<>();
         instantiatingFlag = new HashMap<>();
         instances = new HashMap<>();
-        advisors = new LinkedList<>();
     }
 
     @Override
-    public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) throws ConflictedBeanException {
+    public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) throws BeansException {
         if (beanDefinitions.containsKey(beanName)) {
             throw new ConflictedBeanException(String.format("the entity named %s has conflicted ! ", beanName));
         }
         beanDefinitions.put(beanName, beanDefinition);
     }
 
-    public void registerSingleInstance() {
-
+    @Override
+    public void registerSingleBean(String beanName, FactoryBean factoryBean) throws BeansException {
+        instances.put(beanName, factoryBean);
     }
 
     @Override
@@ -63,21 +60,50 @@ public class BeanFactoryImplAspect implements AspectAopBeanFactory {
         if (beanDefinition == null) {
             return null;
         }
-        Object target;
+
         if (ScopeType.SINGLETON.equals(beanDefinition.getScope())) {
             instantiateIfNeed(beanName, beanDefinition);
-            target = instances.get(beanName);
+            Object instance = instances.get(beanName);
+
+            if (instance instanceof FactoryBean) {
+
+                try {
+                    FactoryBean factoryBean = (FactoryBean) instance;
+                    return factoryBean.getObject();
+                } catch (Exception e) {
+                    throw new BeansException(e);
+                }
+
+            }
+
+            return instance;
         } else {
+
             UnSharedInstance unSharedInstance = new UnSharedInstance(beanDefinition.getClazz(),
-                    () -> getConstructorArgs(beanName, beanDefinition));
-            unSharedInstance.setObjectFactory(() -> createBean(beanName, beanDefinition, unSharedInstance.getArgs()));
-            target = unSharedInstance;
+                    new UnSharedInstance.ArgumentHolder() {
+                        @Override
+                        public Object[] getArgs() throws BeansException {
+                            return getConstructorArgs(beanName, beanDefinition);
+                        }
+                    });
+
+            unSharedInstance.setObjectFactory(new ObjectFactory<Object>() {
+                @Override
+                public Object getObject() throws BeansException {
+                    return createBean(beanName, beanDefinition, unSharedInstance.getArgs());
+                }
+            });
+
+            return unSharedInstance;
         }
-        ProxyFactory proxyFactory = new ProxyFactory();
-        proxyFactory.setTarget(target);
-        proxyFactory.setBeanFactory(this);
-        proxyFactory.setInterfaces(beanDefinition.getClazz().getInterfaces());
-        return proxyFactory.getProxy();
+    }
+
+    private Object getActualInstance(FactoryBean instance) throws BeansException {
+        try {
+            return instance.getObject();
+        } catch (Exception e) {
+            throw new BeansException(e);
+        }
     }
 
     @Override
@@ -272,24 +298,13 @@ public class BeanFactoryImplAspect implements AspectAopBeanFactory {
         return false;
     }
 
+    protected Map<String, Object> getInstances() {
+        return instances;
+    }
+
     @Override
     public Map<String, BeanDefinition> getBeanDefinations() {
         return this.beanDefinitions;
     }
 
-    @Override
-    public void registerAdvisor(String beanName, Advisor advisor) {
-        Object instance = instances.get(beanName);
-        if (advisor instanceof AspectAdvisor) {
-            AspectAdvisor aspectAdvisor = (AspectAdvisor) advisor;
-            AspectAdvice aspectAdvice = aspectAdvisor.getAspectAdvice();
-            aspectAdvice.setAdviceInstance(instance);
-        }
-        advisors.add(advisor);
-    }
-
-    @Override
-    public List<Advisor> getAdvisors() {
-        return advisors;
-    }
 }

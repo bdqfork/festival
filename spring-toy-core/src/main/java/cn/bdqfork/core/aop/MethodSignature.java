@@ -22,24 +22,22 @@ public class MethodSignature implements Signature {
 
     @Override
     public String toShortString() {
-        return targetClass.getName() + "." + getName();
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        StringBuilder sb = new StringBuilder();
+        sb.append("(");
+        if (parameterTypes.length > 0) {
+            sb.append(parameterTypes[0]);
+            for (int i = 1; i < parameterTypes.length; i++) {
+                sb.append(",").append(parameterTypes[i]);
+            }
+        }
+        sb.append(")");
+        return getName() + sb.toString();
     }
 
     @Override
     public String toLongString() {
-        String[] paramterNames = Arrays.stream(method.getParameters())
-                .map(Parameter::getName)
-                .toArray(String[]::new);
-        StringBuilder sb = new StringBuilder();
-        sb.append("(");
-        if (paramterNames.length > 0) {
-            sb.append(paramterNames[0]);
-            for (int i = 1; i < paramterNames.length; i++) {
-                sb.append(",").append(paramterNames[i]);
-            }
-        }
-        sb.append(")");
-        return targetClass.getTypeName() + "." + getName() + sb.toString();
+        return targetClass.getTypeName() + "." + toShortString();
     }
 
     @Override

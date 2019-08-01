@@ -31,7 +31,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
             throw new ApplicationContextException("the length of scanPaths is less than one ");
         }
         this.beanNameGenerator = new SimpleBeanNameGenerator();
-        this.beanFactory = new BeanFactoryImplAspect();
+        this.beanFactory = new AspectBeanFactory();
         this.scanPaths = scanPaths;
         this.scan();
     }
@@ -69,7 +69,10 @@ public class AnnotationApplicationContext implements ApplicationContext {
         //解析aspect
         AspectResolver aspectResolver = new AspectResolver(beanDefinitions.values());
         Map<String, List<Advisor>> beanAdvisorMapper = aspectResolver.resolve();
-        beanAdvisorMapper.forEach(this::registerAdvisors);
+        //注册advisor
+        for (Map.Entry<String, List<Advisor>> entry : beanAdvisorMapper.entrySet()) {
+            registerAdvisors(entry.getKey(), entry.getValue());
+        }
     }
 
     /**
@@ -108,11 +111,19 @@ public class AnnotationApplicationContext implements ApplicationContext {
     /**
      * 注册Advisor
      */
-    private void registerAdvisors(String beanName, List<Advisor> advisors) {
-        AspectAopBeanFactory aspectAopBeanFactory = (AspectAopBeanFactory) beanFactory;
-        advisors.forEach(advisor -> {
-            aspectAopBeanFactory.registerAdvisor(beanName, advisor);
-        });
+    private void registerAdvisors(String beanName, List<Advisor> advisors) throws BeansException {
+        AspectBeanFactory aspectBeanFactory = (AspectBeanFactory) beanFactory;
+        for (Advisor advisor : advisors) {
+            aspectBeanFactory.registerAdvisor(beanName, advisor);
+        }
+    }
+
+    public void registerSingleBean(FactoryBean factoryBean) throws BeansException {
+        String beanName = this.beanNameGenerator.generateBeanName(factoryBean.getObjectType());
+        Class<?> objectType = factoryBean.getObjectType();
+        BeanDefinition beanDefinition = new BeanDefinition(objectType, ScopeType.SINGLETON, beanName, false);
+        beanFactory.registerBeanDefinition(beanName, beanDefinition);
+        beanFactory.registerSingleBean(beanName, factoryBean);
     }
 
     @Override

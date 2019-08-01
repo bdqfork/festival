@@ -1,6 +1,8 @@
 package test.cn.bdqfork.ioc.aop;
 
 import cn.bdqfork.core.annotation.Component;
+import cn.bdqfork.core.annotation.Scope;
+import cn.bdqfork.core.annotation.ScopeType;
 import org.apache.tools.ant.taskdefs.Echo;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -12,6 +14,7 @@ import org.aspectj.lang.annotation.Before;
  * @author bdq
  * @since 2019-07-28
  */
+@Scope(ScopeType.PROTOTYPE)
 @Component
 @Aspect
 public class Log {

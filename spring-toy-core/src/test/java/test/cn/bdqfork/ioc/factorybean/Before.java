@@ -1,4 +1,4 @@
-package test.cn.bdqfork.ioc.aop;
+package test.cn.bdqfork.ioc.factorybean;
 
 import cn.bdqfork.core.aop.MethodBeforeAdvice;
 

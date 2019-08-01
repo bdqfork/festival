@@ -3,7 +3,8 @@ package cn.bdqfork.core.proxy;
 import cn.bdqfork.core.aop.*;
 import cn.bdqfork.core.aop.aspect.AspectAdvice;
 import cn.bdqfork.core.aop.aspect.AspectAdvisor;
-import cn.bdqfork.core.container.AspectAopBeanFactory;
+import cn.bdqfork.core.container.AopBeanFactory;
+import cn.bdqfork.core.container.AspectBeanFactory;
 import cn.bdqfork.core.container.BeanFactory;
 import cn.bdqfork.core.exception.BeansException;
 
@@ -37,8 +38,8 @@ public class ProxyFactory {
             invocationHandler.setAdvisors(advisors);
         }
         if (beanFactory != null) {
-            AspectAopBeanFactory aspectAopBeanFactory = (AspectAopBeanFactory) beanFactory;
-            invocationHandler.setAdvisors(aspectAopBeanFactory.getAdvisors());
+            AopBeanFactory aopBeanFactory = (AopBeanFactory) beanFactory;
+            invocationHandler.setAdvisors(aopBeanFactory.getAdvisors());
         }
         return invocationHandler.newProxyInstance();
     }

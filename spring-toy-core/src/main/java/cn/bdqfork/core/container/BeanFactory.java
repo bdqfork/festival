@@ -10,6 +10,7 @@ import java.util.Map;
  * @since 2019-07-30
  */
 public interface BeanFactory {
+
     /**
      * 将Bean描述注册到容器中
      *
@@ -17,7 +18,16 @@ public interface BeanFactory {
      * @param beanDefinition Bean的描述信息
      * @throws ConflictedBeanException Bean冲突异常
      */
-    void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) throws ConflictedBeanException;
+    void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) throws BeansException;
+
+    /**
+     * 将Bean描述注册到容器中
+     *
+     * @param beanName    Bean名称
+     * @param factoryBean FactoryBean实例
+     * @throws ConflictedBeanException Bean冲突异常
+     */
+    void registerSingleBean(String beanName, FactoryBean factoryBean) throws BeansException;
 
     /**
      * 根据beanName获取代理实例

@@ -6,10 +6,11 @@ import java.util.List;
 
 /**
  * @author bdq
- * @since 2019-07-31
+ * @since 2019-08-01
  */
-public interface AspectAopBeanFactory extends BeanFactory {
-    void registerAdvisor(String beanName, Advisor advisor);
+public interface AdvisorBeanFactory extends BeanFactory {
+
+    void registerAdvisor(Advisor advisor);
 
     List<Advisor> getAdvisors();
 }

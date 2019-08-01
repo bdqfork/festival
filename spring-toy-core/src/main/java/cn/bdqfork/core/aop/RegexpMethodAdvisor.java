@@ -21,7 +21,8 @@ public class RegexpMethodAdvisor implements Advisor {
 
     @Override
     public boolean isMatch(Method method, Class<?> adviceType) {
-        return adviceType.isAssignableFrom(advice.getClass()) && method.getName().matches(pointcut);
+        MethodSignature methodSignature = new MethodSignature(adviceType, method);
+        return adviceType.isAssignableFrom(advice.getClass()) && methodSignature.toLongString().matches(pointcut);
     }
 
 }
