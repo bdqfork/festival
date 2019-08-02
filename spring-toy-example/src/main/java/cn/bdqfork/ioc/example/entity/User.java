@@ -2,7 +2,7 @@ package cn.bdqfork.ioc.example.entity;
 
 /**
  * @author bdq
- * @date 2019-02-19
+ * @since 2019-02-19
  */
 public class User {
     private String username;

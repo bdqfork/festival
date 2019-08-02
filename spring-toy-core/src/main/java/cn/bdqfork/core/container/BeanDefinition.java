@@ -1,21 +1,17 @@
 package cn.bdqfork.core.container;
 
 
-import cn.bdqfork.core.exception.InjectedException;
-import cn.bdqfork.core.proxy.CglibMethodInterceptor;
-import cn.bdqfork.core.proxy.JdkInvocationHandler;
-
-import java.util.Objects;
+import java.util.List;
 
 /**
  * bean的定义，用来描述bean的信息
  *
  * @author bdq
- * @date 2019-02-12
+ * @since 2019-02-12
  */
 public class BeanDefinition {
     /**
-     * Class类
+     * Class类型
      */
     private Class<?> clazz;
     /**
@@ -23,91 +19,75 @@ public class BeanDefinition {
      */
     private String name;
     /**
-     * 单实例
+     * Bean的作用域
      */
-    private Object instance;
+    private String scope;
     /**
-     * 是否单例
+     * 构造器属性
      */
-    private boolean isSingleton;
+    private ConstructorAttribute constructorAttribute;
     /**
-     * 依赖信息提供者
+     * 待直接注入依赖属性
      */
-    private InjectorProvider injectorProvider;
+    private List<FieldAttribute> fieldAttributes;
     /**
-     * 是否已预注册
+     * 属性注入方法属性
+     */
+    private List<MethodAttribute> methodAttributes;
+    /**
+     * 是否延迟初始化
+     */
+    private boolean isLazy;
+    /**
+     * 是否已注册
      */
     private boolean isResolved;
 
-    public BeanDefinition(Class<?> clazz, boolean isSingleton, String name) {
+    public BeanDefinition(Class<?> clazz, String scope, String name, boolean isLazy) {
         this.clazz = clazz;
-        this.isSingleton = isSingleton;
+        this.scope = scope;
         this.name = name;
+        this.isLazy = isLazy;
     }
 
-    /**
-     * 判断当前bean是否是clazz的类型，如果是，返回true，否则返回false
-     *
-     * @param clazz
-     * @return boolean
-     */
-    public boolean isType(Class<?> clazz) {
-        return this.clazz == clazz;
+    public String getBeanName() {
+        return name;
     }
 
-    /**
-     * 判断当前bean是否为clazz的父类型，如果是，返回true，否则返回false
-     *
-     * @param clazz
-     * @return boolean
-     */
-    public boolean isSuperType(Class<?> clazz) {
-        return this.clazz.isAssignableFrom(clazz);
+    public Class<?> getClazz() {
+        return clazz;
     }
 
-    /**
-     * 判断当前bean是否为clazz的子类型，如果是，返回true，否则返回false
-     *
-     * @param clazz
-     * @return boolean
-     */
-    public boolean isSubType(Class<?> clazz) {
-        return clazz.isAssignableFrom(this.clazz);
+    public String getScope() {
+        return scope;
     }
 
-    /**
-     * 获取对象实例，如果bean是单例的，则每次都返回同一个实例，如果不是，则每次都创建一个新的实例。
-     *
-     * @return Object
-     */
-    public Object getInstance() throws InjectedException {
-        if (isSingleton) {
-            return getSingleInstance();
-        }
-        return newBean();
+    public ConstructorAttribute getConstructorAttribute() {
+        return constructorAttribute;
     }
 
-    private Object getSingleInstance() throws InjectedException {
-        if (instance == null) {
-            synchronized (Object.class) {
-                if (instance == null) {
-                    instance = newBean();
-                }
-            }
-        }
-        return instance;
+    public void setConstructorAttribute(ConstructorAttribute constructorAttribute) {
+        this.constructorAttribute = constructorAttribute;
     }
 
-    private Object newBean() throws InjectedException {
-        Object instance = injectorProvider.doInject(this);
-        Class<?>[] classes = clazz.getInterfaces();
-        if (classes.length != 0) {
-            JdkInvocationHandler jdkInvocationHandler = new JdkInvocationHandler();
-            return jdkInvocationHandler.newProxyInstance(instance);
-        } else {
-            CglibMethodInterceptor cglibMethodInterceptor = new CglibMethodInterceptor();
-            return cglibMethodInterceptor.newProxyInstance(instance);
-        }
+    public List<FieldAttribute> getFieldAttributes() {
+        return fieldAttributes;
+    }
+
+    public void setFieldAttributes(List<FieldAttribute> fieldAttributes) {
+        this.fieldAttributes = fieldAttributes;
+    }
+
+    public List<MethodAttribute> getMethodAttributes() {
+        return methodAttributes;
+    }
+
+    public void setMethodAttributes(List<MethodAttribute> methodAttributes) {
+        this.methodAttributes = methodAttributes;
+    }
+
+    public boolean isLazy() {
+        return isLazy;
     }
 
     public void setResolved(boolean resolved) {
@@ -118,41 +98,4 @@ public class BeanDefinition {
         return isResolved;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public Class<?> getClazz() {
-        return clazz;
-    }
-
-    public void setInjectorProvider(InjectorProvider injectorProvider) {
-        this.injectorProvider = injectorProvider;
-    }
-
-    public InjectorProvider getInjectorProvider() {
-        return injectorProvider;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        BeanDefinition that = (BeanDefinition) o;
-        return isSingleton == that.isSingleton &&
-                isResolved == that.isResolved &&
-                Objects.equals(clazz, that.clazz) &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(instance, that.instance) &&
-                Objects.equals(injectorProvider, that.injectorProvider);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(clazz, name, instance, isSingleton, isResolved, injectorProvider);
-    }
 }
