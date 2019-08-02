@@ -1,10 +1,9 @@
-package cn.bdqfork.core.proxy;
+package cn.bdqfork.core.aop.proxy;
 
 import cn.bdqfork.core.aop.*;
 import cn.bdqfork.core.aop.aspect.AspectAdvice;
 import cn.bdqfork.core.aop.aspect.AspectAdvisor;
 import cn.bdqfork.core.container.AopBeanFactory;
-import cn.bdqfork.core.container.AspectBeanFactory;
 import cn.bdqfork.core.container.BeanFactory;
 import cn.bdqfork.core.exception.BeansException;
 
@@ -26,22 +25,35 @@ public class ProxyFactory {
     }
 
     public Object getProxy() throws BeansException {
-        AdviceInvocationHandler invocationHandler;
+
+        AdviceInvocationHandler adviceInvocationHandler = getAdviceInvocationHandler();
+
+        return createProxyInstance(adviceInvocationHandler);
+    }
+
+    private Object createProxyInstance(AdviceInvocationHandler adviceInvocationHandler) throws BeansException {
+        ProxyInvocationHandler invocationHandler;
         if (interfaces != null && interfaces.length > 0) {
-            invocationHandler = new JdkInvocationHandler();
+            invocationHandler = new JdkInvocationHandler(adviceInvocationHandler);
         } else {
-            invocationHandler = new CglibMethodInterceptor();
+            invocationHandler = new CglibMethodInterceptor(adviceInvocationHandler);
         }
+
         invocationHandler.setTarget(target);
         invocationHandler.setInterfaces(interfaces);
+        return invocationHandler.newProxyInstance();
+    }
+
+    private AdviceInvocationHandler getAdviceInvocationHandler() {
+        AdviceInvocationHandler adviceInvocationHandler = new AdviceInvocationHandlerImpl();
         if (advisors.size() > 0) {
-            invocationHandler.setAdvisors(advisors);
+            adviceInvocationHandler.setAdvisors(advisors);
         }
         if (beanFactory != null) {
             AopBeanFactory aopBeanFactory = (AopBeanFactory) beanFactory;
-            invocationHandler.setAdvisors(aopBeanFactory.getAdvisors());
+            adviceInvocationHandler.setAdvisors(aopBeanFactory.getAdvisors());
         }
-        return invocationHandler.newProxyInstance();
+        return adviceInvocationHandler;
     }
 
     public void addAdvice(Advice advice) {

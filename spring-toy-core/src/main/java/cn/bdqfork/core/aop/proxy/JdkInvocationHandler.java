@@ -1,4 +1,4 @@
-package cn.bdqfork.core.proxy;
+package cn.bdqfork.core.aop.proxy;
 
 import cn.bdqfork.core.container.UnSharedInstance;
 import cn.bdqfork.core.exception.BeansException;
@@ -13,7 +13,13 @@ import java.lang.reflect.Proxy;
  * @author bdq
  * @since 2019-02-13
  */
-public class JdkInvocationHandler extends AbstractAopInvocationHandler implements InvocationHandler {
+public class JdkInvocationHandler extends AbstractProxyInvocationHandler implements InvocationHandler {
+    private AdviceInvocationHandler adviceInvocationHandler;
+
+    public JdkInvocationHandler(AdviceInvocationHandler adviceInvocationHandler) {
+        this.adviceInvocationHandler = adviceInvocationHandler;
+    }
+
     /**
      * 创建代理实例
      *
@@ -31,7 +37,12 @@ public class JdkInvocationHandler extends AbstractAopInvocationHandler implement
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        return invoke(method, args);
+        Object targetObject = getTargetObject();
+        Object result = invokeObjectMethod(targetObject, method, args);
+        if (result == null) {
+            result = adviceInvocationHandler.invokeWithAdvice(targetObject, method, args);
+        }
+        return result;
     }
 
 }

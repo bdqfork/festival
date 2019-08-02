@@ -1,6 +1,5 @@
-package cn.bdqfork.core.proxy;
+package cn.bdqfork.core.aop.proxy;
 
-import cn.bdqfork.core.container.BeanFactory;
 import cn.bdqfork.core.container.UnSharedInstance;
 import cn.bdqfork.core.exception.BeansException;
 import net.sf.cglib.proxy.Enhancer;
@@ -16,7 +15,13 @@ import java.util.Arrays;
  * @author bdq
  * @since 2019-02-14
  */
-public class CglibMethodInterceptor extends AbstractAopInvocationHandler implements MethodInterceptor {
+public class CglibMethodInterceptor extends AbstractProxyInvocationHandler implements MethodInterceptor {
+    private AdviceInvocationHandler adviceInvocationHandler;
+
+    public CglibMethodInterceptor(AdviceInvocationHandler adviceInvocationHandler) {
+        this.adviceInvocationHandler = adviceInvocationHandler;
+    }
+
     /**
      * 创建代理实例
      *
@@ -50,7 +55,12 @@ public class CglibMethodInterceptor extends AbstractAopInvocationHandler impleme
 
     @Override
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-        return invoke(method, args);
+        Object targetObject = getTargetObject();
+        Object result = invokeObjectMethod(targetObject, method, args);
+        if (result == null) {
+            result = adviceInvocationHandler.invokeWithAdvice(targetObject, method, args);
+        }
+        return result;
     }
 
 }

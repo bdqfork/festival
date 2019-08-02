@@ -1,4 +1,4 @@
-package cn.bdqfork.core.proxy;
+package cn.bdqfork.core.aop.proxy;
 
 import cn.bdqfork.core.exception.BeansException;
 
@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
  * @author bdq
  * @since 2019-07-31
  */
-public interface AopInvocationHandler {
+public interface ProxyInvocationHandler {
     /**
      * 创建代理实例
      *

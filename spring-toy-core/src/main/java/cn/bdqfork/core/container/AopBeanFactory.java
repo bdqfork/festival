@@ -1,14 +1,9 @@
 package cn.bdqfork.core.container;
 
-import cn.bdqfork.core.aop.Advice;
 import cn.bdqfork.core.aop.Advisor;
-import cn.bdqfork.core.aop.RegexpMethodAdvisor;
-import cn.bdqfork.core.aop.aspect.AspectAdvice;
-import cn.bdqfork.core.aop.aspect.AspectAdvisor;
 import cn.bdqfork.core.exception.BeansException;
-import cn.bdqfork.core.exception.ConflictedBeanException;
-import cn.bdqfork.core.proxy.ProxyFactory;
-import cn.bdqfork.core.proxy.ProxyFactoryBean;
+import cn.bdqfork.core.aop.proxy.ProxyFactory;
+import cn.bdqfork.core.aop.proxy.ProxyFactoryBean;
 import cn.bdqfork.core.utils.BeanUtils;
 
 import java.util.LinkedList;

@@ -133,12 +133,12 @@ public class MethodInvocation implements ProceedingJoinPoint {
 
         @Override
         public String toShortString() {
-            return null;
+            return signature.toShortString();
         }
 
         @Override
         public String toLongString() {
-            return null;
+            return signature.toLongString();
         }
     }
 }

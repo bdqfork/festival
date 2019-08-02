@@ -1,6 +1,5 @@
 package test.cn.bdqfork.ioc.factorybean;
 
-import cn.bdqfork.core.aop.Advice;
 import cn.bdqfork.core.aop.Advisor;
 import cn.bdqfork.core.aop.RegexpMethodAdvisor;
 import cn.bdqfork.core.container.FactoryBean;
@@ -8,9 +7,8 @@ import cn.bdqfork.core.context.AnnotationApplicationContext;
 import cn.bdqfork.core.context.ApplicationContext;
 import cn.bdqfork.core.exception.ApplicationContextException;
 import cn.bdqfork.core.exception.BeansException;
-import cn.bdqfork.core.proxy.ProxyFactoryBean;
+import cn.bdqfork.core.aop.proxy.ProxyFactoryBean;
 import org.junit.Test;
-import test.cn.bdqfork.ioc.aop.UserDaoImpl;
 
 /**
  * @author bdq
