@@ -6,7 +6,8 @@
 
     <groupId>cn.bdqfork</groupId>
     <artifactId>spring-toy</artifactId>
-    <version>0.2</version>
+  
+    <version>0.1</version>
     <modules>
         <module>spring-toy-example</module>
         <module>spring-toy-core</module>
