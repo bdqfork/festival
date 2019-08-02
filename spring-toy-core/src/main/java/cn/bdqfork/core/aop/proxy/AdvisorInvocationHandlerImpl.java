@@ -9,10 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 实现了通知分类缓存以及匹配执行的方法
+ *
  * @author bdq
  * @since 2019-07-31
  */
-public class AdviceInvocationHandlerImpl implements AdviceInvocationHandler {
+public class AdvisorInvocationHandlerImpl implements AdvisorInvocationHandler {
     /**
      * 切面
      */
@@ -34,7 +36,7 @@ public class AdviceInvocationHandlerImpl implements AdviceInvocationHandler {
      */
     private Map<String, ThrowsAdvice[]> throwsAdviceCache;
 
-    public AdviceInvocationHandlerImpl() {
+    public AdvisorInvocationHandlerImpl() {
         methodBeforeAdviceCache = new HashMap<>();
         afterReturningAdviceCache = new HashMap<>();
         aroundAdviceCache = new HashMap<>();
@@ -52,6 +54,7 @@ public class AdviceInvocationHandlerImpl implements AdviceInvocationHandler {
         MethodInterceptor[] aroundAdvices = getAroundAdvices(method, methodSignature);
 
         if (aroundAdvices.length > 0) {
+            //执行环绕通知
             for (MethodInterceptor aroundAdvice : aroundAdvices) {
                 try {
                     Object returnValue = doAround(aroundAdvice, invocation);

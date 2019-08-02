@@ -15,8 +15,8 @@ public class ComponentUtils {
     /**
      * 判断candidate是否为组件
      *
-     * @param candidate
-     * @return
+     * @param candidate 候选类
+     * @return boolean
      */
     public static boolean isComponent(Class<?> candidate) {
         Component component = candidate.getAnnotation(Component.class);
@@ -36,17 +36,14 @@ public class ComponentUtils {
             return true;
         }
         Named named = candidate.getAnnotation(Named.class);
-        if (named != null) {
-            return true;
-        }
-        return false;
+        return named != null;
     }
 
     /**
      * 获取组件名称
      *
-     * @param candidate
-     * @return
+     * @param candidate 候选类
+     * @return String 指定组件名
      */
     public static String getComponentName(Class<?> candidate) {
         Component component = candidate.getAnnotation(Component.class);

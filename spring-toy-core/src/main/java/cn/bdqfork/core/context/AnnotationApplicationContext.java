@@ -2,18 +2,21 @@ package cn.bdqfork.core.context;
 
 
 import cn.bdqfork.core.annotation.ScopeType;
-import cn.bdqfork.core.aop.Advisor;
+import cn.bdqfork.core.aop.aspect.AspectAdvisor;
 import cn.bdqfork.core.container.*;
 import cn.bdqfork.core.container.resolver.AspectResolver;
 import cn.bdqfork.core.container.resolver.BeanDefinitionResolver;
-import cn.bdqfork.core.exception.*;
-import cn.bdqfork.core.container.BeanNameGenerator;
-import cn.bdqfork.core.container.SimpleBeanNameGenerator;
+import cn.bdqfork.core.exception.ApplicationContextException;
+import cn.bdqfork.core.exception.BeansException;
+import cn.bdqfork.core.exception.ResolvedException;
 import cn.bdqfork.core.utils.ComponentUtils;
 import cn.bdqfork.core.utils.ReflectUtil;
 
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.Modifier;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * ApplicationContext的实现类，负责扫描注解，并将bean注册到容器中
@@ -22,8 +25,17 @@ import java.util.*;
  * @since 2019-02-12
  */
 public class AnnotationApplicationContext implements ApplicationContext {
+    /**
+     * 待扫描的路径
+     */
     private String[] scanPaths;
+    /**
+     * Bean工厂
+     */
     private BeanFactory beanFactory;
+    /**
+     * BeanName生成器
+     */
     private BeanNameGenerator beanNameGenerator;
 
     public AnnotationApplicationContext(String... scanPaths) throws ApplicationContextException {
@@ -31,7 +43,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
             throw new ApplicationContextException("the length of scanPaths is less than one ");
         }
         this.beanNameGenerator = new SimpleBeanNameGenerator();
-        this.beanFactory = new AspectBeanFactory();
+        this.beanFactory = new AspectBeanFactoryImpl();
         this.scanPaths = scanPaths;
         this.scan();
     }
@@ -42,6 +54,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
             candidates.addAll(ReflectUtil.getClasses(scanPath));
         }
         Set<Class<?>> beanClasses = new HashSet<>();
+        //获取组件类
         for (Class<?> candidate : candidates) {
             if (candidate.isAnnotation() || candidate.isInterface() || Modifier.isAbstract(candidate.getModifiers())) {
                 continue;
@@ -68,9 +81,9 @@ public class AnnotationApplicationContext implements ApplicationContext {
 
         //解析aspect
         AspectResolver aspectResolver = new AspectResolver(beanDefinitions.values());
-        Map<String, List<Advisor>> beanAdvisorMapper = aspectResolver.resolve();
+        Map<String, List<AspectAdvisor>> beanAdvisorMapper = aspectResolver.resolve();
         //注册advisor
-        for (Map.Entry<String, List<Advisor>> entry : beanAdvisorMapper.entrySet()) {
+        for (Map.Entry<String, List<AspectAdvisor>> entry : beanAdvisorMapper.entrySet()) {
             registerAdvisors(entry.getKey(), entry.getValue());
         }
     }
@@ -111,10 +124,10 @@ public class AnnotationApplicationContext implements ApplicationContext {
     /**
      * 注册Advisor
      */
-    private void registerAdvisors(String beanName, List<Advisor> advisors) throws BeansException {
-        AspectBeanFactory aspectBeanFactory = (AspectBeanFactory) beanFactory;
-        for (Advisor advisor : advisors) {
-            aspectBeanFactory.registerAdvisor(beanName, advisor);
+    private void registerAdvisors(String beanName, List<AspectAdvisor> advisors) throws BeansException {
+        AspectBeanFactoryImpl aspectBeanFactory = (AspectBeanFactoryImpl) beanFactory;
+        for (AspectAdvisor advisor : advisors) {
+            aspectBeanFactory.registerAspectAdvisor(beanName, advisor);
         }
     }
 

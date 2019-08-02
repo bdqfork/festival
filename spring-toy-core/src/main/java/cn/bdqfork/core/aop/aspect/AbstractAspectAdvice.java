@@ -7,19 +7,37 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
 /**
+ * Aspect增强抽象类，实现了基本的功能
+ *
  * @author bdq
  * @since 2019-07-31
  */
 public abstract class AbstractAspectAdvice implements AspectAdvice {
-    protected Object adviceInstance;
-    protected Method adviceMethod;
+    /**
+     * Aspect注解修饰的切面类实例
+     */
+    protected Object aspectInstance;
+    /**
+     * Before、AfterReturning、Around、AfterThrowing注解修饰的切面通知方法
+     */
+    protected Method aspectAdviceMethod;
+    /**
+     * 连接点
+     */
     protected JoinPoint joinPoint;
 
-    protected Object[] getAdviceArgs(Object value) {
-        Parameter[] parameters = adviceMethod.getParameters();
+    /**
+     * 获取Before、AfterReturning、Around、AfterThrowing增强方法所需要回调的参数
+     *
+     * @param value 参数，可能是被增强方法的返回值或者是异常
+     * @param clazz JointPoint类型
+     * @return Object[]
+     */
+    protected Object[] getAdviceArgs(Object value, Class<?> clazz) {
+        Parameter[] parameters = aspectAdviceMethod.getParameters();
         Object[] adviceArgs = new Object[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
-            if (BeanUtils.isSubType(parameters[i].getType(), JoinPoint.class)) {
+            if (BeanUtils.isSubType(parameters[i].getType(), clazz)) {
                 adviceArgs[i] = joinPoint;
             } else {
                 adviceArgs[i] = value;
@@ -34,17 +52,17 @@ public abstract class AbstractAspectAdvice implements AspectAdvice {
     }
 
     @Override
-    public void setAdviceInstance(Object adviceInstance) {
-        this.adviceInstance = adviceInstance;
+    public void setAspectInstance(Object aspectInstance) {
+        this.aspectInstance = aspectInstance;
     }
 
     @Override
-    public Object getAdviceInstance() {
-        return adviceInstance;
+    public Object getAspectInstance() {
+        return aspectInstance;
     }
 
     @Override
-    public void setAdviceMethod(Method adviceMethod) {
-        this.adviceMethod = adviceMethod;
+    public void setAspectAdviceMethod(Method aspectAdviceMethod) {
+        this.aspectAdviceMethod = aspectAdviceMethod;
     }
 }

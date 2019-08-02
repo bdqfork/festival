@@ -53,7 +53,10 @@ public class TestFactoryBean {
         proxyFactoryBean.setInterfaces(UserDao.class);
         proxyFactoryBean.setTarget(new UserDao());
         Before before = new Before();
-        proxyFactoryBean.addAdvice(new RegexpMethodAdvisor(".*test.*", before));
+        Advisor advisor = new RegexpMethodAdvisor();
+        advisor.setPointcut(".*test.*");
+        advisor.setAdvice(before);
+        proxyFactoryBean.addAdvice(advisor);
         applicationContext.registerSingleBean(proxyFactoryBean);
         UserDao userDao = applicationContext.getBean(UserDao.class);
         userDao.test();
@@ -63,7 +66,9 @@ public class TestFactoryBean {
     public void testAdvisor() throws ApplicationContextException {
         ApplicationContext applicationContext = new AnnotationApplicationContext("test.cn.bdqfork.ioc.factorybean");
         Before before = new Before();
-        Advisor advisor = new RegexpMethodAdvisor(".*test.*", before);
+        Advisor advisor = new RegexpMethodAdvisor();
+        advisor.setPointcut(".*test.*");
+        advisor.setAdvice(before);
         applicationContext.registerSingleBean(new FactoryBean() {
             @Override
             public Object getObject() throws BeansException {

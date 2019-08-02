@@ -15,11 +15,19 @@ import java.lang.reflect.*;
 import java.util.*;
 
 /**
+ * 解析BeanDefinition
+ *
  * @author bdq
  * @since 2019-02-22
  */
 public class BeanDefinitionResolver implements Resolver<Map<String, BeanDefinition>> {
+    /**
+     * BeanName生成器
+     */
     private BeanNameGenerator beanNameGenerator;
+    /**
+     * 待解析的类
+     */
     private Collection<Class<?>> classes;
 
     public BeanDefinitionResolver(BeanNameGenerator beanNameGenerator, Collection<Class<?>> classes) {

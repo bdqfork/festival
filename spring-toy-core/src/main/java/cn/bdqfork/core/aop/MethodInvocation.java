@@ -9,17 +9,31 @@ import org.aspectj.runtime.internal.AroundClosure;
 import java.lang.reflect.Method;
 
 /**
+ * 切点类
+ *
  * @author bdq
  * @since 2019-07-29
  */
 public class MethodInvocation implements ProceedingJoinPoint {
+    /**
+     * 目标实例
+     */
     private Object target;
+    /**
+     * 代理方法
+     */
     private Method method;
+    /**
+     * 代理方法参数
+     */
     private Object[] args;
     /**
      * 前置增强
      */
     private MethodBeforeAdvice[] beforeAdvices;
+    /**
+     * 签名
+     */
     private StaticPart staticPart;
 
     public MethodInvocation(Object target, Method method, Object[] args, MethodBeforeAdvice[] beforeAdvices) {
@@ -32,7 +46,7 @@ public class MethodInvocation implements ProceedingJoinPoint {
 
     @Override
     public void set$AroundClosure(AroundClosure arc) {
-
+        //AspectJ实现，不支持
     }
 
     @Override

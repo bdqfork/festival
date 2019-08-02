@@ -12,6 +12,8 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 /**
+ * 抽象工厂
+ *
  * @author bdq
  * @since 2019-07-30
  */
@@ -138,7 +140,9 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 
     private Object doInstantiate(BeanDefinition beanDefinition, Object[] args) throws InstantiateException {
         Object instance;
+
         ConstructorAttribute constructorAttribute = beanDefinition.getConstructorAttribute();
+
         if (constructorAttribute != null) {
             //执行构造器注入
             Constructor<?> constructor = constructorAttribute.getConstructor();
@@ -149,6 +153,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
                         beanDefinition.getBeanName()), e);
             }
         } else {
+
             try {
                 instance = beanDefinition.getClazz().newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
@@ -160,8 +165,11 @@ public abstract class AbstractBeanFactory implements BeanFactory {
     }
 
     private Object[] getConstructorArgs(String beanName, BeanDefinition beanDefinition) throws BeansException {
+
         ConstructorAttribute constructorAttribute = beanDefinition.getConstructorAttribute();
+
         Object[] args = null;
+
         if (constructorAttribute != null) {
             instantiatingFlag.put(beanName, beanDefinition.getClazz());
             try {
@@ -171,39 +179,51 @@ public abstract class AbstractBeanFactory implements BeanFactory {
             }
             instantiatingFlag.remove(beanName);
         }
+
         return args;
     }
 
     private Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws BeansException {
         Object instance = instances.get(beanName);
+
         if (instance != null && ScopeType.SINGLETON.equals(beanDefinition.getScope())) {
+
             if (beanDefinition.isLazy()) {
                 processField(beanName, beanDefinition);
                 processMethod(beanName, beanDefinition);
             }
+
             return instances.get(beanName);
         }
+
         instance = doInstantiate(beanDefinition, args);
         instances.put(beanName, instance);
+
         if (!ScopeType.SINGLETON.equals(beanDefinition.getScope())) {
             processField(beanName, beanDefinition);
             processMethod(beanName, beanDefinition);
         }
+
         return instance;
     }
 
     @Override
     public void processField(String beanName, BeanDefinition beanDefinition) throws BeansException {
         Object instance = instances.get(beanName);
+
         for (FieldAttribute fieldAttribute : beanDefinition.getFieldAttributes()) {
+
             Field field = fieldAttribute.getField();
             field.setAccessible(true);
             Object proxyBean = getBean(fieldAttribute.getBeanName());
+
             if (proxyBean == null) {
                 //如果指定依赖名和默认依赖名都没有找到Bean，则按类型进行匹配
                 proxyBean = getBean(fieldAttribute.getType());
             }
+
             if (proxyBean != null) {
+
                 if (fieldAttribute.isProvider()) {
                     Object finalProxyBean = proxyBean;
                     proxyBean = new Provider<Object>() {
@@ -213,12 +233,15 @@ public abstract class AbstractBeanFactory implements BeanFactory {
                         }
                     };
                 }
+
                 try {
                     field.set(instance, proxyBean);
                 } catch (IllegalAccessException e) {
                     throw new FieldInjectedException(e);
                 }
+
             } else if (fieldAttribute.isRequired()) {
+
                 throw new UnsatisfiedBeanException(String.format("there is no match reference bean named %s !",
                         fieldAttribute.getBeanName()));
             }
@@ -228,13 +251,19 @@ public abstract class AbstractBeanFactory implements BeanFactory {
     @Override
     public void processMethod(String beanName, BeanDefinition beanDefinition) throws BeansException {
         Object instance = instances.get(beanName);
+
         for (MethodAttribute methodAttribute : beanDefinition.getMethodAttributes()) {
+
             Method method = methodAttribute.getMethod();
             method.setAccessible(true);
+
             try {
+
                 Object[] args = getMethodArguments(methodAttribute.getArgs());
                 method.invoke(instance, args);
+
             } catch (IllegalAccessException | InvocationTargetException e) {
+
                 if (methodAttribute.isRequired()) {
                     throw new MethodInjectedException(String.format("failed to inject entity %s by method !",
                             beanDefinition.getBeanName()), e);
@@ -245,24 +274,30 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 
     private Object[] getMethodArguments(List<ParameterAttribute> parameterAttributes) throws BeansException {
         List<Object> args = new ArrayList<>(parameterAttributes.size());
+
         //遍历方法的参数依赖信息
         for (ParameterAttribute parameterAttribute : parameterAttributes) {
+
             boolean istantiating = isInstantiating(parameterAttribute.getBeanName(), parameterAttribute.getType());
             if (istantiating) {
                 throw new UnsatisfiedBeanException(String.format("reference bean named %s is instantiating!",
                         parameterAttribute.getBeanName()));
             }
+
             Object proxyBean = getBean(parameterAttribute.getBeanName());
+
             if (proxyBean == null) {
                 //如果指定依赖名和默认依赖名都没有找到Bean，则按类型进行匹配
                 proxyBean = getBean(parameterAttribute.getType());
             }
+
             if (proxyBean == null) {
                 throw new UnsatisfiedBeanException(String.format("there is no match reference bean named %s !",
                         parameterAttribute.getBeanName()));
             }
             //判断是否是Provider
             if (parameterAttribute.isProvider()) {
+
                 //添加实例到Provider参数
                 Object finalProxyBean = proxyBean;
                 args.add(new Provider<Object>() {
@@ -271,8 +306,10 @@ public abstract class AbstractBeanFactory implements BeanFactory {
                         return finalProxyBean;
                     }
                 });
+
                 continue;
             }
+
             //添加代理实例作为参数
             args.add(proxyBean);
         }
@@ -281,9 +318,11 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 
     private boolean isInstantiating(String beanName, Class<?> type) {
         Class<?> clazz = instantiatingFlag.get(beanName);
+
         if (clazz != null) {
             return true;
         }
+
         for (Class<?> cls : instantiatingFlag.values()) {
             if (BeanUtils.isSubType(type, cls) || BeanUtils.isSubType(cls, type)) {
                 return true;

@@ -8,11 +8,19 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
+ * 方法签名
+ *
  * @author bdq
  * @since 2019-07-30
  */
 public class MethodSignature implements Signature {
+    /**
+     * 方法所属类
+     */
     private Class<?> targetClass;
+    /**
+     * 方法
+     */
     private Method method;
 
     public MethodSignature(Class<?> targetClass, Method method) {

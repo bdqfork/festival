@@ -6,7 +6,7 @@ import cn.bdqfork.core.annotation.ScopeType;
 
 /**
  * @author bdq
- * @date 2019-02-19
+ * @since 2019-02-19
  */
 @Scope(ScopeType.PROTOTYPE)
 @Repositorty

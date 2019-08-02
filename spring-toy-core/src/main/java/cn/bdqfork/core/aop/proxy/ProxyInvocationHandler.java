@@ -25,7 +25,17 @@ public interface ProxyInvocationHandler {
      */
     Object invoke(Method method, Object[] args) throws Throwable;
 
+    /**
+     * 设置目标实例
+     *
+     * @param target
+     */
     void setTarget(Object target);
 
+    /**
+     * 设置代理类型
+     *
+     * @param interfaces 代理类型
+     */
     void setInterfaces(Class<?>... interfaces);
 }

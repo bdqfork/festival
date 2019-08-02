@@ -1,6 +1,5 @@
 package cn.bdqfork.core.aop.proxy;
 
-import cn.bdqfork.core.container.UnSharedInstance;
 import cn.bdqfork.core.exception.BeansException;
 
 import java.lang.reflect.InvocationHandler;
@@ -14,10 +13,13 @@ import java.lang.reflect.Proxy;
  * @since 2019-02-13
  */
 public class JdkInvocationHandler extends AbstractProxyInvocationHandler implements InvocationHandler {
-    private AdviceInvocationHandler adviceInvocationHandler;
+    /**
+     * 顾问处理
+     */
+    private AdvisorInvocationHandler advisorInvocationHandler;
 
-    public JdkInvocationHandler(AdviceInvocationHandler adviceInvocationHandler) {
-        this.adviceInvocationHandler = adviceInvocationHandler;
+    public JdkInvocationHandler(AdvisorInvocationHandler advisorInvocationHandler) {
+        this.advisorInvocationHandler = advisorInvocationHandler;
     }
 
     /**
@@ -27,11 +29,7 @@ public class JdkInvocationHandler extends AbstractProxyInvocationHandler impleme
      */
     @Override
     public Object newProxyInstance() throws BeansException {
-        Class<?> targetClass = target.getClass();
-        if (target.getClass() == UnSharedInstance.class) {
-            UnSharedInstance unSharedInstance = (UnSharedInstance) target;
-            targetClass = unSharedInstance.getClazz();
-        }
+        Class<?> targetClass = getTargetClass();
         return Proxy.newProxyInstance(targetClass.getClassLoader(), interfaces, this);
     }
 
@@ -40,7 +38,7 @@ public class JdkInvocationHandler extends AbstractProxyInvocationHandler impleme
         Object targetObject = getTargetObject();
         Object result = invokeObjectMethod(targetObject, method, args);
         if (result == null) {
-            result = adviceInvocationHandler.invokeWithAdvice(targetObject, method, args);
+            result = advisorInvocationHandler.invokeWithAdvice(targetObject, method, args);
         }
         return result;
     }

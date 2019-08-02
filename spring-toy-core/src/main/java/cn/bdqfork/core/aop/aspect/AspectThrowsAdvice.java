@@ -1,6 +1,7 @@
 package cn.bdqfork.core.aop.aspect;
 
 import cn.bdqfork.core.aop.ThrowsAdvice;
+import org.aspectj.lang.JoinPoint;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,10 +14,12 @@ public class AspectThrowsAdvice extends AbstractAspectAdvice implements ThrowsAd
 
     @Override
     public void afterThrowing(Method method, Object[] args, Object target, Exception ex) {
-        Object[] adviceArgs = getAdviceArgs(ex);
+        Object[] adviceArgs = getAdviceArgs(ex, JoinPoint.class);
         try {
-            adviceMethod.invoke(adviceInstance, adviceArgs);
+            //执行切面通知方法
+            aspectAdviceMethod.invoke(aspectInstance, adviceArgs);
         } catch (IllegalAccessException | InvocationTargetException e) {
+            //如果切面通知方法有异常，则抛出
             throw new RuntimeException(e);
         }
     }

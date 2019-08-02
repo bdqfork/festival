@@ -6,6 +6,8 @@ import cn.bdqfork.core.exception.ConflictedBeanException;
 import java.util.Map;
 
 /**
+ * Bean工厂以及容器
+ *
  * @author bdq
  * @since 2019-07-30
  */

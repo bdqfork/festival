@@ -5,12 +5,23 @@ import cn.bdqfork.core.container.FactoryBean;
 import cn.bdqfork.core.exception.BeansException;
 
 /**
+ * FactoryBean，代理实例直接注入到BeanFactory
+ *
  * @author bdq
  * @since 2019-07-30
  */
 public class ProxyFactoryBean implements FactoryBean<Object> {
+    /**
+     * 目标实例
+     */
     private Object target;
+    /**
+     * 代理类型
+     */
     private Class<?>[] interfaces;
+    /**
+     * 代理工厂
+     */
     private ProxyFactory proxyFactory;
 
 
@@ -43,6 +54,11 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
         return target.getClass();
     }
 
+    /**
+     * 添加通知
+     *
+     * @param advice 通知
+     */
     public void addAdvice(Advice advice) {
         proxyFactory.addAdvice(advice);
     }

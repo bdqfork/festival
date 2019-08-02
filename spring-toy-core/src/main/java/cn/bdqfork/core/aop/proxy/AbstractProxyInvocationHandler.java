@@ -6,6 +6,8 @@ import cn.bdqfork.core.exception.BeansException;
 import java.lang.reflect.Method;
 
 /**
+ * ProxyInvocationHandler抽象实现，实现了基本的方法
+ *
  * @author bdq
  * @since 2019-08-02
  */
@@ -27,6 +29,15 @@ public abstract class AbstractProxyInvocationHandler implements ProxyInvocationH
     @Override
     public void setInterfaces(Class<?>... interfaces) {
         this.interfaces = interfaces;
+    }
+
+    protected Class<?> getTargetClass() {
+        Class<?> targetClass = target.getClass();
+        if (target.getClass() == UnSharedInstance.class) {
+            UnSharedInstance unSharedInstance = (UnSharedInstance) target;
+            targetClass = unSharedInstance.getClazz();
+        }
+        return targetClass;
     }
 
     protected Object getTargetObject() throws BeansException {

@@ -16,10 +16,13 @@ import java.util.Arrays;
  * @since 2019-02-14
  */
 public class CglibMethodInterceptor extends AbstractProxyInvocationHandler implements MethodInterceptor {
-    private AdviceInvocationHandler adviceInvocationHandler;
+    /**
+     * 顾问处理
+     */
+    private AdvisorInvocationHandler advisorInvocationHandler;
 
-    public CglibMethodInterceptor(AdviceInvocationHandler adviceInvocationHandler) {
-        this.adviceInvocationHandler = adviceInvocationHandler;
+    public CglibMethodInterceptor(AdvisorInvocationHandler advisorInvocationHandler) {
+        this.advisorInvocationHandler = advisorInvocationHandler;
     }
 
     /**
@@ -35,6 +38,7 @@ public class CglibMethodInterceptor extends AbstractProxyInvocationHandler imple
         Class targetClass = target.getClass();
 
         Object[] args = null;
+        //处理多实例类
         if (targetClass == UnSharedInstance.class) {
 
             UnSharedInstance unSharedInstance = (UnSharedInstance) target;
@@ -44,10 +48,11 @@ public class CglibMethodInterceptor extends AbstractProxyInvocationHandler imple
         }
 
         enhancer.setSuperclass(targetClass);
-
+        //执行无参构造方法
         if (args == null) {
             return enhancer.create();
         }
+        //获取参数
         Class[] argumentTypes = Arrays.stream(args).map(Object::getClass).toArray(Class[]::new);
 
         return enhancer.create(argumentTypes, args);
@@ -55,10 +60,11 @@ public class CglibMethodInterceptor extends AbstractProxyInvocationHandler imple
 
     @Override
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+        //获取真实目标实例
         Object targetObject = getTargetObject();
         Object result = invokeObjectMethod(targetObject, method, args);
         if (result == null) {
-            result = adviceInvocationHandler.invokeWithAdvice(targetObject, method, args);
+            result = advisorInvocationHandler.invokeWithAdvice(targetObject, method, args);
         }
         return result;
     }

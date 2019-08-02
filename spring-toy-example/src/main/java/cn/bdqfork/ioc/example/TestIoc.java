@@ -7,7 +7,7 @@ import cn.bdqfork.ioc.example.controller.UserController;
 
 /**
  * @author bdq
- * @date 2019-02-19
+ * @since 2019-02-19
  */
 public class TestIoc {
     public static void main(String[] args) throws InterruptedException, ApplicationContextException {
