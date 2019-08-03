@@ -7,6 +7,7 @@ import cn.bdqfork.core.aop.proxy.ProxyFactory;
 import cn.bdqfork.core.aop.proxy.ProxyFactoryBean;
 import cn.bdqfork.core.utils.BeanUtils;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ public class AdvisorBeanFactoryImpl extends AbstractBeanFactory implements Advis
      * 实例前缀，以$开头的beanName，在执行getBean时会获取真实实例，而非代理类
      */
     public static final String INSTANCE_PREFIX = "$";
+    private Map<String, Object> proxyInstances;
     /**
      * Advisor切面
      */
@@ -27,6 +29,7 @@ public class AdvisorBeanFactoryImpl extends AbstractBeanFactory implements Advis
 
     public AdvisorBeanFactoryImpl() {
         this.advisors = new LinkedList<>();
+        this.proxyInstances = new HashMap<>();
     }
 
     @Override
@@ -43,6 +46,9 @@ public class AdvisorBeanFactoryImpl extends AbstractBeanFactory implements Advis
         boolean requireProxy = !beanName.startsWith(INSTANCE_PREFIX);
 
         if (requireProxy) {
+            if (proxyInstances.containsKey(beanName)) {
+                return proxyInstances.get(beanName);
+            }
             BeanDefinition beanDefinition = getBeanDefinations().get(beanName);
 
             Object instance = getInstances().get(beanName);
@@ -54,13 +60,16 @@ public class AdvisorBeanFactoryImpl extends AbstractBeanFactory implements Advis
                 //特殊处理ProxyFactoryBean
                 if (factoryBean instanceof ProxyFactoryBean) {
                     ProxyFactoryBean proxyFactoryBean = (ProxyFactoryBean) instance;
-                    return proxyFactoryBean.getObject();
+                    Object proxyInstance = proxyFactoryBean.getObject();
+                    proxyInstances.put(beanName, proxyInstance);
+                    return proxyInstance;
                 }
 
                 instance = factoryBean.getObject();
             }
 
             if (instance == null) {
+                proxyInstances.put(beanName, null);
                 return null;
             }
 
@@ -68,8 +77,9 @@ public class AdvisorBeanFactoryImpl extends AbstractBeanFactory implements Advis
             if (!ScopeType.SINGLETON.equals(beanDefinition.getScope())) {
                 instance = super.getBean(beanName);
             }
-
-            return createProxyBean(beanDefinition, instance);
+            Object proxyInstance = createProxyBean(beanDefinition, instance);
+            proxyInstances.put(beanName, proxyInstance);
+            return proxyInstance;
         } else {
             beanName = beanName.substring(1);
             return super.getBean(beanName);
