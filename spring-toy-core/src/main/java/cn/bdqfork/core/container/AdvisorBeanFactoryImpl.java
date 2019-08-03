@@ -1,5 +1,6 @@
 package cn.bdqfork.core.container;
 
+import cn.bdqfork.core.annotation.ScopeType;
 import cn.bdqfork.core.aop.Advisor;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.aop.proxy.ProxyFactory;
@@ -8,6 +9,7 @@ import cn.bdqfork.core.utils.BeanUtils;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author bdq
@@ -38,32 +40,41 @@ public class AdvisorBeanFactoryImpl extends AbstractBeanFactory implements Advis
 
     @Override
     public Object getBean(String beanName) throws BeansException {
-        String actualBeanName = beanName;
-
         boolean requireProxy = !beanName.startsWith(INSTANCE_PREFIX);
-        if (!requireProxy) {
-            actualBeanName = beanName.substring(1);
+
+        if (requireProxy) {
+            BeanDefinition beanDefinition = getBeanDefinations().get(beanName);
+
+            Object instance = getInstances().get(beanName);
+
+            //重写FactoryBean的处理
+            if (instance instanceof FactoryBean) {
+                FactoryBean factoryBean = (FactoryBean) instance;
+
+                //特殊处理ProxyFactoryBean
+                if (factoryBean instanceof ProxyFactoryBean) {
+                    ProxyFactoryBean proxyFactoryBean = (ProxyFactoryBean) instance;
+                    return proxyFactoryBean.getObject();
+                }
+
+                instance = factoryBean.getObject();
+            }
+
+            if (instance == null) {
+                return null;
+            }
+
+            //如果不是单例，则调用父容器的getBean()方法获取UnSharedInstance
+            if (!ScopeType.SINGLETON.equals(beanDefinition.getScope())) {
+                instance = super.getBean(beanName);
+            }
+
+            return createProxyBean(beanDefinition, instance);
+        } else {
+            beanName = beanName.substring(1);
+            return super.getBean(beanName);
         }
 
-        Object instance = getInstances().get(beanName);
-
-        //特殊处理ProxyFactoryBean
-        if (instance instanceof ProxyFactoryBean) {
-            ProxyFactoryBean proxyFactoryBean = (ProxyFactoryBean) instance;
-            return proxyFactoryBean.getObject();
-        }
-
-        instance = super.getBean(actualBeanName);
-
-        if (instance == null) {
-            return null;
-        }
-
-        if (!requireProxy) {
-            return instance;
-        }
-        BeanDefinition beanDefinition = getBeanDefinations().get(actualBeanName);
-        return createProxyBean(beanDefinition, instance);
     }
 
     private Object createProxyBean(BeanDefinition beanDefinition, Object target) throws BeansException {
