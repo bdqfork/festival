@@ -62,14 +62,4 @@ public abstract class AbstractProxyInvocationHandler implements ProxyInvocationH
         return null;
     }
 
-    @Override
-    public Object invoke(Method method, Object[] args) throws Throwable {
-        Object targetObject = getTargetObject();
-        Object result = invokeObjectMethod(targetObject, method, args);
-        if (result == null) {
-            result = method.invoke(targetObject, args);
-        }
-        return result;
-    }
-
 }

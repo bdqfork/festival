@@ -16,7 +16,7 @@ import java.util.Map;
  * @author bdq
  * @since 2019-08-01
  */
-public class AdvisorBeanFactoryImpl extends AbstractBeanFactory implements AdvisorBeanFactory {
+public class AdvisorBeanFactoryImpl extends BeanFactoryImpl implements AdvisorBeanFactory {
     /**
      * 实例前缀，以$开头的beanName，在执行getBean时会获取真实实例，而非代理类
      */

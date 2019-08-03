@@ -9,10 +9,25 @@ import java.lang.reflect.Method;
  * @since 2019-07-29
  */
 public interface Advisor extends Advice {
+    /**
+     * 设置切点
+     *
+     * @param pointcut 切点表达式
+     */
     void setPointcut(String pointcut);
 
+    /**
+     * 获取切点表达式
+     *
+     * @return String
+     */
     String getPointcut();
 
+    /**
+     * 设置通知
+     *
+     * @param advice 通知
+     */
     void setAdvice(Advice advice);
 
     /**

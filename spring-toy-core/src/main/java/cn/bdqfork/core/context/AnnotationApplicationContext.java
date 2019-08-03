@@ -131,6 +131,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
         }
     }
 
+    @Override
     public void registerSingleBean(FactoryBean factoryBean) throws BeansException {
         String beanName = this.beanNameGenerator.generateBeanName(factoryBean.getObjectType());
         Class<?> objectType = factoryBean.getObjectType();

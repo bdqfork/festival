@@ -18,14 +18,6 @@ public interface ProxyInvocationHandler {
     Object newProxyInstance() throws BeansException;
 
     /**
-     * 执行代理方法
-     *
-     * @return 执行结果
-     * @throws BeansException bean异常
-     */
-    Object invoke(Method method, Object[] args) throws Throwable;
-
-    /**
      * 设置目标实例
      *
      * @param target

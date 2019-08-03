@@ -17,7 +17,7 @@ import java.util.*;
  * @author bdq
  * @since 2019-07-30
  */
-public abstract class AbstractBeanFactory implements BeanFactory {
+public class BeanFactoryImpl implements BeanFactory {
     /**
      * BeanDefinition容器，key为beanName
      */
@@ -31,7 +31,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
      */
     private Map<String, Object> instances;
 
-    public AbstractBeanFactory() {
+    public BeanFactoryImpl() {
         beanDefinitions = new HashMap<>();
         instantiatingFlag = new HashMap<>();
         instances = new HashMap<>();
@@ -91,14 +91,6 @@ public abstract class AbstractBeanFactory implements BeanFactory {
             });
 
             return unSharedInstance;
-        }
-    }
-
-    private Object getActualInstance(FactoryBean instance) throws BeansException {
-        try {
-            return instance.getObject();
-        } catch (Exception e) {
-            throw new BeansException(e);
         }
     }
 
@@ -331,7 +323,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
         return false;
     }
 
-    protected Map<String, Object> getInstances() {
+    public Map<String, Object> getInstances() {
         return instances;
     }
 
