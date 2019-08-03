@@ -3,6 +3,7 @@ package test.cn.bdqfork.ioc.cglib.single.constructor;
 import cn.bdqfork.core.context.AnnotationApplicationContext;
 import cn.bdqfork.core.context.ApplicationContext;
 import cn.bdqfork.core.exception.ApplicationContextException;
+import cn.bdqfork.core.exception.BeansException;
 import org.junit.Test;
 
 /**
@@ -11,7 +12,7 @@ import org.junit.Test;
  */
 public class TestConstructorInject {
 
-    @Test
+    @Test(expected = BeansException.class)
     public void testJdkConstructorInject() throws ApplicationContextException {
         ApplicationContext applicationContext = new AnnotationApplicationContext("test.cn.bdqfork.ioc.cglib.single.constructor");
         UserService userService = applicationContext.getBean(UserService.class);
