@@ -68,6 +68,7 @@ public class ReflectUtil {
             String path = chirldFile.getAbsolutePath();
             if (!chirldFile.isDirectory() && path.endsWith(SUFFIX)) {
                 String className = path.substring(path.indexOf(packagePath), path.lastIndexOf(SUFFIX))
+                        .replaceAll("\\\\","\\/")
                         .replaceAll("/", ".");
                 try {
                     Class clazz = Class.forName(className);
@@ -91,6 +92,7 @@ public class ReflectUtil {
                 String entryName = jarEntry.getName();
                 if (!jarEntry.isDirectory() && entryName.endsWith(SUFFIX)) {
                     String className = entryName.substring(0, entryName.lastIndexOf(SUFFIX))
+                            .replaceAll("\\\\","\\/")
                             .replaceAll("/", ".");
                     Class clazz = Class.forName(className);
                     classes.add(clazz);
