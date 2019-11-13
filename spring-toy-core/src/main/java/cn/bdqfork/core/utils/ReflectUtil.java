@@ -65,7 +65,7 @@ public class ReflectUtil {
             return classes;
         }
         for (File chirldFile : chirldFiles) {
-            String path = chirldFile.getAbsolutePath().replaceAll("\\\\","\\/");
+            String path = FileUtil.getUniformAbsolutePath(chirldFile);
             if (!chirldFile.isDirectory() && path.endsWith(SUFFIX)) {
                 String className = path.substring(path.indexOf(packagePath), path.lastIndexOf(SUFFIX))
                         .replaceAll("/", ".");
@@ -91,7 +91,6 @@ public class ReflectUtil {
                 String entryName = jarEntry.getName();
                 if (!jarEntry.isDirectory() && entryName.endsWith(SUFFIX)) {
                     String className = entryName.substring(0, entryName.lastIndexOf(SUFFIX))
-                            .replaceAll("\\\\","\\/")
                             .replaceAll("/", ".");
                     Class clazz = Class.forName(className);
                     classes.add(clazz);
@@ -101,6 +100,11 @@ public class ReflectUtil {
             e.printStackTrace();
         }
         return classes;
+    }
+
+    public static void main(String[] args) throws IOException {
+        JarFile file = new JarFile("C:/Users/h-l-j/Desktop/arduino-1.8.10-windows/arduino-1.8.10/lib/batik-ext-1.8.jar");
+        getClassesByJar(file);
     }
 
 }
