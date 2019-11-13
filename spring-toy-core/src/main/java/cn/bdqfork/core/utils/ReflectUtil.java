@@ -102,9 +102,5 @@ public class ReflectUtil {
         return classes;
     }
 
-    public static void main(String[] args) throws IOException {
-        JarFile file = new JarFile("C:/Users/h-l-j/Desktop/arduino-1.8.10-windows/arduino-1.8.10/lib/batik-ext-1.8.jar");
-        getClassesByJar(file);
-    }
 
 }
