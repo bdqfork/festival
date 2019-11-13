@@ -65,10 +65,9 @@ public class ReflectUtil {
             return classes;
         }
         for (File chirldFile : chirldFiles) {
-            String path = chirldFile.getAbsolutePath();
+            String path = chirldFile.getAbsolutePath().replaceAll("\\\\","\\/");
             if (!chirldFile.isDirectory() && path.endsWith(SUFFIX)) {
                 String className = path.substring(path.indexOf(packagePath), path.lastIndexOf(SUFFIX))
-                        .replaceAll("\\\\","\\/")
                         .replaceAll("/", ".");
                 try {
                     Class clazz = Class.forName(className);
