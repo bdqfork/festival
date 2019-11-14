@@ -65,7 +65,7 @@ public class ReflectUtil {
             return classes;
         }
         for (File chirldFile : chirldFiles) {
-            String path = chirldFile.getAbsolutePath();
+            String path = FileUtil.getUniformAbsolutePath(chirldFile);
             if (!chirldFile.isDirectory() && path.endsWith(SUFFIX)) {
                 String className = path.substring(path.indexOf(packagePath), path.lastIndexOf(SUFFIX))
                         .replaceAll("/", ".");
@@ -101,5 +101,6 @@ public class ReflectUtil {
         }
         return classes;
     }
+
 
 }
