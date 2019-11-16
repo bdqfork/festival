@@ -57,7 +57,7 @@ public class ProxyFactory {
         ProxyInvocationHandler invocationHandler;
         //实例化代理生成类
         if (interfaces != null && interfaces.length > 0) {
-            invocationHandler = new JdkInvocationHandler(advisorInvocationHandler);
+            invocationHandler = new JavassistInvocationHandler(advisorInvocationHandler);
         } else {
             invocationHandler = new CglibMethodInterceptor(advisorInvocationHandler);
         }

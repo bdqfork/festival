@@ -4,7 +4,6 @@ import cn.bdqfork.core.exception.BeansException;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 
 /**
  * jdk动态代理
@@ -12,13 +11,13 @@ import java.lang.reflect.Proxy;
  * @author bdq
  * @since 2019-02-13
  */
-public class JdkInvocationHandler extends AbstractProxyInvocationHandler implements InvocationHandler {
+public class JavassistInvocationHandler extends AbstractProxyInvocationHandler implements InvocationHandler {
     /**
      * 顾问处理
      */
     private AdvisorInvocationHandler advisorInvocationHandler;
 
-    public JdkInvocationHandler(AdvisorInvocationHandler advisorInvocationHandler) {
+    public JavassistInvocationHandler(AdvisorInvocationHandler advisorInvocationHandler) {
         this.advisorInvocationHandler = advisorInvocationHandler;
     }
 
