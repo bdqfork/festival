@@ -1,7 +1,7 @@
 package cn.bdqfork.core.aop.proxy;
 
 
-import cn.bdqfork.core.utils.ReflectUtils;
+import cn.bdqfork.core.util.ReflectUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -67,7 +67,7 @@ public abstract class Proxy implements Serializable {
         //添加默认构造方法
         generator.addDefaultConstructor();
 
-        //扫描接口，获取所有的接口方法，并进行去重
+        //扫描接口，获取所有的接口方法，并通过方法签名进行去重
         Set<String> worked = new HashSet<>();
         List<Method> methods = new ArrayList<>();
         for (Class interfaceClass : interfaces) {

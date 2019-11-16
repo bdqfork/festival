@@ -5,7 +5,7 @@ import cn.bdqfork.core.aop.Advisor;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.aop.proxy.ProxyFactory;
 import cn.bdqfork.core.aop.proxy.ProxyFactoryBean;
-import cn.bdqfork.core.utils.BeanUtils;
+import cn.bdqfork.core.util.BeanUtils;
 
 import java.util.HashMap;
 import java.util.LinkedList;

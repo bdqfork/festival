@@ -1,4 +1,4 @@
-package cn.bdqfork.core.utils;
+package cn.bdqfork.core.util;
 
 import cn.bdqfork.core.annotation.Component;
 import cn.bdqfork.core.annotation.Controller;

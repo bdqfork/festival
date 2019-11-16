@@ -2,7 +2,7 @@ package cn.bdqfork.core.container;
 
 import cn.bdqfork.core.annotation.ScopeType;
 import cn.bdqfork.core.exception.*;
-import cn.bdqfork.core.utils.BeanUtils;
+import cn.bdqfork.core.util.BeanUtils;
 
 import javax.inject.Provider;
 import java.lang.reflect.Constructor;

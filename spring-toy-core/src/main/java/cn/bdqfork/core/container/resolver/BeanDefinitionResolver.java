@@ -2,10 +2,9 @@ package cn.bdqfork.core.container.resolver;
 
 import cn.bdqfork.core.annotation.*;
 import cn.bdqfork.core.container.*;
-import cn.bdqfork.core.container.resolver.Resolver;
 import cn.bdqfork.core.exception.ResolvedException;
 import cn.bdqfork.core.exception.ScopeException;
-import cn.bdqfork.core.utils.ComponentUtils;
+import cn.bdqfork.core.util.ComponentUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;

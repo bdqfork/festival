@@ -1,4 +1,4 @@
-package cn.bdqfork.core.utils;
+package cn.bdqfork.core.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,7 +66,7 @@ public class ReflectUtils {
             return classes;
         }
         for (File chirldFile : chirldFiles) {
-            String path = FileUtil.getUniformAbsolutePath(chirldFile);
+            String path = FileUtils.getUniformAbsolutePath(chirldFile);
             if (!chirldFile.isDirectory() && path.endsWith(SUFFIX)) {
                 String className = path.substring(path.indexOf(packagePath), path.lastIndexOf(SUFFIX))
                         .replaceAll("/", ".");

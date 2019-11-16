@@ -1,6 +1,6 @@
 package cn.bdqfork.core.aop.aspect;
 
-import cn.bdqfork.core.utils.BeanUtils;
+import cn.bdqfork.core.util.BeanUtils;
 import org.aspectj.lang.JoinPoint;
 
 import java.lang.reflect.Method;

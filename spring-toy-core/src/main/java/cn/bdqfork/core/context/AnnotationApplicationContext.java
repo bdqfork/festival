@@ -9,8 +9,8 @@ import cn.bdqfork.core.container.resolver.BeanDefinitionResolver;
 import cn.bdqfork.core.exception.ApplicationContextException;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.ResolvedException;
-import cn.bdqfork.core.utils.ComponentUtils;
-import cn.bdqfork.core.utils.ReflectUtils;
+import cn.bdqfork.core.util.ComponentUtils;
+import cn.bdqfork.core.util.ReflectUtils;
 
 import java.lang.reflect.Modifier;
 import java.util.HashSet;

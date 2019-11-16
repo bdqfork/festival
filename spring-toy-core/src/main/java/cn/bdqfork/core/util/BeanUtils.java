@@ -1,4 +1,4 @@
-package cn.bdqfork.core.utils;
+package cn.bdqfork.core.util;
 
 /**
  * @author bdq
