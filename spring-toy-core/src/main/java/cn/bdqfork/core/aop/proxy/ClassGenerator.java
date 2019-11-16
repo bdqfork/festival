@@ -1,6 +1,5 @@
 package cn.bdqfork.core.aop.proxy;
 
-import cn.bdqfork.common.util.StringUtils;
 import javassist.*;
 
 import java.lang.reflect.Modifier;
@@ -223,23 +222,24 @@ public class ClassGenerator {
         methodBuilder.append(" ").append(methodName).append("(");
 
         for (int i = 0; i < parameterTypes.length; i++) {
-            Class<?> parameterType = parameterTypes[i];
-            methodBuilder.append(parameterType.getName())
+            if (i > 0) {
+                methodBuilder.append(",");
+            }
+            methodBuilder.append(parameterTypes[i].getName())
                     .append(" arg")
-                    .append(i)
-                    .append(",");
+                    .append(i);
         }
-        StringUtils.removeLastChar(methodBuilder);
         methodBuilder.append(")");
 
         if (exceptionTypes != null && exceptionTypes.length > 0) {
             methodBuilder.append("throws ");
 
-            for (Class<?> exceptionType : exceptionTypes) {
-                methodBuilder.append(exceptionType.getName())
-                        .append(",");
+            for (int i = 0; i < exceptionTypes.length; i++) {
+                if (i > 0) {
+                    methodBuilder.append(",");
+                }
+                methodBuilder.append(exceptionTypes[i].getName());
             }
-            StringUtils.removeLastChar(methodBuilder);
         }
 
         methodBuilder.append("{").append(body).append("}");
@@ -255,7 +255,7 @@ public class ClassGenerator {
     /**
      * 构建CtClass并转换为Class返回给调用者
      *
-     * @param classLoader ClassLoader
+     * @param classLoader      ClassLoader
      * @param protectionDomain ProtectionDomain
      * @return Class<?>
      */

@@ -10,7 +10,7 @@ import cn.bdqfork.core.exception.ApplicationContextException;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.ResolvedException;
 import cn.bdqfork.core.utils.ComponentUtils;
-import cn.bdqfork.core.utils.ReflectUtil;
+import cn.bdqfork.core.utils.ReflectUtils;
 
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
@@ -51,7 +51,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
     private void scan() throws ResolvedException, BeansException {
         Set<Class<?>> candidates = new HashSet<>();
         for (String scanPath : scanPaths) {
-            candidates.addAll(ReflectUtil.getClasses(scanPath));
+            candidates.addAll(ReflectUtils.getClasses(scanPath));
         }
         Set<Class<?>> beanClasses = new HashSet<>();
         //获取组件类
@@ -150,6 +150,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
         return beanFactory.getBean(beanName);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getBean(Class<T> clazz) throws BeansException {
         processLazyIfNeed(clazz);
@@ -157,6 +158,7 @@ public class AnnotationApplicationContext implements ApplicationContext {
         return (T) bean;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> Map<String, T> getBeans(Class<T> clazz) throws BeansException {
         processLazyIfNeed(clazz);
