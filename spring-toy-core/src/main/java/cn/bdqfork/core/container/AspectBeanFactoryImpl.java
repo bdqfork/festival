@@ -1,6 +1,6 @@
 package cn.bdqfork.core.container;
 
-import cn.bdqfork.core.aop.aspect.AspectAdvice;
+import cn.bdqfork.core.aop.advice.AspectAdvice;
 import cn.bdqfork.core.aop.aspect.AspectAdvisor;
 import cn.bdqfork.core.exception.BeansException;
 

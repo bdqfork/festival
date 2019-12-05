@@ -1,6 +1,6 @@
 package cn.bdqfork.core.aop.aspect;
 
-import cn.bdqfork.core.aop.MethodBeforeAdvice;
+import cn.bdqfork.core.aop.advice.MethodBeforeAdvice;
 import org.aspectj.lang.JoinPoint;
 
 import java.lang.reflect.Method;

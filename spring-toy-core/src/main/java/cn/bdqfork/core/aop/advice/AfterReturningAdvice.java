@@ -1,4 +1,4 @@
-package cn.bdqfork.core.aop;
+package cn.bdqfork.core.aop.advice;
 
 import java.lang.reflect.Method;
 

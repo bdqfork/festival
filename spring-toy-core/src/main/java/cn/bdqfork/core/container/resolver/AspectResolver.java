@@ -1,5 +1,6 @@
 package cn.bdqfork.core.container.resolver;
 
+import cn.bdqfork.core.aop.advice.AspectAdvice;
 import cn.bdqfork.core.aop.aspect.*;
 import cn.bdqfork.core.container.BeanDefinition;
 import cn.bdqfork.core.exception.ResolvedException;

@@ -1,6 +1,6 @@
 package cn.bdqfork.core.aop.proxy;
 
-import cn.bdqfork.core.aop.Advice;
+import cn.bdqfork.core.aop.advice.Advice;
 import cn.bdqfork.core.container.FactoryBean;
 import cn.bdqfork.core.exception.BeansException;
 

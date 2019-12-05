@@ -1,6 +1,6 @@
 package test.cn.bdqfork.ioc.factorybean;
 
-import cn.bdqfork.core.aop.MethodBeforeAdvice;
+import cn.bdqfork.core.aop.advice.MethodBeforeAdvice;
 
 import java.lang.reflect.Method;
 

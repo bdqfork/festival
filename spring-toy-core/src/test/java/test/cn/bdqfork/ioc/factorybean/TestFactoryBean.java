@@ -1,7 +1,7 @@
 package test.cn.bdqfork.ioc.factorybean;
 
-import cn.bdqfork.core.aop.Advisor;
-import cn.bdqfork.core.aop.RegexpMethodAdvisor;
+import cn.bdqfork.core.aop.advice.Advisor;
+import cn.bdqfork.core.aop.aspect.RegexpMethodAdvisor;
 import cn.bdqfork.core.container.FactoryBean;
 import cn.bdqfork.core.context.AnnotationApplicationContext;
 import cn.bdqfork.core.context.ApplicationContext;

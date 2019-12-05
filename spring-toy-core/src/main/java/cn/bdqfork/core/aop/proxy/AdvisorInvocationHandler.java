@@ -1,6 +1,6 @@
 package cn.bdqfork.core.aop.proxy;
 
-import cn.bdqfork.core.aop.Advisor;
+import cn.bdqfork.core.aop.advice.Advisor;
 
 import java.lang.reflect.Method;
 import java.util.List;

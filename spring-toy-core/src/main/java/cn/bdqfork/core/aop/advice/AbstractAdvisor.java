@@ -1,4 +1,7 @@
-package cn.bdqfork.core.aop;
+package cn.bdqfork.core.aop.advice;
+
+import cn.bdqfork.core.aop.advice.Advice;
+import cn.bdqfork.core.aop.advice.Advisor;
 
 /**
  * 抽象Advisor

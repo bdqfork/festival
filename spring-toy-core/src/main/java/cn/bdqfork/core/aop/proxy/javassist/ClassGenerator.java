@@ -1,4 +1,4 @@
-package cn.bdqfork.core.aop.proxy;
+package cn.bdqfork.core.aop.proxy.javassist;
 
 import javassist.*;
 

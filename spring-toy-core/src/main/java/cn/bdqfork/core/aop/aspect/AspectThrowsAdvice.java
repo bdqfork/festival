@@ -1,6 +1,6 @@
 package cn.bdqfork.core.aop.aspect;
 
-import cn.bdqfork.core.aop.ThrowsAdvice;
+import cn.bdqfork.core.aop.advice.ThrowsAdvice;
 import org.aspectj.lang.JoinPoint;
 
 import java.lang.reflect.InvocationTargetException;

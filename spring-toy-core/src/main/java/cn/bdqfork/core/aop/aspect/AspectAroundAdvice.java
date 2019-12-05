@@ -1,6 +1,6 @@
 package cn.bdqfork.core.aop.aspect;
 
-import cn.bdqfork.core.aop.MethodInterceptor;
+import cn.bdqfork.core.aop.advice.MethodInterceptor;
 import cn.bdqfork.core.aop.MethodInvocation;
 import org.aspectj.lang.ProceedingJoinPoint;
 

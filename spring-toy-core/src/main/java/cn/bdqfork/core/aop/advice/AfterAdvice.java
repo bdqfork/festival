@@ -1,4 +1,4 @@
-package cn.bdqfork.core.aop;
+package cn.bdqfork.core.aop.advice;
 
 /**
  * 后置通知，标记类

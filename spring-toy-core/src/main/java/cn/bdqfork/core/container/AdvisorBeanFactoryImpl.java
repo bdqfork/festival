@@ -1,7 +1,7 @@
 package cn.bdqfork.core.container;
 
 import cn.bdqfork.core.annotation.ScopeType;
-import cn.bdqfork.core.aop.Advisor;
+import cn.bdqfork.core.aop.advice.Advisor;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.aop.proxy.ProxyFactory;
 import cn.bdqfork.core.aop.proxy.ProxyFactoryBean;

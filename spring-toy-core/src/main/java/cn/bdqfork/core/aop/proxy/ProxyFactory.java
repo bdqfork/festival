@@ -1,10 +1,12 @@
 package cn.bdqfork.core.aop.proxy;
 
-import cn.bdqfork.core.aop.Advice;
-import cn.bdqfork.core.aop.Advisor;
-import cn.bdqfork.core.aop.RegexpMethodAdvisor;
-import cn.bdqfork.core.aop.aspect.AspectAdvice;
+import cn.bdqfork.core.aop.advice.Advice;
+import cn.bdqfork.core.aop.advice.Advisor;
+import cn.bdqfork.core.aop.aspect.RegexpMethodAdvisor;
+import cn.bdqfork.core.aop.advice.AspectAdvice;
 import cn.bdqfork.core.aop.aspect.AspectAdvisor;
+import cn.bdqfork.core.aop.proxy.cglib.CglibMethodInterceptor;
+import cn.bdqfork.core.aop.proxy.javassist.JavassistInvocationHandler;
 import cn.bdqfork.core.container.AdvisorBeanFactoryImpl;
 import cn.bdqfork.core.container.BeanFactory;
 import cn.bdqfork.core.exception.BeansException;

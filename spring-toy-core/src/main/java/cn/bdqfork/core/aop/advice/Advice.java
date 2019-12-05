@@ -1,4 +1,4 @@
-package cn.bdqfork.core.aop;
+package cn.bdqfork.core.aop.advice;
 
 /**
  * 通知接口，标记类
