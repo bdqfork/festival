@@ -13,7 +13,11 @@ V0.2版本大量重构，项目结构更加合理。
 该框架遵从jsr330规范，实现了基本的依赖注入功能，同时支持Aop！
 你可以运行示例来进行测试！
 
-项目原理可参考本人博客 https://bdqfork.cn/post/82946b03.html
+项目设计：
+
+![design](image/design.png)
+
+详细原理可参考本人博客 https://bdqfork.cn/articles/40
 
 #### 更新日志:
 
