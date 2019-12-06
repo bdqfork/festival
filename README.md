@@ -15,7 +15,7 @@ V0.2版本大量重构，项目结构更加合理。
 
 项目设计：
 
-![design](image/design.png)
+![design](https://raw.githubusercontent.com/bdqfork/spring-toy/master/image/design.png)
 
 详细原理可参考本人博客 https://bdqfork.cn/articles/40
 
