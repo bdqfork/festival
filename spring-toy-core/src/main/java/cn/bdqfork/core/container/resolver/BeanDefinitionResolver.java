@@ -1,15 +1,10 @@
 package cn.bdqfork.core.container.resolver;
 
-import cn.bdqfork.core.annotation.*;
 import cn.bdqfork.core.container.*;
 import cn.bdqfork.core.exception.ResolvedException;
 import cn.bdqfork.core.exception.ScopeException;
-import cn.bdqfork.core.util.ComponentUtils;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Provider;
-import javax.inject.Singleton;
+import javax.inject.*;
 import java.lang.reflect.*;
 import java.util.*;
 
@@ -46,31 +41,18 @@ public class BeanDefinitionResolver implements Resolver<Map<String, BeanDefiniti
     }
 
     private BeanDefinition createBeanDefinition(Class<?> clazz) throws ScopeException {
-        String name = ComponentUtils.getComponentName(clazz);
-        String beanScope = "singleton";
-        if (clazz.getAnnotation(Singleton.class) == null) {
-
-            Scope scope = clazz.getAnnotation(Scope.class);
-
-            if (scope != null) {
-                if (!ScopeType.PROTOTYPE.equals(scope.value())) {
-                    throw new ScopeException("the value of scope is error !");
-                } else {
-                    beanScope = scope.value();
-                }
-            }
-
-        }
+        String name = clazz.getAnnotation(Named.class).value();
         if ("".equals(name)) {
             name = this.beanNameGenerator.generateBeanName(clazz);
         }
-
-        Lazy lazy = clazz.getAnnotation(Lazy.class);
-        boolean isLazy = false;
-        if (lazy != null) {
-            isLazy = lazy.value();
+        if (clazz.getAnnotation(Singleton.class) == null) {
+            return new BeanDefinition(name, clazz, BeanDefinition.SINGLETON);
+        } else if (clazz.isAnnotationPresent(Scope.class)) {
+            //todo:添加异常信息
+            throw new ScopeException("");
+        } else {
+            return new BeanDefinition(name, clazz);
         }
-        return new BeanDefinition(clazz, beanScope, name, isLazy);
     }
 
     private void doResolve(BeanDefinition beanDefinition) throws ResolvedException {
@@ -79,7 +61,7 @@ public class BeanDefinitionResolver implements Resolver<Map<String, BeanDefiniti
             return;
         }
         //优先解析父类
-        Class<?> superClass = beanDefinition.getClazz().getSuperclass();
+        Class<?> superClass = beanDefinition.getBeanClass().getSuperclass();
         if (superClass != null && superClass != Object.class) {
             for (Class<?> clazz : classes) {
                 if (clazz == superClass) {
@@ -99,41 +81,42 @@ public class BeanDefinitionResolver implements Resolver<Map<String, BeanDefiniti
     }
 
     private void resolveConstructorInfo(BeanDefinition beanDefinition) throws ResolvedException {
-        Class<?> candidate = beanDefinition.getClazz();
-        int count = 0;
-        for (Constructor<?> constructor : candidate.getDeclaredConstructors()) {
-            AutoWired autoWired = constructor.getAnnotation(AutoWired.class);
-            Inject inject = constructor.getAnnotation(Inject.class);
-            if (autoWired != null || inject != null) {
-                count++;
-                if (count > 1) {
-                    throw new ResolvedException(String.format("the entity named %s has more than one constructor to be injected !",
-                            candidate.getName()));
-                }
-
-                List<ParameterAttribute> parameterAttributes = resolveParameterAttributes(constructor.getParameters());
-                ConstructorAttribute constructorAttribute = new ConstructorAttribute(constructor, parameterAttributes);
-                beanDefinition.setConstructorAttribute(constructorAttribute);
-            }
+        Class<?> candidate = beanDefinition.getBeanClass();
+        Constructor<?>[] constructors = Arrays.stream(candidate.getDeclaredConstructors())
+                .filter(constructor -> constructor.isAnnotationPresent(Inject.class))
+                .toArray(Constructor<?>[]::new);
+        if (constructors.length > 1) {
+            //todo:添加异常信息
+            throw new ResolvedException("");
+        } else if (constructors.length == 1) {
+            List<ParameterAttribute> parameterAttributes = resolveParameterAttributes(constructors[0].getParameters());
+            parameterAttributes.forEach(parameterAttribute -> beanDefinition.addDependOn(parameterAttribute.getBeanName()));
+            ConstructorAttribute constructorAttribute = new ConstructorAttribute(constructors[0], parameterAttributes);
+            beanDefinition.setConstructorAttribute(constructorAttribute);
         }
+        try {
+            Constructor<?> constructor = candidate.getDeclaredConstructor();
+            ConstructorAttribute constructorAttribute = new ConstructorAttribute(constructor, null);
+            beanDefinition.setConstructorAttribute(constructorAttribute);
+        } catch (NoSuchMethodException e) {
+            throw new ResolvedException(e);
+        }
+
     }
 
     private void resolveFieldInfo(BeanDefinition beanDefinition) throws ResolvedException {
-        Class<?> candidate = beanDefinition.getClazz();
+        Class<?> candidate = beanDefinition.getBeanClass();
         List<FieldAttribute> fieldAttributes = new LinkedList<>();
 
         for (Field field : candidate.getDeclaredFields()) {
             field.setAccessible(true);
 
-            AutoWired autoWired = field.getAnnotation(AutoWired.class);
             Inject inject = field.getAnnotation(Inject.class);
-            if (autoWired != null || inject != null) {
+            if (inject != null) {
 
                 if (Modifier.isFinal(field.getModifiers())) {
                     throw new ResolvedException(String.format("the field %s is final !", field.getName()));
                 }
-
-                boolean isRequire = autoWired != null && autoWired.required();
 
                 //获取依赖类型
                 Class<?> type = field.getType();
@@ -145,12 +128,7 @@ public class BeanDefinitionResolver implements Resolver<Map<String, BeanDefiniti
                 //Qualifier优先级比Named高
                 String refName = getIfNamed(type, field.getAnnotation(Named.class));
 
-                Qualifier qualifier = field.getAnnotation(Qualifier.class);
-                if (qualifier != null) {
-                    refName = qualifier.value();
-                }
-
-                FieldAttribute fieldAttribute = new FieldAttribute(refName, field, type, isRequire, isProvider(field.getType()));
+                FieldAttribute fieldAttribute = new FieldAttribute(refName, field, type, true, isProvider);
                 fieldAttributes.add(fieldAttribute);
             }
         }
@@ -167,16 +145,15 @@ public class BeanDefinitionResolver implements Resolver<Map<String, BeanDefiniti
     }
 
     private void resolveMethodInfo(BeanDefinition beanDefinition) throws ResolvedException {
-        Class<?> candidate = beanDefinition.getClazz();
+        Class<?> candidate = beanDefinition.getBeanClass();
         Method[] methods = candidate.getDeclaredMethods();
         List<MethodAttribute> methodAttributes = new LinkedList<>();
         for (Method method : methods) {
 
             method.setAccessible(true);
-            AutoWired autoWired = method.getAnnotation(AutoWired.class);
             Inject inject = method.getAnnotation(Inject.class);
 
-            if (autoWired != null || inject != null) {
+            if (inject != null) {
                 String methodName = method.getName();
                 if (Modifier.isAbstract(method.getModifiers())) {
                     throw new ResolvedException(String.format("the method %s is abstract !", methodName));
@@ -188,12 +165,7 @@ public class BeanDefinitionResolver implements Resolver<Map<String, BeanDefiniti
 
                 List<ParameterAttribute> parameterAttributes = resolveParameterAttributes(method.getParameters());
 
-                boolean isRequire = false;
-                if (autoWired != null) {
-                    isRequire = true;
-                }
-
-                MethodAttribute methodAttribute = new MethodAttribute(method, parameterAttributes, isRequire);
+                MethodAttribute methodAttribute = new MethodAttribute(method, parameterAttributes, true);
                 methodAttributes.add(methodAttribute);
             }
         }

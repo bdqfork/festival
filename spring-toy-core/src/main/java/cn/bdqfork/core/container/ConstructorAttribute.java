@@ -1,6 +1,7 @@
 package cn.bdqfork.core.container;
 
 import java.lang.reflect.Constructor;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,6 +19,10 @@ public class ConstructorAttribute {
      * 构造方法参数
      */
     private List<ParameterAttribute> args;
+
+    public ConstructorAttribute(Constructor<?> constructor) {
+        this(constructor, Collections.emptyList());
+    }
 
     public ConstructorAttribute(Constructor<?> constructor, List<ParameterAttribute> args) {
         this.constructor = constructor;
