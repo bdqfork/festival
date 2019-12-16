@@ -1,9 +1,10 @@
 package test.cn.bdqfork.core;
 
-import cn.bdqfork.core.container.BeanDefinition;
-import cn.bdqfork.core.container.DefaultBefactory;
+import cn.bdqfork.core.factory.BeanDefinition;
+import cn.bdqfork.core.factory.DefaultBefactory;
 import cn.bdqfork.core.exception.BeansException;
 import org.junit.Test;
+import test.cn.bdqfork.core.bean.UserDao;
 
 /**
  * @author bdq

@@ -9,7 +9,6 @@
   
     <version>0.2</version>
     <modules>
-        <module>spring-toy-example</module>
         <module>spring-toy-core</module>
     </modules>
     <packaging>pom</packaging>
@@ -48,6 +47,11 @@
                 <groupId>cglib</groupId>
                 <artifactId>cglib</artifactId>
                 <version>3.2.6</version>
+            </dependency>
+            <dependency>
+                <groupId>org.objenesis</groupId>
+                <artifactId>objenesis</artifactId>
+                <version>3.1</version>
             </dependency>
             <dependency>
                 <groupId>org.aspectj</groupId>
