@@ -1,10 +1,22 @@
 package cn.bdqfork.core.util;
 
+import javax.inject.Provider;
+
 /**
  * @author bdq
  * @since 2019-07-30
  */
 public class BeanUtils {
+
+    /**
+     * 判断clazz是否为target类型或子类型，如果是，返回true，否则返回false
+     *
+     * @param clazz 待判断类型
+     * @return boolean
+     */
+    public static boolean isProvider(Class<?> clazz) {
+        return clazz == Provider.class;
+    }
 
     /**
      * 判断clazz是否为target类型或子类型，如果是，返回true，否则返回false
@@ -16,6 +28,7 @@ public class BeanUtils {
     public static boolean isSubType(Class<?> clazz, Class<?> target) {
         return target.isAssignableFrom(clazz);
     }
+
 
     /**
      * 判断clazz是否为target类型或子类型，如果是，返回true，否则返回false

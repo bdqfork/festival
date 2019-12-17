@@ -2,6 +2,7 @@ package cn.bdqfork.core.factory;
 
 import cn.bdqfork.core.exception.BeansException;
 
+import javax.inject.Provider;
 import java.lang.reflect.Constructor;
 
 /**
@@ -21,8 +22,16 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
     }
 
     protected Object doCreateBean(String beanName, BeanDefinition beanDefinition, Object[] explicitArgs) throws BeansException {
-        Object bean = createInstance(beanName, beanDefinition, explicitArgs);
+        registerCreatingSingleton(beanName, () -> {
+            try {
+                return createInstance(beanName, beanDefinition, explicitArgs);
+            } catch (BeansException e) {
+                throw new IllegalStateException(e);
+            }
+        });
+        Object bean = getSingleton(beanName, true);
         autoInjected(beanName, bean);
+        registerSingleton(beanName, bean);
         return bean;
     }
 

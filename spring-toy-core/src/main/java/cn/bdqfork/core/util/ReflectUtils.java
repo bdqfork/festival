@@ -4,8 +4,7 @@ import cn.bdqfork.core.exception.ResolvedException;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.*;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.Collections;
@@ -130,6 +129,10 @@ public class ReflectUtils {
             throw new ResolvedException(String.format("class %s is not found !", type.getTypeName()), e);
         }
         return providedType;
+    }
+
+    public static void makeAccessible(AccessibleObject accessibleObject) {
+        accessibleObject.setAccessible(true);
     }
 
 }

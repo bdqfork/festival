@@ -37,8 +37,19 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
         synchronized (singletons) {
             singletons.put(beanName, bean);
             earlySingletons.remove(beanName);
-            registerSingletons.remove(beanName);
+            creatingSingletons.remove(beanName);
             registerSingletons.add(beanName);
+        }
+    }
+
+    protected void registerCreatingSingleton(String beanName, Provider<?> provider) {
+        synchronized (singletons) {
+            if (singletonProviders.containsKey(beanName)) {
+                //todo: info
+                throw new IllegalArgumentException("");
+            }
+            singletonProviders.put(beanName, provider);
+            creatingSingletons.add(beanName);
         }
     }
 
@@ -66,7 +77,8 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
                 singleton = earlySingletons.get(beanName);
                 if (singleton == null && isCreating(beanName)) {
                     Provider<?> provider = singletonProviders.get(beanName);
-                    earlySingletons.put(beanName, provider.get());
+                    singleton = provider.get();
+                    earlySingletons.put(beanName, singleton);
                 }
             }
             return singleton;
@@ -136,14 +148,16 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
     }
 
     private boolean isDependent(String dependOn, Map<String, Boolean> trace) {
-        for (String depend : dependentBeanMap.get(dependOn)) {
-            if (trace.containsKey(depend)) {
-                return true;
+        if (dependentBeanMap.containsKey(dependOn)) {
+            for (String depend : dependentBeanMap.get(dependOn)) {
+                if (trace.containsKey(depend)) {
+                    return true;
+                }
+                if (isDependent(depend, trace)) {
+                    return true;
+                }
+                trace.put(depend, true);
             }
-            if (isDependent(depend, trace)) {
-                return true;
-            }
-            trace.put(depend, true);
         }
         return false;
     }

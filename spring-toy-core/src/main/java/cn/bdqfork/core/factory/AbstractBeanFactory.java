@@ -1,5 +1,6 @@
 package cn.bdqfork.core.factory;
 
+import cn.bdqfork.core.exception.UnsatisfiedBeanException;
 import cn.bdqfork.core.factory.registry.DefaultSingletonBeanRegistry;
 import cn.bdqfork.core.exception.BeansException;
 
@@ -45,7 +46,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         }
         for (String dependOn : beanDefinition.getDependOns()) {
             if (isDependent(dependOn, beanName)) {
-                throw new BeansException("");
+                throw new UnsatisfiedBeanException("circular dependency exists !");
             }
             getBean(dependOn);
         }
