@@ -2,6 +2,7 @@ package cn.bdqfork.core.factory;
 
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import cn.bdqfork.core.exception.BeansException;
+import cn.bdqfork.core.util.BeanUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -121,7 +122,7 @@ public class DefaultBefactory extends AbstractAutoInjectedBeanFactory implements
     @Override
     protected <T> BeanDefinition getBeanDefination(Class<T> clazz) {
         for (BeanDefinition beanDefinition : beanDefinitionMap.values()) {
-            if (beanDefinition.getBeanClass() == clazz) {
+            if (BeanUtils.checkIsInstance(beanDefinition.getBeanClass(), clazz)) {
                 return beanDefinition;
             }
         }

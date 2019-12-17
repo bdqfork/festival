@@ -82,7 +82,7 @@ public class AnnotationBeanfactory extends DefaultBefactory {
         if ("".equals(name)) {
             name = this.beanNameGenerator.generateBeanName(clazz);
         }
-        if (clazz.getAnnotation(Singleton.class) == null) {
+        if (clazz.isAnnotationPresent(Singleton.class)) {
             return new BeanDefinition(name, clazz, BeanDefinition.SINGLETON);
         } else if (clazz.isAnnotationPresent(Scope.class)) {
             //todo:添加异常信息
@@ -165,8 +165,8 @@ public class AnnotationBeanfactory extends DefaultBefactory {
                 String beanName = beanNameGenerator.generateBeanName(type);
                 if (beanDefinition.isPrototype()) {
                     beanDefinition.addDependOn(beanName);
+                    registerDependentForBean(beanDefinition.getBeanName(), beanName);
                 }
-                registerDependentForBean(beanDefinition.getBeanName(), beanName);
             }
         }
         beanDefinition.setFields(fields);
@@ -200,8 +200,8 @@ public class AnnotationBeanfactory extends DefaultBefactory {
                     String beanName = beanNameGenerator.generateBeanName(type);
                     if (beanDefinition.isPrototype()) {
                         beanDefinition.addDependOn(beanName);
+                        registerDependentForBean(beanDefinition.getBeanName(), beanName);
                     }
-                    registerDependentForBean(beanDefinition.getBeanName(), beanName);
                 }
             }
         }

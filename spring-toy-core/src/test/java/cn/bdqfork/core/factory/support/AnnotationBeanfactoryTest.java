@@ -2,9 +2,7 @@ package cn.bdqfork.core.factory.support;
 
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.UnsatisfiedBeanException;
-import cn.bdqfork.model.cycle.ConstructorCycleServiceImpl;
-import cn.bdqfork.model.cycle.FieldCycleServiceImpl;
-import cn.bdqfork.model.cycle.SetterCycleServiceImpl;
+import cn.bdqfork.model.cycle.*;
 import org.junit.Test;
 
 public class AnnotationBeanfactoryTest {
@@ -12,18 +10,31 @@ public class AnnotationBeanfactoryTest {
     @Test(expected = UnsatisfiedBeanException.class)
     public void testConstructorCycle() throws BeansException {
         AnnotationBeanfactory annotationBeanfactory = new AnnotationBeanfactory("cn.bdqfork.model");
-        annotationBeanfactory.getBean(ConstructorCycleServiceImpl.class);
+        annotationBeanfactory.getBean(ConstructorCycleService.class);
+        annotationBeanfactory.getBean(PrototypeConstructorCycleService.class);
     }
 
     @Test
     public void testFieldCycle() throws BeansException {
         AnnotationBeanfactory annotationBeanfactory = new AnnotationBeanfactory("cn.bdqfork.model");
-        annotationBeanfactory.getBean(FieldCycleServiceImpl.class);
+        annotationBeanfactory.getBean(FieldCycleService.class);
+    }
+
+    @Test(expected = UnsatisfiedBeanException.class)
+    public void testPrototypeFieldCycle() throws BeansException {
+        AnnotationBeanfactory annotationBeanfactory = new AnnotationBeanfactory("cn.bdqfork.model");
+        annotationBeanfactory.getBean(PrototypeFieldCycleService.class);
     }
 
     @Test
-    public void testMethodCycle() throws BeansException {
+    public void testSetterCycle() throws BeansException {
         AnnotationBeanfactory annotationBeanfactory = new AnnotationBeanfactory("cn.bdqfork.model");
-        annotationBeanfactory.getBean(SetterCycleServiceImpl.class);
+        annotationBeanfactory.getBean(SetterCycleService.class);
+    }
+
+    @Test(expected = UnsatisfiedBeanException.class)
+    public void testPrototypeSetterCycle() throws BeansException {
+        AnnotationBeanfactory annotationBeanfactory = new AnnotationBeanfactory("cn.bdqfork.model");
+        annotationBeanfactory.getBean(PrototypeSetterCycleService.class);
     }
 }
