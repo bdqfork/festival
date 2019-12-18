@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author bdq
  * @since 2019/12/15
  */
-public class DefaultBefactory extends AbstractAutoInjectedBeanFactory implements BeanDefinitionRegistry {
+public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory implements BeanDefinitionRegistry {
     private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
     private BeanFactory parentBeanFactory;
 

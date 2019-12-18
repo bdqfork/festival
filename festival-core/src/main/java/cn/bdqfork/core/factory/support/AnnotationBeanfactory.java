@@ -18,7 +18,7 @@ import java.util.*;
  * @author bdq
  * @since 2019/12/16
  */
-public class AnnotationBeanfactory extends DefaultBefactory {
+public class AnnotationBeanfactory extends DefaultBeanFactory {
     /**
      * BeanName生成器
      */

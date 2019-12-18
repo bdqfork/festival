@@ -9,7 +9,7 @@
   
     <version>0.2</version>
     <modules>
-        <module>spring-toy-core</module>
+        <module>festival-core</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
@@ -27,17 +27,25 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.20</version>
+            <version>1.18.10</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
+            <!--jsr330-->
             <dependency>
                 <groupId>javax.inject</groupId>
                 <artifactId>javax.inject</artifactId>
                 <version>1</version>
             </dependency>
+            <!--jsr250-->
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+                <version>1.3.2</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.javassist</groupId>
                 <artifactId>javassist</artifactId>
