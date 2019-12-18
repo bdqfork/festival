@@ -1,6 +1,7 @@
 package cn.bdqfork.core.factory;
 
 import java.lang.reflect.Member;
+import java.lang.reflect.Type;
 
 /**
  * @author bdq
@@ -14,6 +15,6 @@ public interface InjectedPoint {
 
     String[] getInjectedNames();
 
-    Class<?>[] getInjectedTypes();
+    Type[] getInjectedTypes();
 
 }

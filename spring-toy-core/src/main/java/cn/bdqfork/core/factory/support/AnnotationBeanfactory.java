@@ -156,13 +156,13 @@ public class AnnotationBeanfactory extends DefaultBefactory {
                     throw new ResolvedException(String.format("the field %s is final !", field.getName()));
                 }
                 fields.add(field);
-                Class<?> type;
-                if (BeanUtils.isProvider(field.getType())) {
-                    type = ReflectUtils.getActualType((ParameterizedType) field.getGenericType());
+                Type type = field.getGenericType();
+                if (BeanUtils.isProvider(type)) {
+                    type = ReflectUtils.getActualType(type);
                 } else {
                     type = field.getType();
                 }
-                String beanName = beanNameGenerator.generateBeanName(type);
+                String beanName = beanNameGenerator.generateBeanName((Class<?>) type);
                 if (beanDefinition.isPrototype()) {
                     beanDefinition.addDependOn(beanName);
                     registerDependentForBean(beanDefinition.getBeanName(), beanName);
@@ -190,14 +190,11 @@ public class AnnotationBeanfactory extends DefaultBefactory {
                 }
 
                 methods.add(method);
-                for (Parameter parameter : method.getParameters()) {
-                    Class<?> type;
-                    if (BeanUtils.isProvider(parameter.getType())) {
-                        type = ReflectUtils.getActualType((ParameterizedType) parameter.getParameterizedType());
-                    } else {
-                        type = parameter.getType();
+                for (Type type : method.getGenericParameterTypes()) {
+                    if (BeanUtils.isProvider(type)) {
+                        type = ReflectUtils.getActualType(type);
                     }
-                    String beanName = beanNameGenerator.generateBeanName(type);
+                    String beanName = beanNameGenerator.generateBeanName((Class<?>) type);
                     if (beanDefinition.isPrototype()) {
                         beanDefinition.addDependOn(beanName);
                         registerDependentForBean(beanDefinition.getBeanName(), beanName);

@@ -11,11 +11,11 @@ import javax.inject.Singleton;
  */
 @Singleton
 @Named
-public class SetterCycleDaoImpl implements SetterCycleDao {
-    private SetterCycleService service;
+public class ProviderSetterCycleDaoImpl implements ProviderCycleSetterDao{
+    private Provider<ProviderSetterCycleService> service;
 
     @Inject
-    public void setService(SetterCycleService service) {
+    public void setService(Provider<ProviderSetterCycleService> service) {
         this.service = service;
     }
 }

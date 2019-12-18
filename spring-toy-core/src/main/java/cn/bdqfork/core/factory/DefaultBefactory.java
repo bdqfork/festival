@@ -1,13 +1,13 @@
 package cn.bdqfork.core.factory;
 
+import cn.bdqfork.core.exception.ResolvedException;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.util.BeanUtils;
+import cn.bdqfork.core.util.ReflectUtils;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import javax.inject.Provider;
+import java.lang.reflect.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -81,12 +81,29 @@ public class DefaultBefactory extends AbstractAutoInjectedBeanFactory implements
     }
 
     @Override
-    protected Object[] doResovleDependencies(String[] names, Class<?>[] types, boolean check) throws BeansException {
+    protected Object[] doResovleDependencies(String[] names, Type[] types, boolean check) throws BeansException {
         Object[] objects = new Object[types.length];
         for (int i = 0; i < types.length; i++) {
             Object bean = getBean(names[i]);
+            if (bean != null) {
+                if (BeanUtils.isProvider(types[i])) {
+                    Object finalBean = bean;
+                    bean = (Provider<Object>) () -> finalBean;
+                }
+            }
             if (bean == null) {
-                bean = getBean(types[i]);
+                Class<?> actualType = ReflectUtils.getActualType(types[i]);
+                if (BeanUtils.isProvider(types[i])) {
+                    bean = (Provider<Object>) () -> {
+                        try {
+                            return getBean(actualType);
+                        } catch (BeansException e) {
+                            throw new IllegalStateException(e);
+                        }
+                    };
+                } else {
+                    bean = getBean(actualType);
+                }
             }
             if (bean == null && check) {
                 //todo:info

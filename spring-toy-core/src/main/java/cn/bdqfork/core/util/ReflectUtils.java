@@ -121,14 +121,12 @@ public class ReflectUtils {
         return signBuilder.toString();
     }
 
-    public static Class<?> getActualType(ParameterizedType type) throws ResolvedException {
-        Class<?> providedType;
-        try {
-            providedType = Class.forName(type.getActualTypeArguments()[0].getTypeName());
-        } catch (ClassNotFoundException e) {
-            throw new ResolvedException(String.format("class %s is not found !", type.getTypeName()), e);
+    public static Class<?> getActualType(Type type) {
+        if (type instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) type;
+            return (Class<?>) parameterizedType.getActualTypeArguments()[0];
         }
-        return providedType;
+        return (Class<?>) type;
     }
 
     public static void makeAccessible(AccessibleObject accessibleObject) {

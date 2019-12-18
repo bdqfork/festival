@@ -30,6 +30,7 @@ public class AnnotationBeanfactoryTest {
     public void testSetterCycle() throws BeansException {
         AnnotationBeanfactory annotationBeanfactory = new AnnotationBeanfactory("cn.bdqfork.model");
         annotationBeanfactory.getBean(SetterCycleService.class);
+        annotationBeanfactory.getBean(ProviderSetterCycleService.class);
     }
 
     @Test(expected = UnsatisfiedBeanException.class)

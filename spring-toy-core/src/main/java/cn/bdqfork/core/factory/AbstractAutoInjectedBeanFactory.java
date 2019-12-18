@@ -2,8 +2,8 @@ package cn.bdqfork.core.factory;
 
 import cn.bdqfork.core.exception.BeansException;
 
-import javax.inject.Provider;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Type;
 
 /**
  * @author bdq
@@ -66,11 +66,11 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
             throw new BeansException("");
         }
         String[] names = injectedPoint.getInjectedNames();
-        Class<?>[] types = injectedPoint.getInjectedTypes();
+        Type[] types = injectedPoint.getInjectedTypes();
         return doResovleDependencies(names, types, check);
     }
 
-    protected abstract Object[] doResovleDependencies(String[] names, Class<?>[] types, boolean check) throws BeansException;
+    protected abstract Object[] doResovleDependencies(String[] names, Type[] types, boolean check) throws BeansException;
 
     @Override
     public void autoInjected(String beanName, Object bean) throws BeansException {

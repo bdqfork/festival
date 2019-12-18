@@ -1,5 +1,8 @@
 package cn.bdqfork.core.factory;
 
+import cn.bdqfork.core.exception.ResolvedException;
+import cn.bdqfork.core.util.ReflectUtils;
+
 import javax.inject.Named;
 import java.lang.reflect.*;
 import java.util.LinkedList;
@@ -13,7 +16,7 @@ public class DefaultInjectedPoint implements InjectedPoint {
     private Member member;
     private BeanNameGenerator beanNameGenerator;
     private List<String> names = new LinkedList<>();
-    private List<Class<?>> types = new LinkedList<>();
+    private List<Type> types = new LinkedList<>();
 
     public DefaultInjectedPoint(Member member) {
         this.member = member;
@@ -37,21 +40,23 @@ public class DefaultInjectedPoint implements InjectedPoint {
 
     protected void doResolve(Parameter[] parameters) {
         for (Parameter parameter : parameters) {
-            Class<?> type = parameter.getType();
+            Type type = parameter.getParameterizedType();
             types.add(type);
-            String name = beanNameGenerator.generateBeanName(type);
+            Class<?> actualType = ReflectUtils.getActualType(type);
+            String name = beanNameGenerator.generateBeanName(actualType);
             names.add(name);
         }
     }
 
     protected void doResolve(Field field) {
-        Class<?> type = field.getType();
+        Type type = field.getGenericType();
         types.add(type);
         if (field.isAnnotationPresent(Named.class)) {
-            Named named = type.getAnnotation(Named.class);
+            Named named = field.getAnnotation(Named.class);
             names.add(named.value());
         } else {
-            String name = beanNameGenerator.generateBeanName(type);
+            Class<?> actualType = ReflectUtils.getActualType(type);
+            String name = beanNameGenerator.generateBeanName(actualType);
             names.add(name);
         }
     }
@@ -72,8 +77,8 @@ public class DefaultInjectedPoint implements InjectedPoint {
     }
 
     @Override
-    public Class<?>[] getInjectedTypes() {
-        return types.toArray(new Class[0]);
+    public Type[] getInjectedTypes() {
+        return types.toArray(new Type[0]);
     }
 
     public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
