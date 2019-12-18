@@ -1,9 +1,13 @@
 package cn.bdqfork.core.factory;
 
 import cn.bdqfork.core.exception.BeansException;
+import cn.bdqfork.core.exception.NoSuchBeanException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author bdq
@@ -36,41 +40,46 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
     }
 
     private Object createInstance(String beanName, BeanDefinition beanDefinition, Object[] explicitArgs) throws BeansException {
-        Constructor<?> constructor = beanDefinition.getConstructor();
-        if (constructor == null) {
-            Class<?> beanClass = beanDefinition.getBeanClass();
+        Class<?> beanType = beanDefinition.getBeanClass();
+        Constructor<?> constructor = null;
+        if (explicitArgs != null) {
+            Class<?>[] explicitArgTypes = Arrays.stream(explicitArgs)
+                    .map(Object::getClass)
+                    .toArray(Class[]::new);
             try {
-                constructor = beanClass.getDeclaredConstructor();
+                constructor = beanType.getConstructor(explicitArgTypes);
             } catch (NoSuchMethodException e) {
-                throw new BeansException("");
+                throw new BeansException(e);
             }
-            beanDefinition.setConstructor(constructor);
         }
-        return autoInjectedConstructor(beanName, constructor, explicitArgs);
+        return autoInjectedConstructor(beanName, beanDefinition, constructor, explicitArgs);
     }
 
-    protected abstract Object autoInjectedConstructor(String beanName, Constructor<?> constructor, Object[] explicitArgs) throws BeansException;
+    protected abstract Object autoInjectedConstructor(String beanName, BeanDefinition beanDefinition, Constructor<?> constructor, Object[] explicitArgs) throws BeansException;
 
     protected abstract void autoInjectedField(String beanName, BeanDefinition beanDefinition, Object instance) throws BeansException;
 
     protected abstract void autoInjectedMethod(String beanName, BeanDefinition beanDefinition, Object instance) throws BeansException;
 
     @Override
-    public Object[] resovleDependencies(InjectedPoint injectedPoint, String beanName) throws BeansException {
-        return resovleDependencies(injectedPoint, beanName, true);
+    public Object resovleDependence(InjectedPoint injectedPoint, String beanName) throws BeansException {
+        if (!containBean(beanName)) {
+            throw new NoSuchBeanException(String.format("there is no such bean named %s !", beanName));
+        }
+        return doResovleDependence(injectedPoint.getBeanName(), injectedPoint.getType(), injectedPoint.isRequire());
     }
 
     @Override
-    public Object[] resovleDependencies(InjectedPoint injectedPoint, String beanName, boolean check) throws BeansException {
-        if (!containBean(beanName)) {
-            throw new BeansException("");
+    public Object[] resovleMultDependence(MultInjectedPoint multInjectedPoint, String beanName) throws BeansException {
+        List<Object> dependencies = new LinkedList<>();
+        for (InjectedPoint injectedPoint : multInjectedPoint) {
+            Object dependence = resovleDependence(injectedPoint, beanName);
+            dependencies.add(dependence);
         }
-        String[] names = injectedPoint.getInjectedNames();
-        Type[] types = injectedPoint.getInjectedTypes();
-        return doResovleDependencies(names, types, check);
+        return dependencies.toArray();
     }
 
-    protected abstract Object[] doResovleDependencies(String[] names, Type[] types, boolean check) throws BeansException;
+    protected abstract Object doResovleDependence(String name, Type type, boolean check) throws BeansException;
 
     @Override
     public void autoInjected(String beanName, Object bean) throws BeansException {

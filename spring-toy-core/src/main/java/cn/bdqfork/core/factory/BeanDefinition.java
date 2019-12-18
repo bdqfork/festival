@@ -1,10 +1,9 @@
 package cn.bdqfork.core.factory;
 
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -35,16 +34,15 @@ public class BeanDefinition {
     /**
      * 构造器属性
      */
-    private Constructor<?> constructor;
-
+    private MultInjectedPoint injectedConstructor;
     /**
      * 待直接注入依赖属性
      */
-    private Set<Field> fields;
+    private Map<String, InjectedPoint> injectedFields;
     /**
      * 属性注入方法属性
      */
-    private Set<Method> methods;
+    private Map<String, MultInjectedPoint> injectedSetters;
     /**
      * 是否已注册
      */
@@ -59,8 +57,8 @@ public class BeanDefinition {
         this.beanClass = beanClass;
         this.scope = scope;
         this.dependOns = new HashSet<>();
-        this.fields = new HashSet<>();
-        this.methods = new HashSet<>();
+        this.injectedFields = new HashMap<>();
+        this.injectedSetters = new HashMap<>();
     }
 
     public String getBeanName() {
@@ -95,28 +93,28 @@ public class BeanDefinition {
         this.dependOns.addAll(dependOns);
     }
 
-    public Constructor<?> getConstructor() {
-        return constructor;
+    public MultInjectedPoint getInjectedConstructor() {
+        return injectedConstructor;
     }
 
-    public void setConstructor(Constructor<?> constructor) {
-        this.constructor = constructor;
+    public void setInjectedConstructor(MultInjectedPoint injectedConstructor) {
+        this.injectedConstructor = injectedConstructor;
     }
 
-    public Set<Field> getFields() {
-        return fields;
+    public Map<String, InjectedPoint> getInjectedFields() {
+        return injectedFields;
     }
 
-    public void setFields(Set<Field> fields) {
-        this.fields = fields;
+    public void setInjectedFields(Map<String, InjectedPoint> injectedFields) {
+        this.injectedFields = injectedFields;
     }
 
-    public Set<Method> getMethods() {
-        return methods;
+    public Map<String, MultInjectedPoint> getInjectedSetters() {
+        return injectedSetters;
     }
 
-    public void setMethods(Set<Method> methods) {
-        this.methods = methods;
+    public void setInjectedSetters(Map<String, MultInjectedPoint> injectedSetters) {
+        this.injectedSetters = injectedSetters;
     }
 
     public boolean isSingleton() {

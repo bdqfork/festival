@@ -1,20 +1,45 @@
 package cn.bdqfork.core.factory;
 
-import java.lang.reflect.Member;
+import cn.bdqfork.core.util.ReflectUtils;
+
 import java.lang.reflect.Type;
 
 /**
  * @author bdq
- * @since 2019/12/16
+ * @since 2019/12/18
  */
-public interface InjectedPoint {
+public class InjectedPoint {
+    private String beanName;
+    private Type type;
+    private boolean require;
 
-    void setMember(Member member);
+    public InjectedPoint(Type type) {
+        this(type, true);
+    }
 
-    Member getMember();
+    public InjectedPoint(Type type, boolean require) {
+        this("", type, require);
+    }
 
-    String[] getInjectedNames();
+    public InjectedPoint(String beanName, Type type, boolean require) {
+        this.beanName = beanName;
+        this.type = type;
+        this.require = require;
+    }
 
-    Type[] getInjectedTypes();
+    public String getBeanName() {
+        return beanName;
+    }
 
+    public boolean isRequire() {
+        return require;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public Class<?> getActualType() {
+        return ReflectUtils.getActualType(type);
+    }
 }

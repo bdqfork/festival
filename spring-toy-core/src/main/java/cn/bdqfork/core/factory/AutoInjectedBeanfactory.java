@@ -12,7 +12,8 @@ public interface AutoInjectedBeanfactory extends ConfigurableBeanFactory {
 
     void autoInjected(String beanName, Object bean) throws BeansException;
 
-    Object[] resovleDependencies(InjectedPoint injectedPoint, String beanName) throws BeansException;
+    Object resovleDependence(InjectedPoint injectedPoint, String beanName) throws BeansException;
 
-    Object[] resovleDependencies(InjectedPoint injectedPoint, String beanName, boolean check) throws BeansException;
+    Object[] resovleMultDependence(MultInjectedPoint multInjectedPoint, String beanName) throws BeansException;
+
 }

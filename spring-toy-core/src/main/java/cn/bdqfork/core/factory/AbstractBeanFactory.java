@@ -1,8 +1,9 @@
 package cn.bdqfork.core.factory;
 
-import cn.bdqfork.core.exception.UnsatisfiedBeanException;
-import cn.bdqfork.core.factory.registry.DefaultSingletonBeanRegistry;
 import cn.bdqfork.core.exception.BeansException;
+import cn.bdqfork.core.exception.CircularDependencyException;
+import cn.bdqfork.core.exception.NoSuchBeanException;
+import cn.bdqfork.core.factory.registry.DefaultSingletonBeanRegistry;
 
 /**
  * @author bdq
@@ -19,8 +20,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
     public <T> T getBean(Class<T> clazz) throws BeansException {
         BeanDefinition beanDefinition = getBeanDefination(clazz);
         if (beanDefinition == null) {
-            //todo: info
-            throw new BeansException("");
+            throw new NoSuchBeanException(String.format("there is no such bean of class %s !", clazz.getCanonicalName()));
         }
         return getBean(beanDefinition.getBeanName());
     }
@@ -36,17 +36,19 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         if (bean != null && args == null) {
             return (T) bean;
         }
+        if (isCreating(beanName)) {
+            throw new BeansException(String.format("bean named %s is under creating !", beanName));
+        }
+
         if (!containBean(beanName)) {
-            throw new BeansException("");
+            throw new NoSuchBeanException(String.format("there is no such bean named %s !", beanName));
         }
 
         BeanDefinition beanDefinition = getBeanDefinition(beanName);
-        if (beanDefinition == null) {
-            throw new BeansException("");
-        }
+
         for (String dependOn : beanDefinition.getDependOns()) {
             if (isDependent(dependOn, beanName)) {
-                throw new UnsatisfiedBeanException("circular dependency exists !");
+                throw new CircularDependencyException("circular dependency exists !");
             }
             getBean(dependOn);
         }
@@ -61,8 +63,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         } else if (isPrototype(beanName)) {
             bean = createBean(beanName, beanDefinition, args);
         } else {
-            //todo:异常信息
-            throw new BeansException("");
+            throw new BeansException("unsupport scope !");
         }
         return (T) bean;
     }
@@ -93,22 +94,18 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
     @Override
     public boolean isSingleton(String beanName) throws BeansException {
-        BeanDefinition beanDefinition = getBeanDefination(beanName);
-        if (beanDefinition == null) {
-            //todo: info
-            throw new BeansException("");
+        if (!containBean(beanName)) {
+            throw new NoSuchBeanException(String.format("no such bean named %s !", beanName));
         }
-        return beanDefinition.isSingleton();
+        return getBeanDefination(beanName).isSingleton();
     }
 
     @Override
     public boolean isPrototype(String beanName) throws BeansException {
-        BeanDefinition beanDefinition = getBeanDefination(beanName);
-        if (beanDefinition == null) {
-            //todo: info
-            throw new BeansException("");
+        if (!containBean(beanName)) {
+            throw new NoSuchBeanException(String.format("there is no such bean named %s !", beanName));
         }
-        return beanDefinition.isPrototype();
+        return getBeanDefination(beanName).isPrototype();
     }
 
     protected abstract BeanDefinition getBeanDefination(String beanName);

@@ -1,8 +1,7 @@
 package cn.bdqfork.core.factory;
 
-import cn.bdqfork.core.exception.ResolvedException;
+import cn.bdqfork.core.exception.*;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
-import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.ReflectUtils;
 
@@ -10,7 +9,6 @@ import javax.inject.Provider;
 import java.lang.reflect.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -21,100 +19,101 @@ public class DefaultBefactory extends AbstractAutoInjectedBeanFactory implements
     private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
     private BeanFactory parentBeanFactory;
 
-    @Override
-    protected Object autoInjectedConstructor(String beanName, Constructor<?> constructor, Object[] explicitArgs) throws BeansException {
-        Object[] args = null;
-        if (explicitArgs != null) {
-            args = explicitArgs;
-        }
-        return instantiate(beanName, constructor, args);
-    }
-
-    protected Object instantiate(String beanName, Constructor<?> constructor, Object[] args) throws BeansException {
-        if (args == null) {
-            args = resovleDependencies(new DefaultInjectedPoint(constructor), beanName);
-        }
+    protected Object instantiate(Constructor<?> constructor, Object[] args) throws BeansException {
         try {
             return constructor.newInstance(args);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new BeansException(e);
+            throw new FailedInjectedConstructorException(e);
         }
+    }
+
+    @Override
+    protected Object autoInjectedConstructor(String beanName, BeanDefinition beanDefinition, Constructor<?> constructor, Object[] explicitArgs) throws BeansException {
+        if (explicitArgs != null) {
+            return instantiate(constructor, explicitArgs);
+        }
+        MultInjectedPoint multInjectedPoint = beanDefinition.getInjectedConstructor();
+        Class<?> beanClass = beanDefinition.getBeanClass();
+        if (multInjectedPoint == null) {
+            multInjectedPoint = new MultInjectedPoint();
+        }
+        try {
+            constructor = beanClass.getConstructor(multInjectedPoint.getActualTypes());
+        } catch (NoSuchMethodException e) {
+            throw new FailedInjectedConstructorException(e);
+        }
+        explicitArgs = resovleMultDependence(multInjectedPoint, beanName);
+        return instantiate(constructor, explicitArgs);
     }
 
     @Override
     protected void autoInjectedField(String beanName, BeanDefinition beanDefinition, Object instance) throws BeansException {
-        Set<Field> fields = beanDefinition.getFields();
-        if (fields == null) {
-            return;
-        }
-        for (Field field : fields) {
-            injectedField(beanName, instance, field);
+        for (Map.Entry<String, InjectedPoint> pointEntry : beanDefinition.getInjectedFields().entrySet()) {
+            Class<?> beanClass = beanDefinition.getBeanClass();
+            Field field;
+            try {
+                field = beanClass.getDeclaredField(pointEntry.getKey());
+            } catch (NoSuchFieldException e) {
+                throw new FailedInjectedFieldException(e);
+            }
+            injectedField(beanName, instance, field, pointEntry.getValue());
         }
     }
 
-    protected void injectedField(String beanName, Object instance, Field field) throws BeansException {
-        Object[] values = resovleDependencies(new DefaultInjectedPoint(field), beanName, true);
+    protected void injectedField(String beanName, Object instance, Field field, InjectedPoint injectedPoint) throws BeansException {
+        Object value = resovleDependence(injectedPoint, beanName);
         field.setAccessible(true);
         try {
-            field.set(instance, values[0]);
+            field.set(instance, value);
         } catch (IllegalAccessException e) {
-            throw new BeansException(e);
+            throw new FailedInjectedFieldException(e);
         }
     }
 
     @Override
     protected void autoInjectedMethod(String beanName, BeanDefinition beanDefinition, Object instance) throws BeansException {
-        Set<Method> methods = beanDefinition.getMethods();
-        for (Method method : methods) {
-            injectedMethod(beanName, instance, method);
-        }
-    }
-
-    protected void injectedMethod(String beanName, Object instance, Method method) throws BeansException {
-        Object[] args = resovleDependencies(new DefaultInjectedPoint(method), beanName);
-        method.setAccessible(true);
-        try {
-            method.invoke(instance, args);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new BeansException(e);
+        for (Map.Entry<String, MultInjectedPoint> pointEntry : beanDefinition.getInjectedSetters().entrySet()) {
+            Class<?> beanClass = beanDefinition.getBeanClass();
+            MultInjectedPoint multInjectedPoint = pointEntry.getValue();
+            Method method;
+            try {
+                method = beanClass.getDeclaredMethod(pointEntry.getKey(), multInjectedPoint.getClassTypes());
+            } catch (NoSuchMethodException e) {
+                throw new FailedInjectedMethodException(e);
+            }
+            injectedMethod(beanName, instance, method, multInjectedPoint);
         }
     }
 
     @Override
-    protected Object[] doResovleDependencies(String[] names, Type[] types, boolean check) throws BeansException {
-        Object[] objects = new Object[types.length];
-        for (int i = 0; i < types.length; i++) {
-            Object bean = getBean(names[i]);
-            if (bean != null) {
-                if (BeanUtils.isProvider(types[i])) {
-                    Object finalBean = bean;
-                    bean = (Provider<Object>) () -> finalBean;
-                }
-            }
-            if (bean == null) {
-                Class<?> actualType = ReflectUtils.getActualType(types[i]);
-                if (BeanUtils.isProvider(types[i])) {
-                    bean = (Provider<Object>) () -> {
-                        try {
-                            return getBean(actualType);
-                        } catch (BeansException e) {
-                            throw new IllegalStateException(e);
-                        }
-                    };
-                } else {
-                    bean = getBean(actualType);
-                }
-            }
-            if (bean == null && check) {
-                //todo:info
-                throw new BeansException("");
-            }
-            if (bean != null) {
-                objects[i] = bean;
-            }
+    protected Object doResovleDependence(String name, Type type, boolean check) throws BeansException {
+        Object bean;
+        Class<?> actualType = ReflectUtils.getActualType(type);
+        if ("".equals(name)) {
+            bean = getBean(actualType);
+        } else {
+            bean = getBean(name);
         }
-        return objects;
+        if (bean == null && check) {
+            throw new UnsatisfiedBeanException(String.format("there is no bean named %s or type of %s", name, type.getTypeName()));
+        }
+        if (BeanUtils.isProvider(type)) {
+            Object finalBean = bean;
+            bean = (Provider<Object>) () -> finalBean;
+        }
+        return bean;
     }
+
+    protected void injectedMethod(String beanName, Object instance, Method method, MultInjectedPoint multInjectedPoint) throws BeansException {
+        Object[] args = resovleMultDependence(multInjectedPoint, beanName);
+        method.setAccessible(true);
+        try {
+            method.invoke(instance, args);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new FailedInjectedMethodException(e);
+        }
+    }
+
 
     @Override
     protected boolean containBeanDefinition(String beanName) {

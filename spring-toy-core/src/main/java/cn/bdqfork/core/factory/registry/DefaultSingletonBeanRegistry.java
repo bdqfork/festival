@@ -26,8 +26,7 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
     public void registerSingleton(String beanName, Object bean) {
         synchronized (singletons) {
             if (singletons.containsKey(beanName)) {
-                //todo: info
-                throw new IllegalArgumentException("");
+                throw new IllegalArgumentException(String.format("singleton %s is already exist !", beanName));
             }
             addSingleton(beanName, bean);
         }
@@ -45,8 +44,7 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
     protected void registerCreatingSingleton(String beanName, Provider<?> provider) {
         synchronized (singletons) {
             if (singletonProviders.containsKey(beanName)) {
-                //todo: info
-                throw new IllegalArgumentException("");
+                throw new IllegalArgumentException(String.format("provider singleton %s is already under creating !", beanName));
             }
             singletonProviders.put(beanName, provider);
             creatingSingletons.add(beanName);
@@ -56,8 +54,7 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
     protected void registerSingleton(String beanName, Provider<?> provider) {
         synchronized (singletons) {
             if (singletonProviders.containsKey(beanName)) {
-                //todo: info
-                throw new IllegalArgumentException("");
+                throw new IllegalArgumentException(String.format("provider singleton %s is already exist !", beanName));
             }
             registerSingletons.add(beanName);
             singletonProviders.put(beanName, provider);

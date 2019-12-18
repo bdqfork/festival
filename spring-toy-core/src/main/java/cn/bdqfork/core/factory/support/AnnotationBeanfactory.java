@@ -3,10 +3,7 @@ package cn.bdqfork.core.factory.support;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.ResolvedException;
 import cn.bdqfork.core.exception.ScopeException;
-import cn.bdqfork.core.factory.BeanDefinition;
-import cn.bdqfork.core.factory.BeanNameGenerator;
-import cn.bdqfork.core.factory.DefaultBefactory;
-import cn.bdqfork.core.factory.SimpleBeanNameGenerator;
+import cn.bdqfork.core.factory.*;
 import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.ReflectUtils;
 
@@ -85,8 +82,8 @@ public class AnnotationBeanfactory extends DefaultBefactory {
         if (clazz.isAnnotationPresent(Singleton.class)) {
             return new BeanDefinition(name, clazz, BeanDefinition.SINGLETON);
         } else if (clazz.isAnnotationPresent(Scope.class)) {
-            //todo:添加异常信息
-            throw new ScopeException("");
+            throw new ScopeException(String.format("used the scope annotation on a class " +
+                    "but forgot to configure the scope in the class %s !", clazz.getCanonicalName()));
         } else {
             return new BeanDefinition(name, clazz);
         }
@@ -123,16 +120,16 @@ public class AnnotationBeanfactory extends DefaultBefactory {
                 .filter(constructor -> constructor.isAnnotationPresent(Inject.class))
                 .toArray(Constructor<?>[]::new);
         if (constructors.length > 1) {
-            //todo:添加异常信息
-            throw new ResolvedException("");
+            throw new ResolvedException("injected constructors are more than one !");
         } else if (constructors.length == 1) {
             Constructor<?> constructor = constructors[0];
-            beanDefinition.setConstructor(constructor);
-
+            MultInjectedPoint multInjectedPoint = new MultInjectedPoint();
             for (Parameter parameter : constructor.getParameters()) {
+                InjectedPoint injectedPoint = new InjectedPoint(parameter.getParameterizedType());
+                multInjectedPoint.addInjectedPoint(injectedPoint);
                 Class<?> type;
                 if (BeanUtils.isProvider(parameter.getType())) {
-                    type = ReflectUtils.getActualType((ParameterizedType) parameter.getParameterizedType());
+                    type = ReflectUtils.getActualType(parameter.getParameterizedType());
                 } else {
                     type = parameter.getType();
                 }
@@ -140,12 +137,14 @@ public class AnnotationBeanfactory extends DefaultBefactory {
                 beanDefinition.addDependOn(beanName);
                 registerDependentForBean(beanDefinition.getBeanName(), beanName);
             }
+
+            beanDefinition.setInjectedConstructor(multInjectedPoint);
         }
     }
 
     private void resolveFieldInfo(BeanDefinition beanDefinition) throws ResolvedException {
         Class<?> candidate = beanDefinition.getBeanClass();
-        Set<Field> fields = new HashSet<>();
+        Map<String, InjectedPoint> fields = new HashMap<>();
 
         for (Field field : candidate.getDeclaredFields()) {
 
@@ -155,8 +154,15 @@ public class AnnotationBeanfactory extends DefaultBefactory {
                 if (Modifier.isFinal(field.getModifiers())) {
                     throw new ResolvedException(String.format("the field %s is final !", field.getName()));
                 }
-                fields.add(field);
+
                 Type type = field.getGenericType();
+                if (field.isAnnotationPresent(Named.class)) {
+                    Named named = field.getAnnotation(Named.class);
+                    fields.put(field.getName(), new InjectedPoint(named.value(), type, true));
+                } else {
+                    fields.put(field.getName(), new InjectedPoint(type));
+                }
+
                 if (BeanUtils.isProvider(type)) {
                     type = ReflectUtils.getActualType(type);
                 } else {
@@ -169,12 +175,12 @@ public class AnnotationBeanfactory extends DefaultBefactory {
                 }
             }
         }
-        beanDefinition.setFields(fields);
+        beanDefinition.setInjectedFields(fields);
     }
 
     private void resolveMethodInfo(BeanDefinition beanDefinition) throws ResolvedException {
         Class<?> candidate = beanDefinition.getBeanClass();
-        Set<Method> methods = new HashSet<>();
+        Map<String, MultInjectedPoint> methods = new HashMap<>();
         for (Method method : candidate.getDeclaredMethods()) {
 
             Inject inject = method.getAnnotation(Inject.class);
@@ -188,9 +194,12 @@ public class AnnotationBeanfactory extends DefaultBefactory {
                 if (!methodName.startsWith("set")) {
                     throw new ResolvedException(String.format("the method %s is not setter !", methodName));
                 }
-
-                methods.add(method);
+                MultInjectedPoint multInjectedPoint = new MultInjectedPoint();
                 for (Type type : method.getGenericParameterTypes()) {
+
+                    InjectedPoint injectedPoint = new InjectedPoint(type);
+                    multInjectedPoint.addInjectedPoint(injectedPoint);
+
                     if (BeanUtils.isProvider(type)) {
                         type = ReflectUtils.getActualType(type);
                     }
@@ -200,9 +209,10 @@ public class AnnotationBeanfactory extends DefaultBefactory {
                         registerDependentForBean(beanDefinition.getBeanName(), beanName);
                     }
                 }
+                methods.put(methodName, multInjectedPoint);
             }
         }
-        beanDefinition.setMethods(methods);
+        beanDefinition.setInjectedSetters(methods);
     }
 
     protected boolean checkIfComponent(Class<?> candidate) {
