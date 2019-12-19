@@ -98,7 +98,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         return getBeanDefinition(beanName).isPrototype();
     }
 
-    public void destorySingletons() {
+    public void destroySingletons() {
         for (String singletonName : getSingletonNames()) {
             destorySingleton(singletonName);
         }

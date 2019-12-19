@@ -1,5 +1,6 @@
 package cn.bdqfork.model.jsr250;
 
+import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Named;
@@ -10,7 +11,7 @@ import javax.inject.Singleton;
  * @since 2019/12/17
  */
 @Singleton
-@Named
+@ManagedBean
 public class PostConstructFieldCycleDaoImpl implements PostConstructFieldCycleDao {
 
     @PostConstruct

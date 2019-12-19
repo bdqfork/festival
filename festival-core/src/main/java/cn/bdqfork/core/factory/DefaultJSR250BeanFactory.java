@@ -73,15 +73,6 @@ public class DefaultJSR250BeanFactory extends AbstractJSR250BeanFactory {
     }
 
     @Override
-    protected Object autoInjectedConstructor(String beanName, BeanDefinition beanDefinition, Constructor<?> constructor, Object[] explicitArgs) throws BeansException {
-        try {
-            return constructor.newInstance(explicitArgs);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new BeansException(e);
-        }
-    }
-
-    @Override
     protected void doInjectedField(String beanName, Object instance, Field field, InjectedPoint injectedPoint) throws BeansException {
         String refBeanName = injectedPoint.getBeanName();
         Object value;
@@ -120,7 +111,7 @@ public class DefaultJSR250BeanFactory extends AbstractJSR250BeanFactory {
     }
 
     @Override
-    public void destorySingletons() {
+    public void destroySingletons() {
         for (String singletonName : getSingletonNames()) {
             Object singleton = getSingleton(singletonName);
             try {
