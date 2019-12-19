@@ -42,7 +42,7 @@ public class BeanDefinition {
     /**
      * 属性注入方法属性
      */
-    private Map<String, MultInjectedPoint> injectedSetters;
+    private Map<String, InjectedPoint> injectedSetters;
     /**
      * 是否已注册
      */
@@ -109,11 +109,11 @@ public class BeanDefinition {
         this.injectedFields = injectedFields;
     }
 
-    public Map<String, MultInjectedPoint> getInjectedSetters() {
+    public Map<String, InjectedPoint> getInjectedSetters() {
         return injectedSetters;
     }
 
-    public void setInjectedSetters(Map<String, MultInjectedPoint> injectedSetters) {
+    public void setInjectedSetters(Map<String, InjectedPoint> injectedSetters) {
         this.injectedSetters = injectedSetters;
     }
 

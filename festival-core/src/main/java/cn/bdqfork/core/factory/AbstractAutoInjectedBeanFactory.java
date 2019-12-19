@@ -1,13 +1,18 @@
 package cn.bdqfork.core.factory;
 
 import cn.bdqfork.core.exception.BeansException;
+import cn.bdqfork.core.exception.FailedInjectedFieldException;
+import cn.bdqfork.core.exception.FailedInjectedMethodException;
 import cn.bdqfork.core.exception.NoSuchBeanException;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author bdq
@@ -39,7 +44,7 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
         return bean;
     }
 
-    private Object createInstance(String beanName, BeanDefinition beanDefinition, Object[] explicitArgs) throws BeansException {
+    protected Object createInstance(String beanName, BeanDefinition beanDefinition, Object[] explicitArgs) throws BeansException {
         Class<?> beanType = beanDefinition.getBeanClass();
         Constructor<?> constructor = null;
         if (explicitArgs != null) {
@@ -56,10 +61,6 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
     }
 
     protected abstract Object autoInjectedConstructor(String beanName, BeanDefinition beanDefinition, Constructor<?> constructor, Object[] explicitArgs) throws BeansException;
-
-    protected abstract void autoInjectedField(String beanName, BeanDefinition beanDefinition, Object instance) throws BeansException;
-
-    protected abstract void autoInjectedMethod(String beanName, BeanDefinition beanDefinition, Object instance) throws BeansException;
 
     @Override
     public Object resovleDependence(InjectedPoint injectedPoint, String beanName) throws BeansException {
@@ -83,8 +84,40 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
 
     @Override
     public void autoInjected(String beanName, Object bean) throws BeansException {
-        BeanDefinition beanDefinition = getBeanDefination(beanName);
+        BeanDefinition beanDefinition = getBeanDefinition(beanName);
         autoInjectedField(beanName, beanDefinition, bean);
         autoInjectedMethod(beanName, beanDefinition, bean);
     }
+
+    protected void autoInjectedField(String beanName, BeanDefinition beanDefinition, Object instance) throws BeansException {
+        for (Map.Entry<String, InjectedPoint> pointEntry : beanDefinition.getInjectedFields().entrySet()) {
+            Class<?> beanClass = beanDefinition.getBeanClass();
+            Field field;
+            try {
+                field = beanClass.getDeclaredField(pointEntry.getKey());
+            } catch (NoSuchFieldException e) {
+                throw new FailedInjectedFieldException(e);
+            }
+            doInjectedField(beanName, instance, field, pointEntry.getValue());
+        }
+    }
+
+    protected abstract void doInjectedField(String beanName, Object instance, Field field, InjectedPoint value) throws BeansException;
+
+    protected void autoInjectedMethod(String beanName, BeanDefinition beanDefinition, Object instance) throws BeansException {
+        for (Map.Entry<String, InjectedPoint> pointEntry : beanDefinition.getInjectedSetters().entrySet()) {
+            Class<?> beanClass = beanDefinition.getBeanClass();
+            InjectedPoint injectedPoint = pointEntry.getValue();
+            Method method;
+            try {
+                method = beanClass.getDeclaredMethod(pointEntry.getKey(), injectedPoint.getClassType());
+            } catch (NoSuchMethodException e) {
+                throw new FailedInjectedMethodException(e);
+            }
+            doInjectedMethod(beanName, instance, method, injectedPoint);
+        }
+    }
+
+    protected abstract void doInjectedMethod(String beanName, Object instance, Method method, InjectedPoint injectedPoint) throws BeansException;
+
 }

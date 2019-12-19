@@ -18,16 +18,23 @@ import java.util.*;
  * @author bdq
  * @since 2019/12/16
  */
-public class AnnotationBeanfactory extends DefaultBeanFactory {
+public class AnnotationBeanFactory extends AbstractDelegateBeanFactory implements ConfigurableBeanFactory {
+    private AbstractAutoInjectedBeanFactory delegateBeanFactory;
+
     /**
      * BeanName生成器
      */
     private BeanNameGenerator beanNameGenerator;
 
-    public AnnotationBeanfactory(String... scanPaths) throws BeansException {
+    public AnnotationBeanFactory(String... scanPaths) throws BeansException {
+        this(new DefaultBeanFactory(), scanPaths);
+    }
+
+    public AnnotationBeanFactory(AbstractAutoInjectedBeanFactory delegateBeanFactory, String... scanPaths) throws BeansException {
         if (scanPaths.length < 1) {
             throw new BeansException("the length of scanPaths is less than one ");
         }
+        this.delegateBeanFactory = delegateBeanFactory;
         this.beanNameGenerator = new SimpleBeanNameGenerator();
         this.scan(scanPaths);
     }
@@ -59,7 +66,7 @@ public class AnnotationBeanfactory extends DefaultBeanFactory {
         for (Map.Entry<String, BeanDefinition> entry : beanDefinitions.entrySet()) {
             String beanName = entry.getKey();
             BeanDefinition beanDefinition = entry.getValue();
-            registerBeanDefinition(beanName, beanDefinition);
+            getDelegateBeanFactory().registerBeanDefinition(beanName, beanDefinition);
         }
 
     }
@@ -135,7 +142,7 @@ public class AnnotationBeanfactory extends DefaultBeanFactory {
                 }
                 String beanName = beanNameGenerator.generateBeanName(type);
                 beanDefinition.addDependOn(beanName);
-                registerDependentForBean(beanDefinition.getBeanName(), beanName);
+                getDelegateBeanFactory().registerDependentForBean(beanDefinition.getBeanName(), beanName);
             }
 
             beanDefinition.setInjectedConstructor(multInjectedPoint);
@@ -171,7 +178,7 @@ public class AnnotationBeanfactory extends DefaultBeanFactory {
                 String beanName = beanNameGenerator.generateBeanName((Class<?>) type);
                 if (beanDefinition.isPrototype()) {
                     beanDefinition.addDependOn(beanName);
-                    registerDependentForBean(beanDefinition.getBeanName(), beanName);
+                    getDelegateBeanFactory().registerDependentForBean(beanDefinition.getBeanName(), beanName);
                 }
             }
         }
@@ -180,7 +187,7 @@ public class AnnotationBeanfactory extends DefaultBeanFactory {
 
     private void resolveMethodInfo(BeanDefinition beanDefinition) throws ResolvedException {
         Class<?> candidate = beanDefinition.getBeanClass();
-        Map<String, MultInjectedPoint> methods = new HashMap<>();
+        Map<String, InjectedPoint> methods = new HashMap<>();
         for (Method method : candidate.getDeclaredMethods()) {
 
             Inject inject = method.getAnnotation(Inject.class);
@@ -191,25 +198,24 @@ public class AnnotationBeanfactory extends DefaultBeanFactory {
                     throw new ResolvedException(String.format("the method %s is abstract !", methodName));
                 }
 
-                if (!methodName.startsWith("set")) {
+                if (!methodName.startsWith("set") && method.getParameterCount() != 1) {
                     throw new ResolvedException(String.format("the method %s is not setter !", methodName));
                 }
-                MultInjectedPoint multInjectedPoint = new MultInjectedPoint();
-                for (Type type : method.getGenericParameterTypes()) {
 
-                    InjectedPoint injectedPoint = new InjectedPoint(type);
-                    multInjectedPoint.addInjectedPoint(injectedPoint);
+                Type type = method.getGenericParameterTypes()[0];
 
-                    if (BeanUtils.isProvider(type)) {
-                        type = ReflectUtils.getActualType(type);
-                    }
-                    String beanName = beanNameGenerator.generateBeanName((Class<?>) type);
-                    if (beanDefinition.isPrototype()) {
-                        beanDefinition.addDependOn(beanName);
-                        registerDependentForBean(beanDefinition.getBeanName(), beanName);
-                    }
+                InjectedPoint injectedPoint = new InjectedPoint(type);
+
+                if (BeanUtils.isProvider(type)) {
+                    type = ReflectUtils.getActualType(type);
                 }
-                methods.put(methodName, multInjectedPoint);
+                String beanName = beanNameGenerator.generateBeanName((Class<?>) type);
+                if (beanDefinition.isPrototype()) {
+                    beanDefinition.addDependOn(beanName);
+                    getDelegateBeanFactory().registerDependentForBean(beanDefinition.getBeanName(), beanName);
+                }
+
+                methods.put(methodName, injectedPoint);
             }
         }
         beanDefinition.setInjectedSetters(methods);
@@ -222,4 +228,23 @@ public class AnnotationBeanfactory extends DefaultBeanFactory {
     public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
         this.beanNameGenerator = beanNameGenerator;
     }
+
+    @Override
+    public void setParentBeanFactory(BeanFactory beanFactory) {
+        if (beanFactory instanceof AbstractAutoInjectedBeanFactory) {
+            delegateBeanFactory = (AbstractAutoInjectedBeanFactory) beanFactory;
+        }
+        //todo:unsupport
+        throw new IllegalStateException("");
+    }
+
+    @Override
+    public BeanFactory getParentBeanFactory() {
+        return delegateBeanFactory;
+    }
+
+    protected AbstractAutoInjectedBeanFactory getDelegateBeanFactory() {
+        return delegateBeanFactory;
+    }
+
 }

@@ -1,9 +1,5 @@
 package cn.bdqfork.core.factory;
 
-import cn.bdqfork.core.util.BeanUtils;
-import cn.bdqfork.core.util.ReflectUtils;
-
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -41,18 +37,9 @@ public class MultInjectedPoint extends InjectedPoint implements Iterable<Injecte
     }
 
     public Class<?>[] getClassTypes() {
-        Class<?>[] classTypes = new Class<?>[injectedPoints.size()];
-        for (int i = 0; i < classTypes.length; i++) {
-            InjectedPoint injectedPoint = injectedPoints.get(i);
-            Type type = injectedPoint.getType();
-            if (type instanceof ParameterizedType) {
-                ParameterizedType parameterizedType = (ParameterizedType) type;
-                classTypes[i] = (Class<?>) parameterizedType.getRawType();
-            }else {
-                classTypes[i] = (Class<?>) type;
-            }
-        }
-        return classTypes;
+        return injectedPoints.stream()
+                .map(InjectedPoint::getClassType)
+                .toArray(Class<?>[]::new);
     }
 
     public Class<?>[] getActualTypes() {

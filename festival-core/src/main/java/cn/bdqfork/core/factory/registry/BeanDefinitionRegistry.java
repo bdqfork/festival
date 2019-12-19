@@ -30,12 +30,19 @@ public interface BeanDefinitionRegistry extends Registry {
      *
      * @return Map<String, BeanDefinition>
      */
-    BeanDefinition getBeanDefination(String beanName);
+    BeanDefinition getBeanDefinition(String beanName);
 
     /**
      * 获取所有BeanDefinition
      *
      * @return Map<String, BeanDefinition>
      */
-    Map<String, BeanDefinition> getBeanDefinations();
+    BeanDefinition getBeanDefinition(Class<?> beanType);
+
+    /**
+     * 获取所有BeanDefinition
+     *
+     * @return Map<String, BeanDefinition>
+     */
+    Map<String, BeanDefinition> getBeanDefinitions();
 }

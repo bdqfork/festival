@@ -19,14 +19,6 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory implemen
     private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
     private BeanFactory parentBeanFactory;
 
-    protected Object instantiate(Constructor<?> constructor, Object[] args) throws BeansException {
-        try {
-            return constructor.newInstance(args);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new FailedInjectedConstructorException(e);
-        }
-    }
-
     @Override
     protected Object autoInjectedConstructor(String beanName, BeanDefinition beanDefinition, Constructor<?> constructor, Object[] explicitArgs) throws BeansException {
         if (explicitArgs != null) {
@@ -46,21 +38,16 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory implemen
         return instantiate(constructor, explicitArgs);
     }
 
-    @Override
-    protected void autoInjectedField(String beanName, BeanDefinition beanDefinition, Object instance) throws BeansException {
-        for (Map.Entry<String, InjectedPoint> pointEntry : beanDefinition.getInjectedFields().entrySet()) {
-            Class<?> beanClass = beanDefinition.getBeanClass();
-            Field field;
-            try {
-                field = beanClass.getDeclaredField(pointEntry.getKey());
-            } catch (NoSuchFieldException e) {
-                throw new FailedInjectedFieldException(e);
-            }
-            injectedField(beanName, instance, field, pointEntry.getValue());
+    protected Object instantiate(Constructor<?> constructor, Object[] args) throws BeansException {
+        try {
+            return constructor.newInstance(args);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new FailedInjectedConstructorException(e);
         }
     }
 
-    protected void injectedField(String beanName, Object instance, Field field, InjectedPoint injectedPoint) throws BeansException {
+    @Override
+    protected void doInjectedField(String beanName, Object instance, Field field, InjectedPoint injectedPoint) throws BeansException {
         Object value = resovleDependence(injectedPoint, beanName);
         field.setAccessible(true);
         try {
@@ -70,18 +57,15 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory implemen
         }
     }
 
+
     @Override
-    protected void autoInjectedMethod(String beanName, BeanDefinition beanDefinition, Object instance) throws BeansException {
-        for (Map.Entry<String, MultInjectedPoint> pointEntry : beanDefinition.getInjectedSetters().entrySet()) {
-            Class<?> beanClass = beanDefinition.getBeanClass();
-            MultInjectedPoint multInjectedPoint = pointEntry.getValue();
-            Method method;
-            try {
-                method = beanClass.getDeclaredMethod(pointEntry.getKey(), multInjectedPoint.getClassTypes());
-            } catch (NoSuchMethodException e) {
-                throw new FailedInjectedMethodException(e);
-            }
-            injectedMethod(beanName, instance, method, multInjectedPoint);
+    protected void doInjectedMethod(String beanName, Object instance, Method method, InjectedPoint injectedPoint) throws BeansException {
+        Object arg = resovleDependence(injectedPoint, beanName);
+        method.setAccessible(true);
+        try {
+            method.invoke(instance, arg);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new FailedInjectedMethodException(e);
         }
     }
 
@@ -104,17 +88,6 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory implemen
         return bean;
     }
 
-    protected void injectedMethod(String beanName, Object instance, Method method, MultInjectedPoint multInjectedPoint) throws BeansException {
-        Object[] args = resovleMultDependence(multInjectedPoint, beanName);
-        method.setAccessible(true);
-        try {
-            method.invoke(instance, args);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new FailedInjectedMethodException(e);
-        }
-    }
-
-
     @Override
     protected boolean containBeanDefinition(String beanName) {
         return beanDefinitionMap.containsKey(beanName);
@@ -126,23 +99,31 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory implemen
     }
 
     @Override
-    public BeanDefinition getBeanDefination(String beanName) {
-        return beanDefinitionMap.get(beanName);
+    public BeanDefinition getBeanDefinition(String beanName) {
+        BeanDefinition beanDefinition = beanDefinitionMap.get(beanName);
+        if (beanDefinition == null) {
+            BeanFactory beanFactory = getParentBeanFactory();
+            if (beanFactory instanceof BeanDefinitionRegistry) {
+                BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
+                beanDefinition = registry.getBeanDefinition(beanName);
+            }
+        }
+        return beanDefinition;
     }
 
     @Override
-    public Map<String, BeanDefinition> getBeanDefinations() {
-        return beanDefinitionMap;
-    }
-
-    @Override
-    protected <T> BeanDefinition getBeanDefination(Class<T> clazz) {
+    public BeanDefinition getBeanDefinition(Class<?> beanType) {
         for (BeanDefinition beanDefinition : beanDefinitionMap.values()) {
-            if (BeanUtils.checkIsInstance(beanDefinition.getBeanClass(), clazz)) {
+            if (BeanUtils.checkIsInstance(beanDefinition.getBeanClass(), beanType)) {
                 return beanDefinition;
             }
         }
         return null;
+    }
+
+    @Override
+    public Map<String, BeanDefinition> getBeanDefinitions() {
+        return beanDefinitionMap;
     }
 
     @Override
@@ -166,5 +147,21 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory implemen
             }
         }
         return map;
+    }
+
+    @Override
+    public boolean isSingleton(String beanName) throws BeansException {
+        if (!containBean(beanName)) {
+            throw new NoSuchBeanException(String.format("no such bean named %s !", beanName));
+        }
+        return getBeanDefinition(beanName).isSingleton();
+    }
+
+    @Override
+    public boolean isPrototype(String beanName) throws BeansException {
+        if (!containBean(beanName)) {
+            throw new NoSuchBeanException(String.format("there is no such bean named %s !", beanName));
+        }
+        return getBeanDefinition(beanName).isPrototype();
     }
 }

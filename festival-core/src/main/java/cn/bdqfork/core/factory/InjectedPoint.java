@@ -2,6 +2,7 @@ package cn.bdqfork.core.factory;
 
 import cn.bdqfork.core.util.ReflectUtils;
 
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 /**
@@ -27,6 +28,10 @@ public class InjectedPoint {
         this.require = require;
     }
 
+    public void setBeanName(String beanName) {
+        this.beanName = beanName;
+    }
+
     public String getBeanName() {
         return beanName;
     }
@@ -37,6 +42,15 @@ public class InjectedPoint {
 
     public Type getType() {
         return type;
+    }
+
+    public Class<?> getClassType() {
+        if (type instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) type;
+            return (Class<?>) parameterizedType.getRawType();
+        } else {
+            return (Class<?>) type;
+        }
     }
 
     public Class<?> getActualType() {
