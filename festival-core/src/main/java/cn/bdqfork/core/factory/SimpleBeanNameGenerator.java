@@ -1,5 +1,7 @@
 package cn.bdqfork.core.factory;
 
+import cn.bdqfork.core.util.StringUtils;
+
 /**
  * @author bdq
  * @since 2019-02-07
@@ -20,8 +22,6 @@ public class SimpleBeanNameGenerator implements BeanNameGenerator {
         } else {
             className = clazz.getSimpleName();
         }
-        char[] chars = className.toCharArray();
-        chars[0] += 32;
-        return String.valueOf(chars);
+        return StringUtils.lowerFirstChar(className);
     }
 }

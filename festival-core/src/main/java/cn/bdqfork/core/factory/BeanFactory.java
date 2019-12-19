@@ -40,6 +40,14 @@ public interface BeanFactory {
      * 获取第一个与clazz匹配代理实例
      *
      * @param clazz class类型
+     * @return Object Bean实例
+     */
+    <T> T getSpecificBean(String beanName, Class<T> clazz) throws BeansException;
+
+    /**
+     * 获取第一个与clazz匹配代理实例
+     *
+     * @param clazz class类型
      * @return Map<String, Object> Bean实例
      */
     <T> Map<String, T> getBeans(Class<T> clazz) throws BeansException;

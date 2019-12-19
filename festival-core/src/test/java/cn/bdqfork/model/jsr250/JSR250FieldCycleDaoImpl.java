@@ -3,7 +3,7 @@ package cn.bdqfork.model.jsr250;
 import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.inject.Named;
+import javax.annotation.Resource;
 import javax.inject.Singleton;
 
 /**
@@ -12,7 +12,10 @@ import javax.inject.Singleton;
  */
 @Singleton
 @ManagedBean
-public class PostConstructFieldCycleDaoImpl implements PostConstructFieldCycleDao {
+public class JSR250FieldCycleDaoImpl implements JSR250FieldCycleDao {
+
+    @Resource
+    private JSR250FieldService jsr250FieldService;
 
     @PostConstruct
     private void init() {

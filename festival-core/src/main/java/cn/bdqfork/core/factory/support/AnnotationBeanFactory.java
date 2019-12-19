@@ -23,7 +23,7 @@ import java.util.*;
  * @author bdq
  * @since 2019/12/16
  */
-public class AnnotationBeanFactory extends AbstractDelegateBeanFactory implements ConfigurableBeanFactory {
+public class AnnotationBeanFactory extends AbstractDelegateBeanFactory {
     private static boolean JSR250 = true;
     private AbstractAutoInjectedBeanFactory delegateBeanFactory;
 
@@ -107,7 +107,7 @@ public class AnnotationBeanFactory extends AbstractDelegateBeanFactory implement
                     "but forgot to configure the scope in the class %s !", clazz.getCanonicalName()));
         } else {
             if (JSR250) {
-                return new ManagedBeanDefinition(name, clazz, BeanDefinition.SINGLETON);
+                return new ManagedBeanDefinition(name, clazz, BeanDefinition.PROTOTYPE);
             }
             return new BeanDefinition(name, clazz);
         }
@@ -238,21 +238,18 @@ public class AnnotationBeanFactory extends AbstractDelegateBeanFactory implement
     private InjectedPoint getFieldInjectedPoint(Field field, Type type) {
         if (JSR250 && field.isAnnotationPresent(Resource.class)) {
             Resource resource = field.getAnnotation(Resource.class);
-            Type resourceType;
-            if (resource.type() != Object.class) {
-                resourceType = resource.type();
-            } else {
-                resourceType = type;
+            if (resource.type() == Object.class) {
+                return new InjectedPoint(resource.name(), type, true);
             }
-            return new InjectedPoint(resource.name(), resourceType, true);
+            return new InjectedPoint(resource.name(), resource.type(), true);
         }
 
         if (field.isAnnotationPresent(Named.class)) {
             Named named = field.getAnnotation(Named.class);
-            return new InjectedPoint(named.value(), type, true);
+            return new InjectedPoint(named.value(), null, true);
+        } else {
+            return new InjectedPoint(type);
         }
-        //todo:info
-        throw new IllegalStateException("");
     }
 
     private boolean checkIfInjectedPoint(AnnotatedElement annotatedElement) {

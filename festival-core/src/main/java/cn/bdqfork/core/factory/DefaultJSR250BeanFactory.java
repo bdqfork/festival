@@ -1,12 +1,9 @@
 package cn.bdqfork.core.factory;
 
 import cn.bdqfork.core.exception.BeansException;
-import cn.bdqfork.core.exception.FailedInjectedFieldException;
-import cn.bdqfork.core.exception.FailedInjectedMethodException;
 import cn.bdqfork.core.util.StringUtils;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -70,44 +67,6 @@ public class DefaultJSR250BeanFactory extends AbstractJSR250BeanFactory {
             }
         }
         return autoInjectedConstructor(beanName, beanDefinition, constructor, explicitArgs);
-    }
-
-    @Override
-    protected void doInjectedField(String beanName, Object instance, Field field, InjectedPoint injectedPoint) throws BeansException {
-        String refBeanName = injectedPoint.getBeanName();
-        Object value;
-        if (!"".equals(refBeanName)) {
-            value = getBean(refBeanName);
-        } else {
-            refBeanName = field.getName();
-            injectedPoint.setBeanName(refBeanName);
-            value = resovleDependence(injectedPoint, beanName);
-        }
-        field.setAccessible(true);
-        try {
-            field.set(instance, value);
-        } catch (IllegalAccessException e) {
-            throw new FailedInjectedFieldException(e);
-        }
-    }
-
-    @Override
-    protected void doInjectedMethod(String beanName, Object instance, Method method, InjectedPoint injectedPoint) throws BeansException {
-        String refBeanName = injectedPoint.getBeanName();
-        Object arg;
-        if (!"".equals(refBeanName)) {
-            arg = getBean(refBeanName);
-        } else {
-            refBeanName = method.getName().substring(3);
-            injectedPoint.setBeanName(refBeanName);
-            arg = resovleDependence(injectedPoint, beanName);
-        }
-        method.setAccessible(true);
-        try {
-            method.invoke(instance, arg);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new FailedInjectedMethodException(e);
-        }
     }
 
     @Override

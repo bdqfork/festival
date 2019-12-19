@@ -5,6 +5,8 @@ import cn.bdqfork.core.exception.CircularDependencyException;
 import cn.bdqfork.core.exception.NoSuchBeanException;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import cn.bdqfork.core.factory.registry.DefaultSingletonBeanRegistry;
+import cn.bdqfork.core.util.BeanUtils;
+import cn.bdqfork.core.util.ReflectUtils;
 
 /**
  * @author bdq
@@ -24,6 +26,17 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
             throw new NoSuchBeanException(String.format("there is no such bean of class %s !", clazz.getCanonicalName()));
         }
         return getBean(beanDefinition.getBeanName());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getSpecificBean(String beanName, Class<T> clazz) throws BeansException {
+        Object bean = getBean(beanName);
+        if (BeanUtils.checkIsInstance(bean.getClass(), clazz)) {
+            return (T) bean;
+        } else {
+            throw new NoSuchBeanException(String.format("there is no such bean of class %s !", clazz.getCanonicalName()));
+        }
     }
 
     @Override

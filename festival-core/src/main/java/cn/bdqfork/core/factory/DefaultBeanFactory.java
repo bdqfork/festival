@@ -4,6 +4,7 @@ import cn.bdqfork.core.exception.*;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.ReflectUtils;
+import cn.bdqfork.core.util.StringUtils;
 
 import javax.inject.Provider;
 import java.lang.reflect.*;
@@ -71,19 +72,24 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory implemen
 
     @Override
     protected Object doResovleDependence(String name, Type type, boolean check) throws BeansException {
-        Object bean;
-        Class<?> actualType = ReflectUtils.getActualType(type);
-        if ("".equals(name)) {
-            bean = getBean(actualType);
-        } else {
+        Object bean = null;
+        if (!StringUtils.isEmpty(name) && type != null) {
+            bean = getSpecificBean(name, ReflectUtils.getActualType(type));
+        } else if (!StringUtils.isEmpty(name)) {
             bean = getBean(name);
+        } else if (type != null) {
+            bean = getBean(ReflectUtils.getActualType(type));
         }
         if (bean == null && check) {
             throw new UnsatisfiedBeanException(String.format("there is no bean named %s or type of %s", name, type.getTypeName()));
         }
+        bean = createIfProvider(type, bean);
+        return bean;
+    }
+
+    protected Object createIfProvider(Type type, Object bean) {
         if (BeanUtils.isProvider(type)) {
-            Object finalBean = bean;
-            bean = (Provider<Object>) () -> finalBean;
+            return (Provider<Object>) () -> bean;
         }
         return bean;
     }

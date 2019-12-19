@@ -26,6 +26,11 @@ public abstract class AbstractDelegateBeanFactory implements ConfigurableBeanFac
     }
 
     @Override
+    public <T> T getSpecificBean(String beanName, Class<T> clazz) throws BeansException {
+        return getParentBeanFactory().getSpecificBean(beanName,clazz);
+    }
+
+    @Override
     public <T> Map<String, T> getBeans(Class<T> clazz) throws BeansException {
         return getParentBeanFactory().getBeans(clazz);
     }
