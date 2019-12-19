@@ -7,6 +7,8 @@ import cn.bdqfork.core.factory.*;
 import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.ReflectUtils;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Scope;
@@ -87,12 +89,12 @@ public class AnnotationBeanFactory extends AbstractDelegateBeanFactory implement
             name = this.beanNameGenerator.generateBeanName(clazz);
         }
         if (clazz.isAnnotationPresent(Singleton.class)) {
-            return new BeanDefinition(name, clazz, BeanDefinition.SINGLETON);
+            return new ManagedBeanDefinition(name, clazz, BeanDefinition.SINGLETON);
         } else if (clazz.isAnnotationPresent(Scope.class)) {
             throw new ScopeException(String.format("used the scope annotation on a class " +
                     "but forgot to configure the scope in the class %s !", clazz.getCanonicalName()));
         } else {
-            return new BeanDefinition(name, clazz);
+            return new ManagedBeanDefinition(name, clazz);
         }
     }
 
@@ -217,16 +219,23 @@ public class AnnotationBeanFactory extends AbstractDelegateBeanFactory implement
 
                 methods.put(methodName, injectedPoint);
             }
+
+            if (method.isAnnotationPresent(PostConstruct.class)) {
+                ManagedBeanDefinition managedBeanDefinition = (ManagedBeanDefinition) beanDefinition;
+                managedBeanDefinition.setInitializingMethod(method.getName());
+            }
+
+            if (method.isAnnotationPresent(PreDestroy.class)) {
+                ManagedBeanDefinition managedBeanDefinition = (ManagedBeanDefinition) beanDefinition;
+                managedBeanDefinition.setDestroyMethod(method.getName());
+            }
+
         }
         beanDefinition.setInjectedSetters(methods);
     }
 
     protected boolean checkIfComponent(Class<?> candidate) {
         return candidate.isAnnotationPresent(Named.class);
-    }
-
-    public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
-        this.beanNameGenerator = beanNameGenerator;
     }
 
     @Override
@@ -245,6 +254,14 @@ public class AnnotationBeanFactory extends AbstractDelegateBeanFactory implement
 
     protected AbstractAutoInjectedBeanFactory getDelegateBeanFactory() {
         return delegateBeanFactory;
+    }
+
+    public void destroy(){
+        getDelegateBeanFactory().destorySingletons();
+    }
+
+    public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
+        this.beanNameGenerator = beanNameGenerator;
     }
 
 }

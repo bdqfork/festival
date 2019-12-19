@@ -46,6 +46,11 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
 
     protected Object createInstance(String beanName, BeanDefinition beanDefinition, Object[] explicitArgs) throws BeansException {
         Class<?> beanType = beanDefinition.getBeanClass();
+        Constructor<?> constructor = getExplicitConstructor(beanType, explicitArgs);
+        return autoInjectedConstructor(beanName, beanDefinition, constructor, explicitArgs);
+    }
+
+    protected Constructor<?> getExplicitConstructor(Class<?> beanType, Object[] explicitArgs) throws BeansException {
         Constructor<?> constructor = null;
         if (explicitArgs != null) {
             Class<?>[] explicitArgTypes = Arrays.stream(explicitArgs)
@@ -57,7 +62,7 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
                 throw new BeansException(e);
             }
         }
-        return autoInjectedConstructor(beanName, beanDefinition, constructor, explicitArgs);
+        return constructor;
     }
 
     protected abstract Object autoInjectedConstructor(String beanName, BeanDefinition beanDefinition, Constructor<?> constructor, Object[] explicitArgs) throws BeansException;

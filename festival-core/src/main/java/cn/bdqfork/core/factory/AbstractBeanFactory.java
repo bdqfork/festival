@@ -57,6 +57,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
                 try {
                     return createBean(beanName, beanDefinition, args);
                 } catch (BeansException e) {
+                    destorySingleton(beanName);
                     throw new IllegalStateException(e);
                 }
             });
@@ -95,6 +96,12 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
             throw new NoSuchBeanException(String.format("there is no such bean named %s !", beanName));
         }
         return getBeanDefinition(beanName).isPrototype();
+    }
+
+    public void destorySingletons() {
+        for (String singletonName : getSingletonNames()) {
+            destorySingleton(singletonName);
+        }
     }
 
 }

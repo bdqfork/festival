@@ -164,4 +164,5 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory implemen
         }
         return getBeanDefinition(beanName).isPrototype();
     }
+
 }

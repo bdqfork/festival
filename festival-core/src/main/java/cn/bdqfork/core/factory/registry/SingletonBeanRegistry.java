@@ -8,6 +8,7 @@ public interface SingletonBeanRegistry extends Registry {
 
     /**
      * 注册实例
+     *
      * @param beanName
      * @param bean
      */
@@ -15,6 +16,7 @@ public interface SingletonBeanRegistry extends Registry {
 
     /**
      * 获取实例
+     *
      * @param beanName
      * @return
      */
@@ -22,12 +24,14 @@ public interface SingletonBeanRegistry extends Registry {
 
     /**
      * 删除实例
+     *
      * @param beanName
      */
-    void removeSingleton(String beanName);
+    void destorySingleton(String beanName);
 
     /**
      * 是否包含实例
+     *
      * @param beanName
      * @return
      */

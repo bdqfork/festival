@@ -3,6 +3,7 @@ package cn.bdqfork.core.factory;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.FailedInjectedFieldException;
 import cn.bdqfork.core.exception.FailedInjectedMethodException;
+import cn.bdqfork.core.util.StringUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -26,7 +27,7 @@ public class DefaultJSR250BeanFactory extends AbstractJSR250BeanFactory {
     protected void doInitializingMethod(Object bean, ManagedBeanDefinition managedBeanDefinition) throws BeansException {
         Class<?> beanClass = managedBeanDefinition.getBeanClass();
         String methodName = managedBeanDefinition.getInitializingMethod();
-        if ("".equals(methodName)) {
+        if (StringUtils.isEmpty(methodName)) {
             return;
         }
         doInvoke(bean, beanClass, methodName);
@@ -36,7 +37,7 @@ public class DefaultJSR250BeanFactory extends AbstractJSR250BeanFactory {
     protected void doPreDestroyMethod(Object bean, ManagedBeanDefinition managedBeanDefinition) throws BeansException {
         Class<?> beanClass = managedBeanDefinition.getBeanClass();
         String methodName = managedBeanDefinition.getDestroyMethod();
-        if ("".equals(methodName)) {
+        if (StringUtils.isEmpty(methodName)) {
             return;
         }
         doInvoke(bean, beanClass, methodName);
@@ -45,7 +46,7 @@ public class DefaultJSR250BeanFactory extends AbstractJSR250BeanFactory {
     private void doInvoke(Object bean, Class<?> beanClass, String methodName) throws BeansException {
         Method method;
         try {
-            method = beanClass.getMethod(methodName);
+            method = beanClass.getDeclaredMethod(methodName);
         } catch (NoSuchMethodException e) {
             throw new BeansException(e);
         }
@@ -55,6 +56,20 @@ public class DefaultJSR250BeanFactory extends AbstractJSR250BeanFactory {
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new BeansException(e);
         }
+    }
+
+    @Override
+    protected Object createInstance(String beanName, BeanDefinition beanDefinition, Object[] explicitArgs) throws BeansException {
+        Class<?> beanClass = beanDefinition.getBeanClass();
+        Constructor<?> constructor = getExplicitConstructor(beanClass, explicitArgs);
+        if (constructor == null) {
+            try {
+                constructor = beanClass.getConstructor();
+            } catch (NoSuchMethodException e) {
+                throw new BeansException(e);
+            }
+        }
+        return autoInjectedConstructor(beanName, beanDefinition, constructor, explicitArgs);
     }
 
     @Override
@@ -104,4 +119,16 @@ public class DefaultJSR250BeanFactory extends AbstractJSR250BeanFactory {
         }
     }
 
+    @Override
+    public void destorySingletons() {
+        for (String singletonName : getSingletonNames()) {
+            Object singleton = getSingleton(singletonName);
+            try {
+                executePreDestroy(singletonName, singleton);
+            } catch (BeansException e) {
+                throw new IllegalStateException(e);
+            }
+            destorySingleton(singletonName);
+        }
+    }
 }

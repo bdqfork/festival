@@ -103,7 +103,7 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
 
 
     @Override
-    public void removeSingleton(String beanName) {
+    public void destorySingleton(String beanName) {
         synchronized (singletons) {
             registerSingletons.remove(beanName);
             singletons.remove(beanName);
@@ -111,6 +111,10 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
             earlySingletons.remove(beanName);
             creatingSingletons.remove(beanName);
         }
+    }
+
+    public Set<String> getSingletonNames() {
+        return singletons.keySet();
     }
 
     @Override
