@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cn.bdqfork</groupId>
-    <artifactId>spring-toy</artifactId>
+    <artifactId>festival</artifactId>
   
     <version>0.2</version>
     <modules>
