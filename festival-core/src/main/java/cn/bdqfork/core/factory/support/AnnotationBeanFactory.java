@@ -239,11 +239,17 @@ public class AnnotationBeanFactory extends AbstractAutoResolveBeanFactory {
             }
 
             if (JSR250 && method.isAnnotationPresent(PostConstruct.class)) {
+                if (method.getParameterCount() > 0) {
+                    throw new ResolvedException("the method annotated by @PostConstruct should hava no parameters !");
+                }
                 ManagedBeanDefinition managedBeanDefinition = (ManagedBeanDefinition) beanDefinition;
                 managedBeanDefinition.setInitializingMethod(method.getName());
             }
 
             if (JSR250 && method.isAnnotationPresent(PreDestroy.class)) {
+                if (method.getParameterCount() > 0) {
+                    throw new ResolvedException("the method annotated by @PostConstruct should hava no parameters !");
+                }
                 ManagedBeanDefinition managedBeanDefinition = (ManagedBeanDefinition) beanDefinition;
                 managedBeanDefinition.setDestroyMethod(method.getName());
             }
