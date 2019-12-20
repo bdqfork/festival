@@ -1,6 +1,5 @@
 package cn.bdqfork.core.factory.support;
 
-import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.ResolvedException;
 import cn.bdqfork.core.exception.ScopeException;
 import cn.bdqfork.core.factory.*;
@@ -17,15 +16,27 @@ import javax.inject.Named;
 import javax.inject.Scope;
 import javax.inject.Singleton;
 import java.lang.reflect.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author bdq
  * @since 2019/12/16
  */
-public class AnnotationBeanFactory extends AbstractDelegateBeanFactory {
+public class AnnotationBeanFactory extends AbstractAutoResolveBeanFactory {
+    /**
+     * 是否启用JSR250
+     */
     private static boolean JSR250 = true;
-    private AbstractAutoInjectedBeanFactory delegateBeanFactory;
+    /**
+     * 委托工厂
+     */
+    private AbstractBeanFactory delegateBeanFactory;
+    /**
+     * BeanName生成器
+     */
+    private BeanNameGenerator beanNameGenerator;
 
     static {
         ClassLoader classLoader = AnnotationBeanFactory.class.getClassLoader();
@@ -36,11 +47,6 @@ public class AnnotationBeanFactory extends AbstractDelegateBeanFactory {
         }
     }
 
-    /**
-     * BeanName生成器
-     */
-    private BeanNameGenerator beanNameGenerator;
-
     public AnnotationBeanFactory() {
         if (JSR250) {
             this.delegateBeanFactory = new DefaultJSR250BeanFactory();
@@ -50,70 +56,33 @@ public class AnnotationBeanFactory extends AbstractDelegateBeanFactory {
         this.beanNameGenerator = new SimpleBeanNameGenerator();
     }
 
-    public void scan(String... scanPaths) throws BeansException {
-        if (scanPaths.length < 1) {
-            throw new BeansException("the length of scanPaths is less than one ");
-        }
-        Set<Class<?>> candidates = new HashSet<>();
-        for (String scanPath : scanPaths) {
-            candidates.addAll(ReflectUtils.getClasses(scanPath));
-        }
-        Set<Class<?>> beanClasses = new HashSet<>();
-        //获取组件类
-        for (Class<?> candidate : candidates) {
-            if (candidate.isAnnotation() || candidate.isInterface() || Modifier.isAbstract(candidate.getModifiers())) {
-                continue;
-            }
-            if (checkIfComponent(candidate)) {
-                beanClasses.add(candidate);
-            }
-        }
-        //解析BeanDefinition
-        Map<String, BeanDefinition> beanDefinitions;
-        try {
-            beanDefinitions = resolve(beanClasses);
-        } catch (ResolvedException e) {
-            throw new BeansException(e);
-        }
+    protected BeanDefinition createBeanDefinition(String beanName, Class<?> clazz) throws ScopeException {
 
-        //注册BeanDefinition
-        for (Map.Entry<String, BeanDefinition> entry : beanDefinitions.entrySet()) {
-            String beanName = entry.getKey();
-            BeanDefinition beanDefinition = entry.getValue();
-            getDelegateBeanFactory().registerBeanDefinition(beanName, beanDefinition);
-        }
-
-    }
-
-    protected Map<String, BeanDefinition> resolve(Set<Class<?>> beanClasses) throws ResolvedException {
-        Map<String, BeanDefinition> beanDefinitions = new HashMap<>();
-        for (Class<?> clazz : beanClasses) {
-            BeanDefinition beanDefinition = createBeanDefinition(clazz);
-            doResolve(beanDefinition, beanClasses);
-            beanDefinitions.put(beanDefinition.getBeanName(), beanDefinition);
-        }
-        return beanDefinitions;
-    }
-
-    protected BeanDefinition createBeanDefinition(Class<?> clazz) throws ScopeException {
-        String name = getBeanName(clazz);
         if (clazz.isAnnotationPresent(Singleton.class)) {
+
             if (JSR250) {
-                return new ManagedBeanDefinition(name, clazz, BeanDefinition.SINGLETON);
+                return new ManagedBeanDefinition(beanName, clazz, BeanDefinition.SINGLETON);
             }
-            return new BeanDefinition(name, clazz);
+
+            return new BeanDefinition(beanName, clazz);
+
         } else if (clazz.isAnnotationPresent(Scope.class)) {
+
             throw new ScopeException(String.format("used the scope annotation on a class " +
                     "but forgot to configure the scope in the class %s !", clazz.getCanonicalName()));
+
         } else {
+
             if (JSR250) {
-                return new ManagedBeanDefinition(name, clazz, BeanDefinition.PROTOTYPE);
+                return new ManagedBeanDefinition(beanName, clazz, BeanDefinition.PROTOTYPE);
             }
-            return new BeanDefinition(name, clazz);
+
+            return new BeanDefinition(beanName, clazz);
         }
     }
 
-    private String getBeanName(Class<?> clazz) {
+    @Override
+    protected String resolveBeanName(Class<?> clazz) {
         String name = "";
 
         if (clazz.isAnnotationPresent(Named.class)) {
@@ -133,73 +102,50 @@ public class AnnotationBeanFactory extends AbstractDelegateBeanFactory {
         return name;
     }
 
-    private void doResolve(BeanDefinition beanDefinition, Set<Class<?>> beanClasses) throws ResolvedException {
-        //如果已经解析过了，则返回
-        if (beanDefinition.isResolved()) {
+    protected void resolveConstructor(BeanDefinition beanDefinition) throws ResolvedException {
+        Class<?> candidate = beanDefinition.getBeanClass();
+
+        Constructor<?> constructor = resolveInjectedConstructor(candidate);
+
+        if (constructor == null) {
             return;
         }
-        //优先解析父类
-        Class<?> superClass = beanDefinition.getBeanClass().getSuperclass();
-        if (superClass != null && superClass != Object.class) {
-            for (Class<?> clazz : beanClasses) {
-                if (clazz == superClass) {
-                    doResolve(createBeanDefinition(clazz), beanClasses);
-                }
-            }
+
+        MultInjectedPoint multInjectedPoint = new MultInjectedPoint();
+
+        for (Type type : constructor.getGenericParameterTypes()) {
+
+            InjectedPoint injectedPoint = new InjectedPoint(type);
+
+            multInjectedPoint.addInjectedPoint(injectedPoint);
+
+            String beanName = generateDependentName(type);
+
+            beanDefinition.addDependOn(beanName);
+
+            getDelegateBeanFactory().registerDependentForBean(beanDefinition.getBeanName(), beanName);
         }
 
-        resolveConstructorInfo(beanDefinition);
-
-        resolveFieldInfo(beanDefinition);
-
-        resolveMethodInfo(beanDefinition);
-
-        beanDefinition.setResolved(true);
-
+        beanDefinition.setInjectedConstructor(multInjectedPoint);
     }
 
-    private void resolveConstructorInfo(BeanDefinition beanDefinition) throws ResolvedException {
-        Class<?> candidate = beanDefinition.getBeanClass();
+    private Constructor<?> resolveInjectedConstructor(Class<?> candidate) throws ResolvedException {
 
         Constructor<?>[] constructors = Arrays.stream(candidate.getDeclaredConstructors())
                 .filter(constructor -> constructor.isAnnotationPresent(Inject.class))
                 .toArray(Constructor<?>[]::new);
 
         if (constructors.length > 1) {
-
             throw new ResolvedException("injected constructors are more than one !");
-
-        } else if (constructors.length == 1) {
-
-            Constructor<?> constructor = constructors[0];
-
-            MultInjectedPoint multInjectedPoint = new MultInjectedPoint();
-
-            for (Parameter parameter : constructor.getParameters()) {
-
-                InjectedPoint injectedPoint = new InjectedPoint(parameter.getParameterizedType());
-                multInjectedPoint.addInjectedPoint(injectedPoint);
-
-                Class<?> type;
-
-                if (BeanUtils.isProvider(parameter.getType())) {
-                    type = ReflectUtils.getActualType(parameter.getParameterizedType());
-                } else {
-                    type = parameter.getType();
-                }
-
-                String beanName = beanNameGenerator.generateBeanName(type);
-
-                beanDefinition.addDependOn(beanName);
-
-                getDelegateBeanFactory().registerDependentForBean(beanDefinition.getBeanName(), beanName);
-            }
-
-            beanDefinition.setInjectedConstructor(multInjectedPoint);
         }
+
+        if (constructors.length == 1) {
+            return constructors[0];
+        }
+        return null;
     }
 
-    private void resolveFieldInfo(BeanDefinition beanDefinition) throws ResolvedException {
+    protected void resolveField(BeanDefinition beanDefinition) throws ResolvedException {
         Class<?> candidate = beanDefinition.getBeanClass();
         Map<String, InjectedPoint> fields = new HashMap<>();
 
@@ -216,12 +162,7 @@ public class AnnotationBeanFactory extends AbstractDelegateBeanFactory {
 
                 fields.put(field.getName(), injectedPoint);
 
-                if (BeanUtils.isProvider(type)) {
-                    type = ReflectUtils.getActualType(type);
-                } else {
-                    type = field.getType();
-                }
-                String beanName = beanNameGenerator.generateBeanName((Class<?>) type);
+                String beanName = generateDependentName(type);
 
                 if (beanDefinition.isPrototype()) {
 
@@ -235,37 +176,39 @@ public class AnnotationBeanFactory extends AbstractDelegateBeanFactory {
         beanDefinition.setInjectedFields(fields);
     }
 
+
     private InjectedPoint getFieldInjectedPoint(Field field, Type type) {
         if (JSR250 && field.isAnnotationPresent(Resource.class)) {
+
             Resource resource = field.getAnnotation(Resource.class);
+
             if (StringUtils.isEmpty(resource.name()) && resource.type() == Object.class) {
                 return new InjectedPoint(field.getName(), true);
             }
+
             if (resource.type() == Object.class) {
                 return new InjectedPoint(resource.name(), type, true);
             }
+
             return new InjectedPoint(resource.name(), resource.type(), true);
         }
 
         if (field.isAnnotationPresent(Named.class)) {
+
             Named named = field.getAnnotation(Named.class);
+
             return new InjectedPoint(named.value(), true);
         } else {
+
             return new InjectedPoint(type);
         }
     }
 
-    private boolean checkIfInjectedPoint(AnnotatedElement annotatedElement) {
-        if (JSR250) {
-            return annotatedElement.isAnnotationPresent(Inject.class) || annotatedElement.isAnnotationPresent(Resource.class);
-        } else {
-            return annotatedElement.isAnnotationPresent(Inject.class);
-        }
-    }
-
-    private void resolveMethodInfo(BeanDefinition beanDefinition) throws ResolvedException {
+    protected void resolveMethod(BeanDefinition beanDefinition) throws ResolvedException {
         Class<?> candidate = beanDefinition.getBeanClass();
+
         Map<String, InjectedPoint> methods = new HashMap<>();
+
         for (Method method : candidate.getDeclaredMethods()) {
 
             if (checkIfInjectedPoint(method)) {
@@ -286,11 +229,7 @@ public class AnnotationBeanFactory extends AbstractDelegateBeanFactory {
 
                 methods.put(methodName, injectedPoint);
 
-                if (BeanUtils.isProvider(type)) {
-                    type = ReflectUtils.getActualType(type);
-                }
-
-                String beanName = beanNameGenerator.generateBeanName((Class<?>) type);
+                String beanName = generateDependentName(type);
 
                 if (beanDefinition.isPrototype()) {
                     beanDefinition.addDependOn(beanName);
@@ -319,7 +258,7 @@ public class AnnotationBeanFactory extends AbstractDelegateBeanFactory {
 
             String name;
             if (StringUtils.isEmpty(resource.name())) {
-                name = StringUtils.lowerFirstChar(method.getName().substring(3));
+                name = StringUtils.makeInitialLowercase(method.getName().substring(3));
             } else {
                 name = resource.name();
             }
@@ -332,10 +271,20 @@ public class AnnotationBeanFactory extends AbstractDelegateBeanFactory {
         }
 
         if (method.isAnnotationPresent(Named.class)) {
+
             Named named = method.getAnnotation(Named.class);
+
             return new InjectedPoint(named.value(), true);
         } else {
             return new InjectedPoint(type);
+        }
+    }
+
+    protected boolean checkIfInjectedPoint(AnnotatedElement annotatedElement) {
+        if (JSR250) {
+            return annotatedElement.isAnnotationPresent(Inject.class) || annotatedElement.isAnnotationPresent(Resource.class);
+        } else {
+            return annotatedElement.isAnnotationPresent(Inject.class);
         }
     }
 
@@ -348,11 +297,11 @@ public class AnnotationBeanFactory extends AbstractDelegateBeanFactory {
 
     @Override
     public void setParentBeanFactory(BeanFactory beanFactory) {
-        if (beanFactory instanceof AbstractAutoInjectedBeanFactory) {
-            delegateBeanFactory = (AbstractAutoInjectedBeanFactory) beanFactory;
+        if (beanFactory instanceof AbstractBeanFactory) {
+            delegateBeanFactory = (AbstractBeanFactory) beanFactory;
         }
-        //todo:unsupport
-        throw new IllegalStateException("");
+        throw new IllegalStateException(String.format("unsupport BeanFactory %s ! delegate BeanFactory " +
+                "can only be instance of AbstractBeanFactory.class !", beanFactory.getClass()));
     }
 
     @Override
@@ -360,12 +309,19 @@ public class AnnotationBeanFactory extends AbstractDelegateBeanFactory {
         return delegateBeanFactory;
     }
 
-    protected AbstractAutoInjectedBeanFactory getDelegateBeanFactory() {
+    protected AbstractBeanFactory getDelegateBeanFactory() {
         return delegateBeanFactory;
     }
 
     public void destroy() {
         getDelegateBeanFactory().destroySingletons();
+    }
+
+    private String generateDependentName(Type type) {
+        if (BeanUtils.isProvider(type)) {
+            type = ReflectUtils.getActualType(type);
+        }
+        return beanNameGenerator.generateBeanName((Class<?>) type);
     }
 
     public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {

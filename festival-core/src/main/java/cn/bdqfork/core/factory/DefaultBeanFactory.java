@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author bdq
  * @since 2019/12/15
  */
-public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory implements BeanDefinitionRegistry {
+public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
     private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
     private BeanFactory parentBeanFactory;
 
@@ -50,7 +50,7 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory implemen
     @Override
     protected void doInjectedField(String beanName, Object instance, Field field, InjectedPoint injectedPoint) throws BeansException {
         Object value = resovleDependence(injectedPoint, beanName);
-        field.setAccessible(true);
+        ReflectUtils.makeAccessible(field);
         try {
             field.set(instance, value);
         } catch (IllegalAccessException e) {
@@ -62,7 +62,7 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory implemen
     @Override
     protected void doInjectedMethod(String beanName, Object instance, Method method, InjectedPoint injectedPoint) throws BeansException {
         Object arg = resovleDependence(injectedPoint, beanName);
-        method.setAccessible(true);
+        ReflectUtils.makeAccessible(method);
         try {
             method.invoke(instance, arg);
         } catch (IllegalAccessException | InvocationTargetException e) {

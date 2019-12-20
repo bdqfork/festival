@@ -10,7 +10,7 @@ public class StringUtils {
         return s == null || "".equals(s);
     }
 
-    public static String lowerFirstChar(String s) {
+    public static String makeInitialLowercase(String s) {
         char[] chars = s.toCharArray();
         chars[0] += 32;
         return String.valueOf(chars);

@@ -22,6 +22,6 @@ public class SimpleBeanNameGenerator implements BeanNameGenerator {
         } else {
             className = clazz.getSimpleName();
         }
-        return StringUtils.lowerFirstChar(className);
+        return StringUtils.makeInitialLowercase(className);
     }
 }
