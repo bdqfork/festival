@@ -4,6 +4,7 @@ import cn.bdqfork.core.factory.BeanDefinition;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.ConflictedBeanException;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,7 +38,7 @@ public interface BeanDefinitionRegistry extends Registry {
      *
      * @return Map<String, BeanDefinition>
      */
-    BeanDefinition getBeanDefinition(Class<?> beanType);
+    List<BeanDefinition> getBeanDefinitions(Class<?> beanType);
 
     /**
      * 获取所有BeanDefinition

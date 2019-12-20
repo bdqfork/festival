@@ -2,6 +2,7 @@ package cn.bdqfork.core.factory;
 
 import cn.bdqfork.core.exception.BeansException;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,7 +30,7 @@ public interface BeanFactory {
     <T> T getBean(String beanName, Object[] args) throws BeansException;
 
     /**
-     * 获取第一个与clazz匹配代理实例
+     * 获取clazz匹配代理实例，如果有多个实例，跑出异常
      *
      * @param clazz class类型
      * @return Object Bean实例

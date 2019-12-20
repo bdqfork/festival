@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author bdq
  * @since 2019/12/16
  */
-public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
+public abstract class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
     private final Map<String, Object> singletons = new ConcurrentHashMap<>(256);
     private final Map<String, Object> earlySingletons = new HashMap<>(16);
     private final Map<String, Provider<?>> singletonProviders = new HashMap<>(16);

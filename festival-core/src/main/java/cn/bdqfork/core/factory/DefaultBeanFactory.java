@@ -9,8 +9,10 @@ import cn.bdqfork.core.util.StringUtils;
 import javax.inject.Provider;
 import java.lang.reflect.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * @author bdq
@@ -73,17 +75,28 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
     @Override
     protected Object doResovleDependence(String name, Type type, boolean check) throws BeansException {
         Object bean = null;
+
         if (!StringUtils.isEmpty(name) && type != null) {
-            bean = getSpecificBean(name, ReflectUtils.getActualType(type));
+
+            Class<?> actualType = ReflectUtils.getActualType(type);
+            bean = getSpecificBean(name, actualType);
+
         } else if (!StringUtils.isEmpty(name)) {
+
             bean = getBean(name);
+
         } else if (type != null) {
+
             bean = getBean(ReflectUtils.getActualType(type));
+
         }
+
         if (bean == null && check) {
-            throw new UnsatisfiedBeanException(String.format("there is no bean named %s or type of %s", name, type.getTypeName()));
+            throw new UnsatisfiedBeanException(String.format("there is no bean named %s or type of %s", name, type));
         }
+
         bean = createIfProvider(type, bean);
+
         return bean;
     }
 
@@ -118,13 +131,11 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
     }
 
     @Override
-    public BeanDefinition getBeanDefinition(Class<?> beanType) {
-        for (BeanDefinition beanDefinition : beanDefinitionMap.values()) {
-            if (BeanUtils.checkIsInstance(beanDefinition.getBeanClass(), beanType)) {
-                return beanDefinition;
-            }
-        }
-        return null;
+    public List<BeanDefinition> getBeanDefinitions(Class<?> beanType) {
+        return beanDefinitionMap.values()
+                .stream()
+                .filter(beanDefinition -> BeanUtils.checkIsInstance(beanDefinition.getBeanClass(), beanType))
+                .collect(Collectors.toList());
     }
 
     @Override
