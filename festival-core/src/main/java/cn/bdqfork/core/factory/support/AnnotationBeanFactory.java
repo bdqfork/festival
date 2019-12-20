@@ -120,7 +120,7 @@ public class AnnotationBeanFactory extends AbstractDelegateBeanFactory {
 
             name = clazz.getAnnotation(Named.class).value();
 
-        } else if (clazz.isAnnotationPresent(ManagedBean.class)) {
+        } else if (JSR250 && clazz.isAnnotationPresent(ManagedBean.class)) {
 
             name = clazz.getAnnotation(ManagedBean.class).value();
 
@@ -238,6 +238,9 @@ public class AnnotationBeanFactory extends AbstractDelegateBeanFactory {
     private InjectedPoint getFieldInjectedPoint(Field field, Type type) {
         if (JSR250 && field.isAnnotationPresent(Resource.class)) {
             Resource resource = field.getAnnotation(Resource.class);
+            if (StringUtils.isEmpty(resource.name()) && resource.type() == Object.class) {
+                return new InjectedPoint(field.getName(), true);
+            }
             if (resource.type() == Object.class) {
                 return new InjectedPoint(resource.name(), type, true);
             }
@@ -246,7 +249,7 @@ public class AnnotationBeanFactory extends AbstractDelegateBeanFactory {
 
         if (field.isAnnotationPresent(Named.class)) {
             Named named = field.getAnnotation(Named.class);
-            return new InjectedPoint(named.value(), null, true);
+            return new InjectedPoint(named.value(), true);
         } else {
             return new InjectedPoint(type);
         }
@@ -279,7 +282,9 @@ public class AnnotationBeanFactory extends AbstractDelegateBeanFactory {
 
                 Type type = method.getGenericParameterTypes()[0];
 
-                InjectedPoint injectedPoint = new InjectedPoint(type);
+                InjectedPoint injectedPoint = getSetterInjectedPoint(method, type);
+
+                methods.put(methodName, injectedPoint);
 
                 if (BeanUtils.isProvider(type)) {
                     type = ReflectUtils.getActualType(type);
@@ -292,7 +297,6 @@ public class AnnotationBeanFactory extends AbstractDelegateBeanFactory {
                     getDelegateBeanFactory().registerDependentForBean(beanDefinition.getBeanName(), beanName);
                 }
 
-                methods.put(methodName, injectedPoint);
             }
 
             if (JSR250 && method.isAnnotationPresent(PostConstruct.class)) {
@@ -307,6 +311,26 @@ public class AnnotationBeanFactory extends AbstractDelegateBeanFactory {
 
         }
         beanDefinition.setInjectedSetters(methods);
+    }
+
+    private InjectedPoint getSetterInjectedPoint(Method method, Type type) {
+        if (JSR250 && method.isAnnotationPresent(Resource.class)) {
+            Resource resource = method.getAnnotation(Resource.class);
+            if (StringUtils.isEmpty(resource.name()) && resource.type() == Object.class) {
+                return new InjectedPoint(StringUtils.lowerFirstChar(method.getName().substring(3)), true);
+            }
+            if (resource.type() == Object.class) {
+                return new InjectedPoint(resource.name(), type, true);
+            }
+            return new InjectedPoint(resource.name(), resource.type(), true);
+        }
+
+        if (method.isAnnotationPresent(Named.class)) {
+            Named named = method.getAnnotation(Named.class);
+            return new InjectedPoint(named.value(), true);
+        } else {
+            return new InjectedPoint(type);
+        }
     }
 
     protected boolean checkIfComponent(Class<?> candidate) {

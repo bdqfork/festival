@@ -22,6 +22,11 @@ public class InjectedPoint {
         this("", type, require);
     }
 
+    public InjectedPoint(String beanName, boolean require) {
+        this.beanName = beanName;
+        this.require = require;
+    }
+
     public InjectedPoint(String beanName, Type type, boolean require) {
         this.beanName = beanName;
         this.type = type;

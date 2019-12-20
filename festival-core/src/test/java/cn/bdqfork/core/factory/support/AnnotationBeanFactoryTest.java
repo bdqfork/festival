@@ -5,6 +5,7 @@ import cn.bdqfork.core.exception.CircularDependencyException;
 import cn.bdqfork.model.cycle.*;
 import cn.bdqfork.model.jsr250.JSR250FieldCycleDao;
 import cn.bdqfork.model.jsr250.JSR250FieldService;
+import cn.bdqfork.model.jsr250.JSR250SetterCycleService;
 import org.junit.Test;
 
 public class AnnotationBeanFactoryTest {
@@ -52,6 +53,14 @@ public class AnnotationBeanFactoryTest {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.jsr250");
         annotationBeanfactory.getBean(JSR250FieldService.class);
+        annotationBeanfactory.destroy();
+    }
+
+    @Test
+    public void testJSR250Setter() throws BeansException {
+        AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
+        annotationBeanfactory.scan("cn.bdqfork.model.jsr250");
+        annotationBeanfactory.getBean(JSR250SetterCycleService.class);
         annotationBeanfactory.destroy();
     }
 }

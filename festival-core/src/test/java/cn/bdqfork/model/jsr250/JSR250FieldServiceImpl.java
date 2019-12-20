@@ -11,6 +11,6 @@ import javax.inject.Singleton;
 @Singleton
 @ManagedBean
 public class JSR250FieldServiceImpl implements JSR250FieldService {
-    @Resource
+    @Resource(type = JSR250FieldCycleDao.class)
     private JSR250FieldCycleDao jsr250FieldCycleDao;
 }
