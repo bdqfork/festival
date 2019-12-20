@@ -316,13 +316,19 @@ public class AnnotationBeanFactory extends AbstractDelegateBeanFactory {
     private InjectedPoint getSetterInjectedPoint(Method method, Type type) {
         if (JSR250 && method.isAnnotationPresent(Resource.class)) {
             Resource resource = method.getAnnotation(Resource.class);
-            if (StringUtils.isEmpty(resource.name()) && resource.type() == Object.class) {
-                return new InjectedPoint(StringUtils.lowerFirstChar(method.getName().substring(3)), true);
+
+            String name;
+            if (StringUtils.isEmpty(resource.name())) {
+                name = StringUtils.lowerFirstChar(method.getName().substring(3));
+            } else {
+                name = resource.name();
             }
+
             if (resource.type() == Object.class) {
-                return new InjectedPoint(resource.name(), type, true);
+                return new InjectedPoint(name, type, true);
             }
-            return new InjectedPoint(resource.name(), resource.type(), true);
+
+            return new InjectedPoint(name, resource.type(), true);
         }
 
         if (method.isAnnotationPresent(Named.class)) {
