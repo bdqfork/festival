@@ -104,7 +104,7 @@ public abstract class DefaultSingletonBeanRegistry implements SingletonBeanRegis
 
 
     @Override
-    public void destorySingleton(String beanName) {
+    public void destroySingleton(String beanName) {
         synchronized (singletons) {
             destroyingSingletons.add(beanName);
             registerSingletons.remove(beanName);

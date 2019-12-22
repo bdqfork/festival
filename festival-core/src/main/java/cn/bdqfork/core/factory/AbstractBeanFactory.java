@@ -73,7 +73,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
                 try {
                     return createBean(beanName, beanDefinition, args);
                 } catch (BeansException e) {
-                    destorySingleton(beanName);
+                    destroySingleton(beanName);
                     throw new IllegalStateException(e);
                 }
             });
@@ -116,7 +116,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
     public void destroySingletons() {
         for (String singletonName : getSingletonNames()) {
-            destorySingleton(singletonName);
+            destroySingleton(singletonName);
         }
     }
 

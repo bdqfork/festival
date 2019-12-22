@@ -78,7 +78,7 @@ public class DefaultJSR250BeanFactory extends AbstractJSR250BeanFactory {
             } catch (BeansException e) {
                 throw new IllegalStateException(e);
             }
-            destorySingleton(singletonName);
+            destroySingleton(singletonName);
         }
     }
 }

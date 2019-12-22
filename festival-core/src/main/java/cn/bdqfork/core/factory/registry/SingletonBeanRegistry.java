@@ -27,7 +27,7 @@ public interface SingletonBeanRegistry extends Registry {
      *
      * @param beanName
      */
-    void destorySingleton(String beanName);
+    void destroySingleton(String beanName);
 
     /**
      * 是否包含实例
