@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * @since 2019/12/15
  */
 public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
-    private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
+    private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
     private BeanFactory parentBeanFactory;
 
     @Override

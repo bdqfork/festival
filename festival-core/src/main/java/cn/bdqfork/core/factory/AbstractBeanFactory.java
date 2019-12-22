@@ -53,7 +53,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         if (bean != null && args == null) {
             return (T) bean;
         }
-        if (isCreating(beanName)) {
+        if (underCreatingOrDestroying(beanName)) {
             throw new BeansException(String.format("bean named %s is under creating !", beanName));
         }
 

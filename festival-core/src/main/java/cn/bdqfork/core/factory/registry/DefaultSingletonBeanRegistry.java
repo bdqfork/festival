@@ -16,6 +16,7 @@ public abstract class DefaultSingletonBeanRegistry implements SingletonBeanRegis
     private final Map<String, Provider<?>> singletonProviders = new HashMap<>(16);
     private final Set<String> registerSingletons = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
     private final Set<String> creatingSingletons = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
+    private final Set<String> destroyingSingletons = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
     /**
      * 必须先初始化的依赖，这里的依赖不一定是类的属性，也有可能是一些其他的类，例如系统配置，JDBC配置等
@@ -72,7 +73,7 @@ public abstract class DefaultSingletonBeanRegistry implements SingletonBeanRegis
             Object singleton = singletons.get(beanName);
             if (singleton == null && allowEarly) {
                 singleton = earlySingletons.get(beanName);
-                if (singleton == null && isCreating(beanName)) {
+                if (singleton == null && underCreatingOrDestroying(beanName)) {
                     Provider<?> provider = singletonProviders.get(beanName);
                     singleton = provider.get();
                     earlySingletons.put(beanName, singleton);
@@ -105,6 +106,7 @@ public abstract class DefaultSingletonBeanRegistry implements SingletonBeanRegis
     @Override
     public void destorySingleton(String beanName) {
         synchronized (singletons) {
+            destroyingSingletons.add(beanName);
             registerSingletons.remove(beanName);
             singletons.remove(beanName);
             singletonProviders.remove(beanName);
@@ -122,8 +124,10 @@ public abstract class DefaultSingletonBeanRegistry implements SingletonBeanRegis
         return registerSingletons.contains(beanName);
     }
 
-    public boolean isCreating(String beanName) {
-        return creatingSingletons.contains(beanName);
+    public boolean underCreatingOrDestroying(String beanName) {
+        synchronized (singletons) {
+            return creatingSingletons.contains(beanName) || destroyingSingletons.contains(beanName);
+        }
     }
 
     public void registerDependentForBean(String beanName, String dependOn) {
