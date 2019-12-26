@@ -7,9 +7,10 @@
     <groupId>cn.bdqfork</groupId>
     <artifactId>festival</artifactId>
   
-    <version>0.2</version>
+    <version>0.3</version>
     <modules>
         <module>festival-core</module>
+        <module>festival-aop</module>
     </modules>
     <packaging>pom</packaging>
     <properties>

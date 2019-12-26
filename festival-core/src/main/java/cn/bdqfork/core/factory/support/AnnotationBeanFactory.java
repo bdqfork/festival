@@ -28,7 +28,7 @@ public class AnnotationBeanFactory extends AbstractAutoResolveBeanFactory {
     /**
      * 是否启用JSR250
      */
-    private static boolean JSR250 = true;
+    protected static boolean JSR250 = true;
     /**
      * 委托工厂
      */
@@ -64,7 +64,7 @@ public class AnnotationBeanFactory extends AbstractAutoResolveBeanFactory {
                 return new ManagedBeanDefinition(beanName, clazz, BeanDefinition.SINGLETON);
             }
 
-            return new BeanDefinition(beanName, clazz);
+            return new BeanDefinition(beanName, clazz, BeanDefinition.SINGLETON);
 
         } else if (clazz.isAnnotationPresent(Scope.class)) {
 
@@ -77,7 +77,7 @@ public class AnnotationBeanFactory extends AbstractAutoResolveBeanFactory {
                 return new ManagedBeanDefinition(beanName, clazz, BeanDefinition.PROTOTYPE);
             }
 
-            return new BeanDefinition(beanName, clazz);
+            return new BeanDefinition(beanName, clazz, BeanDefinition.PROTOTYPE);
         }
     }
 
@@ -305,9 +305,10 @@ public class AnnotationBeanFactory extends AbstractAutoResolveBeanFactory {
     public void setParentBeanFactory(BeanFactory beanFactory) {
         if (beanFactory instanceof AbstractBeanFactory) {
             delegateBeanFactory = (AbstractBeanFactory) beanFactory;
+        } else {
+            throw new IllegalStateException(String.format("unsupport BeanFactory %s ! delegate BeanFactory " +
+                    "can only be instance of AbstractBeanFactory.class !", beanFactory.getClass()));
         }
-        throw new IllegalStateException(String.format("unsupport BeanFactory %s ! delegate BeanFactory " +
-                "can only be instance of AbstractBeanFactory.class !", beanFactory.getClass()));
     }
 
     @Override

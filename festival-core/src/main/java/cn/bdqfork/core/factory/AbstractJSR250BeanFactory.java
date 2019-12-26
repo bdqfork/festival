@@ -11,16 +11,9 @@ public abstract class AbstractJSR250BeanFactory extends DefaultBeanFactory imple
 
     @Override
     public void executePostConstuct(String beanName, Object bean) throws BeansException {
-        ManagedBeanDefinition managedBeanDefinition = getManagedBeanDefinition(beanName);
-        doInitializingMethod(bean, managedBeanDefinition);
-    }
-
-    protected ManagedBeanDefinition getManagedBeanDefinition(String beanName) throws NoSuchBeanException {
         BeanDefinition beanDefinition = getBeanDefinition(beanName);
         if (beanDefinition instanceof ManagedBeanDefinition) {
-            return (ManagedBeanDefinition) beanDefinition;
-        } else {
-            throw new NoSuchBeanException(String.format("managed bean %s is not exist !", beanName));
+            doInitializingMethod(bean, (ManagedBeanDefinition) beanDefinition);
         }
     }
 
@@ -28,8 +21,10 @@ public abstract class AbstractJSR250BeanFactory extends DefaultBeanFactory imple
 
     @Override
     public void executePreDestroy(String beanName, Object bean) throws BeansException {
-        ManagedBeanDefinition managedBeanDefinition = getManagedBeanDefinition(beanName);
-        doPreDestroyMethod(bean, managedBeanDefinition);
+        BeanDefinition beanDefinition = getBeanDefinition(beanName);
+        if (beanDefinition instanceof ManagedBeanDefinition) {
+            doPreDestroyMethod(bean, (ManagedBeanDefinition) beanDefinition);
+        }
     }
 
     protected abstract void doPreDestroyMethod(Object bean, ManagedBeanDefinition managedBeanDefinition) throws BeansException;
