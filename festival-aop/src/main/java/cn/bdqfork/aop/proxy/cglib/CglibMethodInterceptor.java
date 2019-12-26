@@ -24,7 +24,8 @@ public class CglibMethodInterceptor extends AbstractProxyInvocationHandler imple
     @Override
     public Object newProxyInstance() throws BeansException {
         Enhancer enhancer = new Enhancer();
-        enhancer.setCallback(this);
+        enhancer.setCallbackType(MethodInterceptor.class);
+//        enhancer.setCallback(this);
 
         Class<?> targetClass = target.getClass();
         enhancer.setSuperclass(targetClass);
