@@ -1,8 +1,6 @@
-package cn.bdqfork.aop.aspect;
+package cn.bdqfork.aop.advice;
 
 import cn.bdqfork.aop.MethodSignature;
-import cn.bdqfork.aop.advice.AbstractAdvisor;
-import cn.bdqfork.aop.advice.AspectAdvice;
 
 import java.lang.reflect.Method;
 

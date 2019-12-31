@@ -5,4 +5,5 @@ package cn.bdqfork.aop.factory;
  * @since 2019/12/19
  */
 public interface JSR250FieldService {
+    JSR250FieldCycleDao getJsr250FieldCycleDao();
 }

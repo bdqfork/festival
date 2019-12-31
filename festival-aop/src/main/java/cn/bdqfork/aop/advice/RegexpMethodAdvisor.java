@@ -1,4 +1,4 @@
-package cn.bdqfork.aop.aspect;
+package cn.bdqfork.aop.advice;
 
 import cn.bdqfork.aop.MethodSignature;
 import cn.bdqfork.aop.advice.AbstractAdvisor;

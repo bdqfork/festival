@@ -43,4 +43,6 @@ public interface Advisor extends Advice {
      * @return boolean
      */
     boolean isMatch(Method method, Class<?> adviceType);
+
+    boolean isAdviceTypeOf(Class<?> adviceType);
 }

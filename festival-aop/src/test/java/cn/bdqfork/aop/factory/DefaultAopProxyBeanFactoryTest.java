@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class AspectBeanFactoryTest {
+public class DefaultAopProxyBeanFactoryTest {
 
     @Test
     public void getBean() throws BeansException {
@@ -13,5 +13,6 @@ public class AspectBeanFactoryTest {
         aspectBeanFactory.scan("cn.bdqfork.aop.factory");
         JSR250FieldService jsr250FieldService = aspectBeanFactory.getBean(JSR250FieldService.class);
         System.out.println(jsr250FieldService);
+        System.out.println(jsr250FieldService.getJsr250FieldCycleDao());
     }
 }

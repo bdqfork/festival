@@ -9,6 +9,6 @@ import cn.bdqfork.core.factory.support.AnnotationBeanFactory;
 public class AspectAnnotationBeanFactory extends AnnotationBeanFactory {
     public AspectAnnotationBeanFactory() {
         super();
-        setParentBeanFactory(new AspectBeanFactory());
+        setParentBeanFactory(new DefaultAopProxyBeanFactory());
     }
 }

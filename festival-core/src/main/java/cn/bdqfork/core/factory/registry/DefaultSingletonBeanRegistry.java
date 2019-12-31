@@ -73,7 +73,7 @@ public abstract class DefaultSingletonBeanRegistry implements SingletonBeanRegis
             Object singleton = singletons.get(beanName);
             if (singleton == null && allowEarly) {
                 singleton = earlySingletons.get(beanName);
-                if (singleton == null && underCreatingOrDestroying(beanName)) {
+                if (singleton == null && underCreating(beanName)) {
                     Provider<?> provider = singletonProviders.get(beanName);
                     singleton = provider.get();
                     earlySingletons.put(beanName, singleton);
@@ -122,6 +122,12 @@ public abstract class DefaultSingletonBeanRegistry implements SingletonBeanRegis
     @Override
     public boolean containSingleton(String beanName) {
         return registerSingletons.contains(beanName);
+    }
+
+    public boolean underCreating(String beanName) {
+        synchronized (singletons) {
+            return creatingSingletons.contains(beanName);
+        }
     }
 
     public boolean underCreatingOrDestroying(String beanName) {

@@ -26,7 +26,11 @@ public class JavassistInvocationHandler extends AbstractProxyInvocationHandler i
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Object targetObject = getTargetObject();
-        return invokeObjectMethod(targetObject, method, args);
+        Object result = invokeObjectMethod(targetObject, method, args);
+        if (result == null) {
+            result = method.invoke(targetObject, args);
+        }
+        return result;
     }
 
 }

@@ -29,7 +29,7 @@ public class AdvisorInvocationHandlerImpl implements AdvisorInvocationHandler {
     /**
      * 方法签名，环绕通知映射
      */
-    private Map<String, MethodInterceptor[]> aroundAdviceCache;
+    private Map<String, AroundAdvice[]> aroundAdviceCache;
     /**
      * 方法签名，异常通知映射
      */
@@ -50,11 +50,11 @@ public class AdvisorInvocationHandlerImpl implements AdvisorInvocationHandler {
 
         MethodInvocation invocation = new MethodInvocation(target, method, args, beforeAdvices);
 
-        MethodInterceptor[] aroundAdvices = getAroundAdvices(method, methodSignature);
+        AroundAdvice[] aroundAdvices = getAroundAdvices(method, methodSignature);
 
         if (aroundAdvices.length > 0) {
             //执行环绕通知
-            for (MethodInterceptor aroundAdvice : aroundAdvices) {
+            for (AroundAdvice aroundAdvice : aroundAdvices) {
                 try {
                     Object returnValue = doAround(aroundAdvice, invocation);
                     doAfterReturning(invocation, returnValue);
@@ -90,22 +90,22 @@ public class AdvisorInvocationHandlerImpl implements AdvisorInvocationHandler {
         return methodBeforeAdvice;
     }
 
-    private MethodInterceptor[] getAroundAdvices(Method method, MethodSignature methodSignature) {
+    private AroundAdvice[] getAroundAdvices(Method method, MethodSignature methodSignature) {
         String fullyMethodName = methodSignature.toLongString();
         //判断是否有缓存key
         if (aroundAdviceCache.containsKey(fullyMethodName)) {
             return aroundAdviceCache.get(fullyMethodName);
         }
-        MethodInterceptor[] aroundAdvice = advisors.stream()
-                .filter(advisor -> advisor.isMatch(method, MethodInterceptor.class))
-                .map(advisor -> (MethodInterceptor) advisor.getAdvice())
-                .toArray(MethodInterceptor[]::new);
+        AroundAdvice[] aroundAdvice = advisors.stream()
+                .filter(advisor -> advisor.isMatch(method, AroundAdvice.class))
+                .map(advisor -> (AroundAdvice) advisor.getAdvice())
+                .toArray(AroundAdvice[]::new);
         aroundAdviceCache.put(fullyMethodName, aroundAdvice);
         return aroundAdvice;
     }
 
-    private Object doAround(MethodInterceptor methodInterceptor, MethodInvocation methodInvocation) throws Throwable {
-        return methodInterceptor.invoke(methodInvocation);
+    private Object doAround(AroundAdvice aroundAdvice, MethodInvocation methodInvocation) throws Throwable {
+        return aroundAdvice.invoke(methodInvocation);
     }
 
     private void doAfterReturning(MethodInvocation methodInvocation, Object returnValue) throws Throwable {

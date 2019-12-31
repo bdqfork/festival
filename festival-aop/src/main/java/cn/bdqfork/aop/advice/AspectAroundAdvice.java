@@ -1,15 +1,14 @@
-package cn.bdqfork.aop.aspect;
+package cn.bdqfork.aop.advice;
 
 
 import cn.bdqfork.aop.MethodInvocation;
-import cn.bdqfork.aop.advice.MethodInterceptor;
 import org.aspectj.lang.ProceedingJoinPoint;
 
 /**
  * @author bdq
  * @since 2019/12/23
  */
-public class AspectAroundAdvice extends AbstractAspectAdvice implements MethodInterceptor {
+public class AspectAroundAdvice extends AbstractAspectAdvice implements AroundAdvice {
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {

@@ -1,6 +1,5 @@
-package cn.bdqfork.aop.aspect;
+package cn.bdqfork.aop.advice;
 
-import cn.bdqfork.aop.advice.AspectAdvice;
 import cn.bdqfork.core.util.BeanUtils;
 import org.aspectj.lang.JoinPoint;
 

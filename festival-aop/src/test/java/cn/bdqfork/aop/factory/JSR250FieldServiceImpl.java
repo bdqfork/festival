@@ -13,4 +13,15 @@ import javax.inject.Singleton;
 public class JSR250FieldServiceImpl implements JSR250FieldService {
     @Inject
     private JSR250FieldCycleDao jsr250FieldCycleDao;
+
+    public void setJsr250FieldCycleDao(JSR250FieldCycleDao jsr250FieldCycleDao) {
+        this.jsr250FieldCycleDao = jsr250FieldCycleDao;
+    }
+
+    @Override
+    public JSR250FieldCycleDao getJsr250FieldCycleDao() {
+        System.out.println("test");
+        return jsr250FieldCycleDao;
+    }
+
 }

@@ -1,6 +1,5 @@
-package cn.bdqfork.aop.aspect;
+package cn.bdqfork.aop.advice;
 
-import cn.bdqfork.aop.advice.AfterReturningAdvice;
 import org.aspectj.lang.JoinPoint;
 
 import java.lang.reflect.Method;

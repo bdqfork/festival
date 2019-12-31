@@ -6,7 +6,7 @@ import cn.bdqfork.aop.MethodInvocation;
  * @author bdq
  * @since 2019/12/23
  */
-public interface MethodInterceptor extends Advice {
+public interface AroundAdvice extends Advice {
     /**
      * 执行环绕通知
      *

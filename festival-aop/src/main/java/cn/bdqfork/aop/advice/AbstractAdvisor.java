@@ -1,5 +1,7 @@
 package cn.bdqfork.aop.advice;
 
+import cn.bdqfork.aop.constant.AdviceType;
+
 /**
  * @author bdq
  * @since 2019/12/23
@@ -34,4 +36,8 @@ public abstract class AbstractAdvisor implements Advisor {
         return advice;
     }
 
+    @Override
+    public boolean isAdviceTypeOf(Class<?> adviceType) {
+        return adviceType.isInstance(advice);
+    }
 }
