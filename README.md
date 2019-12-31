@@ -10,6 +10,8 @@ V0.3版本大量重构，对BeanFactory进行了抽象，使得项目结构更�
 
 该框架实现了jsr330规范和jsr250规范，实现了基本的依赖注入功能。
 
+注意：master分支的aop功能尚未完善，暂时无法测试。
+
 项目设计：
 
 ![design](images/design.png)
@@ -23,4 +25,3 @@ V0.3版本大量重构，对BeanFactory进行了抽象，使得项目结构更�
 ##### todolist:
 1. 完善测试用例
 2. 支持AspectJ，实现AOP拦截
-
