@@ -10,15 +10,16 @@ V0.3版本大量重构，对BeanFactory进行了抽象，使得项目结构更�
 
 该框架实现了jsr330规范和jsr250规范，实现了基本的依赖注入功能。
 
-项目设计：
-
+core设计如下：
 ![design](images/design.png)
+
+aop设计如下：
+![aop-design](images/aop-design.png)
 
 #### 更新日志:
 
 1. 去除了V0.2版本中的Spring注解，仅支持jsr330和jsr250注解
-2. 暂时删去了aop功能，后面会直接实现AspectJ注解支持
-3. 重新设计了项目，尽可能的面向接口编程
+2. 重新设计了项目，尽可能的面向接口编程
 
 ##### todolist:
 1. 完善测试用例
