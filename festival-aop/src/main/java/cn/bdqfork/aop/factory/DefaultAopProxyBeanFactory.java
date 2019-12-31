@@ -2,13 +2,18 @@ package cn.bdqfork.aop.factory;
 
 import cn.bdqfork.aop.MethodSignature;
 import cn.bdqfork.aop.advice.*;
-import cn.bdqfork.aop.proxy.ProxyFactory;
+import cn.bdqfork.aop.proxy.ProxyInvocationHandler;
+import cn.bdqfork.aop.proxy.cglib.CglibMethodInterceptor;
+import cn.bdqfork.aop.proxy.javassist.JavassistInvocationHandlerDefault;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.BeanDefinition;
 import cn.bdqfork.core.factory.DefaultJSR250BeanFactory;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -19,10 +24,7 @@ import java.util.stream.Collectors;
 public class DefaultAopProxyBeanFactory extends DefaultJSR250BeanFactory implements AopProxyBeanFactory {
     public static final String PREFIX = "$";
 
-    private static final Set<Advisor> beforeAdvisors = Collections.newSetFromMap(new ConcurrentHashMap<>(32));
-    private static final Set<Advisor> aroundAdvisors = Collections.newSetFromMap(new ConcurrentHashMap<>(32));
-    private static final Set<Advisor> afterAdvisors = Collections.newSetFromMap(new ConcurrentHashMap<>(32));
-    private static final Set<Advisor> throwsAdvisors = Collections.newSetFromMap(new ConcurrentHashMap<>(32));
+    private static final Set<Advisor> advisors = Collections.newSetFromMap(new ConcurrentHashMap<>(32));
 
     public DefaultAopProxyBeanFactory() {
         super();
@@ -45,85 +47,106 @@ public class DefaultAopProxyBeanFactory extends DefaultJSR250BeanFactory impleme
         if (advisor == null) {
             throw new BeansException("");
         }
-        if (advisor.isAdviceTypeOf(BeforeAdvice.class)) {
-            beforeAdvisors.add(advisor);
-        }
-        if (advisor.isAdviceTypeOf(AroundAdvice.class)) {
-            aroundAdvisors.add(advisor);
-        }
-        if (advisor.isAdviceTypeOf(AfterAdvice.class)) {
-            afterAdvisors.add(advisor);
-        }
-        if (advisor.isAdviceTypeOf(ThrowsAdvice.class)) {
-            throwsAdvisors.add(advisor);
-        }
+        advisors.add(advisor);
     }
 
     @Override
     public Object getAopProxyInstance(String beanName, Object bean, Class<?>[] interfaces) throws BeansException {
-        ProxyFactory proxyFactory = new ProxyFactory();
-        proxyFactory.setTarget(bean);
-        if (interfaces == null) {
-            proxyFactory.setInterfaces(bean.getClass().getInterfaces());
+        ProxyInvocationHandler invocationHandler;
+
+        if (interfaces != null && interfaces.length > 0) {
+            invocationHandler = new JavassistInvocationHandlerDefault();
         } else {
-            proxyFactory.setInterfaces(interfaces);
+            invocationHandler = new CglibMethodInterceptor();
         }
-        return proxyFactory.getProxy();
+
+        invocationHandler.setTarget(bean);
+
+        Class<?> beanClass = bean.getClass();
+
+        if (interfaces == null) {
+            interfaces = beanClass.getInterfaces();
+        }
+
+        invocationHandler.setInterfaces(interfaces);
+
+        Map<String, Set<MethodBeforeAdvice>> beforeAdvices = resolveBeforeAdvice(beanName, beanClass);
+        for (Map.Entry<String, Set<MethodBeforeAdvice>> entry : beforeAdvices.entrySet()) {
+            invocationHandler.addAdvice(entry.getKey(), entry.getValue().toArray(new MethodBeforeAdvice[0]));
+        }
+
+        Map<String, Set<AroundAdvice>> aroundAdvice = resolveAroundAdvice(beanName, beanClass);
+        for (Map.Entry<String, Set<AroundAdvice>> entry : aroundAdvice.entrySet()) {
+            invocationHandler.addAdvice(entry.getKey(), entry.getValue().toArray(new AroundAdvice[0]));
+        }
+
+        Map<String, Set<AfterReturningAdvice>> afterAdvices = resolveAfterAdvice(beanName, beanClass);
+        for (Map.Entry<String, Set<AfterReturningAdvice>> entry : afterAdvices.entrySet()) {
+            invocationHandler.addAdvice(entry.getKey(), entry.getValue().toArray(new AfterReturningAdvice[0]));
+        }
+
+        Map<String, Set<ThrowsAdvice>> throwsAdvice = resolveThrowsAdvice(beanName, beanClass);
+        for (Map.Entry<String, Set<ThrowsAdvice>> entry : throwsAdvice.entrySet()) {
+            invocationHandler.addAdvice(entry.getKey(), entry.getValue().toArray(new ThrowsAdvice[0]));
+        }
+
+        return invocationHandler.newProxyInstance();
     }
 
     @Override
-    public Map<String, Set<BeforeAdvice>> resolveBeforeAdvice(String beanName, Class<?> beanClass) {
-        Map<String, Set<BeforeAdvice>> beforeAdviceMap = new HashMap<>();
+    public Map<String, Set<MethodBeforeAdvice>> resolveBeforeAdvice(String beanName, Class<?> beanClass) {
+        Map<String, Set<MethodBeforeAdvice>> adviceMap = new HashMap<>();
         for (Method method : beanClass.getDeclaredMethods()) {
-            Set<BeforeAdvice> beforeAdvices = beforeAdvisors.stream()
-                    .filter(advisor -> advisor.isMatch(method, BeforeAdvice.class))
-                    .map(advisor -> (BeforeAdvice) advisor.getAdvice())
+            Set<MethodBeforeAdvice> advices = advisors.stream()
+                    .filter(advisor -> advisor.isMatch(method, MethodBeforeAdvice.class))
+                    .map(advisor -> (MethodBeforeAdvice) advisor.getAdvice())
                     .collect(Collectors.toSet());
             MethodSignature signature = new MethodSignature(beanClass, method);
-            beforeAdviceMap.put(signature.toLongString(), beforeAdvices);
+            adviceMap.put(signature.toLongString(), advices);
         }
-        return beforeAdviceMap;
-    }
-
-    @Override
-    public Map<String, Set<AfterAdvice>> resolveAfterAdvice(String beanName, Class<?> beanClass) {
-        Map<String, Set<AfterAdvice>> afterAdviceMap = new HashMap<>();
-        for (Method method : beanClass.getDeclaredMethods()) {
-            Set<AfterAdvice> afterAdvices = afterAdvisors.stream()
-                    .filter(advisor -> advisor.isMatch(method, AfterAdvice.class))
-                    .map(advisor -> (AfterAdvice) advisor.getAdvice())
-                    .collect(Collectors.toSet());
-            MethodSignature signature = new MethodSignature(beanClass, method);
-            afterAdviceMap.put(signature.toLongString(), afterAdvices);
-        }
-        return afterAdviceMap;
+        return adviceMap;
     }
 
     @Override
     public Map<String, Set<AroundAdvice>> resolveAroundAdvice(String beanName, Class<?> beanClass) {
-        Map<String, Set<AroundAdvice>> aroundAdviceMap = new HashMap<>();
+        Map<String, Set<AroundAdvice>> adviceMap = new HashMap<>();
         for (Method method : beanClass.getDeclaredMethods()) {
-            Set<AroundAdvice> aroundAdvices = aroundAdvisors.stream()
+            Set<AroundAdvice> advices = advisors.stream()
                     .filter(advisor -> advisor.isMatch(method, AroundAdvice.class))
                     .map(advisor -> (AroundAdvice) advisor.getAdvice())
                     .collect(Collectors.toSet());
             MethodSignature signature = new MethodSignature(beanClass, method);
-            aroundAdviceMap.put(signature.toLongString(), aroundAdvices);
+            adviceMap.put(signature.toLongString(), advices);
         }
-        return aroundAdviceMap;
+        return adviceMap;
+    }
+
+    @Override
+    public Map<String, Set<AfterReturningAdvice>> resolveAfterAdvice(String beanName, Class<?> beanClass) {
+        Map<String, Set<AfterReturningAdvice>> adviceMap = new HashMap<>();
+        for (Method method : beanClass.getDeclaredMethods()) {
+            Set<AfterReturningAdvice> advices = advisors.stream()
+                    .filter(advisor -> advisor.isMatch(method, AfterReturningAdvice.class))
+                    .map(advisor -> (AfterReturningAdvice) advisor.getAdvice())
+                    .collect(Collectors.toSet());
+            MethodSignature signature = new MethodSignature(beanClass, method);
+            adviceMap.put(signature.toLongString(), advices);
+        }
+        return adviceMap;
     }
 
     @Override
     public Map<String, Set<ThrowsAdvice>> resolveThrowsAdvice(String beanName, Class<?> beanClass) {
-        Map<String, Set<ThrowsAdvice>> throwsAdviceMap = new HashMap<>();
+        Map<String, Set<ThrowsAdvice>> adviceMap = new HashMap<>();
         for (Method method : beanClass.getDeclaredMethods()) {
-            Set<ThrowsAdvice> throwsAdvices = throwsAdvisors.stream()
+            Set<ThrowsAdvice> advices = advisors.stream()
                     .filter(advisor -> advisor.isMatch(method, ThrowsAdvice.class))
                     .map(advisor -> (ThrowsAdvice) advisor.getAdvice())
                     .collect(Collectors.toSet());
             MethodSignature signature = new MethodSignature(beanClass, method);
-            throwsAdviceMap.put(signature.toLongString(), throwsAdvices);
+            adviceMap.put(signature.toLongString(), advices);
         }
-        return throwsAdviceMap;
+        return adviceMap;
     }
+
 }

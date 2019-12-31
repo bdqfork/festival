@@ -1,5 +1,6 @@
 package cn.bdqfork.aop.proxy.javassist;
 
+import cn.bdqfork.aop.proxy.AbstractAopInvocationHandler;
 import cn.bdqfork.aop.proxy.AbstractProxyInvocationHandler;
 import cn.bdqfork.core.exception.BeansException;
 
@@ -10,7 +11,7 @@ import java.lang.reflect.Method;
  * @author bdq
  * @since 2019/12/23
  */
-public class JavassistInvocationHandler extends AbstractProxyInvocationHandler implements InvocationHandler {
+public class JavassistInvocationHandlerDefault extends AbstractAopInvocationHandler implements InvocationHandler {
 
     /**
      * 创建代理实例
@@ -28,7 +29,7 @@ public class JavassistInvocationHandler extends AbstractProxyInvocationHandler i
         Object targetObject = getTargetObject();
         Object result = invokeObjectMethod(targetObject, method, args);
         if (result == null) {
-            result = method.invoke(targetObject, args);
+            result = invokeWithAdvice(targetObject, method, args);
         }
         return result;
     }

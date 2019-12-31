@@ -11,8 +11,9 @@ public class DefaultAopProxyBeanFactoryTest {
     public void getBean() throws BeansException {
         AspectAnnotationBeanFactory aspectBeanFactory = new AspectAnnotationBeanFactory();
         aspectBeanFactory.scan("cn.bdqfork.aop.factory");
-        JSR250FieldService jsr250FieldService = aspectBeanFactory.getBean(JSR250FieldService.class);
-        System.out.println(jsr250FieldService);
-        System.out.println(jsr250FieldService.getJsr250FieldCycleDao());
+        UserDaoImpl userDao = aspectBeanFactory.getBean(UserDaoImpl.class);
+        System.out.println(userDao);
+        userDao.testAop();
+        userDao.testThrowing();
     }
 }

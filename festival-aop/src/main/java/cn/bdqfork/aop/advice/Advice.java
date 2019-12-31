@@ -5,4 +5,5 @@ package cn.bdqfork.aop.advice;
  * @since 2019/12/23
  */
 public interface Advice {
+
 }

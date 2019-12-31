@@ -21,13 +21,13 @@ public interface AopProxyBeanFactory {
      *
      * @param beanName
      * @param beanClass
-     * @return Map<String, BeforeAdvice> method name and advice instance entry
+     * @return Map<Advisor> method name and advisor instance entry
      */
-    Map<String, Set<BeforeAdvice>> resolveBeforeAdvice(String beanName, Class<?> beanClass);
-
-    Map<String, Set<AfterAdvice>> resolveAfterAdvice(String beanName, Class<?> beanClass);
+    Map<String, Set<MethodBeforeAdvice>> resolveBeforeAdvice(String beanName, Class<?> beanClass);
 
     Map<String, Set<AroundAdvice>> resolveAroundAdvice(String beanName, Class<?> beanClass);
+
+    Map<String, Set<AfterReturningAdvice>> resolveAfterAdvice(String beanName, Class<?> beanClass);
 
     Map<String, Set<ThrowsAdvice>> resolveThrowsAdvice(String beanName, Class<?> beanClass);
 

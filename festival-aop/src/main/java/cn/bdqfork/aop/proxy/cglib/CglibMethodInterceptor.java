@@ -1,6 +1,6 @@
 package cn.bdqfork.aop.proxy.cglib;
 
-import cn.bdqfork.aop.proxy.AbstractProxyInvocationHandler;
+import cn.bdqfork.aop.proxy.AbstractAopInvocationHandler;
 import cn.bdqfork.core.exception.BeansException;
 import net.sf.cglib.proxy.*;
 import org.objenesis.Objenesis;
@@ -8,13 +8,12 @@ import org.objenesis.ObjenesisStd;
 import org.objenesis.instantiator.ObjectInstantiator;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 /**
  * @author bdq
  * @since 2019/12/23
  */
-public class CglibMethodInterceptor extends AbstractProxyInvocationHandler implements MethodInterceptor {
+public class CglibMethodInterceptor extends AbstractAopInvocationHandler implements MethodInterceptor {
 
     /**
      * 创建代理实例
@@ -25,8 +24,6 @@ public class CglibMethodInterceptor extends AbstractProxyInvocationHandler imple
     public Object newProxyInstance() throws BeansException {
         Enhancer enhancer = new Enhancer();
         enhancer.setCallbackType(MethodInterceptor.class);
-//        enhancer.setCallback(this);
-
         Class<?> targetClass = target.getClass();
         enhancer.setSuperclass(targetClass);
         Class<?> proxyClass = enhancer.createClass();
@@ -44,7 +41,11 @@ public class CglibMethodInterceptor extends AbstractProxyInvocationHandler imple
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
         //获取真实目标实例
         Object targetObject = getTargetObject();
-        return invokeObjectMethod(targetObject, method, args);
+        Object result = invokeObjectMethod(targetObject, method, args);
+        if (result == null) {
+            result = invokeWithAdvice(targetObject, method, args);
+        }
+        return result;
     }
 
 }
