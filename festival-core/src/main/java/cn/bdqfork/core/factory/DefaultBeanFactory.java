@@ -156,12 +156,10 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
     @Override
     public <T> Map<String, T> getBeans(Class<T> clazz) throws BeansException {
         Map<String, T> map = new HashMap<>();
-        for (BeanDefinition beanDefinition : beanDefinitionMap.values()) {
-            if (beanDefinition.getBeanClass() == clazz) {
-                String beanName = beanDefinition.getBeanName();
-                T bean = getBean(beanName);
-                map.put(beanName, bean);
-            }
+        for (BeanDefinition beanDefinition : getBeanDefinitions(clazz)) {
+            String beanName = beanDefinition.getBeanName();
+            T bean = getBean(beanName);
+            map.put(beanName, bean);
         }
         return map;
     }
