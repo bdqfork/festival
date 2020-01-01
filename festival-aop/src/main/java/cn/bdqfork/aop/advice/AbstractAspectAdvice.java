@@ -5,6 +5,7 @@ import org.aspectj.lang.JoinPoint;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Objects;
 
 /**
  * @author bdq
@@ -62,5 +63,20 @@ public abstract class AbstractAspectAdvice implements AspectAdvice {
     @Override
     public void setAspectAdviceMethod(Method aspectAdviceMethod) {
         this.aspectAdviceMethod = aspectAdviceMethod;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractAspectAdvice that = (AbstractAspectAdvice) o;
+        return Objects.equals(aspectInstance, that.aspectInstance) &&
+                Objects.equals(aspectAdviceMethod, that.aspectAdviceMethod) &&
+                Objects.equals(joinPoint, that.joinPoint);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(aspectInstance, aspectAdviceMethod, joinPoint);
     }
 }

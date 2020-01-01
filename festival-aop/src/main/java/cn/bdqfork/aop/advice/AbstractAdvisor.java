@@ -1,6 +1,7 @@
 package cn.bdqfork.aop.advice;
 
-import cn.bdqfork.aop.constant.AdviceType;
+
+import java.util.Objects;
 
 /**
  * @author bdq
@@ -39,5 +40,19 @@ public abstract class AbstractAdvisor implements Advisor {
     @Override
     public boolean isAdviceTypeOf(Class<?> adviceType) {
         return adviceType.isInstance(advice);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractAdvisor that = (AbstractAdvisor) o;
+        return pointcut.equals(that.pointcut) &&
+                advice.equals(that.advice);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pointcut, advice);
     }
 }

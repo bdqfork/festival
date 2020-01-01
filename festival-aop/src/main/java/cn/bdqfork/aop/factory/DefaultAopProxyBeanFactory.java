@@ -4,7 +4,7 @@ import cn.bdqfork.aop.MethodSignature;
 import cn.bdqfork.aop.advice.*;
 import cn.bdqfork.aop.proxy.ProxyInvocationHandler;
 import cn.bdqfork.aop.proxy.cglib.CglibMethodInterceptor;
-import cn.bdqfork.aop.proxy.javassist.JavassistInvocationHandlerDefault;
+import cn.bdqfork.aop.proxy.javassist.JavassistInvocationHandler;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.BeanDefinition;
 import cn.bdqfork.core.factory.DefaultJSR250BeanFactory;
@@ -24,10 +24,20 @@ import java.util.stream.Collectors;
 public class DefaultAopProxyBeanFactory extends DefaultJSR250BeanFactory implements AopProxyBeanFactory {
     public static final String PREFIX = "$";
 
-    private static final Set<Advisor> advisors = Collections.newSetFromMap(new ConcurrentHashMap<>(32));
+    private final Set<Advisor> advisors = Collections.newSetFromMap(new ConcurrentHashMap<>(32));
+    private final Map<String, Object> proxyInstances = new ConcurrentHashMap<>(256);
 
     public DefaultAopProxyBeanFactory() {
         super();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getBean(String beanName) throws BeansException {
+        if (!beanName.startsWith(PREFIX) && proxyInstances.containsKey(beanName)) {
+            return (T) proxyInstances.get(beanName);
+        }
+        return super.getBean(beanName);
     }
 
     @Override
@@ -36,16 +46,29 @@ public class DefaultAopProxyBeanFactory extends DefaultJSR250BeanFactory impleme
         if (instance == null) {
             return null;
         }
+        return afterPropertiesSet(beanName, instance);
+    }
+
+    protected Object afterPropertiesSet(String beanName, Object instance) throws BeansException {
         if (beanName.startsWith(PREFIX)) {
             return instance;
         }
-        return getAopProxyInstance(beanName, instance, null);
+        instance = getAopProxyInstance(beanName, instance, null);
+        registerProxyBean(beanName, instance);
+        return instance;
+    }
+
+    public void registerProxyBean(String beanName, Object proxyBean) throws BeansException {
+        if (proxyInstances.containsKey(beanName)) {
+            throw new BeansException("");
+        }
+        proxyInstances.put(beanName, proxyBean);
     }
 
     @Override
     public void registerAdvisor(Advisor advisor) throws BeansException {
         if (advisor == null) {
-            throw new BeansException("");
+            throw new BeansException("register advisor is null");
         }
         advisors.add(advisor);
     }
@@ -55,7 +78,7 @@ public class DefaultAopProxyBeanFactory extends DefaultJSR250BeanFactory impleme
         ProxyInvocationHandler invocationHandler;
 
         if (interfaces != null && interfaces.length > 0) {
-            invocationHandler = new JavassistInvocationHandlerDefault();
+            invocationHandler = new JavassistInvocationHandler();
         } else {
             invocationHandler = new CglibMethodInterceptor();
         }

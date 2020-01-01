@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
  * @author bdq
  * @since 2019/12/23
  */
-public class JavassistInvocationHandlerDefault extends AbstractAopInvocationHandler implements InvocationHandler {
+public class JavassistInvocationHandler extends AbstractAopInvocationHandler implements InvocationHandler {
 
     /**
      * 创建代理实例
