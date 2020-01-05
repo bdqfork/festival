@@ -2,6 +2,7 @@ package cn.bdqfork.core.factory.support;
 
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.CircularDependencyException;
+import cn.bdqfork.model.GetBeanTestCase.IgetBean;
 import cn.bdqfork.model.cycle.*;
 import cn.bdqfork.model.jsr250.JSR250FieldService;
 import cn.bdqfork.model.jsr250.JSR250SetterCycleService;
@@ -93,49 +94,68 @@ public class AnnotationBeanFactoryTest {
         annotationBeanfactory.destroy();
     }
 
+
+    /**
+     * 通过BeanName获取Bean
+     * @throws BeansException
+     */
     @Test
     public void testGetBeanByName() throws BeansException
 
     {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
-        annotationBeanfactory.scan("cn.bdqfork.model.cycle");
-        annotationBeanfactory.getBean("setterCycleService");
+        annotationBeanfactory.scan("cn.bdqfork.model.GetBeanTestCase");
+        annotationBeanfactory.getBean("getBeanImpl");
     }
 
+    /**
+     * 直接获取Bean
+     * @throws BeansException
+     */
     @Test
     public void testGetSetterBeans() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
-        annotationBeanfactory.scan("cn.bdqfork.model.cycle");
-        annotationBeanfactory.getBeans(SetterCycleService.class);
+        annotationBeanfactory.scan("cn.bdqfork.model.GetBeanTestCase");
+        annotationBeanfactory.getBeans(IgetBean.class);
     }
 
+    /**
+     * 判断Bean是否为单例
+     * @throws BeansException
+     */
     @Test
     public void testIsSingleton() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
-        annotationBeanfactory.scan("cn.bdqfork.model.cycle");
-        assert annotationBeanfactory.isSingleton("setterCycleService")==true;
+        annotationBeanfactory.scan("cn.bdqfork.model.GetBeanTestCase");
+        assert annotationBeanfactory.isSingleton("getBeanImpl")==true;
         }
 
+    /**
+     * 判断Bean是否为多例
+     * @throws BeansException
+     */
     @Test
     public void testIsPrototype() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
-        annotationBeanfactory.scan("cn.bdqfork.model.cycle");
-        assert annotationBeanfactory.isPrototype("setterCycleService")==false;
-        assert annotationBeanfactory.isPrototype("prototypeSetterCycleService")==true;
+        annotationBeanfactory.scan("cn.bdqfork.model.GetBeanTestCase");
+        assert annotationBeanfactory.isPrototype("getBeanImpl")==false;
     }
 
     @Test
     public void testContainBean() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
-        annotationBeanfactory.scan("cn.bdqfork.model.cycle");
-        assert annotationBeanfactory.containBean("setterCycleService")==true;
-        assert annotationBeanfactory.containBean("prototypeSetterCycleService")==true;
+        annotationBeanfactory.scan("cn.bdqfork.model.GetBeanTestCase");
+        assert annotationBeanfactory.containBean("getBeanImpl")==true;
     }
 
+    /**
+     * 通过BeanName和类型获取
+     * @throws BeansException
+     */
     @Test
     public void testGetBeanByBeanNameAndType() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
-        annotationBeanfactory.scan("cn.bdqfork.model.cycle");
-        annotationBeanfactory. getSpecificBean("setterCycleService", SetterCycleService.class);
+        annotationBeanfactory.scan("cn.bdqfork.model.GetBeanTestCase");
+        annotationBeanfactory. getSpecificBean("getBeanImpl", IgetBean.class);
     }
 }
