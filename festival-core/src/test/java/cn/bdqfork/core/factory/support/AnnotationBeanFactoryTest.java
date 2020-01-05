@@ -141,6 +141,10 @@ public class AnnotationBeanFactoryTest {
         assert annotationBeanfactory.isPrototype("getBeanImpl")==false;
     }
 
+    /**
+     * 判断容器中是否包含Bean
+     * @throws BeansException
+     */
     @Test
     public void testContainBean() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
