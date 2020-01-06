@@ -2,7 +2,7 @@ package cn.bdqfork.core.factory.support;
 
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.CircularDependencyException;
-import cn.bdqfork.model.bean.GetBeanService;
+import cn.bdqfork.model.bean.BeanService;
 import cn.bdqfork.model.cycle.*;
 import cn.bdqfork.model.jsr250.JSR250FieldService;
 import cn.bdqfork.model.jsr250.JSR250SetterCycleService;
@@ -105,7 +105,7 @@ public class AnnotationBeanFactoryTest {
     {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.bean");
-        annotationBeanfactory.getBean("getBeanServiceImpl");
+        annotationBeanfactory.getBean("BeanServiceImpl");
     }
 
     /**
@@ -116,7 +116,7 @@ public class AnnotationBeanFactoryTest {
     public void testGetSetterBeans() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.bean");
-        annotationBeanfactory.getBeans(GetBeanService.class);
+        annotationBeanfactory.getBeans(BeanService.class);
     }
 
     /**
@@ -127,7 +127,7 @@ public class AnnotationBeanFactoryTest {
     public void testIsSingleton() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.bean");
-        assert annotationBeanfactory.isSingleton("getBeanServiceImpl") == true;
+        assert annotationBeanfactory.isSingleton("BeanServiceImpl") == true;
         }
 
     /**
@@ -138,7 +138,7 @@ public class AnnotationBeanFactoryTest {
     public void testIsPrototype() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.bean");
-        assert annotationBeanfactory.isPrototype("getBeanServiceImpl") == false;
+        assert annotationBeanfactory.isPrototype("BeanServiceImpl") == false;
     }
 
     /**
@@ -149,7 +149,7 @@ public class AnnotationBeanFactoryTest {
     public void testContainBean() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.bean");
-        assert annotationBeanfactory.containBean("getBeanServiceImpl") == true;
+        assert annotationBeanfactory.containBean("BeanServiceImpl") == true;
     }
 
     /**
@@ -160,6 +160,6 @@ public class AnnotationBeanFactoryTest {
     public void testGetBeanByBeanNameAndType() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.bean");
-        annotationBeanfactory. getSpecificBean("getBeanServiceImpl", GetBeanService.class);
+        annotationBeanfactory. getSpecificBean("BeanServiceImpl", BeanService.class);
     }
 }
