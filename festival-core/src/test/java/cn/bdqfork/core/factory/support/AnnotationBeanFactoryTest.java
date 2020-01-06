@@ -113,7 +113,7 @@ public class AnnotationBeanFactoryTest {
     public void testGetBeanByName() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.bean");
-        annotationBeanfactory.getBean("singletonBeanServiceImpl");
+        assert annotationBeanfactory.getBean("singletonBeanServiceImpl") != null;
     }
 
     /**
@@ -125,7 +125,7 @@ public class AnnotationBeanFactoryTest {
     public void testGetBeans() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.bean");
-        annotationBeanfactory.getBeans(SingletonBeanService.class);
+        assert annotationBeanfactory.getBeans(SingletonBeanService.class) != null;
     }
 
     /**
