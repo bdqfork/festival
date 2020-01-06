@@ -17,7 +17,7 @@ import javax.inject.Singleton;
 public class JSR250SetterCycleDaoImpl implements JSR250SetterCycleDao {
     private JSR250SetterCycleService service;
 
-    @Resource(name = "jSR250SetterCycleService")
+    @Resource(name = "jSR250SetterCycleServiceImpl")
     public void setService(JSR250SetterCycleService service) {
         this.service = service;
     }

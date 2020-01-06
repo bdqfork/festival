@@ -3,6 +3,8 @@ package cn.bdqfork.core.util;
 import javax.inject.Provider;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author bdq
@@ -21,6 +23,26 @@ public class BeanUtils {
             ParameterizedType parameterizedType = (ParameterizedType) type;
             Type rawType = parameterizedType.getRawType();
             return rawType == Provider.class;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isCollection(Type type) {
+        if (type instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) type;
+            Type rawType = parameterizedType.getRawType();
+            return rawType == List.class;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isMap(Type type) {
+        if (type instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) type;
+            Type rawType = parameterizedType.getRawType();
+            return rawType == Map.class;
         } else {
             return false;
         }
@@ -48,4 +70,5 @@ public class BeanUtils {
     public static boolean checkIsInstance(Class<?> clazz, Class<?> target) {
         return isSubType(clazz, target) || isSubType(target, clazz);
     }
+
 }

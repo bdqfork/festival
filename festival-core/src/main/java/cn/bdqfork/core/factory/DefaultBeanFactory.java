@@ -8,6 +8,7 @@ import cn.bdqfork.core.util.StringUtils;
 
 import javax.inject.Provider;
 import java.lang.reflect.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +88,19 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
 
         } else if (type != null) {
 
-            bean = getBean(ReflectUtils.getActualType(type));
+            if (BeanUtils.isCollection(type)) {
+
+                bean = new ArrayList<>(getBeans(ReflectUtils.getActualType(type)).values());
+
+            } else if (BeanUtils.isMap(type)) {
+
+                bean = getBeans(ReflectUtils.getActualType(type));
+
+            } else {
+
+                bean = getBean(ReflectUtils.getActualType(type));
+
+            }
 
         }
 
@@ -109,11 +122,19 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
 
     @Override
     protected boolean containBeanDefinition(String beanName) {
+        BeanFactory beanFactory = getParentBeanFactory();
+        if (beanFactory instanceof AbstractBeanFactory) {
+            AbstractBeanFactory abstractBeanFactory = (AbstractBeanFactory) beanFactory;
+            return beanDefinitionMap.containsKey(beanName) || abstractBeanFactory.containBeanDefinition(beanName);
+        }
         return beanDefinitionMap.containsKey(beanName);
     }
 
     @Override
     public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) throws BeansException {
+        if (containBeanDefinition(beanName)) {
+            throw new ConflictedBeanException(String.format("the entity named %s has conflicted ! ", beanName));
+        }
         beanDefinitionMap.put(beanName, beanDefinition);
     }
 

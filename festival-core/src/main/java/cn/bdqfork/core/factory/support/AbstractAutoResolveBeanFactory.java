@@ -1,6 +1,7 @@
 package cn.bdqfork.core.factory.support;
 
 import cn.bdqfork.core.exception.BeansException;
+import cn.bdqfork.core.exception.ConflictedBeanException;
 import cn.bdqfork.core.exception.ResolvedException;
 import cn.bdqfork.core.exception.ScopeException;
 import cn.bdqfork.core.factory.BeanDefinition;
@@ -41,6 +42,14 @@ public abstract class AbstractAutoResolveBeanFactory extends AbstractDelegateBea
             throw new BeansException(e);
         }
 
+        for (Map.Entry<String, BeanDefinition> entry : beanDefinitions.entrySet()) {
+            try {
+                resolveInjectedPoint(entry.getValue(), beanDefinitions);
+            } catch (ResolvedException e) {
+                throw new BeansException(e);
+            }
+        }
+
         //注册BeanDefinition
         for (Map.Entry<String, BeanDefinition> entry : beanDefinitions.entrySet()) {
             BeanDefinitionRegistry registry = (BeanDefinitionRegistry) getParentBeanFactory();
@@ -64,7 +73,7 @@ public abstract class AbstractAutoResolveBeanFactory extends AbstractDelegateBea
         return beanClasses;
     }
 
-    protected Map<String, BeanDefinition> resolve(Set<Class<?>> beanClasses) throws ResolvedException {
+    protected Map<String, BeanDefinition> resolve(Set<Class<?>> beanClasses) throws ResolvedException, ConflictedBeanException {
         Map<String, BeanDefinition> beanDefinitions = new HashMap<>();
         for (Class<?> clazz : beanClasses) {
 
@@ -72,8 +81,11 @@ public abstract class AbstractAutoResolveBeanFactory extends AbstractDelegateBea
 
             BeanDefinition beanDefinition = createBeanDefinition(beanName, clazz);
 
-            resolveInjectedPoint(beanDefinition, beanClasses);
+            if (beanDefinitions.containsKey(beanDefinition.getBeanName())) {
 
+                throw new ConflictedBeanException(String.format("the entity named %s has conflicted ! ", beanName));
+
+            }
             beanDefinitions.put(beanDefinition.getBeanName(), beanDefinition);
 
         }
@@ -84,41 +96,27 @@ public abstract class AbstractAutoResolveBeanFactory extends AbstractDelegateBea
 
     protected abstract String resolveBeanName(Class<?> clazz);
 
-    protected void resolveInjectedPoint(BeanDefinition beanDefinition, Set<Class<?>> beanClasses) throws ResolvedException {
+    protected void resolveInjectedPoint(BeanDefinition beanDefinition, Map<String, BeanDefinition> beanDefinitionMap) throws ResolvedException {
 
         //如果已经解析过了，则返回
         if (beanDefinition.isResolved()) {
             return;
         }
 
-        //优先解析父类
-        Class<?> superClass = beanDefinition.getBeanClass().getSuperclass();
-        if (superClass != null && superClass != Object.class) {
+        resolveConstructor(beanDefinition,beanDefinitionMap);
 
-            for (Class<?> clazz : beanClasses) {
+        resolveField(beanDefinition,beanDefinitionMap);
 
-                if (clazz == superClass) {
-                    String beanName = resolveBeanName(clazz);
-                    resolveInjectedPoint(createBeanDefinition(beanName, clazz), beanClasses);
-                }
-
-            }
-        }
-
-        resolveConstructor(beanDefinition);
-
-        resolveField(beanDefinition);
-
-        resolveMethod(beanDefinition);
+        resolveMethod(beanDefinition,beanDefinitionMap);
 
         beanDefinition.setResolved(true);
     }
 
-    protected abstract void resolveConstructor(BeanDefinition beanDefinition) throws ResolvedException;
+    protected abstract void resolveConstructor(BeanDefinition beanDefinition, Map<String, BeanDefinition> beanDefinitionMap) throws ResolvedException;
 
-    protected abstract void resolveField(BeanDefinition beanDefinition) throws ResolvedException;
+    protected abstract void resolveField(BeanDefinition beanDefinition,Map<String, BeanDefinition> beanDefinitionMap) throws ResolvedException;
 
-    protected abstract void resolveMethod(BeanDefinition beanDefinition) throws ResolvedException;
+    protected abstract void resolveMethod(BeanDefinition beanDefinition,Map<String, BeanDefinition> beanDefinitionMap) throws ResolvedException;
 
     protected abstract boolean checkIfComponent(Class<?> candidate);
 

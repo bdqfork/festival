@@ -102,7 +102,8 @@ public class AnnotationBeanFactory extends AbstractAutoResolveBeanFactory {
         return name;
     }
 
-    protected void resolveConstructor(BeanDefinition beanDefinition) throws ResolvedException {
+    @Override
+    protected void resolveConstructor(BeanDefinition beanDefinition, Map<String, BeanDefinition> beanDefinitionMap) throws ResolvedException {
         Class<?> candidate = beanDefinition.getBeanClass();
 
         Constructor<?> constructor = resolveInjectedConstructor(candidate);
@@ -119,7 +120,7 @@ public class AnnotationBeanFactory extends AbstractAutoResolveBeanFactory {
 
             multInjectedPoint.addInjectedPoint(injectedPoint);
 
-            String beanName = generateDependentName(type);
+            String beanName = generateDependentName(type,beanDefinitionMap);
 
             beanDefinition.addDependOn(beanName);
 
@@ -145,7 +146,8 @@ public class AnnotationBeanFactory extends AbstractAutoResolveBeanFactory {
         return null;
     }
 
-    protected void resolveField(BeanDefinition beanDefinition) throws ResolvedException {
+    @Override
+    protected void resolveField(BeanDefinition beanDefinition, Map<String, BeanDefinition> beanDefinitionMap) throws ResolvedException {
         Class<?> candidate = beanDefinition.getBeanClass();
         Map<String, InjectedPoint> fields = new HashMap<>();
 
@@ -162,7 +164,7 @@ public class AnnotationBeanFactory extends AbstractAutoResolveBeanFactory {
 
                 fields.put(field.getName(), injectedPoint);
 
-                String beanName = generateDependentName(type);
+                String beanName = generateDependentName(type,beanDefinitionMap);
 
                 if (beanDefinition.isPrototype()) {
 
@@ -204,7 +206,8 @@ public class AnnotationBeanFactory extends AbstractAutoResolveBeanFactory {
         }
     }
 
-    protected void resolveMethod(BeanDefinition beanDefinition) throws ResolvedException {
+    @Override
+    protected void resolveMethod(BeanDefinition beanDefinition, Map<String, BeanDefinition> beanDefinitionMap) throws ResolvedException {
         Class<?> candidate = beanDefinition.getBeanClass();
 
         Map<String, InjectedPoint> methods = new HashMap<>();
@@ -229,7 +232,7 @@ public class AnnotationBeanFactory extends AbstractAutoResolveBeanFactory {
 
                 methods.put(methodName, injectedPoint);
 
-                String beanName = generateDependentName(type);
+                String beanName = generateDependentName(type,beanDefinitionMap);
 
                 if (beanDefinition.isPrototype()) {
                     beanDefinition.addDependOn(beanName);
@@ -324,11 +327,17 @@ public class AnnotationBeanFactory extends AbstractAutoResolveBeanFactory {
         getDelegateBeanFactory().destroySingletons();
     }
 
-    private String generateDependentName(Type type) {
-        if (BeanUtils.isProvider(type)) {
-            type = ReflectUtils.getActualType(type);
+    private String generateDependentName(Type type, Map<String, BeanDefinition> definitionMap) {
+        Class<?> actualType = ReflectUtils.getActualType(type);
+        if (actualType.isInterface()) {
+            for (Map.Entry<String, BeanDefinition> entry : definitionMap.entrySet()) {
+                BeanDefinition beanDefinition = entry.getValue();
+                if (BeanUtils.checkIsInstance(actualType, beanDefinition.getBeanClass())) {
+                    return entry.getKey();
+                }
+            }
         }
-        return beanNameGenerator.generateBeanName((Class<?>) type);
+        return beanNameGenerator.generateBeanName(actualType);
     }
 
     public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {

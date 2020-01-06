@@ -15,13 +15,7 @@ public class SimpleBeanNameGenerator implements BeanNameGenerator {
      */
     @Override
     public String generateBeanName(Class<?> clazz) {
-        Class<?>[] interfaces = clazz.getInterfaces();
-        String className;
-        if (interfaces.length > 0) {
-            className = interfaces[0].getSimpleName();
-        } else {
-            className = clazz.getSimpleName();
-        }
+        String className = clazz.getSimpleName();
         return StringUtils.makeInitialLowercase(className);
     }
 }
