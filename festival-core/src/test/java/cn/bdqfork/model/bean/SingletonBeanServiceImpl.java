@@ -10,10 +10,6 @@ import javax.inject.Singleton;
 
 @Singleton
 @Named("singletonBeanServiceImpl")
-public class SingletonSingletonBeanServiceImpl implements SingletonBeanService {
-
-
-    private SingletonBeanDao singletonBeanDao;
-
+public class SingletonBeanServiceImpl implements SingletonBeanService {
 
 }

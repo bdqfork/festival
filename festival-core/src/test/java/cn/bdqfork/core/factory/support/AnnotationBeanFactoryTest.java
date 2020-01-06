@@ -113,7 +113,7 @@ public class AnnotationBeanFactoryTest {
      * @throws BeansException
      */
     @Test
-    public void testGetSetterBeans() throws BeansException {
+    public void testGetBeans() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.bean");
         annotationBeanfactory.getBeans(SingletonBeanService.class);
