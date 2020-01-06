@@ -127,7 +127,7 @@ public class AnnotationBeanFactoryTest {
     public void testIsSingleton() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.bean");
-        assert annotationBeanfactory.isSingleton("getBeanServiceImpl")==true;
+        assert annotationBeanfactory.isSingleton("getBeanServiceImpl") == true;
         }
 
     /**
@@ -138,7 +138,7 @@ public class AnnotationBeanFactoryTest {
     public void testIsPrototype() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.bean");
-        assert annotationBeanfactory.isPrototype("getBeanServiceImpl")==false;
+        assert annotationBeanfactory.isPrototype("getBeanServiceImpl") == false;
     }
 
     /**
@@ -149,7 +149,7 @@ public class AnnotationBeanFactoryTest {
     public void testContainBean() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.bean");
-        assert annotationBeanfactory.containBean("getBeanServiceImpl")==true;
+        assert annotationBeanfactory.containBean("getBeanServiceImpl") == true;
     }
 
     /**
