@@ -29,8 +29,8 @@ public class DefaultBeanFactoryTest {
         defaultBeanFactory.registerBeanDefinition("singletonBeanService",
                 new BeanDefinition("singletonBeanService", SingletonBeanServiceImpl.class,
                         BeanDefinition.SINGLETON));
-        defaultBeanFactory.createBean("singletonBeanService");
-        defaultBeanFactory.getBean("singletonBeanService");
+        assert defaultBeanFactory.createBean("singletonBeanService") instanceof SingletonBeanService;
+        assert defaultBeanFactory.getBean("singletonBeanService") instanceof SingletonBeanService;
     }
 
     /**
@@ -43,7 +43,7 @@ public class DefaultBeanFactoryTest {
         defaultBeanFactory.registerBeanDefinition("singletonBeanService",
                 new BeanDefinition("singletonBeanService", SingletonBeanServiceImpl.class,
                         BeanDefinition.SINGLETON));
-        defaultBeanFactory.getBeans(SingletonBeanServiceImpl.class);
+        assert defaultBeanFactory.getBeans(SingletonBeanServiceImpl.class) != null;
     }
     /**
      * 通过beanName获取bean的描述
@@ -56,7 +56,7 @@ public class DefaultBeanFactoryTest {
         defaultBeanFactory.registerBeanDefinition("singletonBeanService",
                 new BeanDefinition("singletonBeanService", SingletonBeanService.class,
                         BeanDefinition.SINGLETON));
-        defaultBeanFactory.getBeanDefinition("singletonBeanService");
+        assert defaultBeanFactory.getBeanDefinition("singletonBeanService") != null;
     }
 
     /**
@@ -69,8 +69,8 @@ public class DefaultBeanFactoryTest {
         defaultBeanFactory.registerBeanDefinition("singletonBeanService",
                 new BeanDefinition("singletonBeanService", SingletonBeanService.class,
                         BeanDefinition.SINGLETON));
-        defaultBeanFactory.getBeanDefinitions(SingletonBeanService.class);
-        defaultBeanFactory.getBeanDefinitions();
+        assert defaultBeanFactory.getBeanDefinitions(SingletonBeanService.class) != null;
+        assert defaultBeanFactory.getBeanDefinitions() != null;
     }
 
     /**
@@ -109,7 +109,7 @@ public class DefaultBeanFactoryTest {
     public void testSetAndGetParentFactory() throws BeansException {
         DefaultBeanFactory defaultBeanFactory = new DefaultBeanFactory();
         defaultBeanFactory.setParentBeanFactory(new AnnotationBeanFactory());
-        defaultBeanFactory.getParentBeanFactory();
+        assert defaultBeanFactory.getParentBeanFactory() instanceof AnnotationBeanFactory;
     }
 
 }
