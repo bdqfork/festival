@@ -5,7 +5,6 @@ import cn.bdqfork.core.factory.BeanDefinition;
 import cn.bdqfork.core.factory.DefaultBeanFactory;
 import cn.bdqfork.model.bean.SingletonBeanService;
 import cn.bdqfork.model.bean.SingletonBeanServiceImpl;
-import cn.bdqfork.model.cycle.SetterCycleService;
 import org.junit.Test;
 
 
