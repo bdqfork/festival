@@ -116,7 +116,20 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
     public void destroySingletons() {
         for (String singletonName : getSingletonNames()) {
+            Object singleton = getSingleton(singletonName);
+            preDestory(singletonName, singleton);
             destroySingleton(singletonName);
+        }
+    }
+
+    protected void preDestory(String singletonName, Object singleton) {
+        if (singleton instanceof DisposableBean) {
+            DisposableBean disposableBean = (DisposableBean) singleton;
+            try {
+                disposableBean.destroy();
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
+            }
         }
     }
 

@@ -4,6 +4,7 @@ import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.FailedInjectedFieldException;
 import cn.bdqfork.core.exception.FailedInjectedMethodException;
 import cn.bdqfork.core.exception.NoSuchBeanException;
+import cn.bdqfork.core.util.BeanUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -40,9 +41,12 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
         });
         Object bean = getSingleton(beanName, true);
         autoInjected(beanName, bean);
+        afterPropertiesSet(beanName, bean);
         registerSingleton(beanName, bean);
         return bean;
     }
+
+    protected abstract void afterPropertiesSet(String beanName, Object bean) ;
 
     protected Object createInstance(String beanName, BeanDefinition beanDefinition, Object[] explicitArgs) throws BeansException {
         Class<?> beanType = beanDefinition.getBeanClass();

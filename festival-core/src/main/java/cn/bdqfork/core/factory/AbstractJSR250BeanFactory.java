@@ -10,10 +10,14 @@ import cn.bdqfork.core.exception.NoSuchBeanException;
 public abstract class AbstractJSR250BeanFactory extends DefaultBeanFactory implements JSR250BeanFactory {
 
     @Override
-    public void executePostConstuct(String beanName, Object bean) throws BeansException {
+    public void executePostConstuct(String beanName, Object bean) {
         BeanDefinition beanDefinition = getBeanDefinition(beanName);
         if (beanDefinition instanceof ManagedBeanDefinition) {
-            doInitializingMethod(bean, (ManagedBeanDefinition) beanDefinition);
+            try {
+                doInitializingMethod(bean, (ManagedBeanDefinition) beanDefinition);
+            } catch (BeansException e) {
+                throw new IllegalStateException(e);
+            }
         }
     }
 
