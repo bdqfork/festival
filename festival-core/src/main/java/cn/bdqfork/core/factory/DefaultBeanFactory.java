@@ -24,7 +24,7 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
     private BeanFactory parentBeanFactory;
 
     @Override
-    protected void afterPropertiesSet(String beanName, Object bean) {
+    protected void afterPropertiesSet(String beanName, Object bean) throws BeansException {
         if (bean instanceof InitializingBean) {
             InitializingBean initializingBean = (InitializingBean) bean;
             try {

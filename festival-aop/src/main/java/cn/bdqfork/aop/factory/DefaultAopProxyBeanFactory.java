@@ -53,17 +53,13 @@ public class DefaultAopProxyBeanFactory extends DefaultJSR250BeanFactory impleme
     }
 
     @Override
-    protected void afterPropertiesSet(String beanName, Object bean) {
+    protected void afterPropertiesSet(String beanName, Object bean) throws BeansException {
         super.afterPropertiesSet(beanName, bean);
         if (beanName.startsWith(PREFIX)) {
             return;
         }
-        try {
-            Object proxyBean = getAopProxyInstance(beanName, bean, null);
-            registerProxyBean(beanName, proxyBean);
-        } catch (BeansException e) {
-            throw new IllegalStateException(e);
-        }
+        Object proxyBean = getAopProxyInstance(beanName, bean, null);
+        registerProxyBean(beanName, proxyBean);
     }
 
     public void registerProxyBean(String beanName, Object proxyBean) throws BeansException {

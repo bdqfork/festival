@@ -55,7 +55,7 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
         return bean;
     }
 
-    protected abstract void afterPropertiesSet(String beanName, Object bean) ;
+    protected abstract void afterPropertiesSet(String beanName, Object bean) throws BeansException;
 
     protected Object createInstance(String beanName, BeanDefinition beanDefinition, Object[] explicitArgs) throws BeansException {
         Class<?> beanType = beanDefinition.getBeanClass();
