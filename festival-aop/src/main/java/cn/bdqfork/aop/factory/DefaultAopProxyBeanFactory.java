@@ -46,16 +46,24 @@ public class DefaultAopProxyBeanFactory extends DefaultJSR250BeanFactory impleme
         if (instance == null) {
             return null;
         }
-        return afterPropertiesSet(beanName, instance);
-    }
-
-    protected Object afterPropertiesSet(String beanName, Object instance) throws BeansException {
         if (beanName.startsWith(PREFIX)) {
             return instance;
         }
-        instance = getAopProxyInstance(beanName, instance, null);
-        registerProxyBean(beanName, instance);
-        return instance;
+        return proxyInstances.get(beanName);
+    }
+
+    @Override
+    protected void afterPropertiesSet(String beanName, Object bean) {
+        super.afterPropertiesSet(beanName, bean);
+        if (beanName.startsWith(PREFIX)) {
+            return;
+        }
+        try {
+            Object proxyBean = getAopProxyInstance(beanName, bean, null);
+            registerProxyBean(beanName, proxyBean);
+        } catch (BeansException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     public void registerProxyBean(String beanName, Object proxyBean) throws BeansException {

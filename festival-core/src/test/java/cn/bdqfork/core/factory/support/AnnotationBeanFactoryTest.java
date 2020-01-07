@@ -3,9 +3,11 @@ package cn.bdqfork.core.factory.support;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.CircularDependencyException;
 import cn.bdqfork.model.bean.SingletonBeanService;
+import cn.bdqfork.model.collection.CollectionPropertyService;
 import cn.bdqfork.model.cycle.*;
 import cn.bdqfork.model.jsr250.JSR250FieldService;
 import cn.bdqfork.model.jsr250.JSR250SetterCycleService;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class AnnotationBeanFactoryTest {
@@ -13,6 +15,7 @@ public class AnnotationBeanFactoryTest {
     /**
      * 构造方法注入，单例/多例
      * 测试循环依赖异常功能
+     *
      * @throws BeansException
      */
     @Test(expected = CircularDependencyException.class)
@@ -26,6 +29,7 @@ public class AnnotationBeanFactoryTest {
     /**
      * 自动注入功能测试
      * 获取单例bean对象
+     *
      * @throws BeansException
      */
     @Test
@@ -38,6 +42,7 @@ public class AnnotationBeanFactoryTest {
 
     /**
      * 自动注入循环依赖异常
+     *
      * @throws BeansException
      */
     @Test(expected = CircularDependencyException.class)
@@ -49,6 +54,7 @@ public class AnnotationBeanFactoryTest {
 
     /**
      * Setter方法注入，获取单例bean对象
+     *
      * @throws BeansException
      */
     @Test
@@ -61,6 +67,7 @@ public class AnnotationBeanFactoryTest {
 
     /**
      * Setter方法注入,获取多例对象循环依赖异常
+     *
      * @throws BeansException
      */
     @Test(expected = CircularDependencyException.class)
@@ -72,6 +79,7 @@ public class AnnotationBeanFactoryTest {
 
     /**
      * 使用jsr250注解，指定类型对象注入数据。获取bean对象
+     *
      * @throws BeansException
      */
     @Test
@@ -84,6 +92,7 @@ public class AnnotationBeanFactoryTest {
 
     /**
      * 使用Setter方法注入，循环依赖
+     *
      * @throws BeansException
      */
     @Test
@@ -97,12 +106,11 @@ public class AnnotationBeanFactoryTest {
 
     /**
      * 通过BeanName获取Bean
+     *
      * @throws BeansException
      */
     @Test
-    public void testGetBeanByName() throws BeansException
-
-    {
+    public void testGetBeanByName() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.bean");
         assert annotationBeanfactory.getBean("singletonBeanServiceImpl") != null;
@@ -110,6 +118,7 @@ public class AnnotationBeanFactoryTest {
 
     /**
      * 直接获取Bean
+     *
      * @throws BeansException
      */
     @Test
@@ -121,6 +130,7 @@ public class AnnotationBeanFactoryTest {
 
     /**
      * 判断Bean是否为单例
+     *
      * @throws BeansException
      */
     @Test
@@ -128,10 +138,11 @@ public class AnnotationBeanFactoryTest {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.bean");
         assert annotationBeanfactory.isSingleton("singletonBeanServiceImpl") == true;
-        }
+    }
 
     /**
      * 判断Bean是否为多例
+     *
      * @throws BeansException
      */
     @Test
@@ -143,6 +154,7 @@ public class AnnotationBeanFactoryTest {
 
     /**
      * 判断容器中是否包含Bean
+     *
      * @throws BeansException
      */
     @Test
@@ -154,12 +166,27 @@ public class AnnotationBeanFactoryTest {
 
     /**
      * 通过BeanName和类型获取
+     *
      * @throws BeansException
      */
     @Test
     public void testGetBeanByBeanNameAndType() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.bean");
-        assert annotationBeanfactory.getSpecificBean("singletonBeanServiceImpl", SingletonBeanService.class) instanceof SingletonBeanService;
+        annotationBeanfactory.getSpecificBean("singletonBeanServiceImpl", SingletonBeanService.class);
+    }
+
+    /**
+     * 测试属性集合注入
+     *
+     * @throws BeansException
+     */
+    @Test
+    public void testCollectionPropertyInjected() throws BeansException {
+        AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
+        annotationBeanfactory.scan("cn.bdqfork.model.collection");
+        CollectionPropertyService service = annotationBeanfactory.getBean(CollectionPropertyService.class);
+        assert service.daos != null;
+        assert service.daoMap != null;
     }
 }

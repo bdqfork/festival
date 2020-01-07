@@ -5,4 +5,5 @@ package cn.bdqfork.core.factory.registry;
  * @since 2019/12/16
  */
 public interface Registry {
+
 }

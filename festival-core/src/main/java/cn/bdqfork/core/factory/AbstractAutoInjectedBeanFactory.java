@@ -9,16 +9,14 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author bdq
  * @since 2019/12/16
  */
 public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactory implements AutoInjectedBeanfactory {
+    private List<BeanPostProcessor> beanPostProcessors = new ArrayList<>(16);
     @Override
     public Object createBean(String beanName) throws BeansException {
         BeanDefinition beanDefinition = getBeanDefinition(beanName);
@@ -38,11 +36,26 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
                 throw new IllegalStateException(e);
             }
         });
+        
         Object bean = getSingleton(beanName, true);
+
         autoInjected(beanName, bean);
+
+        for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
+            beanPostProcessor.postProcessBeforeInitializtion(beanName,bean);
+        }
+
+        afterPropertiesSet(beanName, bean);
+
+        for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
+            beanPostProcessor.postProcessAfterInitializtion(beanName,bean);
+        }
+
         registerSingleton(beanName, bean);
         return bean;
     }
+
+    protected abstract void afterPropertiesSet(String beanName, Object bean) ;
 
     protected Object createInstance(String beanName, BeanDefinition beanDefinition, Object[] explicitArgs) throws BeansException {
         Class<?> beanType = beanDefinition.getBeanClass();
@@ -124,5 +137,10 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
     }
 
     protected abstract void doInjectedMethod(String beanName, Object instance, Method method, InjectedPoint injectedPoint) throws BeansException;
+
+    @Override
+    public void addPostBeanProcessor(BeanPostProcessor beanPostProcessor) {
+        beanPostProcessors.add(beanPostProcessor);
+    }
 
 }

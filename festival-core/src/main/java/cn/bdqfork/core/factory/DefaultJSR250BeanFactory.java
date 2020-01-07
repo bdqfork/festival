@@ -14,10 +14,9 @@ import java.lang.reflect.Method;
 public class DefaultJSR250BeanFactory extends AbstractJSR250BeanFactory {
 
     @Override
-    protected Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws BeansException {
-        Object bean = doCreateBean(beanName, beanDefinition, args);
+    protected void afterPropertiesSet(String beanName, Object bean) {
+        super.afterPropertiesSet(beanName, bean);
         executePostConstuct(beanName, bean);
-        return bean;
     }
 
     @Override
@@ -70,15 +69,12 @@ public class DefaultJSR250BeanFactory extends AbstractJSR250BeanFactory {
     }
 
     @Override
-    public void destroySingletons() {
-        for (String singletonName : getSingletonNames()) {
-            Object singleton = getSingleton(singletonName);
-            try {
-                executePreDestroy(singletonName, singleton);
-            } catch (BeansException e) {
-                throw new IllegalStateException(e);
-            }
-            destroySingleton(singletonName);
+    protected void preDestory(String singletonName, Object singleton) {
+        super.preDestory(singletonName, singleton);
+        try {
+            executePreDestroy(singletonName, singleton);
+        } catch (BeansException e) {
+            throw new IllegalStateException(e);
         }
     }
 }

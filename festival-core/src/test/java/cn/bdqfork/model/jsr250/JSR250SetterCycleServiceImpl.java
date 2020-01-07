@@ -14,7 +14,7 @@ public class JSR250SetterCycleServiceImpl implements JSR250SetterCycleService {
     private JSR250SetterCycleDao dao;
 
     @Resource
-    public void setJSR250SetterCycleDao(JSR250SetterCycleDao dao) {
+    public void setJSR250SetterCycleDaoImpl(JSR250SetterCycleDao dao) {
         this.dao = dao;
     }
 }
