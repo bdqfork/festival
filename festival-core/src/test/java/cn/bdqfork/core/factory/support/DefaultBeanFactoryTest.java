@@ -2,6 +2,7 @@ package cn.bdqfork.core.factory.support;
 
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.BeanDefinition;
+import cn.bdqfork.core.factory.BeanPostProcessor;
 import cn.bdqfork.core.factory.DefaultBeanFactory;
 import cn.bdqfork.model.bean.SingletonBeanService;
 import cn.bdqfork.model.bean.SingletonBeanServiceImpl;
@@ -34,7 +35,36 @@ public class DefaultBeanFactoryTest {
     }
 
     /**
+     * 通过beanName创建Bean对象
+     *
+     * @throws BeansException
+     */
+    @Test
+    public void testBeanPostProcessor() throws BeansException {
+        DefaultBeanFactory defaultBeanFactory = new DefaultBeanFactory();
+        defaultBeanFactory.registerBeanDefinition("singletonBeanService",
+                new BeanDefinition("singletonBeanService", SingletonBeanServiceImpl.class,
+                        BeanDefinition.SINGLETON));
+        defaultBeanFactory.addPostBeanProcessor(new BeanPostProcessor() {
+            @Override
+            public Object postProcessBeforeInitializtion(String beanName, Object bean) throws BeansException {
+                System.out.println("postProcessBeforeInitializtion......");
+                return bean;
+            }
+
+            @Override
+            public Object postProcessAfterInitializtion(String beanName, Object bean) throws BeansException {
+                System.out.println("postProcessAfterInitializtion......");
+                return bean;
+            }
+        });
+        assert defaultBeanFactory.createBean("singletonBeanService") instanceof SingletonBeanService;
+        assert defaultBeanFactory.getBean("singletonBeanService") instanceof SingletonBeanService;
+    }
+
+    /**
      * 获取指定类型的Bean
+     *
      * @throws BeansException
      */
     @Test
@@ -45,6 +75,7 @@ public class DefaultBeanFactoryTest {
                         BeanDefinition.SINGLETON));
         assert defaultBeanFactory.getBeans(SingletonBeanServiceImpl.class) != null;
     }
+
     /**
      * 通过beanName获取bean的描述
      *
@@ -61,6 +92,7 @@ public class DefaultBeanFactoryTest {
 
     /**
      * 获取bean的描述
+     *
      * @throws BeansException
      */
     @Test
@@ -103,6 +135,7 @@ public class DefaultBeanFactoryTest {
 
     /**
      * 设置委托工厂并获取
+     *
      * @throws BeansException
      */
     @Test

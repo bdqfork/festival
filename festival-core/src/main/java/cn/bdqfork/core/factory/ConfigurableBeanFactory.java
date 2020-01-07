@@ -9,4 +9,7 @@ public interface ConfigurableBeanFactory extends BeanFactory {
     void setParentBeanFactory(BeanFactory beanFactory);
 
     BeanFactory getParentBeanFactory();
+
+    void addPostBeanProcessor(BeanPostProcessor beanPostProcessor);
+
 }
