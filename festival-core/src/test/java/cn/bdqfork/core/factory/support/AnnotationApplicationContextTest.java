@@ -10,6 +10,10 @@ import cn.bdqfork.model.cycle.*;
 import cn.bdqfork.model.jsr250.JSR250FieldService;
 import org.junit.Test;
 
+/**
+ * @author fbw
+ * @since 2020/1/8
+ */
 public class AnnotationApplicationContextTest {
 
     /**
@@ -165,6 +169,10 @@ public class AnnotationApplicationContextTest {
         assert collectionPropertyService.daoMap != null;
     }
 
+    /**
+     * 通过beanName和类型获取指定的Bean
+     * @throws BeansException
+     */
     @Test
     public void testGetSpecificBean() throws BeansException {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.bean");
