@@ -1,15 +1,14 @@
 package cn.bdqfork.aop.factory;
 
+import cn.bdqfork.aop.context.AspectApplicationContext;
 import cn.bdqfork.core.exception.BeansException;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class DefaultAopProxyBeanFactoryTest {
 
     @Test
     public void getBean() throws BeansException {
-        AspectAnnotationBeanFactory aspectBeanFactory = new AspectAnnotationBeanFactory();
+        AspectApplicationContext aspectBeanFactory = new AspectApplicationContext();
         aspectBeanFactory.scan("cn.bdqfork.aop.factory");
         aspectBeanFactory.refresh();
         aspectBeanFactory.refresh();

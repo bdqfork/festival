@@ -1,7 +1,6 @@
 package cn.bdqfork.core.factory.support;
 
 import cn.bdqfork.core.exception.BeansException;
-import cn.bdqfork.core.exception.ResolvedException;
 import cn.bdqfork.core.factory.*;
 import cn.bdqfork.core.factory.definition.AnnotationBeanDefinitionReader;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
@@ -13,6 +12,7 @@ import java.util.Map;
  * @author bdq
  * @since 2019/12/16
  */
+@Deprecated
 public class AnnotationBeanFactory extends AbstractDelegateBeanFactory {
     /**
      * 是否启用JSR250
