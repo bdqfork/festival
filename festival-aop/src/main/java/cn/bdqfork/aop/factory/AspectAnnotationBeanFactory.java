@@ -2,7 +2,7 @@ package cn.bdqfork.aop.factory;
 
 import cn.bdqfork.aop.advice.*;
 import cn.bdqfork.core.exception.BeansException;
-import cn.bdqfork.core.factory.BeanDefinition;
+import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import cn.bdqfork.core.factory.support.AnnotationBeanFactory;
 import org.aspectj.lang.annotation.*;
@@ -25,15 +25,21 @@ public class AspectAnnotationBeanFactory extends AnnotationBeanFactory {
     }
 
     @Override
-    public void scan(String... scanPaths) throws BeansException {
-        super.scan(scanPaths);
+    public void scan(String scanPath) throws BeansException {
+        super.scan(scanPath);
+    }
+
+    @Override
+    public void refresh() throws BeansException {
+        super.refresh();
+        //todo:优化重复注册
         BeanDefinitionRegistry registry = (BeanDefinitionRegistry) getParentBeanFactory();
         List<BeanDefinition> beanDefinitions = registry.getBeanDefinitions().values()
                 .stream()
                 .filter(beanDefinition -> beanDefinition.getBeanClass().isAnnotationPresent(Aspect.class))
                 .collect(Collectors.toList());
         for (BeanDefinition beanDefinition : beanDefinitions) {
-            AopProxyBeanFactory aopProxyBeanFactory = (AopProxyBeanFactory) getDelegateBeanFactory();
+            AopProxyBeanFactory aopProxyBeanFactory = (AopProxyBeanFactory) getParentBeanFactory();
             for (AspectAdvisor aspectAdvisor : resolveAdvisors(beanDefinition)) {
                 aopProxyBeanFactory.registerAdvisor(aspectAdvisor);
             }

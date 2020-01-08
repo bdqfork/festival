@@ -1,6 +1,7 @@
 package cn.bdqfork.core.factory;
 
 import cn.bdqfork.core.exception.*;
+import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.ReflectUtils;
@@ -24,7 +25,7 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
     private BeanFactory parentBeanFactory;
 
     @Override
-    protected void afterPropertiesSet(String beanName, Object bean) {
+    protected void afterPropertiesSet(String beanName, Object bean) throws BeansException {
         if (bean instanceof InitializingBean) {
             InitializingBean initializingBean = (InitializingBean) bean;
             try {
@@ -133,7 +134,7 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
     }
 
     @Override
-    protected boolean containBeanDefinition(String beanName) {
+    public boolean containBeanDefinition(String beanName) {
         BeanFactory beanFactory = getParentBeanFactory();
         if (beanFactory instanceof AbstractBeanFactory) {
             AbstractBeanFactory abstractBeanFactory = (AbstractBeanFactory) beanFactory;
@@ -174,6 +175,15 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
     @Override
     public Map<String, BeanDefinition> getBeanDefinitions() {
         return beanDefinitionMap;
+    }
+
+    @Override
+    public void clearAllBeanDefinitions() {
+        beanDefinitionMap.clear();
+        if (getParentBeanFactory() instanceof BeanDefinitionRegistry) {
+            BeanDefinitionRegistry registry = (BeanDefinitionRegistry) getParentBeanFactory();
+            registry.clearAllBeanDefinitions();
+        }
     }
 
     @Override

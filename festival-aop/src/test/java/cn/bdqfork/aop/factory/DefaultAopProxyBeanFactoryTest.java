@@ -11,6 +11,8 @@ public class DefaultAopProxyBeanFactoryTest {
     public void getBean() throws BeansException {
         AspectAnnotationBeanFactory aspectBeanFactory = new AspectAnnotationBeanFactory();
         aspectBeanFactory.scan("cn.bdqfork.aop.factory");
+        aspectBeanFactory.refresh();
+        aspectBeanFactory.refresh();
         UserDaoImpl userDao1 = aspectBeanFactory.getBean(UserDaoImpl.class);
         UserDaoImpl userDao2 = aspectBeanFactory.getBean(UserDaoImpl.class);
         System.out.println(userDao1 == userDao2);

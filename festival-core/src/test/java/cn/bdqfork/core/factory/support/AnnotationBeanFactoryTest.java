@@ -22,6 +22,7 @@ public class AnnotationBeanFactoryTest {
     public void testConstructorCycle() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model");
+        annotationBeanfactory.refresh();
         annotationBeanfactory.getBean(ConstructorCycleService.class);
         annotationBeanfactory.getBean(PrototypeConstructorCycleService.class);
     }
@@ -36,6 +37,7 @@ public class AnnotationBeanFactoryTest {
     public void testFieldCycle() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model");
+        annotationBeanfactory.refresh();
         annotationBeanfactory.getBean(FieldCycleService.class);
         annotationBeanfactory.getBean(ProviderFieldCycleService.class);
     }
@@ -49,6 +51,7 @@ public class AnnotationBeanFactoryTest {
     public void testPrototypeFieldCycle() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model");
+        annotationBeanfactory.refresh();
         annotationBeanfactory.getBean(PrototypeFieldCycleService.class);
     }
 
@@ -61,6 +64,7 @@ public class AnnotationBeanFactoryTest {
     public void testSetterCycle() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model");
+        annotationBeanfactory.refresh();
         annotationBeanfactory.getBean(SetterCycleService.class);
         annotationBeanfactory.getBean(ProviderSetterCycleService.class);
     }
@@ -74,6 +78,7 @@ public class AnnotationBeanFactoryTest {
     public void testPrototypeSetterCycle() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model");
+        annotationBeanfactory.refresh();
         annotationBeanfactory.getBean(PrototypeSetterCycleService.class);
     }
 
@@ -86,6 +91,7 @@ public class AnnotationBeanFactoryTest {
     public void testJSR250Intercept() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.jsr250");
+        annotationBeanfactory.refresh();
         annotationBeanfactory.getBean(JSR250FieldService.class);
         annotationBeanfactory.destroy();
     }
@@ -99,6 +105,7 @@ public class AnnotationBeanFactoryTest {
     public void testJSR250Setter() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.jsr250");
+        annotationBeanfactory.refresh();
         annotationBeanfactory.getBean(JSR250SetterCycleService.class);
         annotationBeanfactory.destroy();
     }
@@ -113,6 +120,7 @@ public class AnnotationBeanFactoryTest {
     public void testGetBeanByName() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.bean");
+        annotationBeanfactory.refresh();
         assert annotationBeanfactory.getBean("singletonBeanServiceImpl") != null;
     }
 
@@ -125,6 +133,7 @@ public class AnnotationBeanFactoryTest {
     public void testGetBeans() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.bean");
+        annotationBeanfactory.refresh();
         assert annotationBeanfactory.getBeans(SingletonBeanService.class) != null;
     }
 
@@ -137,6 +146,7 @@ public class AnnotationBeanFactoryTest {
     public void testIsSingleton() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.bean");
+        annotationBeanfactory.refresh();
         assert annotationBeanfactory.isSingleton("singletonBeanServiceImpl") == true;
     }
 
@@ -149,6 +159,7 @@ public class AnnotationBeanFactoryTest {
     public void testIsPrototype() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.bean");
+        annotationBeanfactory.refresh();
         assert annotationBeanfactory.isPrototype("singletonBeanServiceImpl") == false;
     }
 
@@ -161,6 +172,7 @@ public class AnnotationBeanFactoryTest {
     public void testContainBean() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.bean");
+        annotationBeanfactory.refresh();
         assert annotationBeanfactory.containBean("singletonBeanServiceImpl") == true;
     }
 
@@ -173,6 +185,7 @@ public class AnnotationBeanFactoryTest {
     public void testGetBeanByBeanNameAndType() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.bean");
+        annotationBeanfactory.refresh();
         annotationBeanfactory.getSpecificBean("singletonBeanServiceImpl", SingletonBeanService.class);
     }
 
@@ -185,6 +198,7 @@ public class AnnotationBeanFactoryTest {
     public void testCollectionPropertyInjected() throws BeansException {
         AnnotationBeanFactory annotationBeanfactory = new AnnotationBeanFactory();
         annotationBeanfactory.scan("cn.bdqfork.model.collection");
+        annotationBeanfactory.refresh();
         CollectionPropertyService service = annotationBeanfactory.getBean(CollectionPropertyService.class);
         assert service.daos != null;
         assert service.daoMap != null;

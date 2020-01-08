@@ -1,7 +1,8 @@
 package cn.bdqfork.core.factory;
 
 import cn.bdqfork.core.exception.BeansException;
-import cn.bdqfork.core.exception.NoSuchBeanException;
+import cn.bdqfork.core.factory.definition.BeanDefinition;
+import cn.bdqfork.core.factory.definition.ManagedBeanDefinition;
 
 /**
  * @author bdq
@@ -10,14 +11,10 @@ import cn.bdqfork.core.exception.NoSuchBeanException;
 public abstract class AbstractJSR250BeanFactory extends DefaultBeanFactory implements JSR250BeanFactory {
 
     @Override
-    public void executePostConstuct(String beanName, Object bean) {
+    public void executePostConstuct(String beanName, Object bean) throws BeansException {
         BeanDefinition beanDefinition = getBeanDefinition(beanName);
         if (beanDefinition instanceof ManagedBeanDefinition) {
-            try {
-                doInitializingMethod(bean, (ManagedBeanDefinition) beanDefinition);
-            } catch (BeansException e) {
-                throw new IllegalStateException(e);
-            }
+            doInitializingMethod(bean, (ManagedBeanDefinition) beanDefinition);
         }
     }
 

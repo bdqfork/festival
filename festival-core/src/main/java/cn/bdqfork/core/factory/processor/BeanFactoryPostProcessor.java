@@ -1,6 +1,7 @@
-package cn.bdqfork.core.factory;
+package cn.bdqfork.core.factory.processor;
 
 import cn.bdqfork.core.exception.BeansException;
+import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 
 /**
  * @author bdq

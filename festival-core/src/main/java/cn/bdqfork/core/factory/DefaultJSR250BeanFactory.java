@@ -1,6 +1,8 @@
 package cn.bdqfork.core.factory;
 
 import cn.bdqfork.core.exception.BeansException;
+import cn.bdqfork.core.factory.definition.BeanDefinition;
+import cn.bdqfork.core.factory.definition.ManagedBeanDefinition;
 import cn.bdqfork.core.util.StringUtils;
 
 import java.lang.reflect.Constructor;
@@ -14,7 +16,7 @@ import java.lang.reflect.Method;
 public class DefaultJSR250BeanFactory extends AbstractJSR250BeanFactory {
 
     @Override
-    protected void afterPropertiesSet(String beanName, Object bean) {
+    protected void afterPropertiesSet(String beanName, Object bean) throws BeansException {
         super.afterPropertiesSet(beanName, bean);
         executePostConstuct(beanName, bean);
     }
