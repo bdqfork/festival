@@ -1,8 +1,8 @@
 package cn.bdqfork.core.factory.support;
 
 import cn.bdqfork.core.exception.BeansException;
-import cn.bdqfork.core.factory.BeanDefinition;
-import cn.bdqfork.core.factory.BeanPostProcessor;
+import cn.bdqfork.core.factory.definition.BeanDefinition;
+import cn.bdqfork.core.factory.processor.BeanPostProcessor;
 import cn.bdqfork.core.factory.DefaultBeanFactory;
 import cn.bdqfork.model.bean.SingletonBeanService;
 import cn.bdqfork.model.bean.SingletonBeanServiceImpl;

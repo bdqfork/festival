@@ -1,6 +1,8 @@
 package cn.bdqfork.core.factory;
 
 import cn.bdqfork.core.exception.BeansException;
+import cn.bdqfork.core.factory.definition.BeanDefinition;
+import cn.bdqfork.core.factory.definition.ManagedBeanDefinition;
 import cn.bdqfork.core.util.StringUtils;
 
 import java.lang.reflect.Constructor;

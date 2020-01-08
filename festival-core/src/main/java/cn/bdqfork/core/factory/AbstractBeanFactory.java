@@ -3,6 +3,7 @@ package cn.bdqfork.core.factory;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.CircularDependencyException;
 import cn.bdqfork.core.exception.NoSuchBeanException;
+import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import cn.bdqfork.core.factory.registry.DefaultSingletonBeanRegistry;
 import cn.bdqfork.core.util.BeanUtils;
@@ -95,8 +96,6 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         BeanFactory beanFactory = getParentBeanFactory();
         return (beanFactory != null) && beanFactory.containBean(beanName);
     }
-
-    protected abstract boolean containBeanDefinition(String beanName);
 
     @Override
     public boolean isSingleton(String beanName) throws BeansException {

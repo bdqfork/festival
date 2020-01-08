@@ -1,9 +1,8 @@
 package cn.bdqfork.core.factory.support;
 
 import cn.bdqfork.core.exception.BeansException;
-import cn.bdqfork.core.factory.BeanFactoryPostProcessor;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
-import cn.bdqfork.core.factory.BeanPostProcessor;
+import cn.bdqfork.core.factory.processor.BeanPostProcessor;
 
 import java.util.Map;
 

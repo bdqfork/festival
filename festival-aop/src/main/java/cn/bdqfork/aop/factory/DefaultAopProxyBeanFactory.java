@@ -6,7 +6,7 @@ import cn.bdqfork.aop.proxy.ProxyInvocationHandler;
 import cn.bdqfork.aop.proxy.cglib.CglibMethodInterceptor;
 import cn.bdqfork.aop.proxy.javassist.JavassistInvocationHandler;
 import cn.bdqfork.core.exception.BeansException;
-import cn.bdqfork.core.factory.BeanDefinition;
+import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.DefaultJSR250BeanFactory;
 
 import java.lang.reflect.Method;

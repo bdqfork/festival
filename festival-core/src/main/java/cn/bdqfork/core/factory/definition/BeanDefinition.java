@@ -1,5 +1,8 @@
-package cn.bdqfork.core.factory;
+package cn.bdqfork.core.factory.definition;
 
+
+import cn.bdqfork.core.factory.InjectedPoint;
+import cn.bdqfork.core.factory.MultInjectedPoint;
 
 import java.util.HashMap;
 import java.util.HashSet;

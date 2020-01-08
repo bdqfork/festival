@@ -1,7 +1,8 @@
 package cn.bdqfork.core.factory;
 
 import cn.bdqfork.core.exception.BeansException;
-import cn.bdqfork.core.exception.NoSuchBeanException;
+import cn.bdqfork.core.factory.definition.BeanDefinition;
+import cn.bdqfork.core.factory.definition.ManagedBeanDefinition;
 
 /**
  * @author bdq

@@ -4,6 +4,8 @@ import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.FailedInjectedFieldException;
 import cn.bdqfork.core.exception.FailedInjectedMethodException;
 import cn.bdqfork.core.exception.NoSuchBeanException;
+import cn.bdqfork.core.factory.definition.BeanDefinition;
+import cn.bdqfork.core.factory.processor.BeanPostProcessor;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

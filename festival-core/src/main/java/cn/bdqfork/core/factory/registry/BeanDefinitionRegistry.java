@@ -1,6 +1,6 @@
 package cn.bdqfork.core.factory.registry;
 
-import cn.bdqfork.core.factory.BeanDefinition;
+import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.ConflictedBeanException;
 
@@ -46,4 +46,8 @@ public interface BeanDefinitionRegistry extends Registry {
      * @return Map<String, BeanDefinition>
      */
     Map<String, BeanDefinition> getBeanDefinitions();
+
+    boolean containBeanDefinition(String beanName);
+
+    void clearAllBeanDefinitions();
 }
