@@ -1,10 +1,13 @@
-package cn.bdqfork.aop.factory;
+package cn.bdqfork.aop.context;
 
 import cn.bdqfork.aop.advice.*;
+import cn.bdqfork.aop.factory.AopProxyBeanFactory;
+import cn.bdqfork.aop.factory.DefaultAopProxyBeanFactory;
+import cn.bdqfork.core.context.AnnotationApplicationContext;
 import cn.bdqfork.core.exception.BeansException;
+import cn.bdqfork.core.factory.AbstractBeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
-import cn.bdqfork.core.factory.support.AnnotationBeanFactory;
 import org.aspectj.lang.annotation.*;
 
 import java.lang.reflect.Method;
@@ -18,28 +21,28 @@ import java.util.stream.Collectors;
  * @author bdq
  * @since 2019/12/26
  */
-public class AspectAnnotationBeanFactory extends AnnotationBeanFactory {
-    public AspectAnnotationBeanFactory() {
-        super();
-        setParentBeanFactory(new DefaultAopProxyBeanFactory());
+public class AspectApplicationContext extends AnnotationApplicationContext {
+
+    public AspectApplicationContext(String... scanPaths) throws BeansException {
+        super(scanPaths);
     }
 
     @Override
-    public void scan(String scanPath) throws BeansException {
-        super.scan(scanPath);
+    protected AbstractBeanFactory createBeanFactory() {
+        return new DefaultAopProxyBeanFactory();
     }
 
     @Override
     public void refresh() throws BeansException {
         super.refresh();
         //todo:优化重复注册
-        BeanDefinitionRegistry registry = (BeanDefinitionRegistry) getParentBeanFactory();
+        BeanDefinitionRegistry registry = (BeanDefinitionRegistry) getConfigurableBeanFactory();
         List<BeanDefinition> beanDefinitions = registry.getBeanDefinitions().values()
                 .stream()
                 .filter(beanDefinition -> beanDefinition.getBeanClass().isAnnotationPresent(Aspect.class))
                 .collect(Collectors.toList());
         for (BeanDefinition beanDefinition : beanDefinitions) {
-            AopProxyBeanFactory aopProxyBeanFactory = (AopProxyBeanFactory) getParentBeanFactory();
+            AopProxyBeanFactory aopProxyBeanFactory = (AopProxyBeanFactory) getConfigurableBeanFactory();
             for (AspectAdvisor aspectAdvisor : resolveAdvisors(beanDefinition)) {
                 aopProxyBeanFactory.registerAdvisor(aspectAdvisor);
             }

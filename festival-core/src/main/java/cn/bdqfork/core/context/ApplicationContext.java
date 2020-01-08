@@ -1,5 +1,6 @@
 package cn.bdqfork.core.context;
 
+import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.BeanFactory;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 
@@ -9,6 +10,10 @@ import cn.bdqfork.core.factory.ConfigurableBeanFactory;
  */
 public interface ApplicationContext extends BeanFactory {
     ConfigurableBeanFactory getConfigurableBeanFactory();
+
+    void scan(String... scanPaths) throws BeansException;
+
+    void refresh() throws BeansException;
 
     void close();
 }

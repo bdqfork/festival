@@ -1,7 +1,6 @@
 package cn.bdqfork.core.context;
 
 import cn.bdqfork.core.exception.BeansException;
-import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 
 import java.util.Map;
 
@@ -11,53 +10,43 @@ import java.util.Map;
  */
 public abstract class AbstractApplicationContext implements ApplicationContext {
 
-    private ConfigurableBeanFactory beanFactory;
-
-    public AbstractApplicationContext(ConfigurableBeanFactory beanFactory) {
-        this.beanFactory = beanFactory;
-    }
-
     @Override
     public <T> T getBean(String beanName) throws BeansException {
-        return beanFactory.getBean(beanName);
+        return getConfigurableBeanFactory().getBean(beanName);
     }
 
     @Override
     public <T> T getBean(String beanName, Object[] args) throws BeansException {
-        return beanFactory.getBean(beanName, args);
+        return getConfigurableBeanFactory().getBean(beanName, args);
     }
 
     @Override
     public <T> T getBean(Class<T> clazz) throws BeansException {
-        return beanFactory.getBean(clazz);
+        return getConfigurableBeanFactory().getBean(clazz);
     }
 
     @Override
     public <T> T getSpecificBean(String beanName, Class<T> clazz) throws BeansException {
-        return beanFactory.getSpecificBean(beanName, clazz);
+        return getConfigurableBeanFactory().getSpecificBean(beanName, clazz);
     }
 
     @Override
     public <T> Map<String, T> getBeans(Class<T> clazz) throws BeansException {
-        return beanFactory.getBeans(clazz);
+        return getConfigurableBeanFactory().getBeans(clazz);
     }
 
     @Override
     public boolean containBean(String beanName) {
-        return beanFactory.containBean(beanName);
+        return getConfigurableBeanFactory().containBean(beanName);
     }
 
     @Override
     public boolean isSingleton(String beanName) throws BeansException {
-        return beanFactory.isSingleton(beanName);
+        return getConfigurableBeanFactory().isSingleton(beanName);
     }
 
     @Override
     public boolean isPrototype(String beanName) throws BeansException {
-        return beanFactory.isPrototype(beanName);
-    }
-
-    public ConfigurableBeanFactory getConfigurableBeanFactory() {
-        return beanFactory;
+        return getConfigurableBeanFactory().isPrototype(beanName);
     }
 }
