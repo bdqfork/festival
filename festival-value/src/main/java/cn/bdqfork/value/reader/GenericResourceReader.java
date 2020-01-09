@@ -1,5 +1,7 @@
 package cn.bdqfork.value.reader;
 
+import cn.bdqfork.value.util.ResourceReaderUtils;
+
 import java.io.IOException;
 
 /**
@@ -10,7 +12,7 @@ public class GenericResourceReader implements ResourceReader {
     private ResourceReader resourceReader;
 
     public GenericResourceReader() throws IOException {
-        this(DEFAULT_CONFIG_NAME + ".yaml");
+        this(ResourceReaderUtils.getDefaultConfigFile());
     }
 
     public GenericResourceReader(String resourcePath) throws IOException {

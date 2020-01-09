@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -30,7 +31,7 @@ public class YamlResourceReader extends AbstractResourceReader {
         if (url != null) {
             properties = yaml.load(new FileInputStream(url.getFile()));
         } else {
-            throw new FileNotFoundException(String.format("can't load file from resourcePath %s !", getResourcePath()));
+            properties = Collections.emptyMap();
         }
     }
 
