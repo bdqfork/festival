@@ -4,6 +4,7 @@ import cn.bdqfork.value.Configration;
 import cn.bdqfork.value.Value;
 
 import javax.annotation.ManagedBean;
+import java.util.List;
 
 /**
  * @author bdq
@@ -15,7 +16,9 @@ public class ServerConfig {
     @Value("localhost")
     private String localhost;
     @Value("port")
-    private Integer port;
+    private int port;
+    @Value("names")
+    private List<String> names;
 
     public String getLocalhost() {
         return localhost;
@@ -25,11 +28,19 @@ public class ServerConfig {
         this.localhost = localhost;
     }
 
-    public Integer getPort() {
+    public int getPort() {
         return port;
     }
 
-    public void setPort(Integer port) {
+    public void setPort(int port) {
         this.port = port;
+    }
+
+    public List<String> getNames() {
+        return names;
+    }
+
+    public void setNames(List<String> names) {
+        this.names = names;
     }
 }

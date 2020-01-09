@@ -11,6 +11,8 @@ import cn.bdqfork.model.cycle.*;
 import cn.bdqfork.model.jsr250.JSR250FieldService;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -194,5 +196,8 @@ public class AnnotationApplicationContextTest {
         Server server = annotationApplicationContext.getBean(Server.class);
         ServerConfig serverConfig = server.getServerConfig();
         assertEquals(serverConfig.getLocalhost(), "127.0.0.1");
+        for (String name : serverConfig.getNames()) {
+            System.out.println(name);
+        }
     }
 }

@@ -7,10 +7,7 @@ import java.io.IOException;
 import java.lang.reflect.*;
 import java.net.JarURLConnection;
 import java.net.URL;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -141,6 +138,9 @@ public class ReflectUtils {
                 clazz.equals(java.lang.Float.class) ||
                 clazz.equals(java.lang.Character.class) ||
                 clazz.equals(java.lang.Short.class) ||
-                clazz.equals(java.lang.Boolean.class);
+                clazz.equals(java.lang.Boolean.class) ||
+                clazz.equals(java.util.Map.class) ||
+                clazz.isPrimitive() ||
+                clazz.isArray();
     }
 }
