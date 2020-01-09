@@ -10,9 +10,26 @@ import java.lang.reflect.Type;
  * @since 2019/12/18
  */
 public class InjectedPoint {
+
+    /**
+     * 依赖的bean名称
+     */
     private String beanName;
+
+    /**
+     * 依赖类型
+     */
     private Type type;
+
+    /**
+     * 是否必需
+     */
     private boolean require;
+
+    /**
+     * 属性值
+     */
+    private Object value;
 
     public InjectedPoint(Type type) {
         this(type, true);
@@ -61,4 +78,13 @@ public class InjectedPoint {
     public Class<?> getActualType() {
         return ReflectUtils.getActualType(type);
     }
+
+    public Object getValue() {
+        return value;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
+    }
+
 }

@@ -11,6 +11,8 @@
     <modules>
         <module>festival-core</module>
         <module>festival-aop</module>
+        <module>festival-value</module>
+        <module>festival-context</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
@@ -67,6 +69,13 @@
                 <artifactId>aspectjweaver</artifactId>
                 <version>1.9.4</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>1.25</version>
+            </dependency>
+
             <dependency>
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>

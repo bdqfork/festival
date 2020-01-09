@@ -1,10 +1,7 @@
 package cn.bdqfork.core.factory;
 
 import java.lang.reflect.Type;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -12,6 +9,7 @@ import java.util.function.Consumer;
  * @since 2019/12/18
  */
 public class MultInjectedPoint extends InjectedPoint implements Iterable<InjectedPoint> {
+
     private List<InjectedPoint> injectedPoints = new LinkedList<>();
 
     public MultInjectedPoint() {
@@ -19,7 +17,7 @@ public class MultInjectedPoint extends InjectedPoint implements Iterable<Injecte
     }
 
     public MultInjectedPoint(boolean require) {
-        super(Iterable.class, require);
+        super(MultInjectedPoint.class, require);
     }
 
     public void addInjectedPoint(InjectedPoint injectedPoint) {
@@ -65,5 +63,19 @@ public class MultInjectedPoint extends InjectedPoint implements Iterable<Injecte
     @Override
     public Spliterator<InjectedPoint> spliterator() {
         return injectedPoints.spliterator();
+    }
+
+    @Override
+    public Object getValue() {
+        return injectedPoints.stream().map(InjectedPoint::getValue).toArray(Object[]::new);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void setValue(Object value) {
+        if (value instanceof Map) {
+            Map<Integer, Object> valueMap = (Map<Integer, Object>) value;
+            valueMap.forEach((k, v) -> injectedPoints.get(k).setValue(v));
+        }
     }
 }

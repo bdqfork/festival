@@ -3,7 +3,7 @@ package cn.bdqfork.aop.context;
 import cn.bdqfork.aop.advice.*;
 import cn.bdqfork.aop.factory.AopProxyBeanFactory;
 import cn.bdqfork.aop.factory.DefaultAopProxyBeanFactory;
-import cn.bdqfork.core.context.AnnotationApplicationContext;
+import cn.bdqfork.context.AnnotationApplicationContext;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.AbstractBeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;

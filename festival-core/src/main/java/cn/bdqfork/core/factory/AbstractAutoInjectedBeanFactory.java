@@ -19,6 +19,7 @@ import java.util.*;
  */
 public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactory implements AutoInjectedBeanfactory {
     private List<BeanPostProcessor> beanPostProcessors = new ArrayList<>(16);
+
     @Override
     public Object createBean(String beanName) throws BeansException {
         BeanDefinition beanDefinition = getBeanDefinition(beanName);
@@ -38,19 +39,19 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
                 throw new IllegalStateException(e);
             }
         });
-        
+
         Object bean = getSingleton(beanName, true);
 
         autoInjected(beanName, bean);
 
         for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
-            beanPostProcessor.postProcessBeforeInitializtion(beanName,bean);
+            beanPostProcessor.postProcessBeforeInitializtion(beanName, bean);
         }
 
         afterPropertiesSet(beanName, bean);
 
         for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
-            beanPostProcessor.postProcessAfterInitializtion(beanName,bean);
+            beanPostProcessor.postProcessAfterInitializtion(beanName, bean);
         }
 
         registerSingleton(beanName, bean);
@@ -86,6 +87,9 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
     public Object resovleDependence(InjectedPoint injectedPoint, String beanName) throws BeansException {
         if (!containBean(beanName)) {
             throw new NoSuchBeanException(String.format("there is no such bean named %s !", beanName));
+        }
+        if (injectedPoint.getValue() != null) {
+            return injectedPoint.getValue();
         }
         return doResovleDependence(injectedPoint.getBeanName(), injectedPoint.getType(), injectedPoint.isRequire());
     }

@@ -133,4 +133,14 @@ public class ReflectUtils {
         accessibleObject.setAccessible(true);
     }
 
+    public static boolean isBaseType(Class<?> clazz) {
+        return clazz.equals(java.lang.Integer.class) ||
+                clazz.equals(java.lang.Byte.class) ||
+                clazz.equals(java.lang.Long.class) ||
+                clazz.equals(java.lang.Double.class) ||
+                clazz.equals(java.lang.Float.class) ||
+                clazz.equals(java.lang.Character.class) ||
+                clazz.equals(java.lang.Short.class) ||
+                clazz.equals(java.lang.Boolean.class);
+    }
 }
