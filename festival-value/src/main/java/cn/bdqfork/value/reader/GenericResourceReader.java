@@ -21,7 +21,6 @@ public class GenericResourceReader implements ResourceReader {
             return;
         }
         if (resourcePath.endsWith(".properties")) {
-            //todo:properties文件读写
             resourceReader = new PropertiesResourceReader(resourcePath);
             return;
         }
