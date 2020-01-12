@@ -22,6 +22,7 @@ public class GenericResourceReader implements ResourceReader {
         }
         if (resourcePath.endsWith(".properties")) {
             //todo:properties文件读写
+            resourceReader = new PropertiesResourceReader(resourcePath);
             return;
         }
         throw new IllegalStateException(String.format("unsupport to read for file %s !", resourcePath));
