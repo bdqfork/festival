@@ -245,7 +245,7 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
                     throw new ResolvedException(String.format("the method %s is abstract !", methodName));
                 }
 
-                if (!methodName.startsWith("set") && method.getParameterCount() != 1) {
+                if (!methodName.startsWith("set") || method.getParameterCount() != 1) {
                     throw new ResolvedException(String.format("the method %s is not setter !", methodName));
                 }
 

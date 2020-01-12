@@ -87,34 +87,38 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
     }
 
     @Override
-    protected Object doResovleDependence(String name, Type type, boolean check) throws BeansException {
+    protected Object doResovleDependence(String name, Type type, boolean check) throws UnsatisfiedBeanException {
         Object bean = null;
 
-        if (!StringUtils.isEmpty(name) && type != null) {
+        try {
+            if (!StringUtils.isEmpty(name) && type != null) {
 
-            Class<?> actualType = ReflectUtils.getActualType(type);
-            bean = getSpecificBean(name, actualType);
+                Class<?> actualType = ReflectUtils.getActualType(type);
+                bean = getSpecificBean(name, actualType);
 
-        } else if (!StringUtils.isEmpty(name)) {
+            } else if (!StringUtils.isEmpty(name)) {
 
-            bean = getBean(name);
+                bean = getBean(name);
 
-        } else if (type != null) {
+            } else if (type != null) {
 
-            if (BeanUtils.isCollection(type)) {
+                if (BeanUtils.isCollection(type)) {
 
-                bean = new ArrayList<>(getBeans(ReflectUtils.getActualType(type)).values());
+                    bean = new ArrayList<>(getBeans(ReflectUtils.getActualType(type)).values());
 
-            } else if (BeanUtils.isMap(type)) {
+                } else if (BeanUtils.isMap(type)) {
 
-                bean = getBeans(ReflectUtils.getActualType(type));
+                    bean = getBeans(ReflectUtils.getActualType(type));
 
-            } else {
+                } else {
 
-                bean = getBean(ReflectUtils.getActualType(type));
+                    bean = getBean(ReflectUtils.getActualType(type));
+
+                }
 
             }
-
+        } catch (BeansException e) {
+            throw new UnsatisfiedBeanException(e);
         }
 
         if (bean == null && check) {

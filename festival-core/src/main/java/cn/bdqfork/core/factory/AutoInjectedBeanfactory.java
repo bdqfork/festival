@@ -1,6 +1,7 @@
 package cn.bdqfork.core.factory;
 
 import cn.bdqfork.core.exception.BeansException;
+import cn.bdqfork.core.exception.UnsatisfiedBeanException;
 
 /**
  * @author bdq
@@ -12,8 +13,8 @@ public interface AutoInjectedBeanfactory extends ConfigurableBeanFactory {
 
     void autoInjected(String beanName, Object bean) throws BeansException;
 
-    Object resovleDependence(InjectedPoint injectedPoint, String beanName) throws BeansException;
+    Object resovleDependence(InjectedPoint injectedPoint, String beanName) throws UnsatisfiedBeanException;
 
-    Object[] resovleMultDependence(MultInjectedPoint multInjectedPoint, String beanName) throws BeansException;
+    Object[] resovleMultDependence(MultInjectedPoint multInjectedPoint, String beanName) throws UnsatisfiedBeanException;
 
 }

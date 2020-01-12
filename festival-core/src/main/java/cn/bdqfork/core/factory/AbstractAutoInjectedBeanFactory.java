@@ -1,9 +1,6 @@
 package cn.bdqfork.core.factory;
 
-import cn.bdqfork.core.exception.BeansException;
-import cn.bdqfork.core.exception.FailedInjectedFieldException;
-import cn.bdqfork.core.exception.FailedInjectedMethodException;
-import cn.bdqfork.core.exception.NoSuchBeanException;
+import cn.bdqfork.core.exception.*;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.processor.BeanPostProcessor;
 
@@ -84,9 +81,9 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
     protected abstract Object autoInjectedConstructor(String beanName, BeanDefinition beanDefinition, Constructor<?> constructor, Object[] explicitArgs) throws BeansException;
 
     @Override
-    public Object resovleDependence(InjectedPoint injectedPoint, String beanName) throws BeansException {
+    public Object resovleDependence(InjectedPoint injectedPoint, String beanName) throws UnsatisfiedBeanException {
         if (!containBean(beanName)) {
-            throw new NoSuchBeanException(String.format("there is no such bean named %s !", beanName));
+            throw new UnsatisfiedBeanException(String.format("there is no such bean named %s !", beanName));
         }
         if (injectedPoint.getValue() != null) {
             return injectedPoint.getValue();
@@ -95,7 +92,7 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
     }
 
     @Override
-    public Object[] resovleMultDependence(MultInjectedPoint multInjectedPoint, String beanName) throws BeansException {
+    public Object[] resovleMultDependence(MultInjectedPoint multInjectedPoint, String beanName) throws UnsatisfiedBeanException {
         List<Object> dependencies = new LinkedList<>();
         for (InjectedPoint injectedPoint : multInjectedPoint) {
             Object dependence = resovleDependence(injectedPoint, beanName);
@@ -104,7 +101,7 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
         return dependencies.toArray();
     }
 
-    protected abstract Object doResovleDependence(String name, Type type, boolean check) throws BeansException;
+    protected abstract Object doResovleDependence(String name, Type type, boolean check) throws UnsatisfiedBeanException;
 
     @Override
     public void autoInjected(String beanName, Object bean) throws BeansException {
