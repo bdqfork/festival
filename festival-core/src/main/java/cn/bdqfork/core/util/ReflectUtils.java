@@ -118,12 +118,12 @@ public class ReflectUtils {
         return signBuilder.toString();
     }
 
-    public static Class<?> getActualType(Type type) {
+    public static Type[] getActualType(Type type) {
         if (type instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType) type;
-            return (Class<?>) parameterizedType.getActualTypeArguments()[0];
+            return parameterizedType.getActualTypeArguments();
         }
-        return (Class<?>) type;
+        return new Type[]{type};
     }
 
     public static void makeAccessible(AccessibleObject accessibleObject) {

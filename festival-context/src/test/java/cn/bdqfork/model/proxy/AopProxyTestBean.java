@@ -1,4 +1,4 @@
-package cn.bdqfork.aop.factory;
+package cn.bdqfork.model.proxy;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -9,7 +9,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 @Named
-public class UserDaoImpl {
+public class AopProxyTestBean {
     public String testAop() {
         System.out.println("processing");
         return "ok";

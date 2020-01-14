@@ -13,6 +13,7 @@ import cn.bdqfork.model.configration.Server;
 import cn.bdqfork.model.configration.ServerConfig;
 import cn.bdqfork.model.cycle.*;
 import cn.bdqfork.model.jsr250.JSR250FieldService;
+import cn.bdqfork.model.proxy.AopProxyTestBean;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -172,8 +173,8 @@ public class AnnotationApplicationContextTest {
     public void testCollectionPropertyInjected() throws BeansException {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.collection");
         CollectionPropertyService collectionPropertyService = annotationApplicationContext.getBean(CollectionPropertyService.class);
-        assert collectionPropertyService.daos != null;
-        assert collectionPropertyService.daoMap != null;
+        assert collectionPropertyService.getDaos().size() > 0;
+        assert collectionPropertyService.getDaoMap().size() > 0;
     }
 
     /**
@@ -205,6 +206,7 @@ public class AnnotationApplicationContextTest {
 
     /**
      * ResolveException异常测试
+     *
      * @throws BeansException
      */
     @Test(expected = ResolvedException.class)
@@ -215,12 +217,26 @@ public class AnnotationApplicationContextTest {
 
     /**
      * UnsatisfiedBeanException异常测试
+     *
      * @throws BeansException
      */
     @Test(expected = UnsatisfiedBeanException.class)
     public void testUnsatisfiedBeanException() throws BeansException {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.bean.exception.unsatisfied");
         assert annotationApplicationContext.getBean(UnsatisfiedBeanExceptionBean.class) != null;
+    }
+
+    /**
+     * 测试AOP功能
+     *
+     * @throws BeansException
+     */
+    @Test
+    public void testAop() throws BeansException {
+        AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.proxy");
+        AopProxyTestBean aopProxyTestBean = annotationApplicationContext.getBean(AopProxyTestBean.class);
+        aopProxyTestBean.testAop();
+        aopProxyTestBean.testThrowing();
     }
 
 }

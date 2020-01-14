@@ -32,7 +32,7 @@
 
         <dependency>
             <groupId>cn.bdqfork</groupId>
-            <artifactId>festival-context</artifactId>
+            <artifactId>festival-core</artifactId>
             <version>0.3</version>
         </dependency>
     </dependencies>

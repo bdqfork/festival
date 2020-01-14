@@ -76,7 +76,7 @@ public class InjectedPoint {
     }
 
     public Class<?> getActualType() {
-        return ReflectUtils.getActualType(type);
+        return (Class<?>) ReflectUtils.getActualType(type)[0];
     }
 
     public Object getValue() {

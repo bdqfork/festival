@@ -14,8 +14,16 @@ import java.util.Map;
 @Named
 public class CollectionPropertyService {
     @Inject
-    public List<CollectionPropertyDao> daos;
+    private List<CollectionPropertyDao> daos;
 
     @Inject
-    public Map<String, CollectionPropertyDao> daoMap;
+    private Map<String, CollectionPropertyDao> daoMap;
+
+    public List<CollectionPropertyDao> getDaos() {
+        return daos;
+    }
+
+    public Map<String, CollectionPropertyDao> getDaoMap() {
+        return daoMap;
+    }
 }

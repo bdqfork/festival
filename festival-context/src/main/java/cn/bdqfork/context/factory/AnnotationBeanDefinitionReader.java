@@ -323,7 +323,7 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
     }
 
     private String generateDependentName(Type type, Map<String, BeanDefinition> definitionMap) {
-        Class<?> actualType = ReflectUtils.getActualType(type);
+        Class<?> actualType = (Class<?>) ReflectUtils.getActualType(type)[0];
         if (actualType.isInterface()) {
             for (Map.Entry<String, BeanDefinition> entry : definitionMap.entrySet()) {
                 BeanDefinition beanDefinition = entry.getValue();

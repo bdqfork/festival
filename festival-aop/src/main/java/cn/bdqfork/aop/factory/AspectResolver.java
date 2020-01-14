@@ -1,13 +1,9 @@
-package cn.bdqfork.aop.context;
+package cn.bdqfork.aop.factory;
 
 import cn.bdqfork.aop.advice.*;
-import cn.bdqfork.aop.factory.AopProxyBeanFactory;
-import cn.bdqfork.aop.factory.DefaultAopProxyBeanFactory;
-import cn.bdqfork.context.AnnotationApplicationContext;
 import cn.bdqfork.core.exception.BeansException;
-import cn.bdqfork.core.factory.AbstractBeanFactory;
+import cn.bdqfork.core.factory.BeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
-import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import org.aspectj.lang.annotation.*;
 
 import java.lang.reflect.Method;
@@ -15,42 +11,16 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author bdq
- * @since 2019/12/26
+ * @since 2020/1/14
  */
-public class AspectApplicationContext extends AnnotationApplicationContext {
+public class AspectResolver {
+    private BeanFactory beanFactory;
 
-    public AspectApplicationContext(String... scanPaths) throws BeansException {
-        super(scanPaths);
-    }
-
-    @Override
-    protected AbstractBeanFactory createBeanFactory() {
-        return new DefaultAopProxyBeanFactory();
-    }
-
-    @Override
-    public void refresh() throws BeansException {
-        super.refresh();
-        //todo:优化重复注册
-        BeanDefinitionRegistry registry = (BeanDefinitionRegistry) getConfigurableBeanFactory();
-        List<BeanDefinition> beanDefinitions = registry.getBeanDefinitions().values()
-                .stream()
-                .filter(beanDefinition -> beanDefinition.getBeanClass().isAnnotationPresent(Aspect.class))
-                .collect(Collectors.toList());
-        for (BeanDefinition beanDefinition : beanDefinitions) {
-            AopProxyBeanFactory aopProxyBeanFactory = (AopProxyBeanFactory) getConfigurableBeanFactory();
-            for (AspectAdvisor aspectAdvisor : resolveAdvisors(beanDefinition)) {
-                aopProxyBeanFactory.registerAdvisor(aspectAdvisor);
-            }
-        }
-    }
-
-    private List<AspectAdvisor> resolveAdvisors(BeanDefinition beanDefinition) throws BeansException {
-        List<AspectAdvisor> advisors = new LinkedList<>();
+    public List<Advisor> resolveAdvisors(BeanDefinition beanDefinition) throws BeansException {
+        List<Advisor> advisors = new LinkedList<>();
 
         Class<?> clazz = beanDefinition.getBeanClass();
         //存储解析完成的pointcut，通知绑定
@@ -108,7 +78,7 @@ public class AspectApplicationContext extends AnnotationApplicationContext {
 
         beforeAdvice.setAspectAdviceMethod(method);
 
-        beforeAdvice.setAspectInstance(getBean(beanName));
+        beforeAdvice.setAspectInstance(beanFactory.getBean(beanName));
 
         return getAspectAdvisor(pointcuts, before.value(), beforeAdvice);
     }
@@ -120,7 +90,7 @@ public class AspectApplicationContext extends AnnotationApplicationContext {
 
         afterReturningAdvice.setAspectAdviceMethod(method);
 
-        afterReturningAdvice.setAspectInstance(getBean(beanName));
+        afterReturningAdvice.setAspectInstance(beanFactory.getBean(beanName));
 
         return getAspectAdvisor(pointcuts, afterReturning.value(), afterReturningAdvice);
     }
@@ -132,7 +102,7 @@ public class AspectApplicationContext extends AnnotationApplicationContext {
 
         aroundAdvice.setAspectAdviceMethod(method);
 
-        aroundAdvice.setAspectInstance(getBean(beanName));
+        aroundAdvice.setAspectInstance(beanFactory.getBean(beanName));
 
         return getAspectAdvisor(pointcuts, around.value(), aroundAdvice);
     }
@@ -144,7 +114,7 @@ public class AspectApplicationContext extends AnnotationApplicationContext {
 
         aspectThrowsAdvice.setAspectAdviceMethod(method);
 
-        aspectThrowsAdvice.setAspectInstance(getBean(beanName));
+        aspectThrowsAdvice.setAspectInstance(beanFactory.getBean(beanName));
 
         return getAspectAdvisor(pointcuts, afterThrowing.value(), aspectThrowsAdvice);
     }
@@ -163,5 +133,9 @@ public class AspectApplicationContext extends AnnotationApplicationContext {
         aspectAdvisor.setPointcut(expression.substring(10, expression.length() - 1));
 
         return aspectAdvisor;
+    }
+
+    public void setBeanFactory(BeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
     }
 }

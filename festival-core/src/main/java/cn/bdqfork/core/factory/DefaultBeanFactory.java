@@ -93,7 +93,7 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
         try {
             if (!StringUtils.isEmpty(name) && type != null) {
 
-                Class<?> actualType = ReflectUtils.getActualType(type);
+                Class<?> actualType = (Class<?>) ReflectUtils.getActualType(type)[0];
                 bean = getSpecificBean(name, actualType);
 
             } else if (!StringUtils.isEmpty(name)) {
@@ -101,18 +101,20 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
                 bean = getBean(name);
 
             } else if (type != null) {
-
+                Type[] actualTypes = ReflectUtils.getActualType(type);
                 if (BeanUtils.isCollection(type)) {
+                    Class<?> actualType = (Class<?>) actualTypes[0];
 
-                    bean = new ArrayList<>(getBeans(ReflectUtils.getActualType(type)).values());
+                    bean = new ArrayList<>(getBeans(actualType).values());
 
                 } else if (BeanUtils.isMap(type)) {
+                    Class<?> actualType = (Class<?>) actualTypes[1];
 
-                    bean = getBeans(ReflectUtils.getActualType(type));
+                    bean = getBeans(actualType);
 
                 } else {
-
-                    bean = getBean(ReflectUtils.getActualType(type));
+                    Class<?> actualType = (Class<?>) actualTypes[0];
+                    bean = getBean(actualType);
 
                 }
 

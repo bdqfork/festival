@@ -1,5 +1,6 @@
 package cn.bdqfork.context;
 
+import cn.bdqfork.aop.processor.AopProcessor;
 import cn.bdqfork.context.factory.AnnotationBeanDefinitionReader;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.AbstractBeanFactory;
@@ -8,6 +9,7 @@ import cn.bdqfork.core.factory.DefaultBeanFactory;
 import cn.bdqfork.core.factory.DefaultJSR250BeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.processor.BeanFactoryPostProcessor;
+import cn.bdqfork.core.factory.processor.BeanPostProcessor;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import cn.bdqfork.value.reader.GenericResourceReader;
 import cn.bdqfork.value.reader.ResourceReader;
@@ -23,6 +25,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
      * 是否启用JSR250
      */
     protected static boolean JSR250 = true;
+    protected static boolean AOP = true;
     /**
      * 委托工厂
      */
@@ -37,6 +40,11 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         } catch (ClassNotFoundException e) {
             JSR250 = false;
         }
+        try {
+            classLoader.loadClass("cn.bdqfork.aop.factory.AopProxyBeanFactory");
+        } catch (ClassNotFoundException e) {
+            JSR250 = false;
+        }
     }
 
 
@@ -45,6 +53,10 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         this.delegateBeanFactory = createBeanFactory();
 
         this.delegateBeanFactory.registerBeanDefinition("resourceReader", new BeanDefinition("resourceReader", GenericResourceReader.class, BeanDefinition.SINGLETON));
+
+        if (AOP) {
+            this.delegateBeanFactory.registerBeanDefinition("aopProcessor", new BeanDefinition("aopProcessor", AopProcessor.class, BeanDefinition.SINGLETON));
+        }
 
         this.beanDefinitionReader = getBeanDefinitionReader();
 
@@ -78,13 +90,19 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
     @Override
     public void refresh() throws BeansException {
         doRefresh();
-        processBeanFactory();
+        registerBeanFactoryPostProcessor();
+        registerBeanPostProcessor();
     }
 
-    private void processBeanFactory() throws BeansException {
-        BeanFactoryPostProcessor[] beanFactoryPostProcessors = delegateBeanFactory.getBeans(BeanFactoryPostProcessor.class).values().toArray(new BeanFactoryPostProcessor[0]);
-        for (BeanFactoryPostProcessor beanFactoryPostProcessor : beanFactoryPostProcessors) {
-            beanFactoryPostProcessor.postProcessBeanFactory(delegateBeanFactory);
+    private void registerBeanPostProcessor() throws BeansException {
+        for (BeanPostProcessor beanPostProcessor : delegateBeanFactory.getBeans(BeanPostProcessor.class).values()) {
+            delegateBeanFactory.addPostBeanProcessor(beanPostProcessor);
+        }
+    }
+
+    private void registerBeanFactoryPostProcessor() throws BeansException {
+        for (BeanFactoryPostProcessor factoryPostProcessor : delegateBeanFactory.getBeans(BeanFactoryPostProcessor.class).values()) {
+            factoryPostProcessor.postProcessBeanFactory(delegateBeanFactory);
         }
     }
 

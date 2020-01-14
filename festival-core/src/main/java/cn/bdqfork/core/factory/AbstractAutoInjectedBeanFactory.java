@@ -42,13 +42,13 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
         autoInjected(beanName, bean);
 
         for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
-            beanPostProcessor.postProcessBeforeInitializtion(beanName, bean);
+            bean = beanPostProcessor.postProcessBeforeInitializtion(beanName, bean);
         }
 
         afterPropertiesSet(beanName, bean);
 
         for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
-            beanPostProcessor.postProcessAfterInitializtion(beanName, bean);
+            bean = beanPostProcessor.postProcessAfterInitializtion(beanName, bean);
         }
 
         registerSingleton(beanName, bean);
