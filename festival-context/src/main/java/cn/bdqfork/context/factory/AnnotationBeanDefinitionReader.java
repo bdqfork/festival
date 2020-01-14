@@ -54,11 +54,6 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
 
             return new BeanDefinition(beanName, clazz, BeanDefinition.SINGLETON);
 
-        } else if (clazz.isAnnotationPresent(Scope.class)) {
-
-            throw new ScopeException(String.format("used the scope annotation on a class " +
-                    "but forgot to configure the scope in the class %s !", clazz.getCanonicalName()));
-
         } else {
 
             if (JSR250) {
