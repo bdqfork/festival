@@ -1,16 +1,23 @@
 package cn.bdqfork.aop.proxy;
 
 import cn.bdqfork.aop.MethodInvocation;
+import cn.bdqfork.aop.MethodSignature;
 import cn.bdqfork.aop.advice.*;
 
 import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author bdq
  * @since 2019/12/23
  */
 public class DefaultProxyInvocationHandler implements ProxyInvocationHandler {
-    protected AopProxySupport support;
+    private Map<String, MethodBeforeAdvice[]> beforeAdviceCache = new ConcurrentHashMap<>();
+    private Map<String, AroundAdvice[]> aroundAdviceCache = new ConcurrentHashMap<>();
+    private Map<String, AfterReturningAdvice[]> afterReturningAdviceCache = new ConcurrentHashMap<>();
+    private Map<String, ThrowsAdvice[]> throwsAdviceCache = new ConcurrentHashMap<>();
+    private AopProxySupport support;
 
     public DefaultProxyInvocationHandler(AopProxySupport support) {
         this.support = support;
@@ -71,11 +78,15 @@ public class DefaultProxyInvocationHandler implements ProxyInvocationHandler {
     }
 
     private MethodBeforeAdvice[] getMethodBeforeAdvices(Method method) {
-        return support.getBeforeAdvice(method).toArray(new MethodBeforeAdvice[0]);
+        MethodSignature methodSignature = new MethodSignature(method.getDeclaringClass(), method);
+        return beforeAdviceCache.computeIfAbsent(methodSignature.toShortString(),
+                v -> support.getBeforeAdvice(method).toArray(new MethodBeforeAdvice[0]));
     }
 
     private AroundAdvice[] getAroundAdvices(Method method) {
-        return support.getAroundAdvice(method).toArray(new AroundAdvice[0]);
+        MethodSignature methodSignature = new MethodSignature(method.getDeclaringClass(), method);
+        return aroundAdviceCache.computeIfAbsent(methodSignature.toShortString(),
+                v -> support.getAroundAdvice(method).toArray(new AroundAdvice[0]));
     }
 
     private Object doAround(AroundAdvice aroundAdvice, MethodInvocation methodInvocation) throws Throwable {
@@ -95,7 +106,9 @@ public class DefaultProxyInvocationHandler implements ProxyInvocationHandler {
     }
 
     private AfterReturningAdvice[] getAfterReturningAdvice(Method method) {
-        return support.getAfterAdvice(method).toArray(new AfterReturningAdvice[0]);
+        MethodSignature methodSignature = new MethodSignature(method.getDeclaringClass(), method);
+        return afterReturningAdviceCache.computeIfAbsent(methodSignature.toShortString(),
+                v -> support.getAfterAdvice(method).toArray(new AfterReturningAdvice[0]));
 
     }
 
@@ -112,7 +125,9 @@ public class DefaultProxyInvocationHandler implements ProxyInvocationHandler {
     }
 
     private ThrowsAdvice[] getThrowsAdvices(Method method) {
-        return support.getThrowsAdvice(method).toArray(new ThrowsAdvice[0]);
+        MethodSignature methodSignature = new MethodSignature(method.getDeclaringClass(), method);
+        return throwsAdviceCache.computeIfAbsent(methodSignature.toShortString(),
+                v -> support.getThrowsAdvice(method).toArray(new ThrowsAdvice[0]));
     }
 
 }

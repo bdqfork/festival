@@ -1,6 +1,5 @@
 package cn.bdqfork.aop.processor;
 
-import cn.bdqfork.aop.factory.AspectResolver;
 import cn.bdqfork.aop.advice.Advisor;
 import cn.bdqfork.aop.factory.AopProxyBeanFactory;
 import cn.bdqfork.aop.factory.DefaultAopProxyBeanFactory;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
  * @author bdq
  * @since 2020/1/14
  */
-public class AopProcessor implements BeanPostProcessor, BeanFactoryPostProcessor {
+public class AopProxyProcessor implements BeanPostProcessor, BeanFactoryPostProcessor {
     private Set<Advisor> advisors = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private AspectResolver aspectResolver = new AspectResolver();
     private AopProxyBeanFactory aopProxyBeanFactory = new DefaultAopProxyBeanFactory();
@@ -33,7 +32,6 @@ public class AopProcessor implements BeanPostProcessor, BeanFactoryPostProcessor
     @Override
     public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
         configurableBeanFactory = beanFactory;
-        aspectResolver.setBeanFactory(beanFactory);
 
         List<BeanDefinition> beanDefinitions = configurableBeanFactory.getBeanDefinitions().values()
                 .stream()
@@ -41,7 +39,7 @@ public class AopProcessor implements BeanPostProcessor, BeanFactoryPostProcessor
                 .collect(Collectors.toList());
 
         for (BeanDefinition beanDefinition : beanDefinitions) {
-            List<Advisor> advisors = aspectResolver.resolveAdvisors(beanDefinition);
+            Set<Advisor> advisors = aspectResolver.resolveAdvisors(beanFactory, beanDefinition);
             this.advisors.addAll(advisors);
         }
     }

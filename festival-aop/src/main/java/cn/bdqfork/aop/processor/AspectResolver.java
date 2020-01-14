@@ -1,26 +1,23 @@
-package cn.bdqfork.aop.factory;
+package cn.bdqfork.aop.processor;
 
 import cn.bdqfork.aop.advice.*;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.BeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
+import cn.bdqfork.core.util.ReflectUtils;
 import org.aspectj.lang.annotation.*;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author bdq
  * @since 2020/1/14
  */
 public class AspectResolver {
-    private BeanFactory beanFactory;
 
-    public List<Advisor> resolveAdvisors(BeanDefinition beanDefinition) throws BeansException {
-        List<Advisor> advisors = new LinkedList<>();
+    public Set<Advisor> resolveAdvisors(BeanFactory beanFactory, BeanDefinition beanDefinition) throws BeansException {
+        Set<Advisor> advisors = new HashSet<>();
 
         Class<?> clazz = beanDefinition.getBeanClass();
         //存储解析完成的pointcut，通知绑定
@@ -35,28 +32,30 @@ public class AspectResolver {
         }
         for (Method method : methods) {
 
-            method.setAccessible(true);
+            ReflectUtils.makeAccessible(method);
+
+            AspectAdvisorConfig config = new AspectAdvisorConfig(pointcuts, method, beanDefinition.getBeanName());
 
             if (method.isAnnotationPresent(Before.class)) {
-                AspectAdvisor aspectAdvisor = resolveBeforeAdvice(pointcuts, method, beanDefinition.getBeanName());
+                AspectAdvisor aspectAdvisor = resolveBeforeAdvice(config, beanFactory);
                 advisors.add(aspectAdvisor);
                 continue;
             }
 
             if (method.isAnnotationPresent(Around.class)) {
-                AspectAdvisor aspectAdvisor = resolveAroundAdvice(pointcuts, method, beanDefinition.getBeanName());
+                AspectAdvisor aspectAdvisor = resolveAroundAdvice(config, beanFactory);
                 advisors.add(aspectAdvisor);
                 continue;
             }
 
             if (method.isAnnotationPresent(AfterReturning.class)) {
-                AspectAdvisor aspectAdvisor = resolveAfterReturningAdvice(pointcuts, method, beanDefinition.getBeanName());
+                AspectAdvisor aspectAdvisor = resolveAfterReturningAdvice(config, beanFactory);
                 advisors.add(aspectAdvisor);
                 continue;
             }
 
             if (method.isAnnotationPresent(AfterThrowing.class)) {
-                AspectAdvisor aspectAdvisor = resolveAfterThrowingAdvice(pointcuts, method, beanDefinition.getBeanName());
+                AspectAdvisor aspectAdvisor = resolveAfterThrowingAdvice(config, beanFactory);
                 advisors.add(aspectAdvisor);
             }
 
@@ -71,52 +70,61 @@ public class AspectResolver {
         }
     }
 
-    private AspectAdvisor resolveBeforeAdvice(Map<String, String> pointcuts, Method method, String beanName) throws BeansException {
+    private AspectAdvisor resolveBeforeAdvice(AspectAdvisorConfig config, BeanFactory beanFactory) throws BeansException {
+
+        Method method = config.method;
+
         Before before = method.getAnnotation(Before.class);
 
         AspectMethodBeforeAdvice beforeAdvice = new AspectMethodBeforeAdvice();
 
         beforeAdvice.setAspectAdviceMethod(method);
 
-        beforeAdvice.setAspectInstance(beanFactory.getBean(beanName));
+        beforeAdvice.setAspectInstance(beanFactory.getBean(config.beanName));
 
-        return getAspectAdvisor(pointcuts, before.value(), beforeAdvice);
+        return getAspectAdvisor(config.pointcuts, before.value(), beforeAdvice);
     }
 
-    private AspectAdvisor resolveAfterReturningAdvice(Map<String, String> pointcuts, Method method, String beanName) throws BeansException {
+    private AspectAdvisor resolveAfterReturningAdvice(AspectAdvisorConfig config, BeanFactory beanFactory) throws BeansException {
+        Method method = config.method;
+
         AfterReturning afterReturning = method.getAnnotation(AfterReturning.class);
 
         AspectAfterReturningAdvice afterReturningAdvice = new AspectAfterReturningAdvice();
 
         afterReturningAdvice.setAspectAdviceMethod(method);
 
-        afterReturningAdvice.setAspectInstance(beanFactory.getBean(beanName));
+        afterReturningAdvice.setAspectInstance(beanFactory.getBean(config.beanName));
 
-        return getAspectAdvisor(pointcuts, afterReturning.value(), afterReturningAdvice);
+        return getAspectAdvisor(config.pointcuts, afterReturning.value(), afterReturningAdvice);
     }
 
-    private AspectAdvisor resolveAroundAdvice(Map<String, String> pointcuts, Method method, String beanName) throws BeansException {
+    private AspectAdvisor resolveAroundAdvice(AspectAdvisorConfig config, BeanFactory beanFactory) throws BeansException {
+        Method method = config.method;
+
         Around around = method.getAnnotation(Around.class);
 
         AspectAroundAdvice aroundAdvice = new AspectAroundAdvice();
 
         aroundAdvice.setAspectAdviceMethod(method);
 
-        aroundAdvice.setAspectInstance(beanFactory.getBean(beanName));
+        aroundAdvice.setAspectInstance(beanFactory.getBean(config.beanName));
 
-        return getAspectAdvisor(pointcuts, around.value(), aroundAdvice);
+        return getAspectAdvisor(config.pointcuts, around.value(), aroundAdvice);
     }
 
-    private AspectAdvisor resolveAfterThrowingAdvice(Map<String, String> pointcuts, Method method, String beanName) throws BeansException {
+    private AspectAdvisor resolveAfterThrowingAdvice(AspectAdvisorConfig config, BeanFactory beanFactory) throws BeansException {
+        Method method = config.method;
+
         AfterThrowing afterThrowing = method.getAnnotation(AfterThrowing.class);
 
         AspectThrowsAdvice aspectThrowsAdvice = new AspectThrowsAdvice();
 
         aspectThrowsAdvice.setAspectAdviceMethod(method);
 
-        aspectThrowsAdvice.setAspectInstance(beanFactory.getBean(beanName));
+        aspectThrowsAdvice.setAspectInstance(beanFactory.getBean(config.beanName));
 
-        return getAspectAdvisor(pointcuts, afterThrowing.value(), aspectThrowsAdvice);
+        return getAspectAdvisor(config.pointcuts, afterThrowing.value(), aspectThrowsAdvice);
     }
 
     private AspectAdvisor getAspectAdvisor(Map<String, String> pointcuts, String pointcut, AspectAdvice aspectAdvice) {
@@ -135,7 +143,16 @@ public class AspectResolver {
         return aspectAdvisor;
     }
 
-    public void setBeanFactory(BeanFactory beanFactory) {
-        this.beanFactory = beanFactory;
+    private static class AspectAdvisorConfig {
+        Map<String, String> pointcuts;
+        Method method;
+        String beanName;
+
+        public AspectAdvisorConfig(Map<String, String> pointcuts, Method method, String beanName) {
+            this.pointcuts = pointcuts;
+            this.method = method;
+            this.beanName = beanName;
+        }
     }
+
 }
