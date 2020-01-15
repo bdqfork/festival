@@ -4,12 +4,14 @@ import cn.bdqfork.value.Configration;
 import cn.bdqfork.value.Value;
 
 import javax.annotation.ManagedBean;
+import javax.inject.Singleton;
 import java.util.List;
 
 /**
  * @author bdq
  * @since 2020/1/9
  */
+@Singleton
 @Configration(prefix = "server")
 @ManagedBean
 public class ServerConfig {

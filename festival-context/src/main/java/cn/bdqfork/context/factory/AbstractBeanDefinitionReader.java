@@ -20,7 +20,7 @@ import java.util.function.Consumer;
  * @author bdq
  * @since 2020/1/8
  */
-public abstract class AbstractBeanDefinitionReader implements Iterable<Map.Entry<String, BeanDefinition>> {
+public abstract class AbstractBeanDefinitionReader {
     private Map<String, BeanDefinition> beanDefinitions = new ConcurrentHashMap<>(256);
     private ResourceReader resourceReader;
     /**
@@ -100,21 +100,6 @@ public abstract class AbstractBeanDefinitionReader implements Iterable<Map.Entry
     protected abstract void resolveMethod(BeanDefinition beanDefinition, AbstractBeanFactory beanFactory) throws ResolvedException;
 
     protected abstract boolean checkIfComponent(Class<?> candidate);
-
-    @Override
-    public Iterator<Map.Entry<String, BeanDefinition>> iterator() {
-        return beanDefinitions.entrySet().iterator();
-    }
-
-    @Override
-    public void forEach(Consumer<? super Map.Entry<String, BeanDefinition>> action) {
-        beanDefinitions.entrySet().forEach(action);
-    }
-
-    @Override
-    public Spliterator<Map.Entry<String, BeanDefinition>> spliterator() {
-        return beanDefinitions.entrySet().spliterator();
-    }
 
     public Map<String, BeanDefinition> getBeanDefinitions() {
         return beanDefinitions;

@@ -7,6 +7,7 @@ import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import cn.bdqfork.core.factory.registry.DefaultSingletonBeanRegistry;
 import cn.bdqfork.core.util.BeanUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
  * @author bdq
  * @since 2019/12/15
  */
+@Slf4j
 public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory, BeanDefinitionRegistry {
 
     @Override
@@ -63,13 +65,18 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         }
 
         BeanDefinition beanDefinition = getBeanDefinition(beanName);
+
         for (String dependOn : beanDefinition.getDependOns()) {
             if (isDependent(dependOn, beanName)) {
                 throw new CircularDependencyException("circular dependency exists !");
             }
             getBean(dependOn);
         }
+
         if (isSingleton(beanName)) {
+            if (log.isTraceEnabled()) {
+                log.trace("get singleton of type {} !", beanDefinition.getBeanClass());
+            }
             bean = getSingleton(beanName, () -> {
                 try {
                     return createBean(beanName, beanDefinition, args);
@@ -79,9 +86,13 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
                 }
             });
         } else if (isPrototype(beanName)) {
+            if (log.isTraceEnabled()) {
+                log.trace("get prototype of type {} !", beanDefinition.getBeanClass());
+            }
             bean = createBean(beanName, beanDefinition, args);
+
         } else {
-            throw new BeansException("unsupport scope !");
+            throw new BeansException(String.format("illegal scope %s !", beanDefinition.getScope()));
         }
         return (T) bean;
     }
@@ -114,6 +125,9 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
     }
 
     public void destroySingletons() {
+        if (log.isTraceEnabled()) {
+            log.trace("destroy singletons !");
+        }
         for (String singletonName : getSingletonNames()) {
             Object singleton = getSingleton(singletonName);
             preDestory(singletonName, singleton);
@@ -123,6 +137,9 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
     protected void preDestory(String singletonName, Object singleton) {
         if (singleton instanceof DisposableBean) {
+            if (log.isDebugEnabled()) {
+                log.debug("invoke dispose method for bean {} !", singletonName);
+            }
             DisposableBean disposableBean = (DisposableBean) singleton;
             try {
                 disposableBean.destroy();

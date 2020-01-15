@@ -1,6 +1,7 @@
 package cn.bdqfork.context;
 
 import cn.bdqfork.core.exception.BeansException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
@@ -9,6 +10,24 @@ import java.util.Map;
  * @since 2020/1/8
  */
 public abstract class AbstractApplicationContext implements ApplicationContext {
+
+    public AbstractApplicationContext(String... scanPaths) throws BeansException {
+
+        createBeanFactory();
+
+        registerResourceReader();
+
+        registerProcessor();
+
+        scan(scanPaths);
+
+    }
+
+    protected abstract void registerProcessor() throws BeansException;
+
+    protected abstract void registerResourceReader() throws BeansException;
+
+    protected abstract void createBeanFactory();
 
     @Override
     public <T> T getBean(String beanName) throws BeansException {

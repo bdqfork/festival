@@ -14,7 +14,5 @@ public interface ApplicationContext extends BeanFactory {
 
     void scan(String... scanPaths) throws BeansException;
 
-    void refresh() throws BeansException;
-
     void close();
 }

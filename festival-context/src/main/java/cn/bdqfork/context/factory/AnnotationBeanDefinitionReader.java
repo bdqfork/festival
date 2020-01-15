@@ -2,7 +2,9 @@ package cn.bdqfork.context.factory;
 
 import cn.bdqfork.core.exception.ResolvedException;
 import cn.bdqfork.core.exception.ScopeException;
-import cn.bdqfork.core.factory.*;
+import cn.bdqfork.core.factory.AbstractBeanFactory;
+import cn.bdqfork.core.factory.InjectedPoint;
+import cn.bdqfork.core.factory.MultInjectedPoint;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.definition.ManagedBeanDefinition;
 import cn.bdqfork.core.util.BeanUtils;
@@ -11,7 +13,7 @@ import cn.bdqfork.core.util.StringUtils;
 import cn.bdqfork.value.Configration;
 import cn.bdqfork.value.Value;
 import cn.bdqfork.value.reader.ResourceReader;
-import jdk.nashorn.internal.ir.IfNode;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
@@ -19,7 +21,6 @@ import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Scope;
 import javax.inject.Singleton;
 import java.lang.reflect.*;
 import java.util.Arrays;
@@ -30,6 +31,7 @@ import java.util.Map;
  * @author bdq
  * @since 2020/1/8
  */
+@Slf4j
 public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader {
     /**
      * 是否启用JSR250
