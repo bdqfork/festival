@@ -69,14 +69,14 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
             this.delegateBeanFactory = new DefaultBeanFactory();
         }
         if (log.isTraceEnabled()) {
-            log.trace("create BeanFactory of type {} !", this.delegateBeanFactory.getClass());
+            log.trace("create BeanFactory of type {} !", this.delegateBeanFactory.getClass().getName());
         }
     }
 
     @Override
     protected void registerResourceReader() throws BeansException {
         if (log.isTraceEnabled()) {
-            log.trace("register ResourceReader of type {} !", GenericResourceReader.class);
+            log.trace("register ResourceReader of type {} !", GenericResourceReader.class.getName());
         }
 
         BeanDefinition beanDefinition = new BeanDefinitionBuilder()
@@ -140,7 +140,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
             BeanDefinition beanDefinition = entry.getValue();
             if (registry.containBeanDefinition(beanName)) {
                 if (log.isTraceEnabled()) {
-                    log.trace("duplicate bean of type {} will not be registered !", beanDefinition.getBeanClass());
+                    log.trace("duplicate bean of type {} will not be registered !", beanDefinition.getBeanClass().getName());
                 }
                 continue;
             }

@@ -3,6 +3,7 @@ package cn.bdqfork.core.factory;
 import cn.bdqfork.core.exception.*;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.processor.BeanPostProcessor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -14,6 +15,7 @@ import java.util.*;
  * @author bdq
  * @since 2019/12/16
  */
+@Slf4j
 public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactory implements AutoInjectedBeanfactory {
     private List<BeanPostProcessor> beanPostProcessors = new ArrayList<>(16);
 
@@ -82,10 +84,18 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
 
     @Override
     public Object resovleDependence(InjectedPoint injectedPoint, String beanName) throws UnsatisfiedBeanException {
+        if (log.isTraceEnabled()) {
+            log.trace("resolve dependence beanName {}, type {} and require is {} for bean {} with injected point !",
+                    injectedPoint.getBeanName(), injectedPoint.getType().getTypeName(), injectedPoint.isRequire(), beanName);
+        }
         if (!containBean(beanName)) {
             throw new UnsatisfiedBeanException(String.format("there is no such bean named %s !", beanName));
         }
         if (injectedPoint.getValue() != null) {
+            if (log.isTraceEnabled()) {
+                log.trace("dependence beanName {}, type {} and require is {} for bean {} exist, will return exist value !",
+                        injectedPoint.getBeanName(), injectedPoint.getType().getTypeName(), injectedPoint.isRequire(), beanName);
+            }
             return injectedPoint.getValue();
         }
         return doResovleDependence(injectedPoint.getBeanName(), injectedPoint.getType(), injectedPoint.isRequire());

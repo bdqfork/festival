@@ -75,7 +75,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
         if (isSingleton(beanName)) {
             if (log.isTraceEnabled()) {
-                log.trace("get singleton of type {} !", beanDefinition.getBeanClass());
+                log.trace("get singleton of type {} !", beanDefinition.getBeanClass().getName());
             }
             bean = getSingleton(beanName, () -> {
                 try {
@@ -87,7 +87,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
             });
         } else if (isPrototype(beanName)) {
             if (log.isTraceEnabled()) {
-                log.trace("get prototype of type {} !", beanDefinition.getBeanClass());
+                log.trace("get prototype of type {} !", beanDefinition.getBeanClass().getName());
             }
             bean = createBean(beanName, beanDefinition, args);
 

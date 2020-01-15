@@ -6,6 +6,7 @@ import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.core.util.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Provider;
 import java.lang.reflect.*;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
  * @author bdq
  * @since 2019/12/15
  */
+@Slf4j
 public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
     private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
     private BeanFactory parentBeanFactory;
@@ -92,28 +94,53 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
 
         try {
             if (!StringUtils.isEmpty(name) && type != null) {
-
                 Class<?> actualType = (Class<?>) ReflectUtils.getActualType(type)[0];
+
+                if (log.isTraceEnabled()) {
+                    log.trace("resovle dependence by name {} and type {} !", name, actualType.getTypeName());
+                }
+
                 bean = getSpecificBean(name, actualType);
 
             } else if (!StringUtils.isEmpty(name)) {
 
+                if (log.isTraceEnabled()) {
+                    log.trace("resovle dependence by name {} !", name);
+                }
+
                 bean = getBean(name);
 
             } else if (type != null) {
+
                 Type[] actualTypes = ReflectUtils.getActualType(type);
+
                 if (BeanUtils.isCollection(type)) {
+
                     Class<?> actualType = (Class<?>) actualTypes[0];
+
+                    if (log.isTraceEnabled()) {
+                        log.trace("resovle collection dependences by type {} !", actualType.getTypeName());
+                    }
 
                     bean = new ArrayList<>(getBeans(actualType).values());
 
                 } else if (BeanUtils.isMap(type)) {
+
                     Class<?> actualType = (Class<?>) actualTypes[1];
+
+                    if (log.isTraceEnabled()) {
+                        log.trace("resovle map dependences by type {} !", actualType.getTypeName());
+                    }
 
                     bean = getBeans(actualType);
 
                 } else {
                     Class<?> actualType = (Class<?>) actualTypes[0];
+
+                    if (log.isTraceEnabled()) {
+                        log.trace("resovle object dependence by type {} !", actualType.getTypeName());
+                    }
+
                     bean = getBean(actualType);
 
                 }
