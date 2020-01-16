@@ -1,6 +1,7 @@
 package cn.bdqfork.context;
 
 import cn.bdqfork.context.factory.AnnotationBeanDefinitionReader;
+import cn.bdqfork.core.factory.processor.ClassLoaderAware;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.AbstractBeanFactory;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
@@ -138,8 +139,13 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
     }
 
     private void refresh() throws BeansException {
+
         registerBeanDefinition();
-        registerBeanFactoryPostProcessor();
+
+        processEnvironment();
+
+        processBeanFactory();
+
         registerBeanPostProcessor();
     }
 
@@ -163,6 +169,16 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         }
     }
 
+    private void processEnvironment() throws BeansException {
+        if (log.isTraceEnabled()) {
+            log.trace("process environment !");
+        }
+        for (ClassLoaderAware classLoaderAware : delegateBeanFactory.getBeans(ClassLoaderAware.class).values()) {
+            classLoaderAware.setClassLoader(classLoader);
+        }
+
+    }
+
     private void registerBeanPostProcessor() throws BeansException {
         if (log.isTraceEnabled()) {
             log.trace("register bean processor !");
@@ -173,7 +189,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         }
     }
 
-    private void registerBeanFactoryPostProcessor() throws BeansException {
+    private void processBeanFactory() throws BeansException {
         if (log.isTraceEnabled()) {
             log.trace("register BeanFactory processor !");
         }

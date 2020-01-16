@@ -68,7 +68,7 @@ public class ReflectUtils {
                 String className = path.substring(path.indexOf(packagePath), path.lastIndexOf(SUFFIX))
                         .replaceAll("/", ".");
                 try {
-                    Class clazz = Class.forName(className);
+                    Class<?> clazz = Class.forName(className);
                     classes.add(clazz);
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
@@ -90,7 +90,7 @@ public class ReflectUtils {
                 if (!jarEntry.isDirectory() && entryName.endsWith(SUFFIX)) {
                     String className = entryName.substring(0, entryName.lastIndexOf(SUFFIX))
                             .replaceAll("/", ".");
-                    Class clazz = Class.forName(className);
+                    Class<?> clazz = Class.forName(className);
                     classes.add(clazz);
                 }
             }
