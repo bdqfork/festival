@@ -1,6 +1,5 @@
 package cn.bdqfork.context;
 
-import cn.bdqfork.aop.processor.AopProxyProcessor;
 import cn.bdqfork.context.factory.AnnotationBeanDefinitionReader;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.AbstractBeanFactory;
@@ -24,6 +23,7 @@ import java.util.Map;
  */
 @Slf4j
 public class AnnotationApplicationContext extends AbstractApplicationContext {
+    private static final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
     /**
      * 是否启用JSR250
      */
@@ -40,7 +40,6 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
     private AnnotationBeanDefinitionReader beanDefinitionReader;
 
     static {
-        ClassLoader classLoader = AnnotationApplicationContext.class.getClassLoader();
         try {
             classLoader.loadClass("javax.annotation.Resource");
             log.info("enable jsr250 !");
@@ -103,9 +102,16 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
                 log.trace("register aop processor !");
             }
 
+            Class<?> aopProcessorClass;
+            try {
+                aopProcessorClass = classLoader.loadClass("cn.bdqfork.aop.processor.AopProxyProcessor");
+            } catch (ClassNotFoundException e) {
+                throw new BeansException(e);
+            }
+
             BeanDefinition beanDefinition = new BeanDefinitionBuilder()
                     .setBeanName("aopProcessor")
-                    .setBeanClass(AopProxyProcessor.class)
+                    .setBeanClass(aopProcessorClass)
                     .setScope(BeanDefinition.SINGLETON)
                     .build();
             this.delegateBeanFactory.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
@@ -117,12 +123,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         if (log.isTraceEnabled()) {
             log.trace("register hook !");
         }
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                close();
-            }
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
     }
 
     @Override

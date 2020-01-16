@@ -1,7 +1,7 @@
 package cn.bdqfork.model.configration;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
@@ -9,7 +9,7 @@ import javax.inject.Singleton;
  * @since 2020/1/9
  */
 @Singleton
-@ManagedBean
+@Named
 public class Server {
     @Inject
     private ServerConfig serverConfig;

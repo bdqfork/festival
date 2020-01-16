@@ -3,7 +3,7 @@ package cn.bdqfork.model.configration;
 import cn.bdqfork.value.Configration;
 import cn.bdqfork.value.Value;
 
-import javax.annotation.ManagedBean;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.List;
 
@@ -13,7 +13,7 @@ import java.util.List;
  */
 @Singleton
 @Configration(prefix = "server")
-@ManagedBean
+@Named
 public class ServerConfig {
     @Value("localhost")
     private String localhost;

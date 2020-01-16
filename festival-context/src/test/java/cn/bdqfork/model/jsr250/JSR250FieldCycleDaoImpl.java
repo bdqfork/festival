@@ -3,10 +3,10 @@ package cn.bdqfork.model.jsr250;
 import cn.bdqfork.core.factory.DisposableBean;
 import cn.bdqfork.core.factory.InitializingBean;
 
-import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
@@ -14,7 +14,7 @@ import javax.inject.Singleton;
  * @since 2019/12/17
  */
 @Singleton
-@ManagedBean
+@Named
 public class JSR250FieldCycleDaoImpl implements JSR250FieldCycleDao, InitializingBean, DisposableBean {
 
     @Resource(name = "jSR250FieldServiceImpl")

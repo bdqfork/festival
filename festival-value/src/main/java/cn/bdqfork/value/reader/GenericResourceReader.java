@@ -12,7 +12,7 @@ import java.io.IOException;
 @Slf4j
 public class GenericResourceReader implements ResourceReader {
     private ResourceReader resourceReader;
-    private static String defaultPath;
+    private static String defaultPath = ResourceReader.DEFAULT_CONFIG_NAME + ".yaml";
 
     static {
         if (FileUtils.isResourceExists(ResourceReader.DEFAULT_CONFIG_NAME + ".yaml")) {

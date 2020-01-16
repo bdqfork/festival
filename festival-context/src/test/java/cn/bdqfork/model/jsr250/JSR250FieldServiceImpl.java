@@ -1,7 +1,7 @@
 package cn.bdqfork.model.jsr250;
 
-import javax.annotation.ManagedBean;
 import javax.annotation.Resource;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
@@ -9,7 +9,7 @@ import javax.inject.Singleton;
  * @since 2019/12/19
  */
 @Singleton
-@ManagedBean
+@Named
 public class JSR250FieldServiceImpl implements JSR250FieldService {
     @Resource(type = JSR250FieldCycleDao.class)
     private JSR250FieldCycleDao jsr250FieldCycleDao;

@@ -15,7 +15,6 @@ import cn.bdqfork.value.Value;
 import cn.bdqfork.value.reader.ResourceReader;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
@@ -74,11 +73,8 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
 
             name = clazz.getAnnotation(Named.class).value();
 
-        } else if (JSR250 && clazz.isAnnotationPresent(ManagedBean.class)) {
-
-            name = clazz.getAnnotation(ManagedBean.class).value();
-
         }
+
         if (StringUtils.isEmpty(name)) {
 
             name = getBeanNameGenerator().generateBeanName(clazz);
@@ -147,7 +143,7 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
                 ResourceReader resourceReader = getResourceReader();
                 Configration configration = candidate.getAnnotation(Configration.class);
                 Value value = field.getAnnotation(Value.class);
-                String propertyKey = "";
+                String propertyKey;
                 if (StringUtils.isEmpty(configration.prefix())) {
                     propertyKey = value.value();
                 } else {
@@ -318,9 +314,6 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
     }
 
     protected boolean checkIfComponent(Class<?> candidate) {
-        if (JSR250) {
-            return candidate.isAnnotationPresent(Named.class) || candidate.isAnnotationPresent(ManagedBean.class);
-        }
         return candidate.isAnnotationPresent(Named.class);
     }
 
