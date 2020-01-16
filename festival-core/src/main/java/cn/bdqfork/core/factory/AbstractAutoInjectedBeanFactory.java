@@ -54,20 +54,29 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
         }
 
         registerSingleton(beanName, bean);
+
         return bean;
     }
 
     protected abstract void afterPropertiesSet(String beanName, Object bean) throws BeansException;
 
     protected Object createInstance(String beanName, BeanDefinition beanDefinition, Object[] explicitArgs) throws BeansException {
+        if (log.isTraceEnabled()) {
+            log.trace("create instance for {} !", beanDefinition.getBeanClass().getName());
+        }
         Class<?> beanType = beanDefinition.getBeanClass();
+
         Constructor<?> constructor = getExplicitConstructor(beanType, explicitArgs);
+
         return autoInjectedConstructor(beanName, beanDefinition, constructor, explicitArgs);
     }
 
     protected Constructor<?> getExplicitConstructor(Class<?> beanType, Object[] explicitArgs) throws BeansException {
         Constructor<?> constructor = null;
         if (explicitArgs != null) {
+            if (log.isTraceEnabled()) {
+                log.trace("get explicit constructor for {} !", beanType.getName());
+            }
             Class<?>[] explicitArgTypes = Arrays.stream(explicitArgs)
                     .map(Object::getClass)
                     .toArray(Class[]::new);

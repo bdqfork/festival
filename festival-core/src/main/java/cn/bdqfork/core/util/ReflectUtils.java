@@ -1,7 +1,5 @@
 package cn.bdqfork.core.util;
 
-import cn.bdqfork.core.exception.ResolvedException;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.*;

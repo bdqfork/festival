@@ -29,6 +29,9 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
     @Override
     protected void afterPropertiesSet(String beanName, Object bean) throws BeansException {
         if (bean instanceof InitializingBean) {
+            if (log.isTraceEnabled()) {
+                log.trace("invoke InitializingBean !");
+            }
             InitializingBean initializingBean = (InitializingBean) bean;
             try {
                 initializingBean.afterPropertiesSet();
@@ -41,19 +44,39 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
     @Override
     protected Object autoInjectedConstructor(String beanName, BeanDefinition beanDefinition, Constructor<?> constructor, Object[] explicitArgs) throws BeansException {
         if (explicitArgs != null) {
+            if (log.isTraceEnabled()) {
+                log.trace("instantiate bean {} with explicit args !", beanDefinition.getBeanClass().getName());
+            }
             return instantiate(constructor, explicitArgs);
         }
+
+        if (log.isTraceEnabled()) {
+            log.trace("instantiate bean {} by injected constructor !", beanDefinition.getBeanClass().getName());
+        }
+
         MultInjectedPoint multInjectedPoint = beanDefinition.getInjectedConstructor();
         Class<?> beanClass = beanDefinition.getBeanClass();
+
         if (multInjectedPoint == null) {
+
+            if (log.isTraceEnabled()) {
+                log.trace("injected constructor for bean {} is null, will use default constructor !", beanDefinition.getBeanClass().getName());
+            }
+
             multInjectedPoint = new MultInjectedPoint();
+
         }
+
         try {
             constructor = beanClass.getConstructor(multInjectedPoint.getActualTypes());
+
         } catch (NoSuchMethodException e) {
+
             throw new FailedInjectedConstructorException(e);
         }
+
         explicitArgs = resovleMultDependence(multInjectedPoint, beanName);
+
         return instantiate(constructor, explicitArgs);
     }
 
@@ -67,6 +90,9 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
 
     @Override
     protected void doInjectedField(String beanName, Object instance, Field field, InjectedPoint injectedPoint) throws BeansException {
+        if (log.isTraceEnabled()) {
+            log.trace("do injected field {} for bean {} !", field.getName(), field.getDeclaringClass().getName());
+        }
         Object value = resovleDependence(injectedPoint, beanName);
         ReflectUtils.makeAccessible(field);
         try {
@@ -79,6 +105,9 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
 
     @Override
     protected void doInjectedMethod(String beanName, Object instance, Method method, InjectedPoint injectedPoint) throws BeansException {
+        if (log.isTraceEnabled()) {
+            log.trace("do injected method {} for bean {} !", method.getName(), method.getDeclaringClass().getName());
+        }
         Object arg = resovleDependence(injectedPoint, beanName);
         ReflectUtils.makeAccessible(method);
         try {
@@ -91,7 +120,6 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
     @Override
     protected Object doResovleDependence(String name, Type type, boolean check) throws UnsatisfiedBeanException {
         Object bean = null;
-
         try {
             if (!StringUtils.isEmpty(name) && type != null) {
                 Class<?> actualType = (Class<?>) ReflectUtils.getActualType(type)[0];
@@ -161,6 +189,9 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
 
     protected Object createIfProvider(Type type, Object bean) {
         if (BeanUtils.isProvider(type)) {
+            if (log.isTraceEnabled()) {
+                log.trace("create provider for {} !", type.getTypeName());
+            }
             return (Provider<Object>) () -> bean;
         }
         return bean;
@@ -188,6 +219,9 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
     public BeanDefinition getBeanDefinition(String beanName) {
         BeanDefinition beanDefinition = beanDefinitionMap.get(beanName);
         if (beanDefinition == null) {
+            if (log.isTraceEnabled()) {
+                log.trace("try to get BeanDefinition from parent factory !");
+            }
             BeanFactory beanFactory = getParentBeanFactory();
             if (beanFactory instanceof BeanDefinitionRegistry) {
                 BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;

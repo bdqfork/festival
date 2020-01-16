@@ -1,7 +1,6 @@
 package cn.bdqfork.aop.advice;
 
 import cn.bdqfork.aop.MethodSignature;
-import cn.bdqfork.aop.advice.AbstractAdvisor;
 
 import java.lang.reflect.Method;
 

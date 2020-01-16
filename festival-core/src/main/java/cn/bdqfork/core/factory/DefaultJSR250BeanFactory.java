@@ -1,11 +1,9 @@
 package cn.bdqfork.core.factory;
 
 import cn.bdqfork.core.exception.BeansException;
-import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.definition.ManagedBeanDefinition;
 import cn.bdqfork.core.util.StringUtils;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -56,19 +54,19 @@ public class DefaultJSR250BeanFactory extends AbstractJSR250BeanFactory {
         }
     }
 
-    @Override
-    protected Object createInstance(String beanName, BeanDefinition beanDefinition, Object[] explicitArgs) throws BeansException {
-        Class<?> beanClass = beanDefinition.getBeanClass();
-        Constructor<?> constructor = getExplicitConstructor(beanClass, explicitArgs);
-        if (constructor == null) {
-            try {
-                constructor = beanClass.getConstructor();
-            } catch (NoSuchMethodException e) {
-                throw new BeansException(e);
-            }
-        }
-        return autoInjectedConstructor(beanName, beanDefinition, constructor, explicitArgs);
-    }
+//    @Override
+//    protected Object createInstance(String beanName, BeanDefinition beanDefinition, Object[] explicitArgs) throws BeansException {
+//        Class<?> beanClass = beanDefinition.getBeanClass();
+//        Constructor<?> constructor = getExplicitConstructor(beanClass, explicitArgs);
+//        if (constructor == null) {
+//            try {
+//                constructor = beanClass.getConstructor();
+//            } catch (NoSuchMethodException e) {
+//                throw new BeansException(e);
+//            }
+//        }
+//        return autoInjectedConstructor(beanName, beanDefinition, constructor, explicitArgs);
+//    }
 
     @Override
     protected void preDestory(String singletonName, Object singleton) {

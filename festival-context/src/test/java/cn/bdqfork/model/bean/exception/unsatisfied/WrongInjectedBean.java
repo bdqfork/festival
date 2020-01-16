@@ -1,7 +1,5 @@
 package cn.bdqfork.model.bean.exception.unsatisfied;
 
-import cn.bdqfork.model.bean.normal.SingletonBeanService;
-
 import javax.inject.Named;
 
 /**

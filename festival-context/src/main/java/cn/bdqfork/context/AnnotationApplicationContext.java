@@ -113,6 +113,19 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
     }
 
     @Override
+    protected void registerHook() {
+        if (log.isTraceEnabled()) {
+            log.trace("register hook !");
+        }
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                close();
+            }
+        }));
+    }
+
+    @Override
     public void scan(String... scanPaths) throws BeansException {
         for (String scanPath : scanPaths) {
             if (log.isTraceEnabled()) {

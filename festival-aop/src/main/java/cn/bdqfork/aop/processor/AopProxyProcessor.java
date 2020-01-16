@@ -6,7 +6,6 @@ import cn.bdqfork.aop.factory.DefaultAopProxyBeanFactory;
 import cn.bdqfork.aop.proxy.AopProxySupport;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
-import cn.bdqfork.core.factory.JSR250BeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.definition.ManagedBeanDefinition;
 import cn.bdqfork.core.factory.processor.BeanFactoryPostProcessor;
@@ -64,7 +63,7 @@ public class AopProxyProcessor implements BeanPostProcessor, BeanFactoryPostProc
         config.setBeanClass(beanClass);
         config.setInterfaces(beanClass.getInterfaces());
 
-        if (configurableBeanFactory instanceof JSR250BeanFactory && beanDefinition instanceof ManagedBeanDefinition) {
+        if (beanDefinition instanceof ManagedBeanDefinition) {
             config.setOptimze(true);
         }
 

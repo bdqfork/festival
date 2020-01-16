@@ -26,9 +26,13 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
     @Override
     public <T> T getBean(Class<T> clazz) throws BeansException {
         List<BeanDefinition> beanDefinitions = getBeanDefinitions(clazz);
+
         if (beanDefinitions == null || !(beanDefinitions.size() > 0)) {
+
             throw new NoSuchBeanException(String.format("there is no such bean of class %s !", clazz.getCanonicalName()));
+
         } else if (beanDefinitions.size() > 1) {
+
             throw new BeansException(String.format("there is more than one bean of class %s !", clazz.getCanonicalName()));
         }
         return getBean(beanDefinitions.get(0).getBeanName());
