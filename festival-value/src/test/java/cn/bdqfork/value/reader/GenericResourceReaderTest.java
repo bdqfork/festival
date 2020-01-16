@@ -20,7 +20,7 @@ public class GenericResourceReaderTest {
 
     @Test
     public void testLoadProperties() throws Throwable {
-        ResourceReader resourceReader = new PropertiesResourceReader("jdbcConfig.properties");
+        ResourceReader resourceReader = new GenericResourceReader("jdbcConfig.properties");
         assertEquals(resourceReader.readProperty("driver"), "com.mysql.cj.jdbc.driver");
         assertEquals(resourceReader.readProperty("username"), "Trey");
         assertEquals(resourceReader.readProperty("password"), "1234");
