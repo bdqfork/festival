@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 /**
+ * 多重注入点（注入点迭代器）
  * @author bdq
  * @since 2019/12/18
  */

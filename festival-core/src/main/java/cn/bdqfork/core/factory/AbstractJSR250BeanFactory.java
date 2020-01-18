@@ -6,6 +6,7 @@ import cn.bdqfork.core.factory.definition.ManagedBeanDefinition;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * 抽象jsr250bean工厂
  * @author bdq
  * @since 2019/12/18
  */
@@ -23,6 +24,12 @@ public abstract class AbstractJSR250BeanFactory extends DefaultBeanFactory imple
         }
     }
 
+    /**
+     * 执行初始化方法
+     * @param bean bean实例
+     * @param managedBeanDefinition bean描述信息
+     * @throws BeansException
+     */
     protected abstract void doInitializingMethod(Object bean, ManagedBeanDefinition managedBeanDefinition) throws BeansException;
 
     @Override
@@ -36,6 +43,12 @@ public abstract class AbstractJSR250BeanFactory extends DefaultBeanFactory imple
         }
     }
 
+    /**
+     * 执行预销毁方法
+     * @param bean bean实例
+     * @param managedBeanDefinition bean描述信息
+     * @throws BeansException
+     */
     protected abstract void doPreDestroyMethod(Object bean, ManagedBeanDefinition managedBeanDefinition) throws BeansException;
 
 }

@@ -259,7 +259,7 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
 
             if (JSR250 && method.isAnnotationPresent(PostConstruct.class)) {
                 if (method.getParameterCount() > 0) {
-                    throw new ResolvedException("the method annotated by @PostConstruct should hava no parameters !");
+                    throw new ResolvedException("the method annotated by @PostConstruct should have no parameters !");
                 }
                 ManagedBeanDefinition managedBeanDefinition = (ManagedBeanDefinition) beanDefinition;
                 managedBeanDefinition.setInitializingMethod(method.getName());
@@ -267,7 +267,7 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
 
             if (JSR250 && method.isAnnotationPresent(PreDestroy.class)) {
                 if (method.getParameterCount() > 0) {
-                    throw new ResolvedException("the method annotated by @PostConstruct should hava no parameters !");
+                    throw new ResolvedException("the method annotated by @PostConstruct should have no parameters !");
                 }
                 ManagedBeanDefinition managedBeanDefinition = (ManagedBeanDefinition) beanDefinition;
                 managedBeanDefinition.setDestroyMethod(method.getName());
