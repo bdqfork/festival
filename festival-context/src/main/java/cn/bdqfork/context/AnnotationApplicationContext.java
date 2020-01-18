@@ -37,9 +37,14 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
      * 委托工厂
      */
     private AbstractBeanFactory delegateBeanFactory;
-
+    /**
+     *bean描述信息读取器
+     */
     private AnnotationBeanDefinitionReader beanDefinitionReader;
 
+    /**
+     * 判断是否使用jsr250注解
+     */
     static {
         try {
             classLoader.loadClass("javax.annotation.Resource");
@@ -55,7 +60,11 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         }
     }
 
-
+    /**
+     * 创建实例时扫描路径
+     * @param scanPaths 要扫描的路径
+     * @throws BeansException
+     */
     public AnnotationApplicationContext(String... scanPaths) throws BeansException {
         super(scanPaths);
         log.info("context is ready to use !");

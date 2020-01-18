@@ -89,8 +89,24 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
         return constructor;
     }
 
+    /**
+     * 自动注入构造器
+     * @param beanName bean名称
+     * @param beanDefinition bean描述信息
+     * @param constructor 要注入的构造方法
+     * @param explicitArgs 构造方法参数
+     * @return Object 实例化对象
+     * @throws BeansException
+     */
     protected abstract Object autoInjectedConstructor(String beanName, BeanDefinition beanDefinition, Constructor<?> constructor, Object[] explicitArgs) throws BeansException;
 
+    /**
+     * 解决依赖
+     * @param injectedPoint 注入点实例
+     * @param beanName bean名称
+     * @return bean实例
+     * @throws UnsatisfiedBeanException
+     */
     @Override
     public Object resovleDependence(InjectedPoint injectedPoint, String beanName) throws UnsatisfiedBeanException {
         if (log.isTraceEnabled()) {
@@ -110,6 +126,13 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
         return doResovleDependence(injectedPoint.getBeanName(), injectedPoint.getType(), injectedPoint.isRequire());
     }
 
+    /**
+     * 解决多重依赖
+     * @param multInjectedPoint 多重依赖注入点
+     * @param beanName bean名称
+     * @return
+     * @throws UnsatisfiedBeanException
+     */
     @Override
     public Object[] resovleMultDependence(MultInjectedPoint multInjectedPoint, String beanName) throws UnsatisfiedBeanException {
         List<Object> dependencies = new LinkedList<>();
