@@ -9,7 +9,8 @@ import java.util.Properties;
  * @since 2020/1/9
  */
 public class PropertiesResourceReader extends AbstractResourceReader {
-    private Properties properties;
+    private Properties properties = new Properties();
+
     public PropertiesResourceReader(String resourcePath) throws IOException {
         super(resourcePath);
     }
@@ -17,11 +18,13 @@ public class PropertiesResourceReader extends AbstractResourceReader {
     public PropertiesResourceReader() throws IOException {
         this(DEFAULT_CONFIG_NAME + ".properties");
     }
+
     @Override
     protected void load() throws IOException {
-        properties = new Properties();
-        InputStream inputStream = PropertiesResourceReader.class.getClassLoader().getResourceAsStream(getResourcePath());
-        properties.load(inputStream);
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(getResourcePath());
+        if (inputStream != null) {
+            properties.load(inputStream);
+        }
     }
 
     @Override

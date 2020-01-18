@@ -2,9 +2,8 @@ package cn.bdqfork.value.reader;
 
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.Map;
 
@@ -13,7 +12,8 @@ import java.util.Map;
  * @since 2020/1/9
  */
 public class YamlResourceReader extends AbstractResourceReader {
-    private Map<String, Object> properties;
+    private Map<String, Object> properties = Collections.emptyMap();
+    ;
 
     public YamlResourceReader() throws IOException {
         this(DEFAULT_CONFIG_NAME + ".yaml");
@@ -26,11 +26,9 @@ public class YamlResourceReader extends AbstractResourceReader {
     @Override
     protected void load() throws IOException {
         Yaml yaml = new Yaml();
-        URL url = Thread.currentThread().getContextClassLoader().getResource(getResourcePath());
-        if (url != null) {
-            properties = yaml.load(new FileInputStream(url.getFile()));
-        } else {
-            properties = Collections.emptyMap();
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(getResourcePath());
+        if (inputStream != null) {
+            properties = yaml.load(inputStream);
         }
     }
 
