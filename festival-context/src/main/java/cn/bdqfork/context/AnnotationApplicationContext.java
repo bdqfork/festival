@@ -1,7 +1,8 @@
 package cn.bdqfork.context;
 
+import cn.bdqfork.context.aware.BeanFactoryAware;
 import cn.bdqfork.context.factory.AnnotationBeanDefinitionReader;
-import cn.bdqfork.core.factory.processor.ClassLoaderAware;
+import cn.bdqfork.context.aware.ClassLoaderAware;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.AbstractBeanFactory;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
@@ -38,13 +39,10 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
      */
     private AbstractBeanFactory delegateBeanFactory;
     /**
-     *bean描述信息读取器
+     * bean描述信息读取器
      */
     private AnnotationBeanDefinitionReader beanDefinitionReader;
 
-    /**
-     * 判断是否使用jsr250注解
-     */
     static {
         try {
             classLoader.loadClass("javax.annotation.Resource");
@@ -60,11 +58,6 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         }
     }
 
-    /**
-     * 创建实例时扫描路径
-     * @param scanPaths 要扫描的路径
-     * @throws BeansException
-     */
     public AnnotationApplicationContext(String... scanPaths) throws BeansException {
         super(scanPaths);
         log.info("context is ready to use !");
@@ -147,7 +140,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         refresh();
     }
 
-    private void refresh() throws BeansException {
+    protected void refresh() throws BeansException {
 
         registerBeanDefinition();
 
@@ -158,7 +151,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         registerBeanPostProcessor();
     }
 
-    private void registerBeanDefinition() throws BeansException {
+    protected void registerBeanDefinition() throws BeansException {
         if (log.isTraceEnabled()) {
             log.trace("register BeanDefinition !");
         }
@@ -178,7 +171,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         }
     }
 
-    private void processEnvironment() throws BeansException {
+    protected void processEnvironment() throws BeansException {
         if (log.isTraceEnabled()) {
             log.trace("process environment !");
         }
@@ -188,7 +181,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
 
     }
 
-    private void registerBeanPostProcessor() throws BeansException {
+    protected void registerBeanPostProcessor() throws BeansException {
         if (log.isTraceEnabled()) {
             log.trace("register bean processor !");
         }
@@ -198,13 +191,21 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         }
     }
 
-    private void processBeanFactory() throws BeansException {
+    protected void processBeanFactory() throws BeansException {
         if (log.isTraceEnabled()) {
             log.trace("register BeanFactory processor !");
         }
 
         for (BeanFactoryPostProcessor factoryPostProcessor : delegateBeanFactory.getBeans(BeanFactoryPostProcessor.class).values()) {
             factoryPostProcessor.postProcessBeanFactory(delegateBeanFactory);
+        }
+
+        if (log.isTraceEnabled()) {
+            log.trace("register BeanFactoryAware processor !");
+        }
+
+        for (BeanFactoryAware beanFactoryAware : delegateBeanFactory.getBeans(BeanFactoryAware.class).values()) {
+            beanFactoryAware.setBeanFactory(delegateBeanFactory);
         }
 
     }

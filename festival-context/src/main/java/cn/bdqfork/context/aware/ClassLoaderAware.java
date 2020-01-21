@@ -1,4 +1,4 @@
-package cn.bdqfork.core.factory.processor;
+package cn.bdqfork.context.aware;
 
 import cn.bdqfork.core.exception.BeansException;
 
