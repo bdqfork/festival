@@ -12,8 +12,7 @@ import java.util.Map;
  * @since 2020/1/9
  */
 public class YamlResourceReader extends AbstractResourceReader {
-    private Map<String, Object> properties = Collections.emptyMap();
-    ;
+    private Map<String, Object> properties;
 
     public YamlResourceReader() throws IOException {
         this(DEFAULT_CONFIG_NAME + ".yaml");
@@ -29,6 +28,8 @@ public class YamlResourceReader extends AbstractResourceReader {
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(getResourcePath());
         if (inputStream != null) {
             properties = yaml.load(inputStream);
+        } else {
+            properties = Collections.emptyMap();
         }
     }
 

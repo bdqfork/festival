@@ -1,16 +1,15 @@
 package cn.bdqfork.context;
 
 import cn.bdqfork.context.factory.AnnotationBeanDefinitionReader;
-import cn.bdqfork.core.factory.processor.ClassLoaderAware;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.AbstractBeanFactory;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.factory.DefaultBeanFactory;
 import cn.bdqfork.core.factory.DefaultJSR250BeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
-import cn.bdqfork.core.factory.definition.BeanDefinitionBuilder;
 import cn.bdqfork.core.factory.processor.BeanFactoryPostProcessor;
 import cn.bdqfork.core.factory.processor.BeanPostProcessor;
+import cn.bdqfork.core.factory.processor.ClassLoaderAware;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import cn.bdqfork.value.reader.GenericResourceReader;
 import cn.bdqfork.value.reader.ResourceReader;
@@ -38,7 +37,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
      */
     private AbstractBeanFactory delegateBeanFactory;
     /**
-     *bean描述信息读取器
+     * bean描述信息读取器
      */
     private AnnotationBeanDefinitionReader beanDefinitionReader;
 
@@ -62,6 +61,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
 
     /**
      * 创建实例时扫描路径
+     *
      * @param scanPaths 要扫描的路径
      * @throws BeansException
      */
@@ -88,7 +88,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
             log.trace("register ResourceReader of type {} !", GenericResourceReader.class.getName());
         }
 
-        BeanDefinition beanDefinition = new BeanDefinitionBuilder()
+        BeanDefinition beanDefinition = BeanDefinition.builder()
                 .setBeanName("resourceReader")
                 .setBeanClass(GenericResourceReader.class)
                 .setScope(BeanDefinition.SINGLETON)
@@ -119,7 +119,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
                 throw new BeansException(e);
             }
 
-            BeanDefinition beanDefinition = new BeanDefinitionBuilder()
+            BeanDefinition beanDefinition = BeanDefinition.builder()
                     .setBeanName("aopProcessor")
                     .setBeanClass(aopProcessorClass)
                     .setScope(BeanDefinition.SINGLETON)
