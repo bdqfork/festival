@@ -22,4 +22,11 @@ public class UserController {
                 .putHeader("content-type", "text/plain")
                 .end("Hello World from Vert.x-Web!");
     }
+
+    @GetMapping("/hello2")
+    public void hello2(RoutingContext routingContext) {
+        routingContext.response()
+                .putHeader("content-type", "text/plain")
+                .end("Hello World from Vert.x-Web 2!");
+    }
 }
