@@ -121,11 +121,17 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
     }
 
     @Override
-    protected void registerHook() {
+    protected void registerShutdownHook() {
         if (log.isTraceEnabled()) {
-            log.trace("register hook !");
+            log.trace("register shutdown hook !");
         }
-        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                close();
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
+            }
+        }));
     }
 
     @Override
@@ -184,7 +190,6 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         if (log.isTraceEnabled()) {
             log.trace("register bean processor !");
         }
-
         for (BeanPostProcessor beanPostProcessor : delegateBeanFactory.getBeans(BeanPostProcessor.class).values()) {
             delegateBeanFactory.addPostBeanProcessor(beanPostProcessor);
         }
@@ -216,9 +221,18 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
     }
 
     @Override
-    public void close() {
+    public void close() throws Exception {
         log.info("closing context !");
-        delegateBeanFactory.destroySingletons();
+        synchronized (Object.class) {
+            if (!isClosed()) {
+                doClose();
+            }
+            closed = true;
+        }
         log.info("closed context !");
+    }
+
+    protected void doClose() throws InterruptedException {
+        delegateBeanFactory.destroySingletons();
     }
 }

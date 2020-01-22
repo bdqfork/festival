@@ -91,7 +91,7 @@ public class AnnotationApplicationContextTest {
      * @throws BeansException
      */
     @Test
-    public void testJSR250Intercept() throws BeansException {
+    public void testJSR250Intercept() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.jsr250");
         annotationApplicationContext.getBean(JSR250FieldService.class);
         annotationApplicationContext.close();
@@ -103,7 +103,7 @@ public class AnnotationApplicationContextTest {
      * @throws BeansException
      */
     @Test
-    public void testJSR250Setter() throws BeansException {
+    public void testJSR250Setter() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.jsr250");
         annotationApplicationContext.getBean(JSR250FieldService.class);
         annotationApplicationContext.close();

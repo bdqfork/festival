@@ -13,6 +13,7 @@ import java.util.List;
 
 /**
  * 可配置的Bean工厂和bean描述信息注册器
+ *
  * @author bdq
  * @since 2019/12/15
  */

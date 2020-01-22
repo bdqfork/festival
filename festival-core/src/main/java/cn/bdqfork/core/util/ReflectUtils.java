@@ -146,4 +146,5 @@ public class ReflectUtils {
                 clazz.isPrimitive() ||
                 clazz.isArray();
     }
+
 }
