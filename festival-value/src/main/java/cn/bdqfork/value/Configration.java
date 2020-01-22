@@ -1,5 +1,6 @@
 package cn.bdqfork.value;
 
+import javax.inject.Named;
 import java.lang.annotation.*;
 
 /**
@@ -8,6 +9,7 @@ import java.lang.annotation.*;
  * @author bdq
  * @since 2020/1/9
  */
+@Named
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
