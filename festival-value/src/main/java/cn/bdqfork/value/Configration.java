@@ -18,4 +18,6 @@ public @interface Configration {
      * 配置前缀
      */
     String prefix() default "";
+
+    String value() default "";
 }
