@@ -7,12 +7,12 @@ import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.mvc.annotation.Route;
 import cn.bdqfork.mvc.handler.GenericMappingHandler;
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.http.HttpServer;
-import io.vertx.ext.web.Router;
+import io.reactivex.Completable;
+import io.vertx.reactivex.core.AbstractVerticle;
+import io.vertx.reactivex.core.http.HttpServer;
+import io.vertx.reactivex.ext.web.Router;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.inject.Inject;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,11 +25,10 @@ import java.util.stream.Collectors;
 public class WebApplicationRunner extends AbstractVerticle implements BeanFactoryAware {
     private GenericMappingHandler mappingHandler = new GenericMappingHandler();
     private ConfigurableBeanFactory configurableBeanFactory;
-    private HttpServer server;
+    private HttpServer httpServer;
 
     @Override
-    public void start() throws Exception {
-        server = vertx.createHttpServer();
+    public Completable rxStart() {
         Router router = Router.router(vertx);
 
         List<BeanDefinition> beanDefinitions = configurableBeanFactory.getBeanDefinitions()
@@ -42,25 +41,30 @@ public class WebApplicationRunner extends AbstractVerticle implements BeanFactor
             Class<?> beanClass = beanDefinition.getBeanClass();
             String baseUrl = beanClass.getAnnotation(Route.class).value();
             for (Method declaredMethod : beanClass.getDeclaredMethods()) {
-                Object bean = configurableBeanFactory.getBean(beanDefinition.getBeanName());
+                Object bean;
+                try {
+                    bean = configurableBeanFactory.getBean(beanDefinition.getBeanName());
+                } catch (BeansException e) {
+                    throw new IllegalStateException(e);
+                }
                 mappingHandler.handle(router, bean, baseUrl, declaredMethod);
             }
         }
-
-        server.requestHandler(router).listen(8080);
+        httpServer = vertx.createHttpServer();
+        return httpServer
+                .requestHandler(router)
+                .rxListen(8080)
+                .toCompletable();
     }
 
     @Override
-    public void stop() throws Exception {
-        server.close(result -> {
-            if (result.succeeded()) {
-                log.info("closed web server !");
-            }
-        });
+    public Completable rxStop() {
+        return httpServer.rxClose().doOnComplete(() -> log.info("closed web server !"));
     }
 
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
         configurableBeanFactory = (ConfigurableBeanFactory) beanFactory;
     }
+
 }

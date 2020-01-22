@@ -2,7 +2,7 @@ package cn.bdqfork.mvc.handler;
 
 import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.mvc.annotation.GetMapping;
-import io.vertx.ext.web.Router;
+import io.vertx.reactivex.ext.web.Router;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
