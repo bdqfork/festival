@@ -9,7 +9,7 @@ import java.util.Properties;
  * @since 2020/1/9
  */
 public class PropertiesResourceReader extends AbstractResourceReader {
-    private Properties properties = new Properties();
+    private static Properties properties;
 
     public PropertiesResourceReader(String resourcePath) throws IOException {
         super(resourcePath);
@@ -22,6 +22,7 @@ public class PropertiesResourceReader extends AbstractResourceReader {
     @Override
     protected void load() throws IOException {
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(getResourcePath());
+        properties = new Properties();
         if (inputStream != null) {
             properties.load(inputStream);
         }

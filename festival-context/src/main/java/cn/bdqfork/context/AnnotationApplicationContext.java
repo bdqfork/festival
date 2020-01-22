@@ -9,7 +9,6 @@ import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.factory.DefaultBeanFactory;
 import cn.bdqfork.core.factory.DefaultJSR250BeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
-import cn.bdqfork.core.factory.definition.BeanDefinitionBuilder;
 import cn.bdqfork.core.factory.processor.BeanFactoryPostProcessor;
 import cn.bdqfork.core.factory.processor.BeanPostProcessor;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
@@ -81,7 +80,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
             log.trace("register ResourceReader of type {} !", GenericResourceReader.class.getName());
         }
 
-        BeanDefinition beanDefinition = new BeanDefinitionBuilder()
+        BeanDefinition beanDefinition = BeanDefinition.builder()
                 .setBeanName("resourceReader")
                 .setBeanClass(GenericResourceReader.class)
                 .setScope(BeanDefinition.SINGLETON)
@@ -112,7 +111,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
                 throw new BeansException(e);
             }
 
-            BeanDefinition beanDefinition = new BeanDefinitionBuilder()
+            BeanDefinition beanDefinition = BeanDefinition.builder()
                     .setBeanName("aopProcessor")
                     .setBeanClass(aopProcessorClass)
                     .setScope(BeanDefinition.SINGLETON)

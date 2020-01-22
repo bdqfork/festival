@@ -4,6 +4,7 @@ package cn.bdqfork.core.factory.definition;
 import cn.bdqfork.core.factory.InjectedPoint;
 import cn.bdqfork.core.factory.MultInjectedPoint;
 
+import java.lang.reflect.Executable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -35,7 +36,11 @@ public class BeanDefinition {
      */
     private Set<String> dependOns;
     /**
-     * 构造器属性
+     * 构造函数/工厂方法
+     */
+    private Executable constructor;
+    /**
+     * 构造器函数/工厂方法的参数属性
      */
     private MultInjectedPoint injectedConstructor;
     /**
@@ -96,6 +101,14 @@ public class BeanDefinition {
         this.dependOns.addAll(dependOns);
     }
 
+    public Executable getConstructor() {
+        return constructor;
+    }
+
+    public void setConstructor(Executable constructor) {
+        this.constructor = constructor;
+    }
+
     public MultInjectedPoint getInjectedConstructor() {
         return injectedConstructor;
     }
@@ -136,4 +149,68 @@ public class BeanDefinition {
         return isResolved;
     }
 
+    public static BeanDefinitionBuilder builder() {
+        return new BeanDefinitionBuilder();
+    }
+
+    public static class BeanDefinitionBuilder {
+        private String beanName;
+        private Class<?> beanClass;
+        private String scope = BeanDefinition.PROTOTYPE;
+        private Set<String> dependOns = new HashSet<>();
+        private Executable constructor;
+        private MultInjectedPoint injectedConstructor;
+        private Map<String, InjectedPoint> injectedFields = new HashMap<>();
+        private Map<String, InjectedPoint> injectedSetters = new HashMap<>();
+
+        public BeanDefinitionBuilder setBeanName(String beanName) {
+            this.beanName = beanName;
+            return this;
+        }
+
+        public BeanDefinitionBuilder setBeanClass(Class<?> beanClass) {
+            this.beanClass = beanClass;
+            return this;
+        }
+
+        public BeanDefinitionBuilder setScope(String scope) {
+            this.scope = scope;
+            return this;
+        }
+
+        public BeanDefinitionBuilder addDependOn(String beanName) {
+            this.dependOns.add(beanName);
+            return this;
+        }
+
+        public BeanDefinitionBuilder setConstructor(Executable constructor) {
+            this.constructor = constructor;
+            return this;
+        }
+
+        public BeanDefinitionBuilder setInjectedConstructor(MultInjectedPoint injectedConstructor) {
+            this.injectedConstructor = injectedConstructor;
+            return this;
+        }
+
+        public BeanDefinitionBuilder addInjectedField(String fieldName, InjectedPoint injectedPoint) {
+            this.injectedFields.put(fieldName, injectedPoint);
+            return this;
+        }
+
+        public BeanDefinitionBuilder addInjectedSetter(String methodName, InjectedPoint injectedPoint) {
+            this.injectedSetters.put(methodName, injectedPoint);
+            return this;
+        }
+
+        public BeanDefinition build() {
+            BeanDefinition beanDefinition = new BeanDefinition(beanName, beanClass, scope);
+            beanDefinition.setDependOns(dependOns);
+            beanDefinition.setConstructor(constructor);
+            beanDefinition.setInjectedConstructor(injectedConstructor);
+            beanDefinition.setInjectedFields(injectedFields);
+            beanDefinition.setInjectedSetters(injectedSetters);
+            return beanDefinition;
+        }
+    }
 }
