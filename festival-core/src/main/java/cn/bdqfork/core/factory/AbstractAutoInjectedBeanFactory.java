@@ -64,6 +64,11 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
         if (log.isTraceEnabled()) {
             log.trace("create instance for {} !", beanDefinition.getBeanClass().getName());
         }
+
+        if (beanDefinition.getConstructor() instanceof Method) {
+            log.trace("use factory method");
+            return autoInjectFactoryMethod(beanDefinition);
+        }
         Class<?> beanType = beanDefinition.getBeanClass();
 
         Constructor<?> constructor = getExplicitConstructor(beanType, explicitArgs);
@@ -99,6 +104,13 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
      * @throws BeansException
      */
     protected abstract Object autoInjectedConstructor(String beanName, BeanDefinition beanDefinition, Constructor<?> constructor, Object[] explicitArgs) throws BeansException;
+
+    /**
+     *  自动注入工厂方法
+     * @param beanDefinition bean描述信息
+     * @throws BeansException
+     */
+    protected abstract Object autoInjectFactoryMethod(BeanDefinition beanDefinition) throws BeansException;
 
     /**
      * 解决依赖
