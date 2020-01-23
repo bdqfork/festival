@@ -13,7 +13,6 @@ import java.util.List;
  */
 @Singleton
 @Configration(prefix = "server")
-@Named
 public class ServerConfig {
     @Value("localhost")
     private String localhost;

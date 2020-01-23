@@ -7,6 +7,7 @@ import cn.bdqfork.core.factory.InjectedPoint;
 import cn.bdqfork.core.factory.MultInjectedPoint;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.definition.ManagedBeanDefinition;
+import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.core.util.StringUtils;
@@ -47,7 +48,7 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
 
     protected BeanDefinition createBeanDefinition(String beanName, Class<?> clazz) throws ScopeException {
 
-        if (clazz.isAnnotationPresent(Singleton.class)) {
+        if (AnnotationUtils.isAnnotationPresent(clazz, Singleton.class)) {
 
             if (JSR250) {
                 return new ManagedBeanDefinition(beanName, clazz, BeanDefinition.SINGLETON);
@@ -69,9 +70,10 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
     protected String resolveBeanName(Class<?> clazz) {
         String name = "";
 
-        if (clazz.isAnnotationPresent(Named.class)) {
+        Named named = AnnotationUtils.getMergedAnnotation(clazz, Named.class);
 
-            name = clazz.getAnnotation(Named.class).value();
+        if (named != null) {
+            name = named.value();
 
         }
 
@@ -134,16 +136,21 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
 
         for (Field field : candidate.getDeclaredFields()) {
 
-            if (candidate.isAnnotationPresent(Configration.class) && checkIfInjectedProperty(field)) {
+            if (checkIfInjectedProperty(field)) {
 
                 if (Modifier.isFinal(field.getModifiers()) && !ReflectUtils.isBaseType(field.getType())) {
                     throw new ResolvedException(String.format("the field %s is final or not base type !", field.getName()));
                 }
 
                 ResourceReader resourceReader = getResourceReader();
-                Configration configration = candidate.getAnnotation(Configration.class);
-                Value value = field.getAnnotation(Value.class);
+
+                Configration configration = AnnotationUtils.getMergedAnnotation(candidate, Configration.class);
+                assert configration != null;
+
+                Value value = AnnotationUtils.getAnnotation(field, Value.class);
+
                 String propertyKey;
+
                 if (StringUtils.isEmpty(configration.prefix())) {
                     propertyKey = value.value();
                 } else {
@@ -191,14 +198,15 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
     }
 
     private boolean checkIfInjectedProperty(Field field) {
-        return field.isAnnotationPresent(Value.class);
+        return AnnotationUtils.isAnnotationPresent(field.getDeclaringClass(), Configration.class) &&
+                field.isAnnotationPresent(Value.class);
     }
 
 
     private InjectedPoint getFieldInjectedPoint(Field field, Type type) {
         if (JSR250 && field.isAnnotationPresent(Resource.class)) {
 
-            Resource resource = field.getAnnotation(Resource.class);
+            Resource resource = AnnotationUtils.getAnnotation(field, Resource.class);
 
             if (StringUtils.isEmpty(resource.name()) && resource.type() == Object.class) {
                 return new InjectedPoint(field.getName(), true);
@@ -211,9 +219,8 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
             return new InjectedPoint(resource.name(), resource.type(), true);
         }
 
-        if (field.isAnnotationPresent(Named.class)) {
-
-            Named named = field.getAnnotation(Named.class);
+        Named named = AnnotationUtils.getMergedAnnotation(field, Named.class);
+        if (named != null) {
 
             return new InjectedPoint(named.value(), true);
         } else {
@@ -295,9 +302,9 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
             return new InjectedPoint(name, resource.type(), true);
         }
 
-        if (method.isAnnotationPresent(Named.class)) {
+        Named named = AnnotationUtils.getMergedAnnotation(method, Named.class);
 
-            Named named = method.getAnnotation(Named.class);
+        if (named != null) {
 
             return new InjectedPoint(named.value(), true);
         } else {
@@ -314,7 +321,7 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
     }
 
     protected boolean checkIfComponent(Class<?> candidate) {
-        return candidate.isAnnotationPresent(Named.class);
+        return AnnotationUtils.isAnnotationPresent(candidate, Named.class);
     }
 
     private String generateDependentName(Type type, Map<String, BeanDefinition> definitionMap) {
