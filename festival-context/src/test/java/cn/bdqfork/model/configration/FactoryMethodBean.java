@@ -18,7 +18,7 @@ import javax.inject.Singleton;
 public class FactoryMethodBean {
 
     @Named
-    public FactoryBean getService(Server server) {
+    private FactoryBean getService(Server server) {
         FactoryBean factoryBean = new FactoryBean();
         factoryBean.setServer(server);
         return factoryBean;
