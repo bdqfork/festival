@@ -94,8 +94,7 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
         Object configBean = getBean(configBeanClass);
 
         try {
-            factoryMethod.setAccessible(true);
-            return factoryMethod.invoke(configBean, args);
+            return ReflectUtils.invokeMethod(configBean, factoryMethod, args);
         } catch (InvocationTargetException | IllegalAccessException e) {
             throw new BeansException(e);
         }
