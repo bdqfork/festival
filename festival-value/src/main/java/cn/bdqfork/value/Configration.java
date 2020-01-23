@@ -12,8 +12,10 @@ import java.lang.annotation.*;
 @Named
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 public @interface Configration {
+    String value() default "";
+
     /**
      * 配置前缀
      */
