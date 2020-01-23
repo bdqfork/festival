@@ -11,4 +11,8 @@ public class FactoryBean {
     void setServer(Server server) {
         this.server = server;
     }
+
+    public Server getServer() {
+        return server;
+    }
 }
