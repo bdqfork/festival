@@ -9,6 +9,7 @@ import cn.bdqfork.model.bean.exception.ResolveExceptionBean;
 import cn.bdqfork.model.bean.exception.unsatisfied.UnsatisfiedBeanExceptionBean;
 import cn.bdqfork.model.bean.normal.SingletonBeanService;
 import cn.bdqfork.model.collection.CollectionPropertyService;
+import cn.bdqfork.model.configration.FactoryBean;
 import cn.bdqfork.model.configration.Server;
 import cn.bdqfork.model.configration.ServerConfig;
 import cn.bdqfork.model.cycle.*;
@@ -106,6 +107,21 @@ public class AnnotationApplicationContextTest {
     public void testJSR250Setter() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.jsr250");
         annotationApplicationContext.getBean(JSR250FieldService.class);
+        annotationApplicationContext.close();
+    }
+
+    /**
+     * 使用@Named注解的工厂方法配置bean
+     *
+     * @throws BeansException
+     */
+
+    @Test
+    public void testGetFactoryBeanDefinition() throws BeansException {
+        AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.configration");
+        FactoryBean factoryBean = annotationApplicationContext.getBean("factoryBean");
+        assert factoryBean != null;
+        assert factoryBean.getServer() != null;
         annotationApplicationContext.close();
     }
 

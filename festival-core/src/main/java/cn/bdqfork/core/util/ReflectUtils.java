@@ -124,11 +124,6 @@ public class ReflectUtils {
         return new Type[]{type};
     }
 
-    public static Object invoke(Object obj, Method method, Object... args) throws InvocationTargetException, IllegalAccessException {
-        makeAccessible(method);
-        return method.invoke(obj, args);
-    }
-
     public static void makeAccessible(AccessibleObject accessibleObject) {
         accessibleObject.setAccessible(true);
     }
@@ -147,4 +142,8 @@ public class ReflectUtils {
                 clazz.isArray();
     }
 
+    public static Object invokeMethod(Object object, Method method, Object... args) throws InvocationTargetException, IllegalAccessException {
+        makeAccessible(method);
+        return method.invoke(object, args);
+    }
 }

@@ -1,5 +1,6 @@
 package cn.bdqfork.value;
 
+import javax.inject.Named;
 import java.lang.annotation.*;
 
 /**
@@ -8,12 +9,15 @@ import java.lang.annotation.*;
  * @author bdq
  * @since 2020/1/9
  */
+@Named
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 public @interface Configration {
     /**
      * 配置前缀
      */
     String prefix() default "";
+
+    String value() default "";
 }
