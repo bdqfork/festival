@@ -9,7 +9,7 @@ import java.util.Properties;
  * @since 2020/1/9
  */
 public class PropertiesResourceReader extends AbstractResourceReader {
-    private static Properties properties;
+    private Properties properties;
 
     public PropertiesResourceReader(String resourcePath) throws IOException {
         super(resourcePath);
