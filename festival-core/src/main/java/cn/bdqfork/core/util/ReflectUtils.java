@@ -141,4 +141,9 @@ public class ReflectUtils {
                 clazz.isPrimitive() ||
                 clazz.isArray();
     }
+
+    public static Object invokeMethod(Object object, Method method, Object... args) throws InvocationTargetException, IllegalAccessException {
+        makeAccessible(method);
+        return method.invoke(object, args);
+    }
 }
