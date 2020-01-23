@@ -239,4 +239,9 @@ public class AnnotationApplicationContextTest {
         aopProxyTestBean.testThrowing();
     }
 
+    @Test
+    public void testGetFactoryBeanDefinition() throws BeansException {
+        AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.configration");
+        assert annotationApplicationContext.getConfigurableBeanFactory().getBeanDefinition("nonono") != null;
+    }
 }
