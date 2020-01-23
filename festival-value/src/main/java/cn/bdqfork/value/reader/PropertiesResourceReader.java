@@ -9,11 +9,7 @@ import java.util.Properties;
  * @since 2020/1/9
  */
 public class PropertiesResourceReader extends AbstractResourceReader {
-<<<<<<< .merge_file_jiweyu
-    private static Properties properties;
-=======
     private Properties properties;
->>>>>>> .merge_file_PfZcCd
 
     public PropertiesResourceReader(String resourcePath) throws IOException {
         super(resourcePath);
