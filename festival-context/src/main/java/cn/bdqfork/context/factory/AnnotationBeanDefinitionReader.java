@@ -85,20 +85,6 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
         return name;
     }
 
-    @Override
-    protected void resolveConstructor(BeanDefinition beanDefinition, AbstractBeanFactory beanFactory) throws ResolvedException {
-        Class<?> candidate = beanDefinition.getBeanClass();
-
-        Constructor<?> constructor = resolveInjectedConstructor(candidate);
-        //将constructor存到beanDefinition中
-        beanDefinition.setConstructor(constructor);
-        if (constructor == null) {
-            return;
-        }
-        //将原来的代码放到setMultInjectedPoint()方法中
-        setMultInjectedPoint(beanDefinition, beanFactory, constructor);
-    }
-
     //新定义的方法setMultInjectedPoint()，作用是分析构造方法和工厂方法中的多重注入点，并将其存入beanDefinition中
     private void setMultInjectedPoint(BeanDefinition beanDefinition, AbstractBeanFactory beanFactory, Executable constructor) {
         MultInjectedPoint multInjectedPoint = new MultInjectedPoint();
@@ -119,6 +105,20 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
         beanDefinition.setInjectedConstructor(multInjectedPoint);
     }
 
+    @Override
+    protected void resolveConstructor(BeanDefinition beanDefinition, AbstractBeanFactory beanFactory) throws ResolvedException {
+        Class<?> candidate = beanDefinition.getBeanClass();
+
+        Constructor<?> constructor = resolveInjectedConstructor(candidate);
+        //将constructor存到beanDefinition中
+        beanDefinition.setConstructor(constructor);
+        if (constructor == null) {
+            return;
+        }
+        //将原来的代码放到setMultInjectedPoint()方法中
+        setMultInjectedPoint(beanDefinition, beanFactory, constructor);
+    }
+
     private Constructor<?> resolveInjectedConstructor(Class<?> candidate) throws ResolvedException {
 
         Constructor<?>[] constructors = Arrays.stream(candidate.getDeclaredConstructors())
@@ -133,6 +133,118 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
             return constructors[0];
         }
         return null;
+    }
+
+    //解析工厂方法，将工厂方法封装成beanDefinition
+    private void resolveFactoryMethod(Method method, AbstractBeanFactory beanFactory) throws BeansException {
+
+        Named named = method.getAnnotation(Named.class);
+        //工厂bean的beanName
+        String beanName;
+        //工厂方法的作用域
+        String scope;
+        if (method.isAnnotationPresent(Singleton.class)) {
+            scope = BeanDefinition.SINGLETON;
+        } else {
+            scope = BeanDefinition.PROTOTYPE;
+        }
+        //判断使用默认beanName还是自定义的beanName
+        if ("".equals(named.value())){
+            beanName = getBeanNameGenerator().generateBeanName((Class<?>) method.getGenericReturnType());
+        } else {
+            beanName = named.value();
+        }
+
+        //新建beanDefinition
+        BeanDefinition factoryBean = BeanDefinition.builder()
+                .setBeanClass((Class<?>) method.getGenericReturnType())
+                .setScope(scope)
+                .setConstructor(method)
+                .setBeanName(beanName)
+                .build();
+        //设置多重依赖点
+        setMultInjectedPoint(factoryBean, beanFactory, method);
+        //将工厂bean注册到容器中
+        BeanDefinitionRegistry registry = beanFactory;
+        registry.registerBeanDefinition(beanName, factoryBean);
+    }
+
+    @Override
+    protected void resolveMethod(BeanDefinition beanDefinition, AbstractBeanFactory beanFactory) throws ResolvedException {
+        Class<?> candidate = beanDefinition.getBeanClass();
+
+        Map<String, InjectedPoint> methods = new HashMap<>();
+
+        for (Method method : candidate.getDeclaredMethods()) {
+
+            //判断该方法是setter方法还是工厂方法
+            if(candidate.isAnnotationPresent(Configration.class) && method.isAnnotationPresent(Named.class)){
+
+                String methodName = method.getName();
+                if (Modifier.isAbstract(method.getModifiers())) {
+                    throw new ResolvedException(String.format("the method %s is abstract !", methodName));
+                }
+
+                if (methodName.startsWith("set")){
+                    throw new ResolvedException(String.format("the method %s is not factory method !", methodName));
+                }
+
+                if (method.getGenericReturnType().getTypeName().equals("void")){
+                    throw new ResolvedException(String.format("the factory method %s should have a return value !", methodName));
+                }
+                try {
+                    //执行解析工厂方法，
+                    resolveFactoryMethod(method, beanFactory);
+                } catch (BeansException e) {
+                    throw new ResolvedException(e);
+                }
+
+            } else {
+                if (checkIfInjectedPoint(method)) {
+                    String methodName = method.getName();
+
+                    if (Modifier.isAbstract(method.getModifiers())) {
+                        throw new ResolvedException(String.format("the method %s is abstract !", methodName));
+                    }
+
+                    if (!methodName.startsWith("set") || method.getParameterCount() != 1) {
+                        throw new ResolvedException(String.format("the method %s is not setter !", methodName));
+                    }
+
+                    Type type = method.getGenericParameterTypes()[0];
+
+                    InjectedPoint injectedPoint = getSetterInjectedPoint(method, type);
+
+                    methods.put(methodName, injectedPoint);
+
+                    String beanName = generateDependentName(type, getBeanDefinitions());
+
+                    if (beanDefinition.isPrototype()) {
+                        beanDefinition.addDependOn(beanName);
+                        beanFactory.registerDependentForBean(beanDefinition.getBeanName(), beanName);
+                    }
+
+                }
+
+                if (JSR250 && method.isAnnotationPresent(PostConstruct.class)) {
+                    if (method.getParameterCount() > 0) {
+                        throw new ResolvedException("the method annotated by @PostConstruct should have no parameters !");
+                    }
+                    ManagedBeanDefinition managedBeanDefinition = (ManagedBeanDefinition) beanDefinition;
+                    managedBeanDefinition.setInitializingMethod(method.getName());
+                }
+
+                if (JSR250 && method.isAnnotationPresent(PreDestroy.class)) {
+                    if (method.getParameterCount() > 0) {
+                        throw new ResolvedException("the method annotated by @PostConstruct should have no parameters !");
+                    }
+                    ManagedBeanDefinition managedBeanDefinition = (ManagedBeanDefinition) beanDefinition;
+                    managedBeanDefinition.setDestroyMethod(method.getName());
+                }
+            }
+
+        }
+        beanDefinition.setInjectedSetters(methods);
     }
 
     @Override
@@ -335,6 +447,7 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
         BeanDefinitionRegistry registry = beanFactory;
         registry.registerBeanDefinition(beanName, factoryBean);
     }
+
 
     private InjectedPoint getSetterInjectedPoint(Method method, Type type) {
         if (JSR250 && method.isAnnotationPresent(Resource.class)) {
