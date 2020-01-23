@@ -87,19 +87,14 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
         Class<?> configBean = factoryMethod.getDeclaringClass();
         MultInjectedPoint multInjectedPoint = beanDefinition.getInjectedConstructor();
         Object[] explicitArgs = resovleMultDependence(multInjectedPoint, beanDefinition.getBeanName());
+        Object obj = getBean(configBean);
 
         try {
-            Object obj = configBean.newInstance();
-            try {
-                return factoryMethod.invoke(obj, explicitArgs);
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+            return factoryMethod.invoke(obj, explicitArgs);
+        } catch (InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
         }
+
         return null;
     }
 
