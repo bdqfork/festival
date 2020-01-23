@@ -112,6 +112,7 @@ public class AnnotationApplicationContextTest {
 
     /**
      * 使用@Named注解的工厂方法配置bean
+     *
      * @throws BeansException
      */
 

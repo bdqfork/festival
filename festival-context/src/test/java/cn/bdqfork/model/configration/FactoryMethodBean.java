@@ -8,13 +8,13 @@ import javax.inject.Singleton;
 
 /**
  * 工厂类
+ *
  * @author fbw
  * @since 2020/1/23
  */
 
 @Singleton
 @Configration
-@Named
 public class FactoryMethodBean {
 
     @Named
