@@ -6,12 +6,11 @@ import cn.bdqfork.core.exception.ScopeException;
 import cn.bdqfork.core.factory.*;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.definition.ManagedBeanDefinition;
-import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
+import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.core.util.StringUtils;
-import cn.bdqfork.value.Bean;
 import cn.bdqfork.value.Configration;
 import cn.bdqfork.value.Value;
 import cn.bdqfork.value.reader.ResourceReader;
@@ -245,7 +244,7 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
         for (Method method : candidate.getDeclaredMethods()) {
 
             //判断该方法是setter方法还是工厂方法
-            if(candidate.isAnnotationPresent(Configration.class) && method.isAnnotationPresent(Named.class)){
+            if (candidate.isAnnotationPresent(Configration.class) && method.isAnnotationPresent(Named.class)) {
 
                 try {
                     //执行解析工厂方法，
@@ -316,8 +315,8 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
             scope = BeanDefinition.PROTOTYPE;
         }
         //判断使用默认beanName还是自定义的beanName
-        if ("".equals(named.value())){
-            BeanNameGenerator beanNameGenerator= new SimpleBeanNameGenerator();
+        if ("".equals(named.value())) {
+            BeanNameGenerator beanNameGenerator = new SimpleBeanNameGenerator();
             beanName = beanNameGenerator.generateBeanName((Class<?>) method.getGenericReturnType());
         } else {
             beanName = named.value();
@@ -336,6 +335,7 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
         BeanDefinitionRegistry registry = beanFactory;
         registry.registerBeanDefinition(beanName, factoryBean);
     }
+
     private InjectedPoint getSetterInjectedPoint(Method method, Type type) {
         if (JSR250 && method.isAnnotationPresent(Resource.class)) {
             Resource resource = method.getAnnotation(Resource.class);

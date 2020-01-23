@@ -84,18 +84,19 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
     protected Object autoInjectFactoryMethod(BeanDefinition beanDefinition) throws BeansException {
 
         Method factoryMethod = (Method) beanDefinition.getConstructor();
-        Class<?> configBeanClazz = factoryMethod.getDeclaringClass();
+
+        Class<?> configBeanClass = factoryMethod.getDeclaringClass();
+
         MultInjectedPoint multInjectedPoint = beanDefinition.getInjectedConstructor();
-        Object[] explicitArgs = resovleMultDependence(multInjectedPoint, beanDefinition.getBeanName());
-        Object invokeObject = getBean(configBeanClazz);
+
+        Object[] args = resovleMultDependence(multInjectedPoint, beanDefinition.getBeanName());
+
+        Object configBean = getBean(configBeanClass);
 
         try {
             factoryMethod.setAccessible(true);
-            return factoryMethod.invoke(invokeObject, explicitArgs);
+            return factoryMethod.invoke(configBean, args);
         } catch (InvocationTargetException | IllegalAccessException e) {
-            if (log.isErrorEnabled()) {
-                log.error("{} invoke failed", factoryMethod.getName());
-            }
             throw new BeansException(e);
         }
 

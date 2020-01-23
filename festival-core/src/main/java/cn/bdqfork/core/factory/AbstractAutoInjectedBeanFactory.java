@@ -61,16 +61,17 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
     protected abstract void afterPropertiesSet(String beanName, Object bean) throws BeansException;
 
     protected Object createInstance(String beanName, BeanDefinition beanDefinition, Object[] explicitArgs) throws BeansException {
-        if (log.isTraceEnabled()) {
-            log.trace("create instance for {} !", beanDefinition.getBeanClass().getName());
-        }
-
-        if (beanDefinition.getConstructor() != null && beanDefinition.getConstructor() instanceof Method) {
+        if (beanDefinition.getConstructor() instanceof Method) {
             if (log.isTraceEnabled()) {
-                log.trace("create {} using factory method", beanDefinition.getBeanClass().getName());
+                log.trace("create instance for {} using factory method!", beanDefinition.getBeanClass().getName());
             }
             return autoInjectFactoryMethod(beanDefinition);
         }
+
+        if (log.isTraceEnabled()) {
+            log.trace("create instance for {} using constructor!", beanDefinition.getBeanClass().getName());
+        }
+
         Class<?> beanType = beanDefinition.getBeanClass();
 
         Constructor<?> constructor = getExplicitConstructor(beanType, explicitArgs);
@@ -98,17 +99,19 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
 
     /**
      * 自动注入构造器
-     * @param beanName bean名称
+     *
+     * @param beanName       bean名称
      * @param beanDefinition bean描述信息
-     * @param constructor 要注入的构造方法
-     * @param explicitArgs 构造方法参数
+     * @param constructor    要注入的构造方法
+     * @param explicitArgs   构造方法参数
      * @return Object 实例化对象
      * @throws BeansException
      */
     protected abstract Object autoInjectedConstructor(String beanName, BeanDefinition beanDefinition, Constructor<?> constructor, Object[] explicitArgs) throws BeansException;
 
     /**
-     *  自动注入工厂方法
+     * 自动注入工厂方法
+     *
      * @param beanDefinition bean描述信息
      * @throws BeansException
      */
@@ -116,8 +119,9 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
 
     /**
      * 解决依赖
+     *
      * @param injectedPoint 注入点实例
-     * @param beanName bean名称
+     * @param beanName      bean名称
      * @return bean实例
      * @throws UnsatisfiedBeanException
      */
@@ -142,8 +146,9 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
 
     /**
      * 解决多重依赖
+     *
      * @param multInjectedPoint 多重依赖注入点
-     * @param beanName bean名称
+     * @param beanName          bean名称
      * @return
      * @throws UnsatisfiedBeanException
      */
