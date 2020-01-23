@@ -18,7 +18,7 @@ public class PostMappingHandler implements RouterMappingHandler {
         router.post(baseUrl + postMapping.value()).handler(routingContext ->
                 {
                     try {
-                        ReflectUtils.invoke(bean, declaredMethod, routingContext);
+                        ReflectUtils.invokeMethod(bean, declaredMethod, routingContext);
                     } catch (InvocationTargetException | IllegalAccessException e) {
                         throw new IllegalStateException(e);
                     }

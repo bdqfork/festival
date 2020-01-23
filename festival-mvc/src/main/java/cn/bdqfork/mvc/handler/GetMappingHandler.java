@@ -25,7 +25,7 @@ public class GetMappingHandler implements RouterMappingHandler {
         router.get(path).handler(routingContext ->
                 {
                     try {
-                        ReflectUtils.invoke(bean, declaredMethod, routingContext);
+                        ReflectUtils.invokeMethod(bean, declaredMethod, routingContext);
                     } catch (InvocationTargetException | IllegalAccessException e) {
                         throw new IllegalStateException(e);
                     }

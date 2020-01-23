@@ -122,7 +122,6 @@ public class AnnotationApplicationContextTest {
         FactoryBean factoryBean = annotationApplicationContext.getBean("factoryBean");
         assert factoryBean != null;
         assert factoryBean.getServer() != null;
-        annotationApplicationContext.close();
     }
 
     /**
