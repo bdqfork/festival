@@ -65,8 +65,10 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
             log.trace("create instance for {} !", beanDefinition.getBeanClass().getName());
         }
 
-        if (beanDefinition.getConstructor() instanceof Method) {
-            log.trace("use factory method");
+        if (beanDefinition.getConstructor() != null && beanDefinition.getConstructor() instanceof Method) {
+            if (log.isTraceEnabled()) {
+                log.trace("create {} using factory method", beanDefinition.getBeanClass().getName());
+            }
             return autoInjectFactoryMethod(beanDefinition);
         }
         Class<?> beanType = beanDefinition.getBeanClass();
