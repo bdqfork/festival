@@ -325,7 +325,7 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
         String beanName;
         Named named = AnnotationUtils.getMergedAnnotation(method, Named.class);
         if (named == null || StringUtils.isEmpty(named.value())) {
-            beanName = getBeanNameGenerator().generateBeanName((Class<?>) method.getGenericReturnType());
+            beanName = getBeanNameGenerator().generateBeanName(method.getReturnType());
         } else {
             beanName = named.value();
         }
@@ -339,7 +339,7 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
 
         setMultInjectedPoint(beanDefinition, beanFactory, method);
 
-        getBeanDefinitions().put(beanName, beanDefinition);
+        beanFactory.registerBeanDefinition(beanName, beanDefinition);
     }
 
     private InjectedPoint getSetterInjectedPoint(Method method, Type type) {

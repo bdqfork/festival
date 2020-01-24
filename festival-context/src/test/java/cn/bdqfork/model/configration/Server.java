@@ -17,4 +17,11 @@ public class Server {
     public ServerConfig getServerConfig() {
         return serverConfig;
     }
+
+    @Override
+    public String toString() {
+        return "Server{" +
+                "serverConfig=" + serverConfig +
+                '}';
+    }
 }

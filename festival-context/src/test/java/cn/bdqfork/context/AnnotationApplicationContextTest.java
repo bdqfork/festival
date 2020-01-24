@@ -120,6 +120,7 @@ public class AnnotationApplicationContextTest {
     public void testGetFactoryBeanDefinition() throws BeansException {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.configration");
         FactoryBean factoryBean = annotationApplicationContext.getBean("factoryBean");
+        System.out.println(factoryBean);
         assert factoryBean != null;
         assert factoryBean.getServer() != null;
     }

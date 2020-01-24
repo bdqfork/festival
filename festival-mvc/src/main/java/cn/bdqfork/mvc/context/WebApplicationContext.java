@@ -9,7 +9,6 @@ import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import cn.bdqfork.mvc.WebSeverRunner;
 import cn.bdqfork.mvc.util.VertxUtils;
 import io.vertx.core.DeploymentOptions;
-import io.vertx.reactivex.core.RxHelper;
 import io.vertx.reactivex.core.Vertx;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,11 +29,21 @@ public class WebApplicationContext extends AnnotationApplicationContext {
         DeploymentOptions options;
         try {
             options = beanFactory.getBean(DeploymentOptions.class);
+
+            if (log.isInfoEnabled()) {
+                log.info("DeploymentOptions find, will use it's options!");
+            }
+
         } catch (NoSuchBeanException e) {
-            log.debug("no DeploymentOptions find, so will use default options!");
+
+            if (log.isWarnEnabled()) {
+                log.warn("no DeploymentOptions find, so will use default options, " +
+                        "but we recommend you using customer options!");
+            }
+
             options = new DeploymentOptions();
+
         }
-        RxHelper.deployVerticle(vertx, runner, options);
         vertx.deployVerticle(runner, options);
     }
 
