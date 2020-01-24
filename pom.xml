@@ -9,8 +9,8 @@
   
     <version>0.3</version>
     <modules>
-        <module>festival-core</module>
         <module>festival-aop</module>
+        <module>festival-core</module>
         <module>festival-configration</module>
         <module>festival-context</module>
         <module>festival-example</module>

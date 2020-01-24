@@ -2,27 +2,30 @@ package cn.bdqfork.mvc.handler;
 
 import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.mvc.annotation.PostMapping;
+import io.vertx.reactivex.core.Vertx;
 import io.vertx.reactivex.ext.web.Router;
+import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
  * @author bdq
  * @since 2020/1/21
  */
-public class PostMappingHandler implements RouterMappingHandler {
+@Slf4j
+public class PostMappingHandler extends AbstractMappingHandler {
+    public PostMappingHandler(Vertx vertx) {
+        super(vertx);
+    }
+
     @Override
-    public void handle(Router router, Object bean, String baseUrl, Method declaredMethod) {
+    protected void doMapping(Router router, Object bean, String baseUrl, Method declaredMethod) {
         PostMapping postMapping = declaredMethod.getAnnotation(PostMapping.class);
-        router.post(baseUrl + postMapping.value()).handler(routingContext ->
-                {
-                    try {
-                        ReflectUtils.invokeMethod(bean, declaredMethod, routingContext);
-                    } catch (InvocationTargetException | IllegalAccessException e) {
-                        throw new IllegalStateException(e);
-                    }
-                }
-        );
+        String path = baseUrl + postMapping.value();
+        if (log.isInfoEnabled()) {
+            log.info("post mapping path:{} to {}:{}!", path, declaredMethod.getDeclaringClass()
+                    .getCanonicalName(), ReflectUtils.getSignature(declaredMethod));
+        }
+        router.post(path).handler(routingContext -> invoke(bean, declaredMethod, routingContext));
     }
 }

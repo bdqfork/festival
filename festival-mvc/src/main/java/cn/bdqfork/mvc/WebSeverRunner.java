@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware {
-    private GenericMappingHandler mappingHandler = new GenericMappingHandler();
     private ConfigurableBeanFactory configurableBeanFactory;
     private HttpServer httpServer;
 
@@ -45,7 +44,7 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
 
                 Object bean = getRouteBean(beanDefinition);
 
-                mappingHandler.handle(router, bean, baseUrl, declaredMethod);
+                new GenericMappingHandler(vertx).handle(router, bean, baseUrl, declaredMethod);
             }
         }
         router.route().handler(BodyHandler.create());

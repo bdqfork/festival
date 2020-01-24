@@ -7,6 +7,7 @@ import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import cn.bdqfork.mvc.WebSeverRunner;
+import cn.bdqfork.mvc.util.VertxUtils;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.reactivex.core.RxHelper;
 import io.vertx.reactivex.core.Vertx;
@@ -20,7 +21,7 @@ import java.util.concurrent.CountDownLatch;
  */
 @Slf4j
 public class WebApplicationContext extends AnnotationApplicationContext {
-    private Vertx vertx = Vertx.vertx();
+    private Vertx vertx = VertxUtils.getVertx();
 
     public WebApplicationContext(String... scanPaths) throws BeansException {
         super(scanPaths);
