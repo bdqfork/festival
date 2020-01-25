@@ -17,7 +17,7 @@ public class DefaultProxyInvocationHandler implements ProxyInvocationHandler {
     private Map<String, AroundAdvice[]> aroundAdviceCache = new ConcurrentHashMap<>();
     private Map<String, AfterReturningAdvice[]> afterReturningAdviceCache = new ConcurrentHashMap<>();
     private Map<String, ThrowsAdvice[]> throwsAdviceCache = new ConcurrentHashMap<>();
-    private AopProxySupport support;
+    protected AopProxySupport support;
 
     public DefaultProxyInvocationHandler(AopProxySupport support) {
         this.support = support;
@@ -25,7 +25,10 @@ public class DefaultProxyInvocationHandler implements ProxyInvocationHandler {
 
     @Override
     public Object invoke(Method method, Object[] args) throws Throwable {
-        //获取真实目标实例
+        if ("getTargetClass".equals(method.getName())) {
+            return support.getBeanClass();
+        }
+
         Object target = support.getBean();
         Object result = invokeObjectMethod(target, method, args);
         if (result == null) {

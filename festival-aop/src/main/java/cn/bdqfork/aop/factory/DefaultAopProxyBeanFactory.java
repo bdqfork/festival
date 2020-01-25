@@ -1,6 +1,7 @@
 package cn.bdqfork.aop.factory;
 
 import cn.bdqfork.aop.proxy.AopProxySupport;
+import cn.bdqfork.aop.proxy.TargetClassAware;
 import cn.bdqfork.aop.proxy.cglib.CglibProxy;
 import cn.bdqfork.aop.proxy.javassist.JavassistProxy;
 
@@ -12,10 +13,11 @@ public class DefaultAopProxyBeanFactory implements AopProxyBeanFactory {
 
     @Override
     public Object createAopProxyBean(AopProxySupport config) {
-        if (!config.isOptimze() && config.getInterfaces() != null && config.getInterfaces().length > 0) {
+        if (!config.isOptimze() && config.getInterfaces() != null && config.getInterfaces().size() > 0) {
+            config.getInterfaces().add(TargetClassAware.class);
             return new JavassistProxy(config).getProxy();
         }
         return new CglibProxy(config).getProxy();
     }
-    
+
 }

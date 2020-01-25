@@ -2,6 +2,7 @@ package cn.bdqfork.aop.proxy.cglib;
 
 import cn.bdqfork.aop.proxy.AopProxy;
 import cn.bdqfork.aop.proxy.AopProxySupport;
+import cn.bdqfork.aop.proxy.TargetClassAware;
 import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.Factory;
@@ -34,6 +35,7 @@ public class CglibProxy implements AopProxy {
 
         Class<?> targetClass = support.getBeanClass();
         enhancer.setSuperclass(targetClass);
+        enhancer.setInterfaces(new Class[]{TargetClassAware.class});
         Class<?> proxyClass = enhancer.createClass();
 
         Objenesis objenesis = new ObjenesisStd();

@@ -2,6 +2,10 @@ package cn.bdqfork.aop.proxy.javassist;
 
 import cn.bdqfork.aop.proxy.AopProxy;
 import cn.bdqfork.aop.proxy.AopProxySupport;
+import cn.bdqfork.aop.proxy.TargetClassAware;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author bdq
@@ -25,6 +29,6 @@ public class JavassistProxy implements AopProxy {
         if (classLoader == null) {
             classLoader = targetClass.getClassLoader();
         }
-        return Proxy.newProxyInstance(classLoader, support.getInterfaces(), new JavassistInvocationHandler(support));
+        return Proxy.newProxyInstance(classLoader, support.getInterfaces().toArray(new Class[0]), new JavassistInvocationHandler(support));
     }
 }
