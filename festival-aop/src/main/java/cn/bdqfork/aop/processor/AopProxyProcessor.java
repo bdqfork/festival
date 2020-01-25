@@ -12,6 +12,7 @@ import cn.bdqfork.core.factory.processor.BeanFactoryPostProcessor;
 import cn.bdqfork.core.factory.processor.BeanPostProcessor;
 import org.aspectj.lang.annotation.Aspect;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -61,7 +62,10 @@ public class AopProxyProcessor implements BeanPostProcessor, BeanFactoryPostProc
         BeanDefinition beanDefinition = configurableBeanFactory.getBeanDefinition(beanName);
         Class<?> beanClass = beanDefinition.getBeanClass();
         config.setBeanClass(beanClass);
-        config.setInterfaces(beanClass.getInterfaces());
+
+        List<Class<?>> interfaces = Arrays.stream(beanClass.getInterfaces())
+                .collect(Collectors.toList());
+        config.setInterfaces(interfaces);
 
         if (beanDefinition instanceof ManagedBeanDefinition) {
             config.setOptimze(true);

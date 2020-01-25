@@ -1,5 +1,7 @@
 package cn.bdqfork.aop.proxy;
 
+import java.util.List;
+
 /**
  * @author bdq
  * @since 2020/1/14
@@ -10,7 +12,7 @@ public class AopProxyConfig {
 
     private Object bean;
 
-    private Class<?>[] interfaces;
+    private List<Class<?>> interfaces;
 
     private boolean optimze;
 
@@ -30,11 +32,11 @@ public class AopProxyConfig {
         this.bean = bean;
     }
 
-    public Class<?>[] getInterfaces() {
+    public List<Class<?>> getInterfaces() {
         return interfaces;
     }
 
-    public void setInterfaces(Class<?>[] interfaces) {
+    public void setInterfaces(List<Class<?>> interfaces) {
         this.interfaces = interfaces;
     }
 
