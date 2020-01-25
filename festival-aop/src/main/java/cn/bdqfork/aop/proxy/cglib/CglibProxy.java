@@ -2,8 +2,8 @@ package cn.bdqfork.aop.proxy.cglib;
 
 import cn.bdqfork.aop.proxy.AopProxy;
 import cn.bdqfork.aop.proxy.AopProxySupport;
-import cn.bdqfork.aop.proxy.FestivalProxy;
-import cn.bdqfork.aop.proxy.TargetClassAware;
+import cn.bdqfork.core.proxy.FestivalProxy;
+import cn.bdqfork.core.proxy.TargetClassAware;
 import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.Factory;

@@ -1,7 +1,8 @@
-package cn.bdqfork.aop.util;
+package cn.bdqfork.core.util;
 
-import cn.bdqfork.aop.proxy.FestivalProxy;
-import cn.bdqfork.aop.proxy.TargetClassAware;
+
+import cn.bdqfork.core.proxy.FestivalProxy;
+import cn.bdqfork.core.proxy.TargetClassAware;
 
 /**
  * @author bdq

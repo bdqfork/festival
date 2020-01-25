@@ -2,10 +2,9 @@ package cn.bdqfork.aop.proxy.javassist;
 
 import cn.bdqfork.aop.proxy.AopProxy;
 import cn.bdqfork.aop.proxy.AopProxySupport;
-import cn.bdqfork.aop.proxy.FestivalProxy;
-import cn.bdqfork.aop.proxy.TargetClassAware;
+import cn.bdqfork.core.proxy.FestivalProxy;
+import cn.bdqfork.core.proxy.TargetClassAware;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**

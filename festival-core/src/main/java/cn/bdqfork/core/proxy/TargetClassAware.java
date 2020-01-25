@@ -1,4 +1,4 @@
-package cn.bdqfork.aop.proxy;
+package cn.bdqfork.core.proxy;
 
 /**
  * @author bdq

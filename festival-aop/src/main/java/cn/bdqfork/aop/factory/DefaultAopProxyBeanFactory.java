@@ -1,7 +1,6 @@
 package cn.bdqfork.aop.factory;
 
 import cn.bdqfork.aop.proxy.AopProxySupport;
-import cn.bdqfork.aop.proxy.TargetClassAware;
 import cn.bdqfork.aop.proxy.cglib.CglibProxy;
 import cn.bdqfork.aop.proxy.javassist.JavassistProxy;
 
