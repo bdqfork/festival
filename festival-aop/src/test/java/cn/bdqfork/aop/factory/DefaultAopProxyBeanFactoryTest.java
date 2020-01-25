@@ -31,7 +31,8 @@ public class DefaultAopProxyBeanFactoryTest {
 
         TargetClassAware targetClassAware = (TargetClassAware) proxyBean;
         assert targetClassAware.getTargetClass().isAnnotationPresent(Named.class);
-        System.out.println(AopUtils.getTargetClass(proxyBean));
+
+        assert AopUtils.isProxy(proxyBean);
     }
 
     public interface ProxyInterface {

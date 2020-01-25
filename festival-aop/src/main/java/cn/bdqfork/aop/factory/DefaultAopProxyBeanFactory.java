@@ -14,7 +14,6 @@ public class DefaultAopProxyBeanFactory implements AopProxyBeanFactory {
     @Override
     public Object createAopProxyBean(AopProxySupport config) {
         if (!config.isOptimze() && config.getInterfaces() != null && config.getInterfaces().size() > 0) {
-            config.getInterfaces().add(TargetClassAware.class);
             return new JavassistProxy(config).getProxy();
         }
         return new CglibProxy(config).getProxy();
