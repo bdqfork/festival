@@ -6,9 +6,8 @@ import cn.bdqfork.core.exception.NoSuchBeanException;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
-import cn.bdqfork.mvc.WebSeverRunner;
 import cn.bdqfork.mvc.processer.VertxAware;
-import cn.bdqfork.mvc.proxy.VerticleProxyProcessor;
+import cn.bdqfork.mvc.processer.VerticleProxyProcessor;
 import cn.bdqfork.mvc.util.VertxUtils;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.reactivex.core.Vertx;
@@ -22,14 +21,19 @@ import java.util.concurrent.CountDownLatch;
  */
 @Slf4j
 public class WebApplicationContext extends AnnotationApplicationContext {
-    private static Vertx vertx = VertxUtils.getVertx();
+    private Vertx vertx;
 
     public WebApplicationContext(String... scanPaths) throws BeansException {
         super(scanPaths);
+
         vertx.eventBus().registerCodec(new HessianMessageCodec());
+
         ConfigurableBeanFactory beanFactory = getConfigurableBeanFactory();
+
         WebSeverRunner runner = beanFactory.getBean(WebSeverRunner.class);
+
         DeploymentOptions options;
+
         try {
             options = beanFactory.getBean(DeploymentOptions.class);
 
@@ -69,9 +73,19 @@ public class WebApplicationContext extends AnnotationApplicationContext {
     @Override
     protected void processEnvironment() throws BeansException {
         super.processEnvironment();
+        try {
+            vertx = getConfigurableBeanFactory().getBean(Vertx.class);
+        } catch (NoSuchBeanException e) {
+            if (log.isTraceEnabled()) {
+                log.trace("can't find Vertx, will use default!");
+            }
+            vertx = VertxUtils.getVertx();
+        }
+
         for (VertxAware vertxAware : getConfigurableBeanFactory().getBeans(VertxAware.class).values()) {
             vertxAware.setVertx(vertx);
         }
+
     }
 
     private void registerWebServer() throws BeansException {

@@ -216,7 +216,7 @@ public class BeanDefinition {
             beanDefinition.setInjectedConstructor(injectedConstructor);
             beanDefinition.setInjectedFields(injectedFields);
             beanDefinition.setInjectedSetters(injectedSetters);
-            beanDefinition.setResolved(true);
+            beanDefinition.setResolved(isResolved);
             return beanDefinition;
         }
     }

@@ -1,5 +1,6 @@
 package cn.bdqfork.mvc.processer;
 
+import cn.bdqfork.core.exception.BeansException;
 import io.vertx.reactivex.core.Vertx;
 
 /**
@@ -7,5 +8,5 @@ import io.vertx.reactivex.core.Vertx;
  * @since 2020/1/26
  */
 public interface VertxAware {
-    void setVertx(Vertx vertx);
+    void setVertx(Vertx vertx) throws BeansException;
 }

@@ -8,12 +8,22 @@ import cn.bdqfork.core.factory.AbstractBeanFactory;
 import cn.bdqfork.core.factory.BeanNameGenerator;
 import cn.bdqfork.core.factory.SimpleBeanNameGenerator;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
+import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.ReflectUtils;
+import cn.bdqfork.core.util.StringUtils;
+import cn.bdqfork.value.Configration;
 import cn.bdqfork.value.reader.ResourceReader;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * @author bdq
@@ -69,7 +79,60 @@ public abstract class AbstractBeanDefinitionReader {
             beanDefinitions.put(beanDefinition.getBeanName(), beanDefinition);
 
         }
+
+        Set<Class<?>> configBeanClasses = beanClasses.stream()
+                .filter(beanClass -> AnnotationUtils.isAnnotationPresent(beanClass, Configration.class))
+                .collect(Collectors.toSet());
+
+        for (Class<?> configBeanClass : configBeanClasses) {
+            resolveFactoryBean(beanDefinitions, configBeanClass);
+        }
         return beanDefinitions;
+    }
+
+    private void resolveFactoryBean(Map<String, BeanDefinition> beanDefinitions, Class<?> configBeanClass) throws ResolvedException, ConflictedBeanException {
+        for (Method method : configBeanClass.getDeclaredMethods()) {
+            if (AnnotationUtils.isAnnotationPresent(method, Named.class)) {
+
+                String methodName = method.getName();
+                if (Modifier.isAbstract(method.getModifiers())) {
+                    throw new ResolvedException(String.format("method %s.%s is abstract !",
+                            method.getDeclaringClass().getCanonicalName(), methodName));
+                }
+
+                if (method.getGenericReturnType().getTypeName().equals("void")) {
+                    throw new ResolvedException(String.format("factory method %s.%s should have a return value !",
+                            method.getDeclaringClass().getCanonicalName(), methodName));
+                }
+
+                String scope = BeanDefinition.PROTOTYPE;
+
+                if (AnnotationUtils.isAnnotationPresent(method, Singleton.class)) {
+                    scope = BeanDefinition.SINGLETON;
+                }
+
+                String beanName;
+                Named named = AnnotationUtils.getMergedAnnotation(method, Named.class);
+                if (named == null || StringUtils.isEmpty(named.value())) {
+                    beanName = getBeanNameGenerator().generateBeanName(method.getReturnType());
+                } else {
+                    beanName = named.value();
+                }
+
+                BeanDefinition beanDefinition = BeanDefinition.builder()
+                        .setBeanName(beanName)
+                        .setBeanClass(method.getReturnType())
+                        .setScope(scope)
+                        .setConstructor(method)
+                        .build();
+
+                if (beanDefinitions.containsKey(beanDefinition.getBeanName())) {
+                    throw new ConflictedBeanException(String.format("the entity named %s has conflicted ! ", beanName));
+                }
+
+                beanDefinitions.put(beanDefinition.getBeanName(), beanDefinition);
+            }
+        }
     }
 
     protected abstract BeanDefinition createBeanDefinition(String beanName, Class<?> clazz) throws ScopeException;

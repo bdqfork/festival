@@ -1,13 +1,15 @@
-package cn.bdqfork.mvc;
+package cn.bdqfork.mvc.context;
 
 import cn.bdqfork.context.aware.BeanFactoryAware;
+import cn.bdqfork.context.aware.ResourceReaderAware;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.BeanFactory;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.util.StringUtils;
-import cn.bdqfork.mvc.annotation.Route;
+import cn.bdqfork.mvc.annotation.RouteMapping;
 import cn.bdqfork.mvc.handler.GenericMappingHandler;
+import cn.bdqfork.value.reader.ResourceReader;
 import io.reactivex.Completable;
 import io.vertx.reactivex.core.AbstractVerticle;
 import io.vertx.reactivex.core.http.HttpServer;
@@ -24,11 +26,12 @@ import java.util.stream.Collectors;
  * @since 2020/1/21
  */
 @Slf4j
-public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware {
+public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware, ResourceReaderAware {
+    private static final String DEFAULT_HOST = "localhost";
+    private static final Integer DEFAULT_PORT = 8080;
     private ConfigurableBeanFactory configurableBeanFactory;
     private HttpServer httpServer;
-
-
+    private ResourceReader resourceReader;
 
     @Override
     public Completable rxStart() {
@@ -40,7 +43,7 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
 
             Class<?> beanClass = beanDefinition.getBeanClass();
 
-            String baseUrl = beanClass.getAnnotation(Route.class).value();
+            String baseUrl = beanClass.getAnnotation(RouteMapping.class).value();
 
             for (Method declaredMethod : beanClass.getDeclaredMethods()) {
 
@@ -49,21 +52,45 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
                 new GenericMappingHandler(vertx).handle(router, bean, baseUrl, declaredMethod);
             }
         }
+
         router.route().handler(BodyHandler.create());
 
         httpServer = vertx.createHttpServer();
+        httpServer.requestHandler(router);
 
-        return httpServer
-                .requestHandler(router)
-                .rxListen(8080)
-                .toCompletable();
+        String host = resourceReader.readProperty("server.host");
+        Integer port = resourceReader.readProperty("server.port");
+
+        if (StringUtils.isEmpty(host)) {
+            host = DEFAULT_HOST;
+        }
+
+        if (port == null) {
+            port = DEFAULT_PORT;
+        }
+
+        String finalHost = host;
+        Integer finalPort = port;
+
+        httpServer.rxListen(port, host)
+                .subscribe(httpServer -> {
+                    if (log.isInfoEnabled()) {
+                        log.info("stated http server by host:{} and port:{}!", finalHost, finalPort);
+                    }
+                }, e -> {
+                    if (log.isErrorEnabled()) {
+                        log.error("failed to start http server by host:{} and port:{}!", finalHost, finalPort, e);
+                    }
+                    vertx.close();
+                });
+        return super.rxStart();
     }
 
     private List<BeanDefinition> getRouteBeanDefinitions() {
         return configurableBeanFactory.getBeanDefinitions()
                 .values()
                 .stream()
-                .filter(beanDefinition -> beanDefinition.getBeanClass().isAnnotationPresent(Route.class))
+                .filter(beanDefinition -> beanDefinition.getBeanClass().isAnnotationPresent(RouteMapping.class))
                 .collect(Collectors.toList());
     }
 
@@ -85,4 +112,8 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
         configurableBeanFactory = (ConfigurableBeanFactory) beanFactory;
     }
 
+    @Override
+    public void setResourceReader(ResourceReader resourceReader) throws BeansException {
+        this.resourceReader = resourceReader;
+    }
 }

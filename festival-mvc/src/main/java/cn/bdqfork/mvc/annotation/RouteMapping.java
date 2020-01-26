@@ -9,6 +9,6 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD})
-public @interface Route {
+public @interface RouteMapping {
     String value() default "";
 }

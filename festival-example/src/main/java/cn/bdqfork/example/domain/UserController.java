@@ -1,11 +1,8 @@
 package cn.bdqfork.example.domain;
 
 import cn.bdqfork.mvc.annotation.GetMapping;
-import cn.bdqfork.mvc.annotation.Route;
+import cn.bdqfork.mvc.annotation.RouteMapping;
 import io.reactivex.Flowable;
-import io.reactivex.disposables.CompositeDisposable;
-import io.vertx.core.eventbus.Message;
-import io.vertx.reactivex.core.http.HttpServerResponse;
 import io.vertx.reactivex.ext.web.RoutingContext;
 
 import javax.inject.Inject;
@@ -16,7 +13,7 @@ import javax.inject.Singleton;
  * @author bdq
  * @since 2020/1/21
  */
-@Route("/users")
+@RouteMapping("/users")
 @Singleton
 @Named
 public class UserController {

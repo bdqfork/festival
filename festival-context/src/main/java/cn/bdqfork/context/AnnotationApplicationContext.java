@@ -1,8 +1,9 @@
 package cn.bdqfork.context;
 
 import cn.bdqfork.context.aware.BeanFactoryAware;
-import cn.bdqfork.context.factory.AnnotationBeanDefinitionReader;
 import cn.bdqfork.context.aware.ClassLoaderAware;
+import cn.bdqfork.context.aware.ResourceReaderAware;
+import cn.bdqfork.context.factory.AnnotationBeanDefinitionReader;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.AbstractBeanFactory;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
@@ -41,6 +42,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
      * bean描述信息读取器
      */
     private AnnotationBeanDefinitionReader beanDefinitionReader;
+    private ResourceReader resourceReader;
 
     static {
         try {
@@ -88,7 +90,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
 
         delegateBeanFactory.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
 
-        ResourceReader resourceReader = delegateBeanFactory.getBean(beanDefinition.getBeanName());
+        resourceReader = delegateBeanFactory.getBean(beanDefinition.getBeanName());
 
         AnnotationBeanDefinitionReader annotationBeanDefinitionReader = new AnnotationBeanDefinitionReader(JSR250);
 
@@ -187,7 +189,9 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         for (ClassLoaderAware classLoaderAware : delegateBeanFactory.getBeans(ClassLoaderAware.class).values()) {
             classLoaderAware.setClassLoader(classLoader);
         }
-
+        for (ResourceReaderAware resourceReaderAware : delegateBeanFactory.getBeans(ResourceReaderAware.class).values()) {
+            resourceReaderAware.setResourceReader(resourceReader);
+        }
     }
 
     protected void registerBeanPostProcessor() throws BeansException {

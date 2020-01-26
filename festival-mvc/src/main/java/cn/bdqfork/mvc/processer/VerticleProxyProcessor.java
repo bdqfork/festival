@@ -1,19 +1,16 @@
-package cn.bdqfork.mvc.proxy;
+package cn.bdqfork.mvc.processer;
 
 import cn.bdqfork.aop.processor.AopProxyProcessor;
 import cn.bdqfork.aop.proxy.javassist.Proxy;
 import cn.bdqfork.context.aware.ClassLoaderAware;
 import cn.bdqfork.core.exception.BeansException;
-import cn.bdqfork.core.factory.DisposableBean;
-import cn.bdqfork.core.factory.processor.BeanPostProcessor;
 import cn.bdqfork.core.util.AopUtils;
 import cn.bdqfork.mvc.annotation.Verticle;
 import cn.bdqfork.mvc.context.ServiceVerticle;
 import cn.bdqfork.mvc.processer.VertxAware;
+import cn.bdqfork.mvc.proxy.VerticleProxyHandler;
 import io.vertx.reactivex.core.Vertx;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.concurrent.CountDownLatch;
 
 /**
  * @author bdq
@@ -30,14 +27,25 @@ public class VerticleProxyProcessor extends AopProxyProcessor implements ClassLo
         Class<?> targetClass = AopUtils.getTargetClass(bean);
         if (targetClass.isAnnotationPresent(Verticle.class)) {
             ServiceVerticle verticle = new ServiceVerticle(bean);
-            vertx.deployVerticle(verticle);
+            vertx.rxDeployVerticle(verticle)
+                    .doOnError(e -> {
+                        if (log.isErrorEnabled()) {
+                            log.error("failed to deploy service {} of {}!", beanName, targetClass.getCanonicalName(), e);
+                        }
+                        vertx.close();
+                    })
+                    .subscribe(id -> {
+                        if (log.isTraceEnabled()) {
+                            log.trace("deployed service {} of {} by id {}!", beanName, targetClass.getCanonicalName(), id);
+                        }
+                    });
             return Proxy.newProxyInstance(classLoader, targetClass.getInterfaces(), new VerticleProxyHandler(vertx, targetClass));
         }
         return bean;
     }
 
     @Override
-    public void setVertx(Vertx vertx) {
+    public void setVertx(Vertx vertx) throws BeansException {
         this.vertx = vertx;
     }
 
