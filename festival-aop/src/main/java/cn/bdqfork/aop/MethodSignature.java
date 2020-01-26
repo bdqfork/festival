@@ -1,5 +1,6 @@
 package cn.bdqfork.aop;
 
+import cn.bdqfork.core.util.ReflectUtils;
 import org.aspectj.lang.Signature;
 
 import java.lang.reflect.Method;
@@ -18,24 +19,14 @@ public class MethodSignature implements Signature {
      */
     private Method method;
 
-    public MethodSignature(Class<?> targetClass, Method method) {
-        this.targetClass = targetClass;
+    public MethodSignature(Method method) {
         this.method = method;
+        this.targetClass = method.getDeclaringClass();
     }
 
     @Override
     public String toShortString() {
-        Class<?>[] parameterTypes = method.getParameterTypes();
-        StringBuilder sb = new StringBuilder();
-        sb.append("(");
-        if (parameterTypes.length > 0) {
-            sb.append(parameterTypes[0]);
-            for (int i = 1; i < parameterTypes.length; i++) {
-                sb.append(",").append(parameterTypes[i]);
-            }
-        }
-        sb.append(")");
-        return getName() + sb.toString();
+        return ReflectUtils.getSignature(method);
     }
 
     @Override

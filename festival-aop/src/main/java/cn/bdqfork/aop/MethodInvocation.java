@@ -41,7 +41,7 @@ public class MethodInvocation implements ProceedingJoinPoint {
         this.method = method;
         this.args = args;
         this.beforeAdvices = beforeAdvices;
-        this.staticPart = new StaticPartImpl(target.getClass(), method);
+        this.staticPart = new StaticPartImpl(method);
     }
 
     @Override
@@ -121,8 +121,8 @@ public class MethodInvocation implements ProceedingJoinPoint {
     static class StaticPartImpl implements StaticPart {
         private Signature signature;
 
-        private StaticPartImpl(Class<?> targetClass, Method method) {
-            this.signature = new MethodSignature(targetClass, method);
+        private StaticPartImpl(Method method) {
+            this.signature = new MethodSignature(method);
         }
 
         @Override

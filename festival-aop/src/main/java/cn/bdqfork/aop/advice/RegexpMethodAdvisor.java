@@ -12,7 +12,7 @@ public class RegexpMethodAdvisor extends AbstractAdvisor {
 
     @Override
     public boolean isMatch(Method method, Class<?> adviceType) {
-        MethodSignature methodSignature = new MethodSignature(adviceType, method);
+        MethodSignature methodSignature = new MethodSignature(method);
         String fullyMethodName = methodSignature.toLongString();
         return adviceType.isAssignableFrom(getAdvice().getClass()) && fullyMethodName.matches(getPointcut());
     }
