@@ -117,7 +117,7 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
         Object value = resovleDependence(injectedPoint, beanName);
         ReflectUtils.makeAccessible(field);
         try {
-            field.set(instance, value);
+            ReflectUtils.setValue(instance, field, value);
         } catch (IllegalAccessException e) {
             throw new FailedInjectedFieldException(e);
         }
@@ -130,9 +130,8 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
             log.trace("do injected method {} for bean {} !", method.getName(), method.getDeclaringClass().getName());
         }
         Object arg = resovleDependence(injectedPoint, beanName);
-        ReflectUtils.makeAccessible(method);
         try {
-            method.invoke(instance, arg);
+            ReflectUtils.invokeMethod(instance, method, arg);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new FailedInjectedMethodException(e);
         }

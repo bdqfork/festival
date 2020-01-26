@@ -104,20 +104,24 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
                 log.trace("register aop processor !");
             }
 
-            Class<?> aopProcessorClass;
-            try {
-                aopProcessorClass = classLoader.loadClass("cn.bdqfork.aop.processor.AopProxyProcessor");
-            } catch (ClassNotFoundException e) {
-                throw new BeansException(e);
-            }
-
-            BeanDefinition beanDefinition = BeanDefinition.builder()
-                    .setBeanName("aopProcessor")
-                    .setBeanClass(aopProcessorClass)
-                    .setScope(BeanDefinition.SINGLETON)
-                    .build();
-            this.delegateBeanFactory.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
+            registerProxyProcessorBean();
         }
+    }
+
+    protected void registerProxyProcessorBean() throws BeansException {
+        Class<?> aopProcessorClass;
+        try {
+            aopProcessorClass = classLoader.loadClass("cn.bdqfork.aop.processor.AopProxyProcessor");
+        } catch (ClassNotFoundException e) {
+            throw new BeansException(e);
+        }
+
+        BeanDefinition beanDefinition = BeanDefinition.builder()
+                .setBeanName("aopProcessor")
+                .setBeanClass(aopProcessorClass)
+                .setScope(BeanDefinition.SINGLETON)
+                .build();
+        this.delegateBeanFactory.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
     }
 
     @Override

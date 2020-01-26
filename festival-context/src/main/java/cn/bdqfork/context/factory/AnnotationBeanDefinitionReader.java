@@ -124,13 +124,13 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
 
             InjectedPoint injectedPoint = new InjectedPoint(type);
 
+            String dependOn = generateDependentName(type, getBeanDefinitions());
+
+            beanDefinition.addDependOn(dependOn);
+
+            beanFactory.registerDependentForBean(beanDefinition.getBeanName(), dependOn);
+
             multInjectedPoint.addInjectedPoint(injectedPoint);
-
-            String beanName = generateDependentName(type, getBeanDefinitions());
-
-            beanDefinition.addDependOn(beanName);
-
-            beanFactory.registerDependentForBean(beanDefinition.getBeanName(), beanName);
         }
 
         beanDefinition.setInjectedConstructor(multInjectedPoint);
@@ -187,16 +187,21 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
 
                 InjectedPoint injectedPoint = getFieldInjectedPoint(field, type);
 
-                fieldInjectedPoints.put(field.getName(), injectedPoint);
+                String dependOn = injectedPoint.getBeanName();
 
-                String beanName = generateDependentName(type, getBeanDefinitions());
+                if (StringUtils.isEmpty(dependOn)) {
+
+                    dependOn = generateDependentName(type, getBeanDefinitions());
+                }
 
                 if (beanDefinition.isPrototype()) {
 
-                    beanDefinition.addDependOn(beanName);
+                    beanDefinition.addDependOn(dependOn);
 
-                    beanFactory.registerDependentForBean(beanDefinition.getBeanName(), beanName);
+                    beanFactory.registerDependentForBean(beanDefinition.getBeanName(), dependOn);
                 }
+
+                fieldInjectedPoints.put(field.getName(), injectedPoint);
             }
 
         }
@@ -228,10 +233,8 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
 
         Named named = AnnotationUtils.getMergedAnnotation(field, Named.class);
         if (named != null) {
-
             return new InjectedPoint(named.value(), true);
         } else {
-
             return new InjectedPoint(type);
         }
     }
@@ -284,11 +287,14 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
 
                     methods.put(methodName, injectedPoint);
 
-                    String beanName = generateDependentName(type, getBeanDefinitions());
+                    String dependOn = injectedPoint.getBeanName();
+                    if (StringUtils.isEmpty(dependOn)) {
+                        dependOn = generateDependentName(type, getBeanDefinitions());
+                    }
 
                     if (beanDefinition.isPrototype()) {
-                        beanDefinition.addDependOn(beanName);
-                        beanFactory.registerDependentForBean(beanDefinition.getBeanName(), beanName);
+                        beanDefinition.addDependOn(dependOn);
+                        beanFactory.registerDependentForBean(beanDefinition.getBeanName(), dependOn);
                     }
 
                 }

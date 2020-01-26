@@ -28,6 +28,8 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
     private ConfigurableBeanFactory configurableBeanFactory;
     private HttpServer httpServer;
 
+
+
     @Override
     public Completable rxStart() {
         Router router = Router.router(vertx);

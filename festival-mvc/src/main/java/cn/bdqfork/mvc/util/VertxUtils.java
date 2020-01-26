@@ -8,7 +8,7 @@ import io.vertx.reactivex.core.Vertx;
  * @since 2020/1/21
  */
 public class VertxUtils {
-    private static Vertx vertx;
+    private static final Vertx vertx;
 
     static {
         vertx = Vertx.vertx();

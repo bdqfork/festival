@@ -17,7 +17,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Named
 @Documented
 @Retention(RUNTIME)
-@Target({ElementType.ANNOTATION_TYPE,ElementType.TYPE})
+@Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
 public @interface Verticle {
     String value() default "";
 }

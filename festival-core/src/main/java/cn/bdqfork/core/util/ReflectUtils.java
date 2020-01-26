@@ -146,4 +146,9 @@ public class ReflectUtils {
         makeAccessible(method);
         return method.invoke(object, args);
     }
+
+    public static void setValue(Object object, Field field, Object value) throws IllegalAccessException {
+        makeAccessible(field);
+        field.set(object, value);
+    }
 }
