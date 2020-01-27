@@ -46,7 +46,7 @@ public class GenericResourceReader implements ResourceReader {
     }
 
     @Override
-    public Object readProperty(String propertyName) throws Throwable {
+    public <T> T readProperty(String propertyName) {
         return resourceReader.readProperty(propertyName);
     }
 }

@@ -1,5 +1,8 @@
 package cn.bdqfork.context;
 
+import cn.bdqfork.context.aware.BeanFactoryAware;
+import cn.bdqfork.context.aware.ClassLoaderAware;
+import cn.bdqfork.context.aware.ResourceReaderAware;
 import cn.bdqfork.context.factory.AnnotationBeanDefinitionReader;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.AbstractBeanFactory;
@@ -9,7 +12,6 @@ import cn.bdqfork.core.factory.DefaultJSR250BeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.processor.BeanFactoryPostProcessor;
 import cn.bdqfork.core.factory.processor.BeanPostProcessor;
-import cn.bdqfork.core.factory.processor.ClassLoaderAware;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import cn.bdqfork.value.reader.GenericResourceReader;
 import cn.bdqfork.value.reader.ResourceReader;
@@ -40,10 +42,8 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
      * bean描述信息读取器
      */
     private AnnotationBeanDefinitionReader beanDefinitionReader;
+    private ResourceReader resourceReader;
 
-    /**
-     * 判断是否使用jsr250注解
-     */
     static {
         try {
             classLoader.loadClass("javax.annotation.Resource");
@@ -59,12 +59,6 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         }
     }
 
-    /**
-     * 创建实例时扫描路径
-     *
-     * @param scanPaths 要扫描的路径
-     * @throws BeansException
-     */
     public AnnotationApplicationContext(String... scanPaths) throws BeansException {
         super(scanPaths);
         log.info("context is ready to use !");
@@ -96,7 +90,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
 
         delegateBeanFactory.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
 
-        ResourceReader resourceReader = delegateBeanFactory.getBean(beanDefinition.getBeanName());
+        resourceReader = delegateBeanFactory.getBean(beanDefinition.getBeanName());
 
         AnnotationBeanDefinitionReader annotationBeanDefinitionReader = new AnnotationBeanDefinitionReader(JSR250);
 
@@ -112,28 +106,38 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
                 log.trace("register aop processor !");
             }
 
-            Class<?> aopProcessorClass;
-            try {
-                aopProcessorClass = classLoader.loadClass("cn.bdqfork.aop.processor.AopProxyProcessor");
-            } catch (ClassNotFoundException e) {
-                throw new BeansException(e);
-            }
-
-            BeanDefinition beanDefinition = BeanDefinition.builder()
-                    .setBeanName("aopProcessor")
-                    .setBeanClass(aopProcessorClass)
-                    .setScope(BeanDefinition.SINGLETON)
-                    .build();
-            this.delegateBeanFactory.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
+            registerProxyProcessorBean();
         }
     }
 
-    @Override
-    protected void registerHook() {
-        if (log.isTraceEnabled()) {
-            log.trace("register hook !");
+    protected void registerProxyProcessorBean() throws BeansException {
+        Class<?> aopProcessorClass;
+        try {
+            aopProcessorClass = classLoader.loadClass("cn.bdqfork.aop.processor.AopProxyProcessor");
+        } catch (ClassNotFoundException e) {
+            throw new BeansException(e);
         }
-        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
+
+        BeanDefinition beanDefinition = BeanDefinition.builder()
+                .setBeanName("aopProcessor")
+                .setBeanClass(aopProcessorClass)
+                .setScope(BeanDefinition.SINGLETON)
+                .build();
+        this.delegateBeanFactory.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
+    }
+
+    @Override
+    protected void registerShutdownHook() {
+        if (log.isTraceEnabled()) {
+            log.trace("register shutdown hook !");
+        }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                close();
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
+            }
+        }));
     }
 
     @Override
@@ -147,7 +151,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         refresh();
     }
 
-    private void refresh() throws BeansException {
+    protected void refresh() throws BeansException {
 
         registerBeanDefinition();
 
@@ -158,7 +162,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         registerBeanPostProcessor();
     }
 
-    private void registerBeanDefinition() throws BeansException {
+    protected void registerBeanDefinition() throws BeansException {
         if (log.isTraceEnabled()) {
             log.trace("register BeanDefinition !");
         }
@@ -178,33 +182,42 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         }
     }
 
-    private void processEnvironment() throws BeansException {
+    protected void processEnvironment() throws BeansException {
         if (log.isTraceEnabled()) {
             log.trace("process environment !");
         }
         for (ClassLoaderAware classLoaderAware : delegateBeanFactory.getBeans(ClassLoaderAware.class).values()) {
             classLoaderAware.setClassLoader(classLoader);
         }
-
+        for (ResourceReaderAware resourceReaderAware : delegateBeanFactory.getBeans(ResourceReaderAware.class).values()) {
+            resourceReaderAware.setResourceReader(resourceReader);
+        }
     }
 
-    private void registerBeanPostProcessor() throws BeansException {
+    protected void registerBeanPostProcessor() throws BeansException {
         if (log.isTraceEnabled()) {
             log.trace("register bean processor !");
         }
-
         for (BeanPostProcessor beanPostProcessor : delegateBeanFactory.getBeans(BeanPostProcessor.class).values()) {
             delegateBeanFactory.addPostBeanProcessor(beanPostProcessor);
         }
     }
 
-    private void processBeanFactory() throws BeansException {
+    protected void processBeanFactory() throws BeansException {
         if (log.isTraceEnabled()) {
             log.trace("register BeanFactory processor !");
         }
 
         for (BeanFactoryPostProcessor factoryPostProcessor : delegateBeanFactory.getBeans(BeanFactoryPostProcessor.class).values()) {
             factoryPostProcessor.postProcessBeanFactory(delegateBeanFactory);
+        }
+
+        if (log.isTraceEnabled()) {
+            log.trace("register BeanFactoryAware processor !");
+        }
+
+        for (BeanFactoryAware beanFactoryAware : delegateBeanFactory.getBeans(BeanFactoryAware.class).values()) {
+            beanFactoryAware.setBeanFactory(delegateBeanFactory);
         }
 
     }
@@ -216,9 +229,18 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
     }
 
     @Override
-    public void close() {
+    public void close() throws Exception {
         log.info("closing context !");
-        delegateBeanFactory.destroySingletons();
+        synchronized (Object.class) {
+            if (!isClosed()) {
+                doClose();
+            }
+            closed = true;
+        }
         log.info("closed context !");
+    }
+
+    protected void doClose() throws InterruptedException {
+        delegateBeanFactory.destroySingletons();
     }
 }

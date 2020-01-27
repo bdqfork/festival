@@ -94,7 +94,7 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
     public Object getSingleton(String beanName, Provider<?> provider) throws BeansException {
         synchronized (singletons) {
             if (singletons.containsKey(beanName)) {
-                throw new BeansException("");
+                throw new BeansException("conflict bean " + beanName + "!");
             }
             Object singleton = provider.get();
             addSingleton(beanName, singleton);

@@ -129,7 +129,10 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
     public Object resovleDependence(InjectedPoint injectedPoint, String beanName) throws UnsatisfiedBeanException {
         if (log.isTraceEnabled()) {
             log.trace("resolve dependence beanName {}, type {} and require is {} for bean {} with injected point !",
-                    injectedPoint.getBeanName(), injectedPoint.getType().getTypeName(), injectedPoint.isRequire(), beanName);
+                    injectedPoint.getBeanName(),
+                    injectedPoint.getType() == null ? null : injectedPoint.getType().getTypeName(),
+                    injectedPoint.isRequire(),
+                    beanName);
         }
         if (!containBean(beanName)) {
             throw new UnsatisfiedBeanException(String.format("there is no such bean named %s !", beanName));

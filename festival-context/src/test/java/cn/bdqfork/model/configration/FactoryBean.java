@@ -15,4 +15,11 @@ public class FactoryBean {
     public Server getServer() {
         return server;
     }
+
+    @Override
+    public String toString() {
+        return "FactoryBean{" +
+                "server=" + server +
+                '}';
+    }
 }

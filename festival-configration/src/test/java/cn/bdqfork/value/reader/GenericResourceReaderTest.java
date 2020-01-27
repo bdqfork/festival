@@ -3,7 +3,6 @@ package cn.bdqfork.value.reader;
 import org.junit.Test;
 
 
-
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -14,8 +13,10 @@ public class GenericResourceReaderTest {
     @Test
     public void testLoadYaml() throws Throwable {
         ResourceReader resourceReader = new GenericResourceReader("test.yaml");
-        assertEquals(resourceReader.readProperty("server.localhost"), "127.0.0.1");
-        assertEquals(resourceReader.readProperty("server.port"), 80);
+        String host = resourceReader.readProperty("server.localhost");
+        assert host.equals("127.0.0.1");
+        Integer port = resourceReader.readProperty("server.port");
+        assert port == 80;
     }
 
     @Test

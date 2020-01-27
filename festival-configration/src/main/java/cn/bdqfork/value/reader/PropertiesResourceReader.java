@@ -28,8 +28,9 @@ public class PropertiesResourceReader extends AbstractResourceReader {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Object readProperty(String propertyName) throws Throwable {
-        return properties.getProperty(propertyName);
+    public <T> T readProperty(String propertyName) {
+        return (T) properties.getProperty(propertyName);
     }
 }

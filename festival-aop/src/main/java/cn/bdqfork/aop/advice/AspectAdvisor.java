@@ -14,9 +14,7 @@ public class AspectAdvisor extends AbstractAdvisor {
     public boolean isMatch(Method method, Class<?> adviceType) {
         AspectAdvice aspectAdvice = (AspectAdvice) getAdvice();
 
-        Object adviceInstance = aspectAdvice.getAspectInstance();
-
-        MethodSignature methodSignature = new MethodSignature(adviceInstance.getClass(), method);
+        MethodSignature methodSignature = new MethodSignature(method);
         String fullyMethodName = methodSignature.toLongString();
 
         return adviceType.isAssignableFrom(aspectAdvice.getClass()) && fullyMethodName.matches(getPointcut());

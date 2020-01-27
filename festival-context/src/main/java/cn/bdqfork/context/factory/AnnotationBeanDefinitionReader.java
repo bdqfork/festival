@@ -1,6 +1,5 @@
 package cn.bdqfork.context.factory;
 
-import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.ResolvedException;
 import cn.bdqfork.core.exception.ScopeException;
 import cn.bdqfork.core.factory.AbstractBeanFactory;
@@ -90,15 +89,21 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
     protected void resolveConstructor(BeanDefinition beanDefinition, AbstractBeanFactory beanFactory) throws ResolvedException {
         Class<?> candidate = beanDefinition.getBeanClass();
 
-        Constructor<?> constructor = resolveInjectedConstructor(candidate);
+        Executable executable = beanDefinition.getConstructor();
 
-        if (constructor == null) {
-            return;
+        if (executable == null) {
+
+            executable = resolveInjectedConstructor(candidate);
+
+            if (executable == null) {
+                return;
+            }
+
         }
 
-        beanDefinition.setConstructor(constructor);
+        beanDefinition.setConstructor(executable);
 
-        setMultInjectedPoint(beanDefinition, beanFactory, constructor);
+        setMultInjectedPoint(beanDefinition, beanFactory, executable);
     }
 
     private Constructor<?> resolveInjectedConstructor(Class<?> candidate) throws ResolvedException {
@@ -124,13 +129,13 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
 
             InjectedPoint injectedPoint = new InjectedPoint(type);
 
+            String dependOn = generateDependentName(type, getBeanDefinitions());
+
+            beanDefinition.addDependOn(dependOn);
+
+            beanFactory.registerDependentForBean(beanDefinition.getBeanName(), dependOn);
+
             multInjectedPoint.addInjectedPoint(injectedPoint);
-
-            String beanName = generateDependentName(type, getBeanDefinitions());
-
-            beanDefinition.addDependOn(beanName);
-
-            beanFactory.registerDependentForBean(beanDefinition.getBeanName(), beanName);
         }
 
         beanDefinition.setInjectedConstructor(multInjectedPoint);
@@ -187,16 +192,21 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
 
                 InjectedPoint injectedPoint = getFieldInjectedPoint(field, type);
 
-                fieldInjectedPoints.put(field.getName(), injectedPoint);
+                String dependOn = injectedPoint.getBeanName();
 
-                String beanName = generateDependentName(type, getBeanDefinitions());
+                if (StringUtils.isEmpty(dependOn)) {
+
+                    dependOn = generateDependentName(type, getBeanDefinitions());
+                }
 
                 if (beanDefinition.isPrototype()) {
 
-                    beanDefinition.addDependOn(beanName);
+                    beanDefinition.addDependOn(dependOn);
 
-                    beanFactory.registerDependentForBean(beanDefinition.getBeanName(), beanName);
+                    beanFactory.registerDependentForBean(beanDefinition.getBeanName(), dependOn);
                 }
+
+                fieldInjectedPoints.put(field.getName(), injectedPoint);
             }
 
         }
@@ -228,10 +238,8 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
 
         Named named = AnnotationUtils.getMergedAnnotation(field, Named.class);
         if (named != null) {
-
             return new InjectedPoint(named.value(), true);
         } else {
-
             return new InjectedPoint(type);
         }
     }
@@ -244,102 +252,55 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
 
         for (Method method : candidate.getDeclaredMethods()) {
 
-            if (AnnotationUtils.isAnnotationPresent(candidate, Configration.class) && AnnotationUtils.isAnnotationPresent(method, Named.class)) {
-
+            if (checkIfInjectedPoint(method)) {
                 String methodName = method.getName();
+
                 if (Modifier.isAbstract(method.getModifiers())) {
-                    throw new ResolvedException(String.format("method %s.%s is abstract !",
+                    throw new ResolvedException(String.format("method %s.%s is abstract, it can't be injected!",
                             method.getDeclaringClass().getCanonicalName(), methodName));
                 }
 
-                if (method.getGenericReturnType().getTypeName().equals("void")) {
-                    throw new ResolvedException(String.format("factory method %s.%s should have a return value !",
+                if (!methodName.startsWith("set") || method.getParameterCount() != 1) {
+                    throw new ResolvedException(String.format("method %s.%s is not setter, it can't be injected!",
                             method.getDeclaringClass().getCanonicalName(), methodName));
                 }
 
-                try {
-                    resolveFactoryMethod(method, beanFactory);
-                } catch (BeansException e) {
-                    throw new ResolvedException(e);
+                Type type = method.getGenericParameterTypes()[0];
+
+                InjectedPoint injectedPoint = getSetterInjectedPoint(method, type);
+
+                methods.put(methodName, injectedPoint);
+
+                String dependOn = injectedPoint.getBeanName();
+                if (StringUtils.isEmpty(dependOn)) {
+                    dependOn = generateDependentName(type, getBeanDefinitions());
                 }
 
-            } else {
-
-                if (checkIfInjectedPoint(method)) {
-                    String methodName = method.getName();
-
-                    if (Modifier.isAbstract(method.getModifiers())) {
-                        throw new ResolvedException(String.format("method %s.%s is abstract, it can't be injected!",
-                                method.getDeclaringClass().getCanonicalName(), methodName));
-                    }
-
-                    if (!methodName.startsWith("set") || method.getParameterCount() != 1) {
-                        throw new ResolvedException(String.format("method %s.%s is not setter, it can't be injected!",
-                                method.getDeclaringClass().getCanonicalName(), methodName));
-                    }
-
-                    Type type = method.getGenericParameterTypes()[0];
-
-                    InjectedPoint injectedPoint = getSetterInjectedPoint(method, type);
-
-                    methods.put(methodName, injectedPoint);
-
-                    String beanName = generateDependentName(type, getBeanDefinitions());
-
-                    if (beanDefinition.isPrototype()) {
-                        beanDefinition.addDependOn(beanName);
-                        beanFactory.registerDependentForBean(beanDefinition.getBeanName(), beanName);
-                    }
-
+                if (beanDefinition.isPrototype()) {
+                    beanDefinition.addDependOn(dependOn);
+                    beanFactory.registerDependentForBean(beanDefinition.getBeanName(), dependOn);
                 }
 
-                if (JSR250 && method.isAnnotationPresent(PostConstruct.class)) {
-                    if (method.getParameterCount() > 0) {
-                        throw new ResolvedException("the method annotated by @PostConstruct should have no parameters !");
-                    }
-                    ManagedBeanDefinition managedBeanDefinition = (ManagedBeanDefinition) beanDefinition;
-                    managedBeanDefinition.setInitializingMethod(method.getName());
-                }
+            }
 
-                if (JSR250 && method.isAnnotationPresent(PreDestroy.class)) {
-                    if (method.getParameterCount() > 0) {
-                        throw new ResolvedException("the method annotated by @PostConstruct should have no parameters !");
-                    }
-                    ManagedBeanDefinition managedBeanDefinition = (ManagedBeanDefinition) beanDefinition;
-                    managedBeanDefinition.setDestroyMethod(method.getName());
+            if (JSR250 && method.isAnnotationPresent(PostConstruct.class)) {
+                if (method.getParameterCount() > 0) {
+                    throw new ResolvedException("the method annotated by @PostConstruct should have no parameters !");
                 }
+                ManagedBeanDefinition managedBeanDefinition = (ManagedBeanDefinition) beanDefinition;
+                managedBeanDefinition.setInitializingMethod(method.getName());
+            }
+
+            if (JSR250 && method.isAnnotationPresent(PreDestroy.class)) {
+                if (method.getParameterCount() > 0) {
+                    throw new ResolvedException("the method annotated by @PostConstruct should have no parameters !");
+                }
+                ManagedBeanDefinition managedBeanDefinition = (ManagedBeanDefinition) beanDefinition;
+                managedBeanDefinition.setDestroyMethod(method.getName());
             }
 
         }
         beanDefinition.setInjectedSetters(methods);
-    }
-
-    private void resolveFactoryMethod(Method method, AbstractBeanFactory beanFactory) throws BeansException {
-
-        String scope = BeanDefinition.PROTOTYPE;
-
-        if (AnnotationUtils.isAnnotationPresent(method, Singleton.class)) {
-            scope = BeanDefinition.SINGLETON;
-        }
-
-        String beanName;
-        Named named = AnnotationUtils.getMergedAnnotation(method, Named.class);
-        if (named == null || StringUtils.isEmpty(named.value())) {
-            beanName = getBeanNameGenerator().generateBeanName((Class<?>) method.getGenericReturnType());
-        } else {
-            beanName = named.value();
-        }
-
-        BeanDefinition beanDefinition = BeanDefinition.builder()
-                .setBeanName(beanName)
-                .setBeanClass(method.getReturnType())
-                .setScope(scope)
-                .setConstructor(method)
-                .build();
-
-        setMultInjectedPoint(beanDefinition, beanFactory, method);
-
-        getBeanDefinitions().put(beanName, beanDefinition);
     }
 
     private InjectedPoint getSetterInjectedPoint(Method method, Type type) {

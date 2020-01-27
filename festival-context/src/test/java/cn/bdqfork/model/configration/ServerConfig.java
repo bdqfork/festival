@@ -44,4 +44,13 @@ public class ServerConfig {
     public void setNames(List<String> names) {
         this.names = names;
     }
+
+    @Override
+    public String toString() {
+        return "ServerConfig{" +
+                "localhost='" + localhost + '\'' +
+                ", port=" + port +
+                ", names=" + names +
+                '}';
+    }
 }

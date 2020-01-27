@@ -92,7 +92,7 @@ public class AnnotationApplicationContextTest {
      * @throws BeansException
      */
     @Test
-    public void testJSR250Intercept() throws BeansException {
+    public void testJSR250Intercept() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.jsr250");
         annotationApplicationContext.getBean(JSR250FieldService.class);
         annotationApplicationContext.close();
@@ -104,7 +104,7 @@ public class AnnotationApplicationContextTest {
      * @throws BeansException
      */
     @Test
-    public void testJSR250Setter() throws BeansException {
+    public void testJSR250Setter() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.jsr250");
         annotationApplicationContext.getBean(JSR250FieldService.class);
         annotationApplicationContext.close();
@@ -120,9 +120,9 @@ public class AnnotationApplicationContextTest {
     public void testGetFactoryBeanDefinition() throws BeansException {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.configration");
         FactoryBean factoryBean = annotationApplicationContext.getBean("factoryBean");
+        System.out.println(factoryBean);
         assert factoryBean != null;
         assert factoryBean.getServer() != null;
-        annotationApplicationContext.close();
     }
 
     /**

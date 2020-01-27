@@ -11,10 +11,10 @@ public interface ResourceReader {
 
     /**
      * 根据配置项读取配置内容
+     *
      * @param propertyName 资源文件名称
      * @return 配置项内容
-     * @throws Throwable
      */
-    Object readProperty(String propertyName) throws Throwable;
+    <T> T readProperty(String propertyName);
 
 }

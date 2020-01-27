@@ -162,6 +162,7 @@ public class BeanDefinition {
         private MultInjectedPoint injectedConstructor;
         private Map<String, InjectedPoint> injectedFields = new HashMap<>();
         private Map<String, InjectedPoint> injectedSetters = new HashMap<>();
+        private boolean isResolved;
 
         public BeanDefinitionBuilder setBeanName(String beanName) {
             this.beanName = beanName;
@@ -203,6 +204,11 @@ public class BeanDefinition {
             return this;
         }
 
+        public BeanDefinitionBuilder isResolved(boolean isResolved) {
+            this.isResolved = isResolved;
+            return this;
+        }
+
         public BeanDefinition build() {
             BeanDefinition beanDefinition = new BeanDefinition(beanName, beanClass, scope);
             beanDefinition.setDependOns(dependOns);
@@ -210,6 +216,7 @@ public class BeanDefinition {
             beanDefinition.setInjectedConstructor(injectedConstructor);
             beanDefinition.setInjectedFields(injectedFields);
             beanDefinition.setInjectedSetters(injectedSetters);
+            beanDefinition.setResolved(isResolved);
             return beanDefinition;
         }
     }

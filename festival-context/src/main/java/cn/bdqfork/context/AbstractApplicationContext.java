@@ -2,14 +2,15 @@ package cn.bdqfork.context;
 
 import cn.bdqfork.core.exception.BeansException;
 
-import javax.annotation.processing.ProcessingEnvironment;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author bdq
  * @since 2020/1/8
  */
 public abstract class AbstractApplicationContext implements ApplicationContext {
+    protected boolean closed = false;
 
     public AbstractApplicationContext(String... scanPaths) throws BeansException {
 
@@ -21,7 +22,7 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
 
         scan(scanPaths);
 
-        registerHook();
+        registerShutdownHook();
     }
 
     protected abstract void createBeanFactory();
@@ -30,7 +31,7 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
 
     protected abstract void registerProcessor() throws BeansException;
 
-    protected abstract void registerHook();
+    protected abstract void registerShutdownHook();
 
     @Override
     public <T> T getBean(String beanName) throws BeansException {
@@ -71,4 +72,10 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
     public boolean isPrototype(String beanName) throws BeansException {
         return getConfigurableBeanFactory().isPrototype(beanName);
     }
+
+    @Override
+    public boolean isClosed() {
+        return closed;
+    }
+
 }
