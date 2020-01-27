@@ -3,9 +3,7 @@ package cn.bdqfork.aop.proxy;
 import cn.bdqfork.aop.advice.*;
 
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -24,31 +22,35 @@ public class AopProxySupport extends AopProxyConfig {
         this.advisors.addAll(advisors);
     }
 
-    public Set<MethodBeforeAdvice> getBeforeAdvice(Method method) {
+    public List<MethodBeforeAdvice> getBeforeAdvice(Method method) {
         return advisors.stream()
                 .filter(advisor -> advisor.isMatch(method, MethodBeforeAdvice.class))
+                .sorted(Comparator.comparing(Advisor::getOrder))
                 .map(advisor -> (MethodBeforeAdvice) advisor.getAdvice())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
-    public Set<AroundAdvice> getAroundAdvice(Method method) {
+    public List<AroundAdvice> getAroundAdvice(Method method) {
         return advisors.stream()
                 .filter(advisor -> advisor.isMatch(method, AroundAdvice.class))
+                .sorted(Comparator.comparing(Advisor::getOrder))
                 .map(advisor -> (AroundAdvice) advisor.getAdvice())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
-    public Set<AfterReturningAdvice> getAfterAdvice(Method method) {
+    public List<AfterReturningAdvice> getAfterAdvice(Method method) {
         return advisors.stream()
                 .filter(advisor -> advisor.isMatch(method, AfterReturningAdvice.class))
+                .sorted(Comparator.comparing(Advisor::getOrder))
                 .map(advisor -> (AfterReturningAdvice) advisor.getAdvice())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
-    public Set<ThrowsAdvice> getThrowsAdvice(Method method) {
+    public List<ThrowsAdvice> getThrowsAdvice(Method method) {
         return advisors.stream()
                 .filter(advisor -> advisor.isMatch(method, ThrowsAdvice.class))
+                .sorted(Comparator.comparing(Advisor::getOrder))
                 .map(advisor -> (ThrowsAdvice) advisor.getAdvice())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 }

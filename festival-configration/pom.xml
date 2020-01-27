@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>festival-value</artifactId>
+    <artifactId>festival-configration</artifactId>
 
     <dependencies>
         <dependency>

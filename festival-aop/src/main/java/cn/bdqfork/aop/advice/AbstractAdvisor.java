@@ -17,6 +17,11 @@ public abstract class AbstractAdvisor implements Advisor {
      */
     private Advice advice;
 
+    /**
+     * 拓展点优先级
+     */
+    private int order;
+
     @Override
     public void setPointcut(String pointcut) {
         this.pointcut = pointcut;
@@ -35,6 +40,15 @@ public abstract class AbstractAdvisor implements Advisor {
     @Override
     public Advice getAdvice() {
         return advice;
+    }
+
+    @Override
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
     }
 
     @Override

@@ -5,6 +5,7 @@ import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.BeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.util.ReflectUtils;
+import cn.bdqfork.value.Order;
 import org.aspectj.lang.annotation.*;
 
 import java.lang.reflect.Method;
@@ -23,6 +24,11 @@ public class AspectResolver {
         //存储解析完成的pointcut，通知绑定
         Map<String, String> pointcuts = new HashMap<>();
 
+        int order = Integer.MAX_VALUE;
+        if (clazz.getDeclaredAnnotation(Order.class) != null) {
+            order = clazz.getDeclaredAnnotation(Order.class).value();
+        }
+
         Method[] methods = clazz.getDeclaredMethods();
         //先解析pointcut，防止npe问题
         for (Method method : methods) {
@@ -38,24 +44,28 @@ public class AspectResolver {
 
             if (method.isAnnotationPresent(Before.class)) {
                 AspectAdvisor aspectAdvisor = resolveBeforeAdvice(config, beanFactory);
+                aspectAdvisor.setOrder(order);
                 advisors.add(aspectAdvisor);
                 continue;
             }
 
             if (method.isAnnotationPresent(Around.class)) {
                 AspectAdvisor aspectAdvisor = resolveAroundAdvice(config, beanFactory);
+                aspectAdvisor.setOrder(order);
                 advisors.add(aspectAdvisor);
                 continue;
             }
 
             if (method.isAnnotationPresent(AfterReturning.class)) {
                 AspectAdvisor aspectAdvisor = resolveAfterReturningAdvice(config, beanFactory);
+                aspectAdvisor.setOrder(order);
                 advisors.add(aspectAdvisor);
                 continue;
             }
 
             if (method.isAnnotationPresent(AfterThrowing.class)) {
                 AspectAdvisor aspectAdvisor = resolveAfterThrowingAdvice(config, beanFactory);
+                aspectAdvisor.setOrder(order);
                 advisors.add(aspectAdvisor);
             }
 

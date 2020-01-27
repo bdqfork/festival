@@ -18,7 +18,7 @@
             <version>0.3</version>
         </dependency>
         <dependency>
-            <artifactId>festival-value</artifactId>
+            <artifactId>festival-configration</artifactId>
             <groupId>cn.bdqfork</groupId>
             <version>0.3</version>
         </dependency>
