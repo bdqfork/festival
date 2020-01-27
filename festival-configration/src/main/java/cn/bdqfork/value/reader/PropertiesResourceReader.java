@@ -30,7 +30,7 @@ public class PropertiesResourceReader extends AbstractResourceReader {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T readProperty(String propertyName) {
+    protected <T> T doReadProperty(String propertyName) {
         return (T) properties.getProperty(propertyName);
     }
 }

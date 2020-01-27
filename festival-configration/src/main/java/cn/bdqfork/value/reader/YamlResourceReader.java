@@ -35,7 +35,7 @@ public class YamlResourceReader extends AbstractResourceReader {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T readProperty(String propertyName) {
+    protected <T> T doReadProperty(String propertyName) {
         String[] keys = propertyName.split("\\.");
         int len = keys.length - 1;
         Map<String, Object> map = properties;

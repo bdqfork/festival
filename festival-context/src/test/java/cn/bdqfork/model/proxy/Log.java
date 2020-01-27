@@ -1,6 +1,6 @@
 package cn.bdqfork.model.proxy;
 
-import cn.bdqfork.value.Order;
+import cn.bdqfork.core.annotation.Order;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;

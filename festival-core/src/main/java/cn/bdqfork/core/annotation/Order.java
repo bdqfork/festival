@@ -1,4 +1,4 @@
-package cn.bdqfork.value;
+package cn.bdqfork.core.annotation;
 
 import java.lang.annotation.*;
 

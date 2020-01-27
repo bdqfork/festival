@@ -5,7 +5,7 @@ import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.BeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.util.ReflectUtils;
-import cn.bdqfork.value.Order;
+import cn.bdqfork.core.annotation.Order;
 import org.aspectj.lang.annotation.*;
 
 import java.lang.reflect.Method;

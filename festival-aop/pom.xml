@@ -35,11 +35,5 @@
             <artifactId>festival-core</artifactId>
             <version>0.3</version>
         </dependency>
-        <dependency>
-            <groupId>cn.bdqfork</groupId>
-            <artifactId>festival-configration</artifactId>
-            <version>0.3</version>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
 </project>
