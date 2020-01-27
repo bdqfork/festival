@@ -36,6 +36,13 @@ public interface Advisor extends Advice {
     Advice getAdvice();
 
     /**
+     * 获取通知的优先级
+     *
+     * @return 优先级，数字越小优先级越高
+     */
+    int getOrder();
+
+    /**
      * 代理方法是否匹配通知
      *
      * @param method     代理方法

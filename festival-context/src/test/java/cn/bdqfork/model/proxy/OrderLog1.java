@@ -8,30 +8,27 @@ import org.aspectj.lang.annotation.*;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-/**
- * @author bdq
- * @since 2019/12/31
- */
 @Singleton
 @Named
 @Aspect
-@Order(3)
-public class Log {
+@Order(1)
+public class OrderLog1 {
+
     @Before("pointcut()")
     public void before(JoinPoint joinPoint) {
-        System.out.println("执行前置通知方法");
+        System.out.println("执行前置通知方法Order1");
     }
 
     @AfterReturning(value = "pointcut()", returning = "result")
     public void after(JoinPoint joinPoint, Object result) {
-        System.out.println("执行后置通知方法，return : " + result);
+        System.out.println("执行后置通知方法Order1，return : " + result);
     }
 
     @Around("execution(cn.bdqfork.model.proxy.*)")
     public Object myAround(ProceedingJoinPoint pjp) throws Throwable {
-        System.out.println("执行环绕通知方法，目标方法执行之前");
+        System.out.println("执行环绕通知方法Order1，目标方法执行之前");
         Object result = pjp.proceed();
-        System.out.println("执行环绕通知方法，目标方法执行之后");
+        System.out.println("执行环绕通知方法Order1，目标方法执行之后");
         if (result != null) {                                //可以修改目标方法的返回结果
             result = ((String) result).toUpperCase();
         }
@@ -40,8 +37,9 @@ public class Log {
 
     @AfterThrowing(value = "pointcut()", throwing = "ex")
     public void afterThrowing(JoinPoint joinPoint, Exception ex) {
-        System.out.println("执行异常抛出通知方法，Exception : " + ex);
+        System.out.println("执行异常抛出通知方法Order1，Exception : " + ex);
     }
+
 
     @Pointcut("execution(cn.bdqfork.model.proxy.*)")
     public void pointcut() {
