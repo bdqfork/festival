@@ -53,7 +53,19 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
             }
         }
 
-        router.route().handler(BodyHandler.create());
+        BodyHandler bodyHandler = BodyHandler.create();
+
+        String uploadsDirectory = resourceReader.readProperty("server.uploads.directory");
+        if (!StringUtils.isEmpty(uploadsDirectory)) {
+            bodyHandler.setUploadsDirectory(uploadsDirectory);
+        }
+
+        Long limit = resourceReader.readProperty("server.uploads.limit");
+        if (limit != null) {
+            bodyHandler.setBodyLimit(limit);
+        }
+
+        router.route().handler(bodyHandler);
 
         httpServer = vertx.createHttpServer();
         httpServer.requestHandler(router);
