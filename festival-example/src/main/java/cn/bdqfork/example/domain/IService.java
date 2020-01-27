@@ -8,4 +8,6 @@ import io.reactivex.Flowable;
  */
 public interface IService {
     Flowable<String> getUserName(String username);
+
+    Flowable<Void> testError(String username);
 }

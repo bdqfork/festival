@@ -16,4 +16,10 @@ public class ServiceImpl implements IService {
     public Flowable<String> getUserName(String username) {
         return Flowable.just(username);
     }
+
+    @Override
+    public Flowable<Void> testError(String username) {
+        return Flowable.just(username)
+                .map(s -> 1 / 0).map(i -> null);
+    }
 }

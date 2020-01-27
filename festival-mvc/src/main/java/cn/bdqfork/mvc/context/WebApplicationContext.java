@@ -6,7 +6,6 @@ import cn.bdqfork.core.exception.NoSuchBeanException;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
-import cn.bdqfork.mvc.processer.VertxAware;
 import cn.bdqfork.mvc.processer.VerticleProxyProcessor;
 import cn.bdqfork.mvc.util.VertxUtils;
 import io.vertx.core.DeploymentOptions;

@@ -7,7 +7,7 @@ import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.util.AopUtils;
 import cn.bdqfork.mvc.annotation.Verticle;
 import cn.bdqfork.mvc.context.ServiceVerticle;
-import cn.bdqfork.mvc.processer.VertxAware;
+import cn.bdqfork.mvc.context.VertxAware;
 import cn.bdqfork.mvc.proxy.VerticleProxyHandler;
 import io.vertx.reactivex.core.Vertx;
 import lombok.extern.slf4j.Slf4j;
@@ -28,16 +28,15 @@ public class VerticleProxyProcessor extends AopProxyProcessor implements ClassLo
         if (targetClass.isAnnotationPresent(Verticle.class)) {
             ServiceVerticle verticle = new ServiceVerticle(bean);
             vertx.rxDeployVerticle(verticle)
-                    .doOnError(e -> {
-                        if (log.isErrorEnabled()) {
-                            log.error("failed to deploy service {} of {}!", beanName, targetClass.getCanonicalName(), e);
-                        }
-                        vertx.close();
-                    })
                     .subscribe(id -> {
                         if (log.isTraceEnabled()) {
                             log.trace("deployed service {} of {} by id {}!", beanName, targetClass.getCanonicalName(), id);
                         }
+                    }, e -> {
+                        if (log.isErrorEnabled()) {
+                            log.error("failed to deploy service {} of {}!", beanName, targetClass.getCanonicalName(), e);
+                        }
+                        vertx.close();
                     });
             return Proxy.newProxyInstance(classLoader, targetClass.getInterfaces(), new VerticleProxyHandler(vertx, targetClass));
         }

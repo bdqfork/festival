@@ -35,7 +35,6 @@ public class VerticleProxyHandler implements InvocationHandler {
         String address = EventBusUtils.getAddress(targetClass);
         return eventBus.rxRequest(address, methodInvocation, options)
                 .toFlowable()
-                .onBackpressureBuffer()
                 .map(Message::body);
     }
 }

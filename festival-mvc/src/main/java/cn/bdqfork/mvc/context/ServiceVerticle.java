@@ -5,14 +5,9 @@ import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.mvc.util.EventBusUtils;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
-import io.vertx.core.Promise;
 import io.vertx.reactivex.core.AbstractVerticle;
 import io.vertx.reactivex.core.eventbus.EventBus;
-import io.vertx.reactivex.core.eventbus.Message;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
@@ -44,15 +39,11 @@ public class ServiceVerticle extends AbstractVerticle {
                     Method method = serviceBean.getClass().getMethod(invocation.getMethodName(), invocation.getArgumentClasses());
                     try {
                         Flowable<Object> result = (Flowable<Object>) ReflectUtils.invokeMethod(serviceBean, method, invocation.getArguments());
-                        result.doOnError(e -> {
-                            if (log.isErrorEnabled()) {
-                                log.error(e.getMessage(), e.getCause());
-                            }
-                        }).subscribe(msg::reply);
+                        result.subscribe(msg::reply, e -> msg.fail(500, e.getMessage()));
                     } catch (Exception e) {
                         msg.fail(500, e.getMessage());
                         if (log.isErrorEnabled()) {
-                            log.error(e.getMessage(), e.getCause());
+                            log.error(e.getMessage(), e);
                         }
                     }
                 });
