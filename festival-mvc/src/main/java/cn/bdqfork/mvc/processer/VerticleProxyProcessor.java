@@ -5,7 +5,7 @@ import cn.bdqfork.aop.proxy.javassist.Proxy;
 import cn.bdqfork.context.aware.ClassLoaderAware;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.util.AopUtils;
-import cn.bdqfork.mvc.annotation.Verticle;
+import cn.bdqfork.mvc.mapping.annotation.VerticleMapping;
 import cn.bdqfork.mvc.context.ServiceVerticle;
 import cn.bdqfork.mvc.context.VertxAware;
 import cn.bdqfork.mvc.proxy.VerticleProxyHandler;
@@ -25,7 +25,7 @@ public class VerticleProxyProcessor extends AopProxyProcessor implements ClassLo
     public Object postProcessAfterInitializtion(String beanName, Object bean) throws BeansException {
         bean = super.postProcessAfterInitializtion(beanName, bean);
         Class<?> targetClass = AopUtils.getTargetClass(bean);
-        if (targetClass.isAnnotationPresent(Verticle.class)) {
+        if (targetClass.isAnnotationPresent(VerticleMapping.class)) {
             ServiceVerticle verticle = new ServiceVerticle(bean);
             vertx.rxDeployVerticle(verticle)
                     .subscribe(id -> {

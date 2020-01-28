@@ -6,15 +6,23 @@ import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.BeanFactory;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
+import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.StringUtils;
-import cn.bdqfork.mvc.annotation.RouteMapping;
-import cn.bdqfork.mvc.handler.GenericMappingHandler;
+import cn.bdqfork.mvc.mapping.MappingAttribute;
+import cn.bdqfork.mvc.mapping.annotation.RouteMapping;
+import cn.bdqfork.mvc.mapping.filter.PermitFilter;
+import cn.bdqfork.mvc.mapping.filter.RoleFilter;
+import cn.bdqfork.mvc.mapping.handler.DefaultMappingHandler;
 import cn.bdqfork.value.reader.ResourceReader;
 import io.reactivex.Completable;
 import io.vertx.reactivex.core.AbstractVerticle;
 import io.vertx.reactivex.core.http.HttpServer;
+import io.vertx.reactivex.ext.auth.AuthProvider;
 import io.vertx.reactivex.ext.web.Router;
+import io.vertx.reactivex.ext.web.handler.AuthHandler;
 import io.vertx.reactivex.ext.web.handler.BodyHandler;
+import io.vertx.reactivex.ext.web.handler.SessionHandler;
+import io.vertx.reactivex.ext.web.sstore.LocalSessionStore;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
@@ -35,67 +43,84 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
 
     @Override
     public Completable rxStart() {
+
         Router router = Router.router(vertx);
 
+        SecuritySystemManager securitySystemManager = getSecurityManager();
+
+        if (securitySystemManager != null) {
+
+            AuthProvider authProvider = securitySystemManager.getAuthProvider();
+
+            AuthHandler authHandler = securitySystemManager.getAuthHandler();
+
+            if (authProvider != null && authHandler != null) {
+                router.route().handler(SessionHandler.create(LocalSessionStore.create(vertx)).setAuthProvider(authProvider));
+            }
+
+            processMapping(router, authHandler);
+        } else {
+            processMapping(router, null);
+        }
+
+
+        processBody(router);
+
+        String host = getHost();
+        Integer port = getPort();
+
+        start(router, host, port);
+
+        return super.rxStart();
+    }
+
+    private SecuritySystemManager getSecurityManager() {
+        try {
+            return configurableBeanFactory.getBean(SecuritySystemManager.class);
+        } catch (BeansException e) {
+            if (log.isDebugEnabled()) {
+                log.debug(e.getMessage(), e);
+            }
+        }
+        return null;
+    }
+
+    private void processMapping(Router router, AuthHandler authHandler) {
         List<BeanDefinition> beanDefinitions = getRouteBeanDefinitions();
 
         for (BeanDefinition beanDefinition : beanDefinitions) {
 
             Class<?> beanClass = beanDefinition.getBeanClass();
 
-            String baseUrl = beanClass.getAnnotation(RouteMapping.class).value();
+            String baseUrl = "";
+            if (AnnotationUtils.isAnnotationPresent(beanClass, RouteMapping.class)) {
+                baseUrl = beanClass.getAnnotation(RouteMapping.class).value();
+            }
 
             for (Method declaredMethod : beanClass.getDeclaredMethods()) {
 
+                if (!AnnotationUtils.isAnnotationPresent(declaredMethod, RouteMapping.class)) {
+                    continue;
+                }
+
                 Object bean = getRouteBean(beanDefinition);
 
-                new GenericMappingHandler(vertx).handle(router, bean, baseUrl, declaredMethod);
+                MappingAttribute mappingAttribute = MappingAttribute.builder().setRouter(router)
+                        .setRouteMethod(declaredMethod)
+                        .setBean(bean)
+                        .setBaseUrl(baseUrl)
+                        .setAuthHandler(authHandler)
+                        .build();
+
+                DefaultMappingHandler mappingHandler = new DefaultMappingHandler(vertx);
+
+                mappingHandler.registerFilter(new PermitFilter(mappingAttribute));
+
+                mappingHandler.registerFilter(new RoleFilter(mappingAttribute));
+
+                mappingHandler.handle(mappingAttribute);
             }
         }
-
-        BodyHandler bodyHandler = BodyHandler.create();
-
-        String uploadsDirectory = resourceReader.readProperty("server.uploads.directory");
-        if (!StringUtils.isEmpty(uploadsDirectory)) {
-            bodyHandler.setUploadsDirectory(uploadsDirectory);
-        }
-
-        Long limit = resourceReader.readProperty("server.uploads.limit");
-        if (limit != null) {
-            bodyHandler.setBodyLimit(limit);
-        }
-
-        router.route().handler(bodyHandler);
-
-        httpServer = vertx.createHttpServer();
-        httpServer.requestHandler(router);
-
-        String host = resourceReader.readProperty("server.host");
-        Integer port = resourceReader.readProperty("server.port");
-
-        if (StringUtils.isEmpty(host)) {
-            host = DEFAULT_HOST;
-        }
-
-        if (port == null) {
-            port = DEFAULT_PORT;
-        }
-
-        String finalHost = host;
-        Integer finalPort = port;
-
-        httpServer.rxListen(port, host)
-                .subscribe(httpServer -> {
-                    if (log.isInfoEnabled()) {
-                        log.info("stated http server by host:{} and port:{}!", finalHost, finalPort);
-                    }
-                }, e -> {
-                    if (log.isErrorEnabled()) {
-                        log.error("failed to start http server by host:{} and port:{}!", finalHost, finalPort, e);
-                    }
-                    vertx.close();
-                });
-        return super.rxStart();
     }
 
     private List<BeanDefinition> getRouteBeanDefinitions() {
@@ -112,6 +137,54 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
         } catch (BeansException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    private String getHost() {
+        String host = resourceReader.readProperty("server.host");
+        if (StringUtils.isEmpty(host)) {
+            host = DEFAULT_HOST;
+        }
+        return host;
+    }
+
+    private Integer getPort() {
+        Integer port = resourceReader.readProperty("server.port");
+        if (port == null) {
+            port = DEFAULT_PORT;
+        }
+        return port;
+    }
+
+    private void processBody(Router router) {
+        BodyHandler bodyHandler = BodyHandler.create();
+
+        String uploadsDirectory = resourceReader.readProperty("server.uploads.directory");
+        if (!StringUtils.isEmpty(uploadsDirectory)) {
+            bodyHandler.setUploadsDirectory(uploadsDirectory);
+        }
+
+        Long limit = resourceReader.readProperty("server.uploads.limit");
+        if (limit != null) {
+            bodyHandler.setBodyLimit(limit);
+        }
+
+        router.route().handler(bodyHandler);
+    }
+
+    private void start(Router router, String host, Integer port) {
+        httpServer = vertx.createHttpServer();
+        httpServer.requestHandler(router)
+                .rxListen(port, host)
+                .subscribe(httpServer -> {
+                    if (log.isInfoEnabled()) {
+                        log.info("stated http server by host:{} and port:{}!", host, port);
+                    }
+                }, e -> {
+                    if (log.isErrorEnabled()) {
+                        log.error("failed to start http server by host:{} and port:{}!", host, port, e);
+                    }
+                    vertx.close();
+                });
     }
 
     @Override

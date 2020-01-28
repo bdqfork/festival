@@ -1,8 +1,10 @@
 package cn.bdqfork.example.domain;
 
 import cn.bdqfork.core.factory.DisposableBean;
-import cn.bdqfork.mvc.annotation.GetMapping;
-import cn.bdqfork.mvc.annotation.RouteMapping;
+import cn.bdqfork.mvc.mapping.annotation.GetMapping;
+import cn.bdqfork.mvc.mapping.annotation.RouteMapping;
+import cn.bdqfork.security.annotation.Auth;
+import cn.bdqfork.security.annotation.RolesAllowed;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -34,6 +36,7 @@ public class UserController implements DisposableBean {
                 .end("Hello World from Vert.x-Web!");
     }
 
+    @Auth
     @GetMapping("/hello2")
     public void hello2(RoutingContext routingContext) {
         routingContext.response()
@@ -41,6 +44,8 @@ public class UserController implements DisposableBean {
                 .end("Hello World from Vert.x-Web 2!");
     }
 
+    @Auth
+    @RolesAllowed("role:administrator")
     @GetMapping("/service")
     public void service(RoutingContext routingContext) {
         Flowable<String> flowable = iService.getUserName("service test");

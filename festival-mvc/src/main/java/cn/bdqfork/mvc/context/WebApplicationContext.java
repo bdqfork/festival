@@ -12,6 +12,7 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.reactivex.core.Vertx;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.Method;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -66,21 +67,28 @@ public class WebApplicationContext extends AnnotationApplicationContext {
     @Override
     protected void registerBeanDefinition() throws BeansException {
         super.registerBeanDefinition();
-        registerWebServer();
-    }
-
-    @Override
-    protected void processEnvironment() throws BeansException {
-        super.processEnvironment();
         try {
             vertx = getConfigurableBeanFactory().getBean(Vertx.class);
         } catch (NoSuchBeanException e) {
             if (log.isTraceEnabled()) {
                 log.trace("can't find Vertx, will use default!");
             }
-            vertx = VertxUtils.getVertx();
+            registerDefaultVertx();
+            vertx = getConfigurableBeanFactory().getBean(Vertx.class);
         }
+        registerWebServer();
+    }
 
+    private void registerDefaultVertx() throws BeansException {
+        if (log.isTraceEnabled()) {
+            log.trace("register default Vertx!");
+        }
+        getConfigurableBeanFactory().registerSingleton("vertx", VertxUtils.getVertx());
+    }
+
+    @Override
+    protected void processEnvironment() throws BeansException {
+        super.processEnvironment();
         for (VertxAware vertxAware : getConfigurableBeanFactory().getBeans(VertxAware.class).values()) {
             vertxAware.setVertx(vertx);
         }

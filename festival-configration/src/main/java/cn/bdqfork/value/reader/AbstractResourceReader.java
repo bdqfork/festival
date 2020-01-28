@@ -1,16 +1,16 @@
 package cn.bdqfork.value.reader;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.WeakHashMap;
 
 /**
  * @author bdq
  * @since 2020/1/9
  */
 public abstract class AbstractResourceReader implements ResourceReader {
-    private final Map<String, Object> cache = new ConcurrentHashMap<>();
+    private final Map<String, Object> cache = Collections.synchronizedMap(new WeakHashMap<>());
     private String resourcePath;
 
     public AbstractResourceReader(String resourcePath) throws IOException {
