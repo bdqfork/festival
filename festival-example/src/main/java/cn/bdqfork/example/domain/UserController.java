@@ -4,6 +4,7 @@ import cn.bdqfork.core.factory.DisposableBean;
 import cn.bdqfork.mvc.mapping.annotation.GetMapping;
 import cn.bdqfork.mvc.mapping.annotation.RouteMapping;
 import cn.bdqfork.security.annotation.Auth;
+import cn.bdqfork.security.annotation.PermitAll;
 import cn.bdqfork.security.annotation.RolesAllowed;
 import cn.bdqfork.security.common.LogicType;
 import io.reactivex.Flowable;
@@ -30,6 +31,8 @@ public class UserController implements DisposableBean {
     @Inject
     private IService iService;
 
+    @Auth
+    @PermitAll
     @GetMapping("/hello")
     public void hello(RoutingContext routingContext) {
         routingContext.response()

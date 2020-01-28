@@ -2,6 +2,7 @@ package cn.bdqfork.mvc.mapping;
 
 import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.security.annotation.Auth;
+import cn.bdqfork.security.annotation.PermitAll;
 import cn.bdqfork.security.annotation.PermitAllowed;
 import cn.bdqfork.security.annotation.RolesAllowed;
 import io.vertx.reactivex.ext.web.Router;
@@ -66,7 +67,7 @@ public class MappingAttribute {
     }
 
     public boolean requireAuth() {
-        if (authHandler == null) {
+        if (authHandler == null || AnnotationUtils.isAnnotationPresent(routeMethod, PermitAll.class)) {
             return false;
         }
         Class<?> beanClass = routeMethod.getDeclaringClass();
