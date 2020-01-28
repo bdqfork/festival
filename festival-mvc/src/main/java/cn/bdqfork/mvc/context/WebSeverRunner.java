@@ -10,8 +10,7 @@ import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.StringUtils;
 import cn.bdqfork.mvc.mapping.MappingAttribute;
 import cn.bdqfork.mvc.mapping.annotation.RouteMapping;
-import cn.bdqfork.mvc.mapping.filter.PermitFilter;
-import cn.bdqfork.mvc.mapping.filter.RoleFilter;
+import cn.bdqfork.mvc.mapping.filter.AuthFilter;
 import cn.bdqfork.mvc.mapping.handler.DefaultMappingHandler;
 import cn.bdqfork.value.reader.ResourceReader;
 import io.reactivex.Completable;
@@ -114,9 +113,7 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
 
                 DefaultMappingHandler mappingHandler = new DefaultMappingHandler(vertx);
 
-                mappingHandler.registerFilter(new PermitFilter(mappingAttribute));
-
-                mappingHandler.registerFilter(new RoleFilter(mappingAttribute));
+                mappingHandler.registerFilter(new AuthFilter(mappingAttribute));
 
                 mappingHandler.handle(mappingAttribute);
             }
