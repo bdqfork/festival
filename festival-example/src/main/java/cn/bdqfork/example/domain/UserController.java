@@ -5,6 +5,7 @@ import cn.bdqfork.mvc.mapping.annotation.GetMapping;
 import cn.bdqfork.mvc.mapping.annotation.RouteMapping;
 import cn.bdqfork.security.annotation.Auth;
 import cn.bdqfork.security.annotation.RolesAllowed;
+import cn.bdqfork.security.common.LogicType;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -45,7 +46,7 @@ public class UserController implements DisposableBean {
     }
 
     @Auth
-    @RolesAllowed({"role:administrator", "role:hispassword"})
+    @RolesAllowed(value = {"role:administrator", "role:hispassword"}, logic = LogicType.OR)
     @GetMapping("/service")
     public void service(RoutingContext routingContext) {
         Flowable<String> flowable = iService.getUserName("service test");

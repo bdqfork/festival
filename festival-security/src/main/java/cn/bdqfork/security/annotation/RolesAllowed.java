@@ -1,5 +1,7 @@
 package cn.bdqfork.security.annotation;
 
+import cn.bdqfork.security.common.LogicType;
+
 import java.lang.annotation.*;
 
 /**
@@ -14,4 +16,6 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE, ElementType.METHOD})
 public @interface RolesAllowed {
     String[] value();
+
+    LogicType logic() default LogicType.AND;
 }
