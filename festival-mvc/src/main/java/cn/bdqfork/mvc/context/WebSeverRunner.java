@@ -57,7 +57,7 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
                 router.route().handler(SessionHandler.create(LocalSessionStore.create(vertx)).setAuthProvider(authProvider));
             }
 
-            processMapping(router, authHandler);
+            processMapping(router, securitySystemManager);
         } else {
             processMapping(router, null);
         }
@@ -84,7 +84,7 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
         return null;
     }
 
-    private void processMapping(Router router, AuthHandler authHandler) {
+    private void processMapping(Router router, SecuritySystemManager securitySystemManager) {
         List<BeanDefinition> beanDefinitions = getRouteBeanDefinitions();
 
         for (BeanDefinition beanDefinition : beanDefinitions) {
@@ -104,18 +104,22 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
 
                 Object bean = getRouteBean(beanDefinition);
 
-                MappingAttribute mappingAttribute = MappingAttribute.builder().setRouter(router)
+                MappingAttribute.Builder builder = MappingAttribute.builder().setRouter(router)
                         .setRouteMethod(declaredMethod)
                         .setBean(bean)
-                        .setBaseUrl(baseUrl)
-                        .setAuthHandler(authHandler)
-                        .build();
+                        .setBaseUrl(baseUrl);
+
+                if (securitySystemManager != null) {
+                    builder.setAuthHandler(securitySystemManager.getAuthHandler());
+                }
+
+                MappingAttribute attribute = builder.build();
 
                 DefaultMappingHandler mappingHandler = new DefaultMappingHandler(vertx);
 
-                mappingHandler.registerFilter(new AuthFilter(mappingAttribute));
+                mappingHandler.registerFilter(new AuthFilter(securitySystemManager, attribute));
 
-                mappingHandler.handle(mappingAttribute);
+                mappingHandler.handle(attribute);
             }
         }
     }

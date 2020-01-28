@@ -32,6 +32,9 @@ public class AuthConfig {
         SecuritySystemManager securitySystemManager = new SecuritySystemManager();
         securitySystemManager.setAuthProvider(authProvider);
         securitySystemManager.setAuthHandler(authHandler);
+        securitySystemManager.setPermitDeniedHandler(routingContext -> {
+            routingContext.response().setStatusCode(401).end("you have not permission!");
+        });
         return securitySystemManager;
     }
 
