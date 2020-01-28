@@ -16,7 +16,9 @@ import cn.bdqfork.value.reader.ResourceReader;
 import io.reactivex.Completable;
 import io.vertx.reactivex.core.AbstractVerticle;
 import io.vertx.reactivex.core.http.HttpServer;
+import io.vertx.reactivex.ext.auth.AuthProvider;
 import io.vertx.reactivex.ext.web.Router;
+import io.vertx.reactivex.ext.web.handler.AuthHandler;
 import io.vertx.reactivex.ext.web.handler.BodyHandler;
 import io.vertx.reactivex.ext.web.handler.SessionHandler;
 import io.vertx.reactivex.ext.web.sstore.LocalSessionStore;
@@ -24,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -45,30 +48,85 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
 
         if (securitySystemManager != null) {
 
+            if (log.isInfoEnabled()) {
+                log.info("process session config!");
+            }
+
             SessionHandler sessionHandler = securitySystemManager.getSessionHandler();
             if (sessionHandler == null) {
-                sessionHandler = getSessionHandler(securitySystemManager);
+                sessionHandler = createSessionHandler(securitySystemManager.getAuthProvider());
             }
+
             router.route().handler(sessionHandler);
 
         }
 
-        processMapping(router, securitySystemManager);
+        AuthHandler authHandler = null;
+        if (securitySystemManager != null) {
+            authHandler = securitySystemManager.getAuthHandler();
+        }
 
-        processBody(router);
+        List<BeanDefinition> beanDefinitions = getRouteBeanDefinitions();
 
-        String host = getHost();
-        Integer port = getPort();
+        for (BeanDefinition beanDefinition : beanDefinitions) {
 
-        start(router, host, port);
+            Class<?> beanClass = beanDefinition.getBeanClass();
+
+            String baseUrl = "";
+
+            if (AnnotationUtils.isAnnotationPresent(beanClass, RouteMapping.class)) {
+                baseUrl = Objects.requireNonNull(AnnotationUtils.getMergedAnnotation(beanClass, RouteMapping.class))
+                        .value();
+            }
+
+            for (Method declaredMethod : beanClass.getDeclaredMethods()) {
+
+                if (!AnnotationUtils.isAnnotationPresent(declaredMethod, RouteMapping.class)) {
+                    continue;
+                }
+
+                Object bean = getRouteBean(beanDefinition);
+
+                MappingAttribute attribute = MappingAttribute.builder().setRouter(router)
+                        .setRouteMethod(declaredMethod)
+                        .setBean(bean)
+                        .setBaseUrl(baseUrl)
+                        .setAuthHandler(authHandler)
+                        .build();
+
+
+                DefaultMappingHandler mappingHandler = new DefaultMappingHandler(vertx);
+
+                mappingHandler.registerFilter(new AuthFilter(securitySystemManager, attribute));
+
+                mappingHandler.handle(attribute);
+            }
+        }
+
+        BodyHandler bodyHandler = BodyHandler.create();
+
+        String uploadsDirectory = resourceReader.readProperty(ApplicationProperty.SERVER_UPLOAD_DERICTORY);
+        if (!StringUtils.isEmpty(uploadsDirectory)) {
+            bodyHandler.setUploadsDirectory(uploadsDirectory);
+        }
+
+        Long limit = resourceReader.readProperty(ApplicationProperty.SERVER_UPLOAD_LIMIT);
+        if (limit != null) {
+            bodyHandler.setBodyLimit(limit);
+        }
+
+        router.route().handler(bodyHandler);
+
+        start(router);
 
         return super.rxStart();
     }
 
-    private SessionHandler getSessionHandler(SecuritySystemManager securitySystemManager) {
-        SessionHandler sessionHandler;
-        sessionHandler = SessionHandler.create(LocalSessionStore.create(vertx))
-                .setAuthProvider(securitySystemManager.getAuthProvider());
+    private SessionHandler createSessionHandler(AuthProvider authProvider) {
+
+        SessionHandler sessionHandler = SessionHandler.create(LocalSessionStore.create(vertx))
+                .setAuthProvider(authProvider);
+
         boolean httpOnly = resourceReader.readProperty(ApplicationProperty.SERVER_COOKIE_HTTP_ONLY, true);
         sessionHandler.setCookieHttpOnlyFlag(httpOnly);
 
@@ -101,46 +159,6 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
         return null;
     }
 
-    private void processMapping(Router router, SecuritySystemManager securitySystemManager) {
-        List<BeanDefinition> beanDefinitions = getRouteBeanDefinitions();
-
-        for (BeanDefinition beanDefinition : beanDefinitions) {
-
-            Class<?> beanClass = beanDefinition.getBeanClass();
-
-            String baseUrl = "";
-            if (AnnotationUtils.isAnnotationPresent(beanClass, RouteMapping.class)) {
-                baseUrl = beanClass.getAnnotation(RouteMapping.class).value();
-            }
-
-            for (Method declaredMethod : beanClass.getDeclaredMethods()) {
-
-                if (!AnnotationUtils.isAnnotationPresent(declaredMethod, RouteMapping.class)) {
-                    continue;
-                }
-
-                Object bean = getRouteBean(beanDefinition);
-
-                MappingAttribute.Builder builder = MappingAttribute.builder().setRouter(router)
-                        .setRouteMethod(declaredMethod)
-                        .setBean(bean)
-                        .setBaseUrl(baseUrl);
-
-                if (securitySystemManager != null) {
-                    builder.setAuthHandler(securitySystemManager.getAuthHandler());
-                }
-
-                MappingAttribute attribute = builder.build();
-
-                DefaultMappingHandler mappingHandler = new DefaultMappingHandler(vertx);
-
-                mappingHandler.registerFilter(new AuthFilter(securitySystemManager, attribute));
-
-                mappingHandler.handle(attribute);
-            }
-        }
-    }
-
     private List<BeanDefinition> getRouteBeanDefinitions() {
         return configurableBeanFactory.getBeanDefinitions()
                 .values()
@@ -157,39 +175,10 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
         }
     }
 
-    private String getHost() {
-        String host = resourceReader.readProperty(ApplicationProperty.SERVER_HOST);
-        if (StringUtils.isEmpty(host)) {
-            host = ApplicationProperty.DEFAULT_HOST;
-        }
-        return host;
-    }
+    private void start(Router router) {
+        String host = resourceReader.readProperty(ApplicationProperty.SERVER_HOST, ApplicationProperty.DEFAULT_HOST);
+        Integer port = resourceReader.readProperty(ApplicationProperty.SERVER_PORT, ApplicationProperty.DEFAULT_PORT);
 
-    private Integer getPort() {
-        Integer port = resourceReader.readProperty(ApplicationProperty.SERVER_PORT);
-        if (port == null) {
-            port = ApplicationProperty.DEFAULT_PORT;
-        }
-        return port;
-    }
-
-    private void processBody(Router router) {
-        BodyHandler bodyHandler = BodyHandler.create();
-
-        String uploadsDirectory = resourceReader.readProperty(ApplicationProperty.SERVER_UPLOAD_DERICTORY);
-        if (!StringUtils.isEmpty(uploadsDirectory)) {
-            bodyHandler.setUploadsDirectory(uploadsDirectory);
-        }
-
-        Long limit = resourceReader.readProperty(ApplicationProperty.SERVER_UPLOAD_LIMIT);
-        if (limit != null) {
-            bodyHandler.setBodyLimit(limit);
-        }
-
-        router.route().handler(bodyHandler);
-    }
-
-    private void start(Router router, String host, Integer port) {
         httpServer = vertx.createHttpServer();
         httpServer.requestHandler(router)
                 .rxListen(port, host)
