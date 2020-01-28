@@ -1,7 +1,8 @@
 package cn.bdqfork.mvc.mapping.filter;
 
-import cn.bdqfork.core.util.StringUtils;
 import cn.bdqfork.mvc.mapping.MappingAttribute;
+import cn.bdqfork.security.util.SecurityUtils;
+import cn.bdqfork.security.annotation.PermitAllowed;
 import io.vertx.reactivex.ext.auth.User;
 import io.vertx.reactivex.ext.web.RoutingContext;
 import lombok.extern.slf4j.Slf4j;
@@ -20,12 +21,13 @@ public class PermitFilter implements Filter {
 
     @Override
     public void doFilter(RoutingContext routingContext, FilterChain filterChain) {
-        if (StringUtils.isEmpty(mappingAttribute.getPermits())) {
+        PermitAllowed permitAllowed = mappingAttribute.getPermits();
+        if (permitAllowed == null) {
             filterChain.doFilter(routingContext);
             return;
         }
         User user = routingContext.user();
-        user.rxIsAuthorized(mappingAttribute.getPermits())
+        SecurityUtils.isPermited(user, permitAllowed.value())
                 .subscribe(res -> {
                             if (res) {
                                 filterChain.doFilter(routingContext);
@@ -39,5 +41,6 @@ public class PermitFilter implements Filter {
                             }
                             routingContext.response().setStatusCode(500).end(e.getMessage());
                         });
+
     }
 }

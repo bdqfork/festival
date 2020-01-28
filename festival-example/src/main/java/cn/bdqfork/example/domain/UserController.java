@@ -45,7 +45,7 @@ public class UserController implements DisposableBean {
     }
 
     @Auth
-    @RolesAllowed("role:administrator")
+    @RolesAllowed({"role:administrator", "role:hispassword"})
     @GetMapping("/service")
     public void service(RoutingContext routingContext) {
         Flowable<String> flowable = iService.getUserName("service test");

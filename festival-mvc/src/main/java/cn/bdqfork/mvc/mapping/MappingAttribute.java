@@ -74,16 +74,16 @@ public class MappingAttribute {
                 || AnnotationUtils.isAnnotationPresent(routeMethod, Auth.class);
     }
 
-    public String getPermits() {
+    public PermitAllowed getPermits() {
         if (authHandler != null && routeMethod.isAnnotationPresent(PermitAllowed.class)) {
-            return routeMethod.getAnnotation(PermitAllowed.class).value();
+            return routeMethod.getAnnotation(PermitAllowed.class);
         }
         return null;
     }
 
-    public String getRoles() {
+    public RolesAllowed getRoles() {
         if (authHandler != null && routeMethod.isAnnotationPresent(RolesAllowed.class)) {
-            return routeMethod.getAnnotation(RolesAllowed.class).value();
+            return routeMethod.getAnnotation(RolesAllowed.class);
         }
         return null;
     }

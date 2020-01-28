@@ -11,5 +11,11 @@
 
     <artifactId>festival-security</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-rx-java2</artifactId>
+            <version>3.8.4</version>
+        </dependency>
+    </dependencies>
 </project>
