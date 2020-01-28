@@ -31,6 +31,15 @@ public abstract class AbstractResourceReader implements ResourceReader {
         return value;
     }
 
+    @Override
+    public <T> T readProperty(String propertyName, T defaultValue) {
+        T value = readProperty(propertyName);
+        if (value != null) {
+            return value;
+        }
+        return defaultValue;
+    }
+
     protected abstract <T> T doReadProperty(String propertyName);
 
     public String getResourcePath() {

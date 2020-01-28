@@ -6,13 +6,13 @@ import cn.bdqfork.core.exception.NoSuchBeanException;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
+import cn.bdqfork.mvc.context.service.HessianMessageCodec;
 import cn.bdqfork.mvc.processer.VerticleProxyProcessor;
 import cn.bdqfork.mvc.util.VertxUtils;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.reactivex.core.Vertx;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Method;
 import java.util.concurrent.CountDownLatch;
 
 /**

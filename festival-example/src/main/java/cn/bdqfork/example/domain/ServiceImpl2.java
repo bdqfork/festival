@@ -1,6 +1,6 @@
 package cn.bdqfork.example.domain;
 
-import cn.bdqfork.mvc.mapping.annotation.VerticleMapping;
+import cn.bdqfork.mvc.context.annotation.VerticleMapping;
 import io.reactivex.Flowable;
 
 import javax.inject.Singleton;

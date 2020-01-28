@@ -1,8 +1,8 @@
 package cn.bdqfork.example.domain;
 
 import cn.bdqfork.core.factory.DisposableBean;
-import cn.bdqfork.mvc.mapping.annotation.GetMapping;
-import cn.bdqfork.mvc.mapping.annotation.RouteMapping;
+import cn.bdqfork.mvc.context.annotation.GetMapping;
+import cn.bdqfork.mvc.context.annotation.RouteMapping;
 import cn.bdqfork.security.annotation.Auth;
 import cn.bdqfork.security.annotation.PermitAll;
 import cn.bdqfork.security.annotation.RolesAllowed;

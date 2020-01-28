@@ -1,4 +1,4 @@
-package cn.bdqfork.mvc.mapping.annotation;
+package cn.bdqfork.mvc.context.annotation;
 
 import io.vertx.core.http.HttpMethod;
 
@@ -13,10 +13,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * @author bdq
  * @since 2020/1/21
  */
-@RouteMapping(method = HttpMethod.POST)
+@RouteMapping(method = HttpMethod.GET)
 @Documented
 @Retention(RUNTIME)
 @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
-public @interface PostMapping {
+public @interface GetMapping {
     String value();
 }

@@ -12,9 +12,19 @@ public interface ResourceReader {
     /**
      * 根据配置项读取配置内容
      *
-     * @param propertyName 资源文件名称
+     * @param propertyName 资源名称
      * @return 配置项内容
      */
     <T> T readProperty(String propertyName);
+
+    /**
+     * 根据配置项读取配置内容
+     *
+     * @param propertyName 资源名称
+     * @param defaultValue 默认值
+     * @param <T>
+     * @return
+     */
+    <T> T readProperty(String propertyName, T defaultValue);
 
 }

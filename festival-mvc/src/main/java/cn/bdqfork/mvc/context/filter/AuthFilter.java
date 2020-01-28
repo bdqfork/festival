@@ -1,14 +1,13 @@
-package cn.bdqfork.mvc.mapping.filter;
+package cn.bdqfork.mvc.context.filter;
 
 import cn.bdqfork.mvc.context.SecuritySystemManager;
-import cn.bdqfork.mvc.mapping.MappingAttribute;
+import cn.bdqfork.mvc.context.MappingAttribute;
 import cn.bdqfork.security.annotation.PermitAllowed;
 import cn.bdqfork.security.annotation.RolesAllowed;
 import cn.bdqfork.security.util.SecurityUtils;
 import io.reactivex.Observable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
-import io.vertx.core.Handler;
 import io.vertx.reactivex.ext.auth.User;
 import io.vertx.reactivex.ext.web.RoutingContext;
 import lombok.extern.slf4j.Slf4j;
@@ -52,47 +51,31 @@ public class AuthFilter implements Filter {
             rolesObservable = Observable.just(true);
         }
 
-        Handler<RoutingContext> permitDeniedHandler = new Handler<RoutingContext>() {
-            @Override
-            public void handle(RoutingContext routingContext) {
-                if (securitySystemManager.getPermitDeniedHandler() != null) {
-                    if (log.isTraceEnabled()) {
-                        log.trace("do custom permit denied handler!");
-                    }
-                    securitySystemManager.getPermitDeniedHandler().handle(routingContext);
-                } else {
-                    if (log.isTraceEnabled()) {
-                        log.trace("do default permit denied handler!");
-                    }
-                    routingContext.response().setStatusCode(401).end("permisson denied!");
-                }
-            }
-        };
-
         Observable.combineLatest(permitObservable, rolesObservable,
                 new BiFunction<Boolean, Boolean, Boolean>() {
                     @Override
                     public Boolean apply(Boolean res1, Boolean res2) throws Exception {
                         return res1 && res2;
                     }
-                }).subscribe(new Consumer<Boolean>() {
-                                 @Override
-                                 public void accept(Boolean res) throws Exception {
-                                     if (res) {
-                                         filterChain.doFilter(routingContext);
-                                     } else {
-                                         permitDeniedHandler.handle(routingContext);
-                                     }
-                                 }
-                             },
-                new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable e) throws Exception {
-                        if (log.isErrorEnabled()) {
-                            log.error(e.getMessage(), e);
-                        }
-                        routingContext.response().setStatusCode(500).end(e.getMessage());
-                    }
-                });
+                })
+                .subscribe(new Consumer<Boolean>() {
+                               @Override
+                               public void accept(Boolean res) throws Exception {
+                                   if (res) {
+                                       filterChain.doFilter(routingContext);
+                                   } else {
+                                       securitySystemManager.getPermitDeniedHandler().handle(routingContext);
+                                   }
+                               }
+                           },
+                        new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable e) throws Exception {
+                                if (log.isErrorEnabled()) {
+                                    log.error(e.getMessage(), e);
+                                }
+                                routingContext.response().setStatusCode(500).end(e.getMessage());
+                            }
+                        });
     }
 }

@@ -1,4 +1,4 @@
-package cn.bdqfork.mvc.mapping.annotation;
+package cn.bdqfork.mvc.context.annotation;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

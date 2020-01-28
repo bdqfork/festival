@@ -1,7 +1,7 @@
-package cn.bdqfork.mvc.mapping.handler;
+package cn.bdqfork.mvc.context.handler;
 
 
-import cn.bdqfork.mvc.mapping.MappingAttribute;
+import cn.bdqfork.mvc.context.MappingAttribute;
 
 /**
  * @author bdq
