@@ -4,7 +4,6 @@ import cn.bdqfork.context.AnnotationApplicationContext;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.NoSuchBeanException;
 import cn.bdqfork.core.factory.BeanFactory;
-import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import cn.bdqfork.mvc.context.service.HessianMessageCodec;
@@ -27,8 +26,13 @@ public class WebApplicationContext extends AnnotationApplicationContext {
 
     public WebApplicationContext(String... scanPaths) throws BeansException {
         super(scanPaths);
+    }
 
-        BeanFactory beanFactory = getConfigurableBeanFactory();
+    @Override
+    public void start() throws Exception {
+        super.start();
+
+        BeanFactory beanFactory = getBeanFactory();
 
         vertx.eventBus().registerCodec(new HessianMessageCodec());
 
@@ -63,7 +67,7 @@ public class WebApplicationContext extends AnnotationApplicationContext {
                 .setBeanClass(VerticleProxyProcessor.class)
                 .setScope(BeanDefinition.SINGLETON)
                 .build();
-        getConfigurableBeanFactory().registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
+        getBeanFactory().registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
     }
 
     @Override
@@ -75,18 +79,18 @@ public class WebApplicationContext extends AnnotationApplicationContext {
 
     private void registerVertx() throws BeansException {
         try {
-            vertx = getConfigurableBeanFactory().getBean(Vertx.class);
+            vertx = getBeanFactory().getBean(Vertx.class);
         } catch (NoSuchBeanException e) {
             if (log.isTraceEnabled()) {
                 log.trace("can't find Vertx, will use default!");
             }
-            getConfigurableBeanFactory().registerSingleton("vertx", VertxUtils.getVertx());
-            vertx = getConfigurableBeanFactory().getBean(Vertx.class);
+            getBeanFactory().registerSingleton("vertx", VertxUtils.getVertx());
+            vertx = getBeanFactory().getBean(Vertx.class);
         }
     }
 
     private void registerWebServer() throws BeansException {
-        BeanDefinitionRegistry registry = getConfigurableBeanFactory();
+        BeanDefinitionRegistry registry = getBeanFactory();
         if (registry.containBeanDefinition("webserver")) {
             return;
         }
@@ -101,7 +105,7 @@ public class WebApplicationContext extends AnnotationApplicationContext {
     @Override
     protected void processEnvironment() throws BeansException {
         super.processEnvironment();
-        for (VertxAware vertxAware : getConfigurableBeanFactory().getBeans(VertxAware.class).values()) {
+        for (VertxAware vertxAware : getBeanFactory().getBeans(VertxAware.class).values()) {
             vertxAware.setVertx(vertx);
         }
 

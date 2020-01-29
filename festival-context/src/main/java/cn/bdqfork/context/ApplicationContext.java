@@ -18,14 +18,10 @@ public interface ApplicationContext extends BeanFactory {
      *
      * @return 可配置bean工厂
      */
-    ConfigurableBeanFactory getConfigurableBeanFactory();
+    ConfigurableBeanFactory getBeanFactory();
 
-    /**
-     * 扫描指定路径，自动将其添加到容器，并依赖注入
-     *
-     * @param scanPaths
-     * @throws BeansException
-     */
+    void start() throws Exception;
+
     void scan(String... scanPaths) throws BeansException;
 
     /**

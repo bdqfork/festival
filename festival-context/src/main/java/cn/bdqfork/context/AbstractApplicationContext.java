@@ -3,7 +3,6 @@ package cn.bdqfork.context;
 import cn.bdqfork.core.exception.BeansException;
 
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author bdq
@@ -11,9 +10,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public abstract class AbstractApplicationContext implements ApplicationContext {
     protected boolean closed = false;
+    protected String[] scanPaths;
 
     public AbstractApplicationContext(String... scanPaths) throws BeansException {
+        this.scanPaths = scanPaths;
+    }
 
+    @Override
+    public void start() throws Exception {
         createBeanFactory();
 
         registerResourceReader();
@@ -35,42 +39,42 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
 
     @Override
     public <T> T getBean(String beanName) throws BeansException {
-        return getConfigurableBeanFactory().getBean(beanName);
+        return getBeanFactory().getBean(beanName);
     }
 
     @Override
     public <T> T getBean(String beanName, Object[] args) throws BeansException {
-        return getConfigurableBeanFactory().getBean(beanName, args);
+        return getBeanFactory().getBean(beanName, args);
     }
 
     @Override
     public <T> T getBean(Class<T> clazz) throws BeansException {
-        return getConfigurableBeanFactory().getBean(clazz);
+        return getBeanFactory().getBean(clazz);
     }
 
     @Override
     public <T> T getSpecificBean(String beanName, Class<T> clazz) throws BeansException {
-        return getConfigurableBeanFactory().getSpecificBean(beanName, clazz);
+        return getBeanFactory().getSpecificBean(beanName, clazz);
     }
 
     @Override
     public <T> Map<String, T> getBeans(Class<T> clazz) throws BeansException {
-        return getConfigurableBeanFactory().getBeans(clazz);
+        return getBeanFactory().getBeans(clazz);
     }
 
     @Override
     public boolean containBean(String beanName) {
-        return getConfigurableBeanFactory().containBean(beanName);
+        return getBeanFactory().containBean(beanName);
     }
 
     @Override
     public boolean isSingleton(String beanName) throws BeansException {
-        return getConfigurableBeanFactory().isSingleton(beanName);
+        return getBeanFactory().isSingleton(beanName);
     }
 
     @Override
     public boolean isPrototype(String beanName) throws BeansException {
-        return getConfigurableBeanFactory().isPrototype(beanName);
+        return getBeanFactory().isPrototype(beanName);
     }
 
     @Override

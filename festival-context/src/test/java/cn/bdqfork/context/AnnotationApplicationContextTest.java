@@ -33,8 +33,9 @@ public class AnnotationApplicationContextTest {
      */
 
     @Test
-    public void testFieldCycle() throws BeansException {
+    public void testFieldCycle() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.cycle");
+        annotationApplicationContext.start();
         annotationApplicationContext.getBean(FieldCycleService.class);
         annotationApplicationContext.getBean(ProviderFieldCycleService.class);
     }
@@ -46,8 +47,9 @@ public class AnnotationApplicationContextTest {
      * @throws BeansException
      */
     @Test(expected = CircularDependencyException.class)
-    public void testConstructorCycle() throws BeansException {
+    public void testConstructorCycle() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.cycle");
+        annotationApplicationContext.start();
         annotationApplicationContext.getBean(ConstructorCycleService.class);
         annotationApplicationContext.getBean(PrototypeConstructorCycleService.class);
     }
@@ -58,8 +60,9 @@ public class AnnotationApplicationContextTest {
      * @throws BeansException
      */
     @Test(expected = CircularDependencyException.class)
-    public void testPrototypeFieldCycle() throws BeansException {
+    public void testPrototypeFieldCycle() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.cycle");
+        annotationApplicationContext.start();
         annotationApplicationContext.getBean(PrototypeFieldCycleService.class);
     }
 
@@ -69,8 +72,9 @@ public class AnnotationApplicationContextTest {
      * @throws BeansException
      */
     @Test
-    public void testSetterCycle() throws BeansException {
+    public void testSetterCycle() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.cycle");
+        annotationApplicationContext.start();
         annotationApplicationContext.getBean(SetterCycleService.class);
         annotationApplicationContext.getBean(ProviderSetterCycleService.class);
     }
@@ -81,8 +85,9 @@ public class AnnotationApplicationContextTest {
      * @throws BeansException
      */
     @Test(expected = CircularDependencyException.class)
-    public void testPrototypeSetterCycle() throws BeansException {
+    public void testPrototypeSetterCycle() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.cycle");
+        annotationApplicationContext.start();
         annotationApplicationContext.getBean(PrototypeSetterCycleService.class);
     }
 
@@ -94,6 +99,7 @@ public class AnnotationApplicationContextTest {
     @Test
     public void testJSR250Intercept() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.jsr250");
+        annotationApplicationContext.start();
         annotationApplicationContext.getBean(JSR250FieldService.class);
         annotationApplicationContext.close();
     }
@@ -106,6 +112,7 @@ public class AnnotationApplicationContextTest {
     @Test
     public void testJSR250Setter() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.jsr250");
+        annotationApplicationContext.start();
         annotationApplicationContext.getBean(JSR250FieldService.class);
         annotationApplicationContext.close();
     }
@@ -117,8 +124,9 @@ public class AnnotationApplicationContextTest {
      */
 
     @Test
-    public void testGetFactoryBeanDefinition() throws BeansException {
+    public void testGetFactoryBeanDefinition() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.configration");
+        annotationApplicationContext.start();
         FactoryBean factoryBean = annotationApplicationContext.getBean("factoryBean");
         System.out.println(factoryBean);
         assert factoryBean != null;
@@ -131,8 +139,9 @@ public class AnnotationApplicationContextTest {
      * @throws BeansException
      */
     @Test
-    public void testGetBeanByName() throws BeansException {
+    public void testGetBeanByName() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.bean.normal");
+        annotationApplicationContext.start();
         assert annotationApplicationContext.getBean("singletonBeanServiceImpl") instanceof SingletonBeanService;
     }
 
@@ -142,8 +151,9 @@ public class AnnotationApplicationContextTest {
      * @throws BeansException
      */
     @Test
-    public void testGetBeans() throws BeansException {
+    public void testGetBeans() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.bean.normal");
+        annotationApplicationContext.start();
         assert annotationApplicationContext.getBeans(SingletonBeanService.class) != null;
     }
 
@@ -153,8 +163,9 @@ public class AnnotationApplicationContextTest {
      * @throws BeansException
      */
     @Test
-    public void testIsPrototype() throws BeansException {
+    public void testIsPrototype() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.bean.normal");
+        annotationApplicationContext.start();
         assert annotationApplicationContext.isPrototype("singletonBeanServiceImpl") == false;
     }
 
@@ -164,8 +175,9 @@ public class AnnotationApplicationContextTest {
      * @throws BeansException
      */
     @Test
-    public void testIsSingleton() throws BeansException {
+    public void testIsSingleton() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.bean.normal");
+        annotationApplicationContext.start();
         assert annotationApplicationContext.isSingleton("singletonBeanServiceImpl") == true;
     }
 
@@ -175,8 +187,9 @@ public class AnnotationApplicationContextTest {
      * @throws BeansException
      */
     @Test
-    public void testContainBean() throws BeansException {
+    public void testContainBean() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.bean.normal");
+        annotationApplicationContext.start();
         assert annotationApplicationContext.containBean("singletonBeanServiceImpl") == true;
     }
 
@@ -186,8 +199,9 @@ public class AnnotationApplicationContextTest {
      * @throws BeansException
      */
     @Test
-    public void testCollectionPropertyInjected() throws BeansException {
+    public void testCollectionPropertyInjected() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.collection");
+        annotationApplicationContext.start();
         CollectionPropertyService collectionPropertyService = annotationApplicationContext.getBean(CollectionPropertyService.class);
         assert collectionPropertyService.getDaos().size() > 0;
         assert collectionPropertyService.getDaoMap().size() > 0;
@@ -199,8 +213,9 @@ public class AnnotationApplicationContextTest {
      * @throws BeansException
      */
     @Test
-    public void testGetSpecificBean() throws BeansException {
+    public void testGetSpecificBean() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.bean.normal");
+        annotationApplicationContext.start();
         assert annotationApplicationContext.getSpecificBean("singletonBeanServiceImpl", SingletonBeanService.class) != null;
     }
 
@@ -210,8 +225,9 @@ public class AnnotationApplicationContextTest {
      * @throws BeansException
      */
     @Test
-    public void testConfigration() throws BeansException {
+    public void testConfigration() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.configration");
+        annotationApplicationContext.start();
         Server server = annotationApplicationContext.getBean(Server.class);
         ServerConfig serverConfig = server.getServerConfig();
         assertEquals(serverConfig.getLocalhost(), "127.0.0.1");
@@ -226,8 +242,9 @@ public class AnnotationApplicationContextTest {
      * @throws BeansException
      */
     @Test(expected = ResolvedException.class)
-    public void testResolveException() throws BeansException {
+    public void testResolveException() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.bean.exception");
+        annotationApplicationContext.start();
         annotationApplicationContext.getBean(ResolveExceptionBean.class);
     }
 
@@ -237,8 +254,9 @@ public class AnnotationApplicationContextTest {
      * @throws BeansException
      */
     @Test(expected = UnsatisfiedBeanException.class)
-    public void testUnsatisfiedBeanException() throws BeansException {
+    public void testUnsatisfiedBeanException() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.bean.exception.unsatisfied");
+        annotationApplicationContext.start();
         assert annotationApplicationContext.getBean(UnsatisfiedBeanExceptionBean.class) != null;
     }
 
@@ -248,8 +266,9 @@ public class AnnotationApplicationContextTest {
      * @throws BeansException
      */
     @Test
-    public void testAop() throws BeansException {
+    public void testAop() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.proxy");
+        annotationApplicationContext.start();
         AopProxyTestBean aopProxyTestBean = annotationApplicationContext.getBean(AopProxyTestBean.class);
         aopProxyTestBean.testAop();
         aopProxyTestBean.testThrowing();

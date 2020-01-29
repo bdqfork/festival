@@ -61,7 +61,6 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
 
     public AnnotationApplicationContext(String... scanPaths) throws BeansException {
         super(scanPaths);
-        log.info("context is ready to use !");
     }
 
     @Override
@@ -224,7 +223,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
 
 
     @Override
-    public ConfigurableBeanFactory getConfigurableBeanFactory() {
+    public ConfigurableBeanFactory getBeanFactory() {
         return delegateBeanFactory;
     }
 
