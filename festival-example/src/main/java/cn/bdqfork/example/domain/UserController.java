@@ -2,10 +2,11 @@ package cn.bdqfork.example.domain;
 
 import cn.bdqfork.core.factory.DisposableBean;
 import cn.bdqfork.mvc.context.annotation.GetMapping;
-import cn.bdqfork.mvc.context.annotation.Route;
 import cn.bdqfork.mvc.context.annotation.RouteMapping;
+import cn.bdqfork.mvc.context.annotation.Router;
 import cn.bdqfork.security.annotation.Auth;
 import cn.bdqfork.security.annotation.PermitAll;
+import cn.bdqfork.security.annotation.PermitAllowed;
 import cn.bdqfork.security.annotation.RolesAllowed;
 import cn.bdqfork.security.common.LogicType;
 import io.reactivex.Flowable;
@@ -22,17 +23,17 @@ import javax.inject.Singleton;
  * @author bdq
  * @since 2020/1/21
  */
+@Auth
 @Slf4j
 @Singleton
 @RouteMapping("/users")
-@Route
+@Router
 public class UserController implements DisposableBean {
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     @Named("ServiceImpl1")
     @Inject
     private IService iService;
 
-    @Auth
     @PermitAll
     @GetMapping("/hello")
     public void hello(RoutingContext routingContext) {
@@ -41,7 +42,6 @@ public class UserController implements DisposableBean {
                 .end("Hello World from Vert.x-Web!");
     }
 
-    @Auth
     @GetMapping("/hello2")
     public void hello2(RoutingContext routingContext) {
         routingContext.response()
@@ -49,7 +49,6 @@ public class UserController implements DisposableBean {
                 .end("Hello World from Vert.x-Web 2!");
     }
 
-    @Auth
     @RolesAllowed(value = {"role:administrator", "role:hispassword"}, logic = LogicType.AND)
     @GetMapping("/service")
     public void service(RoutingContext routingContext) {
@@ -60,6 +59,7 @@ public class UserController implements DisposableBean {
         compositeDisposable.add(disposable);
     }
 
+    @PermitAllowed(value = {"play_golf"}, logic = LogicType.AND)
     @GetMapping("/error")
     public void error(RoutingContext routingContext) {
         Flowable<Void> flowable = iService.testError("service test");
@@ -71,7 +71,6 @@ public class UserController implements DisposableBean {
         compositeDisposable.add(disposable);
     }
 
-    @Override
     public void destroy() throws Exception {
         compositeDisposable.dispose();
     }
