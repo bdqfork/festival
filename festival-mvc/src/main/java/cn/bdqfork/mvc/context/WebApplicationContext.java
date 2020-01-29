@@ -3,6 +3,7 @@ package cn.bdqfork.mvc.context;
 import cn.bdqfork.context.AnnotationApplicationContext;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.NoSuchBeanException;
+import cn.bdqfork.core.factory.BeanFactory;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
@@ -21,12 +22,13 @@ import java.util.concurrent.CountDownLatch;
  */
 @Slf4j
 public class WebApplicationContext extends AnnotationApplicationContext {
+    private static final String SERVER_OPTIONS_NAME = "serverOptions";
     private Vertx vertx;
 
     public WebApplicationContext(String... scanPaths) throws BeansException {
         super(scanPaths);
 
-        ConfigurableBeanFactory beanFactory = getConfigurableBeanFactory();
+        BeanFactory beanFactory = getConfigurableBeanFactory();
 
         vertx.eventBus().registerCodec(new HessianMessageCodec());
 
@@ -35,16 +37,16 @@ public class WebApplicationContext extends AnnotationApplicationContext {
         DeploymentOptions options;
 
         try {
-            options = beanFactory.getBean(DeploymentOptions.class);
+            options = beanFactory.getSpecificBean(SERVER_OPTIONS_NAME, DeploymentOptions.class);
 
             if (log.isInfoEnabled()) {
-                log.info("DeploymentOptions find, will use it's options!");
+                log.info("server options find, will use it's options!");
             }
 
         } catch (NoSuchBeanException e) {
 
             if (log.isWarnEnabled()) {
-                log.warn("no DeploymentOptions find, so will use default options, " +
+                log.warn("no server options find, so will use default options, " +
                         "but we recommend you using customer options!");
             }
 
@@ -65,9 +67,13 @@ public class WebApplicationContext extends AnnotationApplicationContext {
     }
 
     @Override
-    protected void registerBeanDefinition() throws BeansException {
-        super.registerBeanDefinition();
+    protected void registerBean() throws BeansException {
+        super.registerBean();
+        registerVertx();
         registerWebServer();
+    }
+
+    private void registerVertx() throws BeansException {
         try {
             vertx = getConfigurableBeanFactory().getBean(Vertx.class);
         } catch (NoSuchBeanException e) {
@@ -79,6 +85,19 @@ public class WebApplicationContext extends AnnotationApplicationContext {
         }
     }
 
+    private void registerWebServer() throws BeansException {
+        BeanDefinitionRegistry registry = getConfigurableBeanFactory();
+        if (registry.containBeanDefinition("webserver")) {
+            return;
+        }
+        BeanDefinition beanDefinition = BeanDefinition.builder()
+                .setScope(BeanDefinition.SINGLETON)
+                .setBeanClass(WebSeverRunner.class)
+                .setBeanName("webserver")
+                .build();
+        registry.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
+    }
+
     @Override
     protected void processEnvironment() throws BeansException {
         super.processEnvironment();
@@ -86,16 +105,6 @@ public class WebApplicationContext extends AnnotationApplicationContext {
             vertxAware.setVertx(vertx);
         }
 
-    }
-
-    private void registerWebServer() throws BeansException {
-        BeanDefinitionRegistry registry = getConfigurableBeanFactory();
-        BeanDefinition beanDefinition = BeanDefinition.builder()
-                .setScope(BeanDefinition.SINGLETON)
-                .setBeanClass(WebSeverRunner.class)
-                .setBeanName("webserver")
-                .build();
-        registry.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
     }
 
     @Override
