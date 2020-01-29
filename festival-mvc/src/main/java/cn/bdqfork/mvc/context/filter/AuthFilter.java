@@ -79,7 +79,7 @@ public class AuthFilter implements Filter {
                                 if (log.isErrorEnabled()) {
                                     log.error(e.getMessage(), e);
                                 }
-                                routingContext.response().setStatusCode(500).end(e.getMessage());
+                                routingContext.fail(500, e);
                             }
                         });
     }

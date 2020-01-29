@@ -151,4 +151,8 @@ public class ReflectUtils {
         makeAccessible(field);
         field.set(object, value);
     }
+
+    public static Method getDeclaredMethod(Object bean, String methodName, Class<?>... argumentTypes) throws NoSuchMethodException {
+        return bean.getClass().getDeclaredMethod(methodName, argumentTypes);
+    }
 }

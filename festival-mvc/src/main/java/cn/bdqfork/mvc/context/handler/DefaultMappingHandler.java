@@ -12,9 +12,10 @@ import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.RoutingContext;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author bdq
@@ -52,8 +53,9 @@ public class DefaultMappingHandler implements RouteMappingHandler {
                 public void doFilter(RoutingContext routingContext) {
                     try {
                         ReflectUtils.invokeMethod(routeAttribute.getBean(), routeMethod, routingContext);
-                    } catch (InvocationTargetException | IllegalAccessException e) {
-                        throw new IllegalStateException(e);
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        routingContext.fail(500, e);
                     }
                 }
             };
@@ -63,7 +65,6 @@ public class DefaultMappingHandler implements RouteMappingHandler {
     }
 
     protected FilterChain buildFilterChain(FilterChain filterChain) {
-        Collections.reverse(filters);
         for (Filter filter : filters) {
             FilterChain finalFilterChain = filterChain;
             filterChain = new FilterChain() {

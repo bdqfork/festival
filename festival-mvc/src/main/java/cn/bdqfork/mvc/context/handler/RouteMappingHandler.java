@@ -9,6 +9,7 @@ import cn.bdqfork.mvc.context.RouteAttribute;
  */
 public interface RouteMappingHandler {
     String ROUTE_ATTRIBETE_KEY = "routeAttribute";
+
     void handle(RouteAttribute routeAttribute);
 
 }

@@ -1,6 +1,7 @@
 package cn.bdqfork.aop.processor;
 
 import cn.bdqfork.aop.advice.Advisor;
+import cn.bdqfork.aop.annotation.Optimize;
 import cn.bdqfork.aop.factory.AopProxyBeanFactory;
 import cn.bdqfork.aop.factory.DefaultAopProxyBeanFactory;
 import cn.bdqfork.aop.proxy.AopProxySupport;
@@ -10,6 +11,7 @@ import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.definition.ManagedBeanDefinition;
 import cn.bdqfork.core.factory.processor.BeanFactoryPostProcessor;
 import cn.bdqfork.core.factory.processor.BeanPostProcessor;
+import cn.bdqfork.core.util.AnnotationUtils;
 import org.aspectj.lang.annotation.Aspect;
 
 import java.util.Arrays;
@@ -67,11 +69,15 @@ public class AopProxyProcessor implements BeanPostProcessor, BeanFactoryPostProc
                 .collect(Collectors.toList());
         config.setInterfaces(interfaces);
 
-        if (beanDefinition instanceof ManagedBeanDefinition) {
+        if (checkIfOptimize(beanDefinition, beanClass)) {
             config.setOptimze(true);
         }
 
         return aopProxyBeanFactory.createAopProxyBean(config);
+    }
+
+    private boolean checkIfOptimize(BeanDefinition beanDefinition, Class<?> beanClass) {
+        return beanDefinition instanceof ManagedBeanDefinition || AnnotationUtils.isAnnotationPresent(beanClass, Optimize.class);
     }
 
 }
