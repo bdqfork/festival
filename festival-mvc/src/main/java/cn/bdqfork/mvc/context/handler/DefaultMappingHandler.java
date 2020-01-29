@@ -2,7 +2,7 @@ package cn.bdqfork.mvc.context.handler;
 
 import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.ReflectUtils;
-import cn.bdqfork.mvc.context.MappingAttribute;
+import cn.bdqfork.mvc.context.RouteAttribute;
 import cn.bdqfork.mvc.context.annotation.RouteMapping;
 import cn.bdqfork.mvc.context.filter.Filter;
 import cn.bdqfork.mvc.context.filter.FilterChain;
@@ -21,7 +21,7 @@ import java.util.*;
  * @since 2020/1/24
  */
 @Slf4j
-public class DefaultMappingHandler implements RouterMappingHandler {
+public class DefaultMappingHandler implements RouteMappingHandler {
     private List<Filter> filters = new LinkedList<>();
     protected Vertx vertx;
 
@@ -30,28 +30,28 @@ public class DefaultMappingHandler implements RouterMappingHandler {
     }
 
     @Override
-    public void handle(MappingAttribute mappingAttribute) {
-        Method routeMethod = mappingAttribute.getRouteMethod();
+    public void handle(RouteAttribute routeAttribute) {
+        Method routeMethod = routeAttribute.getRouteMethod();
         RouteMapping routeMapping = AnnotationUtils.getMergedAnnotation(routeMethod, RouteMapping.class);
-        assert routeMapping != null;
-        String path = mappingAttribute.getBaseUrl() + routeMapping.value();
+        String path = routeAttribute.getBaseUrl() + Objects.requireNonNull(routeMapping).value();
         if (log.isInfoEnabled()) {
-            log.info("post mapping path:{} to {}:{}!", path, routeMethod.getDeclaringClass()
+            log.info("{} mapping path:{} to {}:{}!", routeMapping.method().name(), path, routeMethod.getDeclaringClass()
                     .getCanonicalName(), ReflectUtils.getSignature(routeMethod));
         }
-        Router router = mappingAttribute.getRouter();
+        Router router = routeAttribute.getRouter();
 
         Route route = router.route(routeMapping.method(), path);
 
-        if (mappingAttribute.requireAuth()) {
-            route.handler(mappingAttribute.getAuthHandler());
+        if (routeAttribute.requireAuth()) {
+            route.handler(routeAttribute.getAuthHandler());
         }
         route.handler(routingContext -> {
+            routingContext.data().put(ROUTE_ATTRIBETE_KEY, routeAttribute);
             FilterChain filterChain = new FilterChain() {
                 @Override
                 public void doFilter(RoutingContext routingContext) {
                     try {
-                        ReflectUtils.invokeMethod(mappingAttribute.getBean(), routeMethod, routingContext);
+                        ReflectUtils.invokeMethod(routeAttribute.getBean(), routeMethod, routingContext);
                     } catch (InvocationTargetException | IllegalAccessException e) {
                         throw new IllegalStateException(e);
                     }

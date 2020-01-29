@@ -7,7 +7,7 @@ import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import cn.bdqfork.mvc.context.service.HessianMessageCodec;
-import cn.bdqfork.mvc.processer.VerticleProxyProcessor;
+import cn.bdqfork.mvc.processor.VerticleProxyProcessor;
 import cn.bdqfork.mvc.util.VertxUtils;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.reactivex.core.Vertx;
@@ -26,9 +26,9 @@ public class WebApplicationContext extends AnnotationApplicationContext {
     public WebApplicationContext(String... scanPaths) throws BeansException {
         super(scanPaths);
 
-        vertx.eventBus().registerCodec(new HessianMessageCodec());
-
         ConfigurableBeanFactory beanFactory = getConfigurableBeanFactory();
+
+        vertx.eventBus().registerCodec(new HessianMessageCodec());
 
         WebSeverRunner runner = beanFactory.getBean(WebSeverRunner.class);
 
@@ -67,23 +67,16 @@ public class WebApplicationContext extends AnnotationApplicationContext {
     @Override
     protected void registerBeanDefinition() throws BeansException {
         super.registerBeanDefinition();
+        registerWebServer();
         try {
             vertx = getConfigurableBeanFactory().getBean(Vertx.class);
         } catch (NoSuchBeanException e) {
             if (log.isTraceEnabled()) {
                 log.trace("can't find Vertx, will use default!");
             }
-            registerDefaultVertx();
+            getConfigurableBeanFactory().registerSingleton("vertx", VertxUtils.getVertx());
             vertx = getConfigurableBeanFactory().getBean(Vertx.class);
         }
-        registerWebServer();
-    }
-
-    private void registerDefaultVertx() throws BeansException {
-        if (log.isTraceEnabled()) {
-            log.trace("register default Vertx!");
-        }
-        getConfigurableBeanFactory().registerSingleton("vertx", VertxUtils.getVertx());
     }
 
     @Override

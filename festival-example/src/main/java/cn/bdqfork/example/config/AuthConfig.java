@@ -1,6 +1,6 @@
 package cn.bdqfork.example.config;
 
-import cn.bdqfork.mvc.context.SecuritySystemManager;
+import cn.bdqfork.mvc.context.filter.AuthFilter;
 import cn.bdqfork.value.Configration;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.shiro.ShiroAuthOptions;
@@ -24,18 +24,26 @@ public class AuthConfig {
 
     @Singleton
     @Named
-    public SecuritySystemManager securityManager(Vertx vertx) {
+    public AuthProvider authProvider(Vertx vertx) {
         JsonObject config = new JsonObject().put("properties_path", "classpath:vertx-users.properties");
         ShiroAuthOptions options = new ShiroAuthOptions().setType(ShiroAuthRealmType.PROPERTIES).setConfig(config);
-        AuthProvider authProvider = ShiroAuth.create(vertx, options);
-        AuthHandler authHandler = BasicAuthHandler.create(authProvider);
-        SecuritySystemManager securitySystemManager = new SecuritySystemManager();
-        securitySystemManager.setAuthProvider(authProvider);
-        securitySystemManager.setAuthHandler(authHandler);
-        securitySystemManager.setPermitDeniedHandler(routingContext -> {
-            routingContext.response().setStatusCode(401).end("you have not permission!");
+        return ShiroAuth.create(vertx, options);
+    }
+
+    @Singleton
+    @Named
+    public AuthHandler authHandler(AuthProvider authProvider) {
+        return BasicAuthHandler.create(authProvider);
+    }
+
+    @Singleton
+    @Named
+    public AuthFilter authFilter() {
+        AuthFilter authFilter = new AuthFilter();
+        authFilter.setDeniedHandler(routingContext -> {
+            routingContext.response().setStatusCode(403).end("you have not permission!");
         });
-        return securitySystemManager;
+        return authFilter;
     }
 
 }

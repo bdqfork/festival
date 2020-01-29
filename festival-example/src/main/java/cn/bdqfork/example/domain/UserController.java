@@ -2,6 +2,7 @@ package cn.bdqfork.example.domain;
 
 import cn.bdqfork.core.factory.DisposableBean;
 import cn.bdqfork.mvc.context.annotation.GetMapping;
+import cn.bdqfork.mvc.context.annotation.Route;
 import cn.bdqfork.mvc.context.annotation.RouteMapping;
 import cn.bdqfork.security.annotation.Auth;
 import cn.bdqfork.security.annotation.PermitAll;
@@ -22,9 +23,9 @@ import javax.inject.Singleton;
  * @since 2020/1/21
  */
 @Slf4j
-@RouteMapping("/users")
 @Singleton
-@Named
+@RouteMapping("/users")
+@Route
 public class UserController implements DisposableBean {
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     @Named("ServiceImpl1")
@@ -49,7 +50,7 @@ public class UserController implements DisposableBean {
     }
 
     @Auth
-    @RolesAllowed(value = {"role:administrator", "role:hispassword"}, logic = LogicType.OR)
+    @RolesAllowed(value = {"role:administrator", "role:hispassword"}, logic = LogicType.AND)
     @GetMapping("/service")
     public void service(RoutingContext routingContext) {
         Flowable<String> flowable = iService.getUserName("service test");

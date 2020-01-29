@@ -1,4 +1,4 @@
-package cn.bdqfork.mvc.processer;
+package cn.bdqfork.mvc.processor;
 
 import cn.bdqfork.aop.processor.AopProxyProcessor;
 import cn.bdqfork.aop.proxy.javassist.Proxy;

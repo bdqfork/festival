@@ -14,7 +14,7 @@ import java.lang.reflect.Method;
  * @author bdq
  * @since 2020/1/27
  */
-public class MappingAttribute {
+public class RouteAttribute {
 
     private Router router;
 
@@ -129,8 +129,8 @@ public class MappingAttribute {
             return this;
         }
 
-        public MappingAttribute build() {
-            MappingAttribute attribute = new MappingAttribute();
+        public RouteAttribute build() {
+            RouteAttribute attribute = new RouteAttribute();
             attribute.setRouter(router);
             attribute.setBean(bean);
             attribute.setBaseUrl(baseUrl);
