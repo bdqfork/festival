@@ -41,7 +41,7 @@ public class AuthConfig {
     public AuthFilter authFilter() {
         AuthFilter authFilter = new AuthFilter();
         authFilter.setDeniedHandler(routingContext -> {
-            routingContext.response().setStatusCode(403).end("you have not permission!");
+            routingContext.response().setStatusCode(403).end("you have not permissions!");
         });
         return authFilter;
     }
