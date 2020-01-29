@@ -1,6 +1,6 @@
 package cn.bdqfork.example.domain;
 
-import cn.bdqfork.mvc.annotation.Verticle;
+import cn.bdqfork.mvc.context.annotation.VerticleMapping;
 import io.reactivex.Flowable;
 
 import javax.inject.Singleton;
@@ -10,7 +10,7 @@ import javax.inject.Singleton;
  * @since 2020/1/26
  */
 @Singleton
-@Verticle("ServiceImpl1")
+@VerticleMapping("ServiceImpl1")
 public class ServiceImpl implements IService {
     @Override
     public Flowable<String> getUserName(String username) {

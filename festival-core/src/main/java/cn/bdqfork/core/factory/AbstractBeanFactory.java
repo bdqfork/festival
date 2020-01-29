@@ -7,6 +7,7 @@ import cn.bdqfork.core.exception.UnsatisfiedBeanException;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import cn.bdqfork.core.factory.registry.DefaultSingletonBeanRegistry;
+import cn.bdqfork.core.util.AopUtils;
 import cn.bdqfork.core.util.BeanUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -160,4 +161,22 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         }
     }
 
+    @Override
+    public void registerSingleton(String beanName, Object bean) {
+        super.registerSingleton(beanName, bean);
+        if (!containBeanDefinition(beanName)) {
+            Class<?> beanClass = AopUtils.getTargetClass(bean);
+            BeanDefinition beanDefinition = BeanDefinition.builder()
+                    .setBeanName(beanName)
+                    .setBeanClass(beanClass)
+                    .setScope(BeanDefinition.SINGLETON)
+                    .isResolved(true)
+                    .build();
+            try {
+                registerBeanDefinition(beanName, beanDefinition);
+            } catch (BeansException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+    }
 }

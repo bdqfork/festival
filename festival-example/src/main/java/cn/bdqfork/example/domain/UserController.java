@@ -1,8 +1,13 @@
 package cn.bdqfork.example.domain;
 
 import cn.bdqfork.core.factory.DisposableBean;
-import cn.bdqfork.mvc.annotation.GetMapping;
-import cn.bdqfork.mvc.annotation.RouteMapping;
+import cn.bdqfork.mvc.context.annotation.GetMapping;
+import cn.bdqfork.mvc.context.annotation.Route;
+import cn.bdqfork.mvc.context.annotation.RouteMapping;
+import cn.bdqfork.security.annotation.Auth;
+import cn.bdqfork.security.annotation.PermitAll;
+import cn.bdqfork.security.annotation.RolesAllowed;
+import cn.bdqfork.security.common.LogicType;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -18,15 +23,17 @@ import javax.inject.Singleton;
  * @since 2020/1/21
  */
 @Slf4j
-@RouteMapping("/users")
 @Singleton
-@Named
+@RouteMapping("/users")
+@Route
 public class UserController implements DisposableBean {
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     @Named("ServiceImpl1")
     @Inject
     private IService iService;
 
+    @Auth
+    @PermitAll
     @GetMapping("/hello")
     public void hello(RoutingContext routingContext) {
         routingContext.response()
@@ -34,6 +41,7 @@ public class UserController implements DisposableBean {
                 .end("Hello World from Vert.x-Web!");
     }
 
+    @Auth
     @GetMapping("/hello2")
     public void hello2(RoutingContext routingContext) {
         routingContext.response()
@@ -41,6 +49,8 @@ public class UserController implements DisposableBean {
                 .end("Hello World from Vert.x-Web 2!");
     }
 
+    @Auth
+    @RolesAllowed(value = {"role:administrator", "role:hispassword"}, logic = LogicType.AND)
     @GetMapping("/service")
     public void service(RoutingContext routingContext) {
         Flowable<String> flowable = iService.getUserName("service test");

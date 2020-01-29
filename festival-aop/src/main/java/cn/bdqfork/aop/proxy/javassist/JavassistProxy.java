@@ -32,6 +32,9 @@ public class JavassistProxy implements AopProxy {
         List<Class<?>> interfaces = support.getInterfaces();
         interfaces.add(FestivalProxy.class);
         interfaces.add(TargetClassAware.class);
+        if (targetClass.isInterface()) {
+            interfaces.add(targetClass);
+        }
         return Proxy.newProxyInstance(classLoader, interfaces.toArray(new Class[0]), new JavassistInvocationHandler(support));
     }
 }

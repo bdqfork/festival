@@ -1,4 +1,6 @@
-package cn.bdqfork.mvc.annotation;
+package cn.bdqfork.mvc.context.annotation;
+
+import io.vertx.core.http.HttpMethod;
 
 import java.lang.annotation.*;
 
@@ -11,4 +13,6 @@ import java.lang.annotation.*;
 @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD})
 public @interface RouteMapping {
     String value() default "";
+
+    HttpMethod method() default HttpMethod.OPTIONS;
 }

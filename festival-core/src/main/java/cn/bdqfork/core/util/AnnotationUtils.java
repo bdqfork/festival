@@ -86,8 +86,10 @@ public class AnnotationUtils {
                     continue;
                 }
                 Method method = getTargetMethod(vistedAnnotationClass, methodName);
-                Object value = getValue(vistedAnnotation, method);
-                memberValues.put(methodName, value);
+                if (method != null) {
+                    Object value = getValue(vistedAnnotation, method);
+                    memberValues.put(methodName, value);
+                }
             }
 
         }
@@ -105,7 +107,7 @@ public class AnnotationUtils {
         try {
             return vistedAnnotationClass.getMethod(methodName);
         } catch (NoSuchMethodException e) {
-            throw new IllegalStateException(e);
+            return null;
         }
     }
 

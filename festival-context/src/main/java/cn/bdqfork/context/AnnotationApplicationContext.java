@@ -154,7 +154,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
 
     protected void refresh() throws BeansException {
 
-        registerBeanDefinition();
+        registerBean();
 
         processEnvironment();
 
@@ -163,7 +163,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         registerBeanPostProcessor();
     }
 
-    protected void registerBeanDefinition() throws BeansException {
+    protected void registerBean() throws BeansException {
         if (log.isTraceEnabled()) {
             log.trace("register BeanDefinition !");
         }

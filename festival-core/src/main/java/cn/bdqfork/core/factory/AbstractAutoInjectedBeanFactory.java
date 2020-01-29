@@ -1,6 +1,9 @@
 package cn.bdqfork.core.factory;
 
-import cn.bdqfork.core.exception.*;
+import cn.bdqfork.core.exception.BeansException;
+import cn.bdqfork.core.exception.FailedInjectedFieldException;
+import cn.bdqfork.core.exception.FailedInjectedMethodException;
+import cn.bdqfork.core.exception.UnsatisfiedBeanException;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.processor.BeanPostProcessor;
 import lombok.extern.slf4j.Slf4j;
@@ -158,9 +161,11 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
     @Override
     public Object[] resovleMultDependence(MultInjectedPoint multInjectedPoint, String beanName) throws UnsatisfiedBeanException {
         List<Object> dependencies = new LinkedList<>();
-        for (InjectedPoint injectedPoint : multInjectedPoint) {
-            Object dependence = resovleDependence(injectedPoint, beanName);
-            dependencies.add(dependence);
+        if (multInjectedPoint != null) {
+            for (InjectedPoint injectedPoint : multInjectedPoint) {
+                Object dependence = resovleDependence(injectedPoint, beanName);
+                dependencies.add(dependence);
+            }
         }
         return dependencies.toArray();
     }

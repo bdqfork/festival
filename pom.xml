@@ -15,6 +15,7 @@
         <module>festival-context</module>
         <module>festival-example</module>
         <module>festival-mvc</module>
+        <module>festival-security</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
