@@ -1,10 +1,14 @@
 package cn.bdqfork.core.util;
 
+import cn.bdqfork.core.annotation.Order;
+
 import javax.inject.Provider;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author bdq
@@ -69,6 +73,22 @@ public class BeanUtils {
      */
     public static boolean checkIsInstance(Class<?> clazz, Class<?> target) {
         return isSubType(clazz, target) || isSubType(target, clazz);
+    }
+
+    public static <T> List<T> getOrderedBeanList(Map<String, T> beans) {
+        return beans.values()
+                .stream()
+                .sorted(Comparator.comparing(v->getOrder(v.getClass())))
+                .collect(Collectors.toList());
+
+    }
+
+    public static int getOrder(Class clazz) {
+        int order = Integer.MAX_VALUE;
+        if (clazz.getDeclaredAnnotation(Order.class) != null) {
+            order = ((Order)clazz.getDeclaredAnnotation(Order.class)).value();
+        }
+        return order;
     }
 
 }

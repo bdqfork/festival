@@ -13,6 +13,7 @@ import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.processor.BeanFactoryPostProcessor;
 import cn.bdqfork.core.factory.processor.BeanPostProcessor;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
+import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.value.reader.GenericResourceReader;
 import cn.bdqfork.value.reader.ResourceReader;
 import lombok.extern.slf4j.Slf4j;
@@ -198,7 +199,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         if (log.isTraceEnabled()) {
             log.trace("register bean processor !");
         }
-        for (BeanPostProcessor beanPostProcessor : delegateBeanFactory.getBeans(BeanPostProcessor.class).values()) {
+        for (BeanPostProcessor beanPostProcessor : BeanUtils.getOrderedBeanList(delegateBeanFactory.getBeans(BeanPostProcessor.class))) {
             delegateBeanFactory.addPostBeanProcessor(beanPostProcessor);
         }
     }
@@ -208,7 +209,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
             log.trace("register BeanFactory processor !");
         }
 
-        for (BeanFactoryPostProcessor factoryPostProcessor : delegateBeanFactory.getBeans(BeanFactoryPostProcessor.class).values()) {
+        for (BeanFactoryPostProcessor factoryPostProcessor : BeanUtils.getOrderedBeanList(delegateBeanFactory.getBeans(BeanFactoryPostProcessor.class))) {
             factoryPostProcessor.postProcessBeanFactory(delegateBeanFactory);
         }
 
