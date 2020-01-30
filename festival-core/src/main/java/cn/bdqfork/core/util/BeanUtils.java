@@ -67,7 +67,7 @@ public class BeanUtils {
      * @param target 目标类型
      * @return boolean
      */
-    public static boolean checkIsInstance(Class<?> clazz, Class<?> target) {
+    public static boolean checkIfSubType(Class<?> clazz, Class<?> target) {
         return isSubType(clazz, target) || isSubType(target, clazz);
     }
 

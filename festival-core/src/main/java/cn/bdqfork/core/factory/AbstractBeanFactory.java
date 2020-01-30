@@ -46,7 +46,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
     @Override
     public <T> T getSpecificBean(String beanName, Class<T> clazz) throws BeansException {
         Object bean = getBean(beanName);
-        if (BeanUtils.checkIsInstance(bean.getClass(), clazz)) {
+        if (BeanUtils.checkIfSubType(bean.getClass(), clazz)) {
             return (T) bean;
         } else {
             throw new NoSuchBeanException(String.format("there is no such bean of class %s !", clazz.getCanonicalName()));
