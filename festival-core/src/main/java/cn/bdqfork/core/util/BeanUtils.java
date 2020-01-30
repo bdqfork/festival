@@ -79,41 +79,42 @@ public class BeanUtils {
 
     /**
      * 对bean的集合进行排序，order越小越前，其他的统一放最后，用户实现的order的value必须大于零
+     *
      * @return 排序好的beanList
      */
     public static <T> List<T> sortByOrder(Collection<T> beans) {
-        return beans
-                .stream()
-                .sorted(Comparator.comparing(BeanUtils::getBeanOrder))
+        return beans.stream()
+                .sorted(Comparator.comparing(BeanUtils::getOrder))
                 .collect(Collectors.toList());
     }
 
-    private static <T> int getBeanOrder(T bean) {
-
-        int order = Integer.MAX_VALUE;
+    private static <T> int getOrder(T bean) {
 
         if (bean instanceof OrderAware) {
             OrderAware orderAware = (OrderAware) bean;
-            if (orderAware.getOrder() >= 0) {
-                return orderAware.getOrder();
+            int order = orderAware.getOrder();
+            if (order >= 0) {
+                return order;
             } else {
-                throw new IllegalStateException("illegal order");
+                throw new IllegalStateException(String.format("illegal order value %s, order value should >= 0!", order));
+            }
+        } else {
+            Class<?> clazz = bean.getClass();
+
+            clazz = AopUtils.getTargetClass(clazz);
+
+            if (clazz.isAnnotationPresent(Order.class)) {
+                int order = clazz.getAnnotation(Order.class).value();
+                if (order >= 0) {
+                    return order;
+                } else {
+                    throw new IllegalStateException(String.format("illegal order value %s, order value should >= 0!", order));
+                }
             }
         }
 
-        Class<?> clazz = bean.getClass();
 
-        clazz = AopUtils.getTargetClass(clazz);
-
-        if (clazz.isAnnotationPresent(Order.class)) {
-            if (clazz.getDeclaredAnnotation(Order.class).value() >= 0) {
-                order = clazz.getDeclaredAnnotation(Order.class).value();
-            } else {
-                throw new IllegalStateException("illegal order");
-            }
-        }
-
-        return order;
+        return Integer.MAX_VALUE;
     }
 
 }
