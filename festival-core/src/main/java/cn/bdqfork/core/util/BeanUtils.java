@@ -93,9 +93,9 @@ public class BeanUtils {
         int order = Integer.MAX_VALUE;
 
         if (bean instanceof OrderAware) {
-            int value = ((OrderAware) bean).getOrder();
-            if (value >= 0) {
-                return value;
+            OrderAware orderAware = (OrderAware) bean;
+            if (orderAware.getOrder() >= 0) {
+                return orderAware.getOrder();
             } else {
                 throw new IllegalStateException("illegal order");
             }
