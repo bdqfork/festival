@@ -1,13 +1,16 @@
 package cn.bdqfork.core.util;
 
 import cn.bdqfork.core.annotation.Order;
-import cn.bdqfork.core.util.AopUtils.*;
+import cn.bdqfork.core.factory.processor.OrderAware;
 
 import javax.inject.Provider;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author bdq
@@ -74,15 +77,41 @@ public class BeanUtils {
         return isSubType(clazz, target) || isSubType(target, clazz);
     }
 
-    public static int getOrder(Class<?> clazz) {
+    /**
+     * 对bean的集合进行排序，order越小越前，其他的统一放最后，用户实现的order的value必须大于零
+     * @param beans
+     * @param <T>
+     * @return
+     */
+    public static <T> List<T> sort(Collection<T> beans) {
+        return beans
+                .stream()
+                .sorted(Comparator.comparing(BeanUtils::getBeanOrder))
+                .collect(Collectors.toList());
+    }
+
+    private static <T> int getBeanOrder(T bean) {
+
+        int order = Integer.MAX_VALUE;
+
+        if (OrderAware.class.isAssignableFrom(bean.getClass())) {
+            if (((OrderAware) bean).getOrder() >= 0) {
+                return ((OrderAware) bean).getOrder();
+            }
+        }
+
+        Class<?> clazz = bean.getClass();
 
         if (AopUtils.isProxy(clazz)) {
             clazz = AopUtils.getTargetClass(clazz);
         }
-        int order = Integer.MAX_VALUE;
+
         if (clazz.isAnnotationPresent(Order.class)) {
-            order = (clazz.getDeclaredAnnotation(Order.class)).value();
+            if ((clazz.getDeclaredAnnotation(Order.class)).value() >= 0) {
+                order = (clazz.getDeclaredAnnotation(Order.class)).value();
+            }
         }
+
         return order;
     }
 

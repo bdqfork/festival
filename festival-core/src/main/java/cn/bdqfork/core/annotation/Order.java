@@ -3,7 +3,7 @@ package cn.bdqfork.core.annotation;
 import java.lang.annotation.*;
 
 /**
- * 表示扩展点执行顺序，value必须为正数，数字小的先执行，未标记或未注明value的扩展点都最后执行
+ * 表示bean的优先级，用户实现的value必须大于0否则无效，数字越小优先级越高，未标记或未注明value的bean优先级为最低
  */
 
 @Documented

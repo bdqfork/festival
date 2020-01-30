@@ -5,7 +5,6 @@ import cn.bdqfork.context.aware.ClassLoaderAware;
 import cn.bdqfork.context.aware.ResourceReaderAware;
 import cn.bdqfork.context.factory.AnnotationBeanDefinitionReader;
 import cn.bdqfork.core.exception.BeansException;
-import cn.bdqfork.core.exception.NoSuchBeanException;
 import cn.bdqfork.core.factory.AbstractBeanFactory;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.factory.DefaultBeanFactory;
@@ -20,9 +19,7 @@ import cn.bdqfork.value.reader.ResourceReader;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-import static cn.bdqfork.core.util.BeanUtils.getOrder;
 
 /**
  * @author bdq
@@ -203,8 +200,13 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         if (log.isTraceEnabled()) {
             log.trace("register bean processor !");
         }
-        for (BeanPostProcessor beanPostProcessor : getProcessorList(BeanPostProcessor.class)) {
-            delegateBeanFactory.addPostBeanProcessor(beanPostProcessor);
+        if (delegateBeanFactory.getBeans(BeanPostProcessor.class) != null) {
+            List<BeanPostProcessor> sortedProcessorList = BeanUtils.sort(delegateBeanFactory.getBeans(BeanPostProcessor.class).values());
+            for (BeanPostProcessor beanPostProcessor : sortedProcessorList) {
+                delegateBeanFactory.addPostBeanProcessor(beanPostProcessor);
+            }
+        } else if (log.isTraceEnabled()) {
+            log.trace("no register BeanPost processor !");
         }
     }
 
@@ -213,9 +215,15 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
             log.trace("register BeanFactory processor !");
         }
 
-        for (BeanFactoryPostProcessor factoryPostProcessor : getProcessorList(BeanFactoryPostProcessor.class)) {
-            factoryPostProcessor.postProcessBeanFactory(delegateBeanFactory);
+        if (delegateBeanFactory.getBeans(BeanFactoryPostProcessor.class) != null) {
+            List<BeanFactoryPostProcessor> sortedProcessorList = BeanUtils.sort(delegateBeanFactory.getBeans(BeanFactoryPostProcessor.class).values());
+            for (BeanFactoryPostProcessor factoryPostProcessor : sortedProcessorList) {
+                factoryPostProcessor.postProcessBeanFactory(delegateBeanFactory);
+            }
+        } else if (log.isTraceEnabled()) {
+            log.trace("no register BeanFactory processor !");
         }
+
 
         if (log.isTraceEnabled()) {
             log.trace("register BeanFactoryAware processor !");
@@ -249,15 +257,4 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         delegateBeanFactory.destroySingletons();
     }
 
-    private <T> List<T> getProcessorList(Class<T> clazz) throws NoSuchBeanException {
-        try {
-            Collection<T> beans = delegateBeanFactory.getBeans(clazz).values();
-            return beans
-                    .stream()
-                    .sorted(Comparator.comparing(v -> getOrder(v.getClass())))
-                    .collect(Collectors.toList());
-        } catch (BeansException e) {
-            throw new NoSuchBeanException(String.format("can't find ang bean of %s", clazz.getName()));
-        }
-    }
 }
