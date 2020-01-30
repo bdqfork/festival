@@ -2,6 +2,7 @@ package cn.bdqfork.model.configration;
 
 import cn.bdqfork.configration.Configration;
 import cn.bdqfork.configration.Value;
+import cn.bdqfork.context.annotation.ComponentScan;
 
 import javax.inject.Singleton;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
  * @since 2020/1/9
  */
 @Singleton
+@ComponentScan("cn.bdqfork.model.bean.normal")
 @Configration(prefix = "server")
 public class ServerConfig {
     @Value("localhost")

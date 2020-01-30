@@ -8,6 +8,7 @@ import cn.bdqfork.core.exception.UnsatisfiedBeanException;
 import cn.bdqfork.model.bean.exception.ResolveExceptionBean;
 import cn.bdqfork.model.bean.exception.unsatisfied.UnsatisfiedBeanExceptionBean;
 import cn.bdqfork.model.bean.normal.SingletonBeanService;
+import cn.bdqfork.model.collection.CollectionPropertyDao;
 import cn.bdqfork.model.collection.CollectionPropertyService;
 import cn.bdqfork.model.configration.FactoryBean;
 import cn.bdqfork.model.configration.Server;
@@ -234,6 +235,14 @@ public class AnnotationApplicationContextTest {
         for (String name : serverConfig.getNames()) {
             System.out.println(name);
         }
+    }
+
+    @Test
+    public void testComponentScan() throws Exception {
+        AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.configration");
+        annotationApplicationContext.start();
+        SingletonBeanService beanService = annotationApplicationContext.getBean(SingletonBeanService.class);
+        assert beanService != null;
     }
 
     /**

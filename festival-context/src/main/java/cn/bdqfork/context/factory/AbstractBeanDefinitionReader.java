@@ -1,5 +1,8 @@
 package cn.bdqfork.context.factory;
 
+import cn.bdqfork.configration.Configration;
+import cn.bdqfork.configration.reader.ResourceReader;
+import cn.bdqfork.context.annotation.ComponentScan;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.ConflictedBeanException;
 import cn.bdqfork.core.exception.ResolvedException;
@@ -11,17 +14,12 @@ import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.core.util.StringUtils;
-import cn.bdqfork.configration.Configration;
-import cn.bdqfork.configration.reader.ResourceReader;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -39,29 +37,45 @@ public abstract class AbstractBeanDefinitionReader {
 
     public void scan(String scanPath) throws BeansException {
 
-        Set<Class<?>> candidates = new HashSet<>(ReflectUtils.getClasses(scanPath));
+        Set<Class<?>> beanClasses = scanBean(scanPath);
 
-        //获取组件类
-        Set<Class<?>> beanClasses = filterBean(candidates);
+        scanImportBean(beanClasses);
 
         beanDefinitions.putAll(resolve(beanClasses));
 
     }
 
-    protected Set<Class<?>> filterBean(Set<Class<?>> candidates) {
-        Set<Class<?>> beanClasses = new HashSet<>();
-        for (Class<?> candidate : candidates) {
+    private Set<Class<?>> scanBean(String scanPath) {
+        Set<Class<?>> candidates = new HashSet<>();
+        for (Class<?> candidate : ReflectUtils.getClasses(scanPath)) {
 
             if (candidate.isAnnotation() || candidate.isInterface() || Modifier.isAbstract(candidate.getModifiers())) {
                 continue;
             }
 
             if (checkIfComponent(candidate)) {
-                beanClasses.add(candidate);
+                candidates.add(candidate);
             }
         }
-        return beanClasses;
+        return candidates;
     }
+
+    private void scanImportBean(Set<Class<?>> beanClasses) {
+        String[] scanPaths = beanClasses.stream().filter(this::checkScanBean)
+                .map(beanClass -> AnnotationUtils.getMergedAnnotation(beanClass, ComponentScan.class))
+                .filter(Objects::nonNull)
+                .flatMap(componentScan -> Arrays.stream(componentScan.value()))
+                .toArray(String[]::new);
+        for (String path : scanPaths) {
+            beanClasses.addAll(scanBean(path));
+        }
+    }
+
+    private boolean checkScanBean(Class<?> beanClass) {
+        return AnnotationUtils.isAnnotationPresent(beanClass, Configration.class)
+                && AnnotationUtils.isAnnotationPresent(beanClass, ComponentScan.class);
+    }
+
 
     protected Map<String, BeanDefinition> resolve(Set<Class<?>> beanClasses) throws ResolvedException, ConflictedBeanException {
         Map<String, BeanDefinition> beanDefinitions = new HashMap<>();
