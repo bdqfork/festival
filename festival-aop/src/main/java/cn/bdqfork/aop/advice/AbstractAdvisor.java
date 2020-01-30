@@ -1,13 +1,15 @@
 package cn.bdqfork.aop.advice;
 
 
+import cn.bdqfork.core.factory.processor.OrderAware;
+
 import java.util.Objects;
 
 /**
  * @author bdq
  * @since 2019/12/23
  */
-public abstract class AbstractAdvisor implements Advisor {
+public abstract class AbstractAdvisor implements Advisor, OrderAware {
     /**
      * 切点表达式，正则表达式
      */

@@ -1,6 +1,7 @@
 package cn.bdqfork.aop.proxy;
 
 import cn.bdqfork.aop.advice.*;
+import cn.bdqfork.core.factory.processor.OrderAware;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -25,7 +26,7 @@ public class AopProxySupport extends AopProxyConfig {
     public List<MethodBeforeAdvice> getBeforeAdvice(Method method) {
         return advisors.stream()
                 .filter(advisor -> advisor.isMatch(method, MethodBeforeAdvice.class))
-                .sorted(Comparator.comparing(Advisor::getOrder))
+                .sorted(Comparator.comparing(v->((OrderAware)v).getOrder()))
                 .map(advisor -> (MethodBeforeAdvice) advisor.getAdvice())
                 .collect(Collectors.toList());
     }
@@ -33,7 +34,7 @@ public class AopProxySupport extends AopProxyConfig {
     public List<AroundAdvice> getAroundAdvice(Method method) {
         return advisors.stream()
                 .filter(advisor -> advisor.isMatch(method, AroundAdvice.class))
-                .sorted(Comparator.comparing(Advisor::getOrder))
+                .sorted(Comparator.comparing(v->((OrderAware)v).getOrder()))
                 .map(advisor -> (AroundAdvice) advisor.getAdvice())
                 .collect(Collectors.toList());
     }
@@ -41,7 +42,7 @@ public class AopProxySupport extends AopProxyConfig {
     public List<AfterReturningAdvice> getAfterAdvice(Method method) {
         return advisors.stream()
                 .filter(advisor -> advisor.isMatch(method, AfterReturningAdvice.class))
-                .sorted(Comparator.comparing(Advisor::getOrder))
+                .sorted(Comparator.comparing(v->((OrderAware)v).getOrder()))
                 .map(advisor -> (AfterReturningAdvice) advisor.getAdvice())
                 .collect(Collectors.toList());
     }
@@ -49,7 +50,7 @@ public class AopProxySupport extends AopProxyConfig {
     public List<ThrowsAdvice> getThrowsAdvice(Method method) {
         return advisors.stream()
                 .filter(advisor -> advisor.isMatch(method, ThrowsAdvice.class))
-                .sorted(Comparator.comparing(Advisor::getOrder))
+                .sorted(Comparator.comparing(v->((OrderAware)v).getOrder()))
                 .map(advisor -> (ThrowsAdvice) advisor.getAdvice())
                 .collect(Collectors.toList());
     }
