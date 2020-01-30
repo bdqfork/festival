@@ -241,8 +241,18 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         if (log.isTraceEnabled()) {
             log.trace("register BeanFactoryAware processor !");
         }
-        for (BeanFactoryAware beanFactoryAware : delegateBeanFactory.getBeans(BeanFactoryAware.class).values()) {
-            beanFactoryAware.setBeanFactory(delegateBeanFactory);
+        Collection<BeanFactoryAware> beanFactoryAwares = null;
+        try {
+            beanFactoryAwares = delegateBeanFactory.getBeans(BeanFactoryAware.class).values();
+        } catch (NoSuchBeanException e) {
+            if (log.isTraceEnabled()) {
+                log.trace("no register BeanFactoryAware processor !");
+            }
+        }
+        if (beanFactoryAwares != null) {
+            for (BeanFactoryAware beanFactoryAware : beanFactoryAwares) {
+                beanFactoryAware.setBeanFactory(delegateBeanFactory);
+            }
         }
 
     }
