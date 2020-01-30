@@ -1,5 +1,6 @@
 package cn.bdqfork.web.context.filter;
 
+import cn.bdqfork.core.factory.processor.OrderAware;
 import cn.bdqfork.web.context.RouteAttribute;
 import cn.bdqfork.web.context.handler.RouteMappingHandler;
 import cn.bdqfork.security.annotation.PermitAllowed;
@@ -18,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
  * @since 2020/1/28
  */
 @Slf4j
-public class AuthFilter implements Filter {
+public class AuthFilter implements Filter, OrderAware {
     private Handler<RoutingContext> deniedHandler;
 
     @Override
@@ -86,5 +87,10 @@ public class AuthFilter implements Filter {
 
     public void setDeniedHandler(Handler<RoutingContext> deniedHandler) {
         this.deniedHandler = deniedHandler;
+    }
+
+    @Override
+    public int getOrder() {
+        return 0;
     }
 }

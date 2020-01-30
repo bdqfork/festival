@@ -1,5 +1,6 @@
 package cn.bdqfork.web.context;
 
+import cn.bdqfork.configration.reader.ResourceReader;
 import cn.bdqfork.context.aware.BeanFactoryAware;
 import cn.bdqfork.context.aware.ResourceReaderAware;
 import cn.bdqfork.core.exception.BeansException;
@@ -8,13 +9,13 @@ import cn.bdqfork.core.factory.BeanFactory;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.util.AnnotationUtils;
+import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.StringUtils;
 import cn.bdqfork.web.constant.ApplicationProperty;
 import cn.bdqfork.web.context.annotation.Route;
 import cn.bdqfork.web.context.filter.AuthFilter;
 import cn.bdqfork.web.context.filter.Filter;
 import cn.bdqfork.web.context.handler.DefaultMappingHandler;
-import cn.bdqfork.configration.reader.ResourceReader;
 import io.reactivex.Completable;
 import io.vertx.core.Promise;
 import io.vertx.reactivex.core.AbstractVerticle;
@@ -116,8 +117,8 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
         try {
             authProvider = beanFactory.getBean(AuthProvider.class);
         } catch (BeansException e) {
-            if (log.isTraceEnabled()) {
-                log.trace("no auth provider");
+            if (log.isDebugEnabled()) {
+                log.debug("no auth provider");
             }
         }
         return authProvider;
@@ -135,7 +136,7 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
 
             DefaultMappingHandler mappingHandler = new DefaultMappingHandler(vertx);
 
-            getFilters().forEach(mappingHandler::registerFilter);
+            getOrderedFilters().forEach(mappingHandler::registerFilter);
 
             registerAuthFilterIfNeed(mappingHandler);
 
@@ -149,8 +150,8 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
         try {
             authHandler = beanFactory.getBean(AuthHandler.class);
         } catch (NoSuchBeanException e) {
-            if (log.isTraceEnabled()) {
-                log.trace("no auth handler found!");
+            if (log.isDebugEnabled()) {
+                log.debug("no auth handler found!");
             }
         }
         return authHandler;
@@ -168,15 +169,19 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
         return beans;
     }
 
-    private Collection<Filter> getFilters() throws BeansException {
+    private Collection<Filter> getOrderedFilters() throws BeansException {
+        Collection<Filter> filters;
         try {
-            return beanFactory.getBeans(Filter.class).values();
+            filters = beanFactory.getBeans(Filter.class).values();
         } catch (NoSuchBeanException e) {
-            if (log.isTraceEnabled()) {
-                log.trace("no filter found!");
+            if (log.isDebugEnabled()) {
+                log.debug("no filter found!");
             }
-            return Collections.emptyList();
+            filters = Collections.emptyList();
         }
+        List<Filter> orderedfilters = BeanUtils.sortByOrder(filters);
+        Collections.reverse(orderedfilters);
+        return orderedfilters;
     }
 
     private void registerAuthFilterIfNeed(DefaultMappingHandler mappingHandler) throws BeansException {
