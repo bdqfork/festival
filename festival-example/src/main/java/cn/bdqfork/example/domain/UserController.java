@@ -1,9 +1,9 @@
 package cn.bdqfork.example.domain;
 
 import cn.bdqfork.core.factory.DisposableBean;
-import cn.bdqfork.mvc.context.annotation.GetMapping;
-import cn.bdqfork.mvc.context.annotation.RouteMapping;
-import cn.bdqfork.mvc.context.annotation.Route;
+import cn.bdqfork.web.context.annotation.GetMapping;
+import cn.bdqfork.web.context.annotation.RouteMapping;
+import cn.bdqfork.web.context.annotation.Route;
 import cn.bdqfork.security.annotation.Auth;
 import cn.bdqfork.security.annotation.PermitAll;
 import cn.bdqfork.security.annotation.PermitAllowed;
@@ -18,8 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * @author bdq

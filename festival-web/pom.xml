@@ -9,34 +9,40 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>festival-example</artifactId>
+    <artifactId>festival-web</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-rx-java2</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.caucho</groupId>
+            <artifactId>hessian</artifactId>
+        </dependency>
+
         <dependency>
             <artifactId>festival-context</artifactId>
             <groupId>cn.bdqfork</groupId>
             <version>0.3</version>
         </dependency>
+
         <dependency>
             <artifactId>festival-aop</artifactId>
             <groupId>cn.bdqfork</groupId>
             <version>0.3</version>
         </dependency>
-        <dependency>
-            <artifactId>festival-web</artifactId>
-            <groupId>cn.bdqfork</groupId>
-            <version>0.3</version>
-        </dependency>
+
         <dependency>
             <artifactId>festival-security</artifactId>
             <groupId>cn.bdqfork</groupId>
             <version>0.3</version>
-        </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-auth-shiro</artifactId>
-            <version>3.8.5</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
-
 </project>

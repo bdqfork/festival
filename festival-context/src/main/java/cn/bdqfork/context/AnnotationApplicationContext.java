@@ -13,8 +13,8 @@ import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.processor.BeanFactoryPostProcessor;
 import cn.bdqfork.core.factory.processor.BeanPostProcessor;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
-import cn.bdqfork.value.reader.GenericResourceReader;
-import cn.bdqfork.value.reader.ResourceReader;
+import cn.bdqfork.configration.reader.GenericResourceReader;
+import cn.bdqfork.configration.reader.ResourceReader;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;

@@ -1,6 +1,6 @@
 package cn.bdqfork.example;
 
-import cn.bdqfork.mvc.context.WebApplicationContext;
+import cn.bdqfork.web.context.WebApplicationContext;
 
 public class WebApplicationRunnerTest {
 

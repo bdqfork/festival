@@ -1,7 +1,7 @@
 package cn.bdqfork.model.configration;
 
 
-import cn.bdqfork.value.Configration;
+import cn.bdqfork.configration.Configration;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

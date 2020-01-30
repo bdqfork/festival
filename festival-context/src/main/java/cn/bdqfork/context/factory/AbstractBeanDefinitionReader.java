@@ -11,8 +11,8 @@ import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.core.util.StringUtils;
-import cn.bdqfork.value.Configration;
-import cn.bdqfork.value.reader.ResourceReader;
+import cn.bdqfork.configration.Configration;
+import cn.bdqfork.configration.reader.ResourceReader;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

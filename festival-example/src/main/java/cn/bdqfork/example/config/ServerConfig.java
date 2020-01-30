@@ -1,6 +1,6 @@
 package cn.bdqfork.example.config;
 
-import cn.bdqfork.value.Configration;
+import cn.bdqfork.configration.Configration;
 import io.vertx.core.DeploymentOptions;
 
 import javax.inject.Named;

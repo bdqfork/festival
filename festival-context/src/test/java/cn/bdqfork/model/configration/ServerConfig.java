@@ -1,9 +1,8 @@
 package cn.bdqfork.model.configration;
 
-import cn.bdqfork.value.Configration;
-import cn.bdqfork.value.Value;
+import cn.bdqfork.configration.Configration;
+import cn.bdqfork.configration.Value;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.List;
 
