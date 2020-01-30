@@ -128,16 +128,18 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
 
         RouteResolver routeResolver = new RouteResolver(router, authHandler);
 
-        DefaultMappingHandler mappingHandler = new DefaultMappingHandler(vertx);
-
         List<RouteAttribute> routeAttributes = routeResolver.resolve(getRouteBeans());
 
-        routeAttributes.forEach(mappingHandler::handle);
+        for (RouteAttribute routeAttribute : routeAttributes) {
 
-        getFilters().forEach(mappingHandler::registerFilter);
+            DefaultMappingHandler mappingHandler = new DefaultMappingHandler(vertx);
 
-        registerAuthFilterIfNeed(mappingHandler);
+            getFilters().forEach(mappingHandler::registerFilter);
 
+            registerAuthFilterIfNeed(mappingHandler);
+
+            mappingHandler.handle(routeAttribute);
+        }
 
     }
 
