@@ -5,6 +5,7 @@ import cn.bdqfork.context.aware.ClassLoaderAware;
 import cn.bdqfork.context.aware.ResourceReaderAware;
 import cn.bdqfork.context.factory.AnnotationBeanDefinitionReader;
 import cn.bdqfork.core.exception.BeansException;
+import cn.bdqfork.core.exception.NoSuchBeanException;
 import cn.bdqfork.core.factory.AbstractBeanFactory;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.factory.DefaultBeanFactory;
@@ -248,11 +249,15 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         delegateBeanFactory.destroySingletons();
     }
 
-    private <T> List<T> getProcessorList(Class<T> clazz) throws BeansException {
-        Collection<T> beans = delegateBeanFactory.getBeans(clazz).values();
-        return beans
-                .stream()
-                .sorted(Comparator.comparing(v->getOrder(v.getClass())))
-                .collect(Collectors.toList());
+    private <T> List<T> getProcessorList(Class<T> clazz) throws NoSuchBeanException {
+        try {
+            Collection<T> beans = delegateBeanFactory.getBeans(clazz).values();
+            return beans
+                    .stream()
+                    .sorted(Comparator.comparing(v -> getOrder(v.getClass())))
+                    .collect(Collectors.toList());
+        } catch (BeansException e) {
+            throw new NoSuchBeanException(String.format("can't find ang bean of %s", clazz.getName()));
+        }
     }
 }
