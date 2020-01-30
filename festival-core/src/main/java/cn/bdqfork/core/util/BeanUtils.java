@@ -81,7 +81,7 @@ public class BeanUtils {
      * 对bean的集合进行排序，order越小越前，其他的统一放最后，用户实现的order的value必须大于零
      * @return 排序好的beanList
      */
-    public static <T> List<T> sort(Collection<T> beans) {
+    public static <T> List<T> sortByOrder(Collection<T> beans) {
         return beans
                 .stream()
                 .sorted(Comparator.comparing(BeanUtils::getBeanOrder))

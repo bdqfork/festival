@@ -210,7 +210,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
             }
         }
         if (processors != null) {
-            List<BeanPostProcessor> sortedProcessorList = BeanUtils.sort(processors);
+            List<BeanPostProcessor> sortedProcessorList = BeanUtils.sortByOrder(processors);
             for (BeanPostProcessor beanPostProcessor : sortedProcessorList) {
                 delegateBeanFactory.addPostBeanProcessor(beanPostProcessor);
             }
@@ -228,11 +228,11 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
 
         } catch (NoSuchBeanException e) {
             if (log.isTraceEnabled()) {
-                log.trace("no register BeanFactory processor !");
+                log.trace("no register BeanFactory found !");
             }
         }
         if (processors != null) {
-            List<BeanFactoryPostProcessor> sortedProcessorList = BeanUtils.sort(processors);
+            List<BeanFactoryPostProcessor> sortedProcessorList = BeanUtils.sortByOrder(processors);
             for (BeanFactoryPostProcessor factoryPostProcessor : sortedProcessorList) {
                 factoryPostProcessor.postProcessBeanFactory(delegateBeanFactory);
             }
@@ -241,12 +241,13 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         if (log.isTraceEnabled()) {
             log.trace("register BeanFactoryAware processor !");
         }
+
         Collection<BeanFactoryAware> beanFactoryAwares = null;
         try {
             beanFactoryAwares = delegateBeanFactory.getBeans(BeanFactoryAware.class).values();
         } catch (NoSuchBeanException e) {
             if (log.isTraceEnabled()) {
-                log.trace("no register BeanFactoryAware processor !");
+                log.trace("no register BeanFactoryAware found !");
             }
         }
         if (beanFactoryAwares != null) {
