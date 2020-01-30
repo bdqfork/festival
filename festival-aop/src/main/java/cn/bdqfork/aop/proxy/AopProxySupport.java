@@ -29,7 +29,7 @@ public class AopProxySupport extends AopProxyConfig {
         Collection<Advisor> beforeAdvisor = advisors.stream()
                 .filter(advisor -> advisor.isMatch(method, BeforeAdvice.class))
                 .collect(Collectors.toSet());
-        List<Advisor> sortedAdvisor = BeanUtils.sort(beforeAdvisor);
+        List<Advisor> sortedAdvisor = BeanUtils.sortByOrder(beforeAdvisor);
         return sortedAdvisor.stream()
                 .map(advisor -> (MethodBeforeAdvice) advisor.getAdvice())
                 .collect(Collectors.toList());
@@ -39,7 +39,7 @@ public class AopProxySupport extends AopProxyConfig {
         Collection<Advisor> aroundAdvisor = advisors.stream()
                 .filter(advisor -> advisor.isMatch(method, AroundAdvice.class))
                 .collect(Collectors.toSet());
-        List<Advisor> sortedAdvisor = BeanUtils.sort(aroundAdvisor);
+        List<Advisor> sortedAdvisor = BeanUtils.sortByOrder(aroundAdvisor);
         return sortedAdvisor.stream()
                 .map(advisor -> (AroundAdvice) advisor.getAdvice())
                 .collect(Collectors.toList());
@@ -49,7 +49,7 @@ public class AopProxySupport extends AopProxyConfig {
         Collection<Advisor> afterAdvisor = advisors.stream()
                 .filter(advisor -> advisor.isMatch(method, AfterReturningAdvice.class))
                 .collect(Collectors.toSet());
-        List<Advisor> sortedAdvisor = BeanUtils.sort(afterAdvisor);
+        List<Advisor> sortedAdvisor = BeanUtils.sortByOrder(afterAdvisor);
         return sortedAdvisor.stream()
                 .map(advisor -> (AfterReturningAdvice) advisor.getAdvice())
                 .collect(Collectors.toList());
@@ -59,7 +59,7 @@ public class AopProxySupport extends AopProxyConfig {
         Collection<Advisor> throwsAdvisor = advisors.stream()
                 .filter(advisor -> advisor.isMatch(method, ThrowsAdvice.class))
                 .collect(Collectors.toSet());
-        List<Advisor> sortedAdvisor = BeanUtils.sort(throwsAdvisor);
+        List<Advisor> sortedAdvisor = BeanUtils.sortByOrder(throwsAdvisor);
         return sortedAdvisor.stream()
                 .map(advisor -> (ThrowsAdvice) advisor.getAdvice())
                 .collect(Collectors.toList());
