@@ -18,7 +18,10 @@ import cn.bdqfork.value.reader.GenericResourceReader;
 import cn.bdqfork.value.reader.ResourceReader;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static cn.bdqfork.core.util.BeanUtils.getOrder;
 
 /**
  * @author bdq
@@ -199,7 +202,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         if (log.isTraceEnabled()) {
             log.trace("register bean processor !");
         }
-        for (BeanPostProcessor beanPostProcessor : BeanUtils.getOrderedBeanList(delegateBeanFactory.getBeans(BeanPostProcessor.class))) {
+        for (BeanPostProcessor beanPostProcessor : getProcessorList(BeanPostProcessor.class)) {
             delegateBeanFactory.addPostBeanProcessor(beanPostProcessor);
         }
     }
@@ -209,7 +212,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
             log.trace("register BeanFactory processor !");
         }
 
-        for (BeanFactoryPostProcessor factoryPostProcessor : BeanUtils.getOrderedBeanList(delegateBeanFactory.getBeans(BeanFactoryPostProcessor.class))) {
+        for (BeanFactoryPostProcessor factoryPostProcessor : getProcessorList(BeanFactoryPostProcessor.class)) {
             factoryPostProcessor.postProcessBeanFactory(delegateBeanFactory);
         }
 
@@ -243,5 +246,13 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
 
     protected void doClose() throws InterruptedException {
         delegateBeanFactory.destroySingletons();
+    }
+
+    private <T> List<T> getProcessorList(Class<T> clazz) throws BeansException {
+        Collection<T> beans = delegateBeanFactory.getBeans(clazz).values();
+        return beans
+                .stream()
+                .sorted(Comparator.comparing(v->getOrder(v.getClass())))
+                .collect(Collectors.toList());
     }
 }
