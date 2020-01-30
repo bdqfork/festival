@@ -1,11 +1,9 @@
 package cn.bdqfork.model.processor;
 
-import cn.bdqfork.core.annotation.Order;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.processor.BeanPostProcessor;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 
 
 @Named

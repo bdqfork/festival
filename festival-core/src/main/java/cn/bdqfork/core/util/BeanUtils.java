@@ -89,7 +89,6 @@ public class BeanUtils {
     }
 
     private static <T> int getOrder(T bean) {
-
         if (bean instanceof OrderAware) {
             OrderAware orderAware = (OrderAware) bean;
             int order = orderAware.getOrder();

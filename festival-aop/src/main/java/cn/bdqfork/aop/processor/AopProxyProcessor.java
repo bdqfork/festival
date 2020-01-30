@@ -11,6 +11,7 @@ import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.definition.ManagedBeanDefinition;
 import cn.bdqfork.core.factory.processor.BeanFactoryPostProcessor;
 import cn.bdqfork.core.factory.processor.BeanPostProcessor;
+import cn.bdqfork.core.factory.processor.OrderAware;
 import cn.bdqfork.core.util.AnnotationUtils;
 import org.aspectj.lang.annotation.Aspect;
 
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
  * @author bdq
  * @since 2020/1/14
  */
-public class AopProxyProcessor implements BeanPostProcessor, BeanFactoryPostProcessor {
+public class AopProxyProcessor implements BeanPostProcessor, BeanFactoryPostProcessor, OrderAware {
     private Set<Advisor> advisors = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private AspectResolver aspectResolver = new AspectResolver();
     private AopProxyBeanFactory aopProxyBeanFactory = new DefaultAopProxyBeanFactory();
@@ -80,4 +81,8 @@ public class AopProxyProcessor implements BeanPostProcessor, BeanFactoryPostProc
         return beanDefinition instanceof ManagedBeanDefinition || AnnotationUtils.isAnnotationPresent(beanClass, Optimize.class);
     }
 
+    @Override
+    public int getOrder() {
+        return 0;
+    }
 }
