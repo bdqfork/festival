@@ -3,7 +3,7 @@ package cn.bdqfork.example.domain;
 import cn.bdqfork.core.factory.DisposableBean;
 import cn.bdqfork.mvc.context.annotation.GetMapping;
 import cn.bdqfork.mvc.context.annotation.RouteMapping;
-import cn.bdqfork.mvc.context.annotation.Router;
+import cn.bdqfork.mvc.context.annotation.Route;
 import cn.bdqfork.security.annotation.Auth;
 import cn.bdqfork.security.annotation.PermitAll;
 import cn.bdqfork.security.annotation.PermitAllowed;
@@ -18,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author bdq
@@ -27,7 +29,7 @@ import javax.inject.Singleton;
 @Slf4j
 @Singleton
 @RouteMapping("/users")
-@Router
+@Route
 public class UserController implements DisposableBean {
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     @Named("ServiceImpl1")
@@ -47,6 +49,19 @@ public class UserController implements DisposableBean {
         routingContext.response()
                 .putHeader("content-type", "text/plain")
                 .end("Hello World from Vert.x-Web 2!");
+    }
+
+    @PermitAll
+    @GetMapping("/hello3")
+    public String hello3(RoutingContext routingContext) {
+        return "Hello World from Vert.x-Web 3!";
+    }
+
+    @PermitAll
+    @GetMapping("/hello4")
+    public String[] hello4(RoutingContext routingContext) {
+        String[] strings = new String[]{"test1", "test2", "test3"};
+        return strings;
     }
 
     @RolesAllowed(value = {"role:administrator", "role:hispassword"}, logic = LogicType.AND)

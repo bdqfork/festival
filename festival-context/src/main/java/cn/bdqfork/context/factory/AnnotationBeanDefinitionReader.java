@@ -150,7 +150,7 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
 
             if (checkIfInjectedProperty(field)) {
 
-                if (Modifier.isFinal(field.getModifiers()) && !ReflectUtils.isBaseType(field.getType())) {
+                if (Modifier.isFinal(field.getModifiers()) && !ReflectUtils.isInjectableValueType(field.getType())) {
                     throw new ResolvedException(String.format("the field %s is final or not base type !", field.getName()));
                 }
 

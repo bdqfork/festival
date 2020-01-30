@@ -128,7 +128,13 @@ public class ReflectUtils {
         accessibleObject.setAccessible(true);
     }
 
-    public static boolean isBaseType(Class<?> clazz) {
+    public static boolean isInjectableValueType(Class<?> clazz) {
+        return isPrimitiveOrWrapper(clazz) ||
+                clazz.equals(java.util.Map.class) ||
+                clazz.isArray();
+    }
+
+    public static boolean isPrimitiveOrWrapper(Class<?> clazz) {
         return clazz.equals(java.lang.Integer.class) ||
                 clazz.equals(java.lang.Byte.class) ||
                 clazz.equals(java.lang.Long.class) ||
@@ -137,9 +143,8 @@ public class ReflectUtils {
                 clazz.equals(java.lang.Character.class) ||
                 clazz.equals(java.lang.Short.class) ||
                 clazz.equals(java.lang.Boolean.class) ||
-                clazz.equals(java.util.Map.class) ||
-                clazz.isPrimitive() ||
-                clazz.isArray();
+                clazz.equals(java.lang.String.class) ||
+                clazz.isPrimitive();
     }
 
     public static Object invokeMethod(Object object, Method method, Object... args) throws InvocationTargetException, IllegalAccessException {
@@ -152,7 +157,4 @@ public class ReflectUtils {
         field.set(object, value);
     }
 
-    public static Method getDeclaredMethod(Object bean, String methodName, Class<?>... argumentTypes) throws NoSuchMethodException {
-        return bean.getClass().getDeclaredMethod(methodName, argumentTypes);
-    }
 }

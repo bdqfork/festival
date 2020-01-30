@@ -2,7 +2,6 @@ package cn.bdqfork.mvc.context;
 
 import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.AopUtils;
-import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.mvc.context.annotation.RouteMapping;
 import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.handler.AuthHandler;
@@ -25,7 +24,7 @@ public class RouteResolver {
         this.authHandler = authHandler;
     }
 
-    public List<RouteAttribute> resolve(List<?> beans) throws NoSuchMethodException {
+    public List<RouteAttribute> resolve(List<?> beans) {
         List<RouteAttribute> attributes = new LinkedList<>();
 
         for (Object routeBean : beans) {
@@ -46,11 +45,6 @@ public class RouteResolver {
             }
         }
         return attributes;
-    }
-
-    private Method getRouteMethod(Object routeBean, Method declaredMethod) throws NoSuchMethodException {
-        return ReflectUtils.getDeclaredMethod(routeBean,
-                declaredMethod.getName(), declaredMethod.getParameterTypes());
     }
 
     private RouteAttribute buildRouteAttribute(Object routeBean, String baseUrl, Method routeMethod) {

@@ -6,16 +6,19 @@ import cn.bdqfork.mvc.context.RouteAttribute;
 import cn.bdqfork.mvc.context.annotation.RouteMapping;
 import cn.bdqfork.mvc.context.filter.Filter;
 import cn.bdqfork.mvc.context.filter.FilterChain;
+import io.reactivex.Observable;
 import io.vertx.reactivex.core.Vertx;
 import io.vertx.reactivex.ext.web.Route;
 import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.RoutingContext;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author bdq
@@ -24,6 +27,7 @@ import java.util.Objects;
 @Slf4j
 public class DefaultMappingHandler implements RouteMappingHandler {
     private List<Filter> filters = new LinkedList<>();
+    private ResultHandler resultHandler = new DefaultResultHandler();
     protected Vertx vertx;
 
     public DefaultMappingHandler(Vertx vertx) {
@@ -51,17 +55,25 @@ public class DefaultMappingHandler implements RouteMappingHandler {
             FilterChain filterChain = new FilterChain() {
                 @Override
                 public void doFilter(RoutingContext routingContext) {
-                    try {
-                        ReflectUtils.invokeMethod(routeAttribute.getBean(), routeMethod, routingContext);
-                    } catch (Exception e) {
-                        log.error(e.getMessage(), e);
-                        routingContext.fail(500, e);
-                    }
+                    Observable.fromArray(routingContext)
+                            .map(context -> invokeRouteMethod(routingContext, routeAttribute, routeMethod))
+                            .subscribe(optional -> {
+                                if (optional.isPresent()) {
+                                    resultHandler.handle(routingContext, optional.get());
+                                }
+                            }, e -> {
+                                log.error(e.getMessage(), e);
+                                routingContext.fail(500, e);
+                            });
                 }
             };
             filterChain = buildFilterChain(filterChain);
             filterChain.doFilter(routingContext);
         });
+    }
+
+    private Optional<Object> invokeRouteMethod(RoutingContext routingContext, RouteAttribute routeAttribute, Method routeMethod) throws InvocationTargetException, IllegalAccessException {
+        return Optional.ofNullable(ReflectUtils.invokeMethod(routeAttribute.getBean(), routeMethod, routingContext));
     }
 
     protected FilterChain buildFilterChain(FilterChain filterChain) {

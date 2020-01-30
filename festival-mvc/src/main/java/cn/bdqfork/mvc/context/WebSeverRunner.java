@@ -10,7 +10,7 @@ import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.StringUtils;
 import cn.bdqfork.mvc.constant.ApplicationProperty;
-import cn.bdqfork.mvc.context.annotation.Router;
+import cn.bdqfork.mvc.context.annotation.Route;
 import cn.bdqfork.mvc.context.filter.AuthFilter;
 import cn.bdqfork.mvc.context.filter.Filter;
 import cn.bdqfork.mvc.context.handler.DefaultMappingHandler;
@@ -20,6 +20,7 @@ import io.vertx.core.Promise;
 import io.vertx.reactivex.core.AbstractVerticle;
 import io.vertx.reactivex.core.http.HttpServer;
 import io.vertx.reactivex.ext.auth.AuthProvider;
+import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.handler.AuthHandler;
 import io.vertx.reactivex.ext.web.handler.BodyHandler;
 import io.vertx.reactivex.ext.web.handler.SessionHandler;
@@ -45,7 +46,7 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
 
     @Override
     public void start(Promise<Void> startPromise) throws Exception {
-        io.vertx.reactivex.ext.web.Router router = io.vertx.reactivex.ext.web.Router.router(vertx);
+        Router router = Router.router(vertx);
 
         registerSessionHandler(router);
 
@@ -158,7 +159,7 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
     private List<Object> getRouteBeans() throws BeansException {
         List<Object> beans = new LinkedList<>();
         for (BeanDefinition beanDefinition : beanFactory.getBeanDefinitions().values()) {
-            if (AnnotationUtils.isAnnotationPresent(beanDefinition.getBeanClass(), Router.class)) {
+            if (AnnotationUtils.isAnnotationPresent(beanDefinition.getBeanClass(), Route.class)) {
                 String beanName = beanDefinition.getBeanName();
                 Object bean = beanFactory.getBean(beanName);
                 beans.add(bean);
