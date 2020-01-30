@@ -15,8 +15,12 @@ import cn.bdqfork.model.configration.Server;
 import cn.bdqfork.model.configration.ServerConfig;
 import cn.bdqfork.model.cycle.*;
 import cn.bdqfork.model.jsr250.JSR250FieldService;
+import cn.bdqfork.model.processor.MyOrder1processor;
+import cn.bdqfork.model.processor.MyOrderProcessor;
 import cn.bdqfork.model.proxy.AopProxyTestBean;
 import org.junit.Test;
+
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -281,6 +285,18 @@ public class AnnotationApplicationContextTest {
         AopProxyTestBean aopProxyTestBean = annotationApplicationContext.getBean(AopProxyTestBean.class);
         aopProxyTestBean.testAop();
         aopProxyTestBean.testThrowing();
+    }
+
+    /**
+     * 测试添加前置后置处理器，并按{@link cn.bdqfork.core.annotation.Order}标注的顺序执行
+     *
+     * @throws BeansException
+     */
+    @Test
+    public void testOrderedProcessor() throws Exception {
+        AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.processor");
+        annotationApplicationContext.start();
+        annotationApplicationContext.getBean("testBean");
     }
 
 }

@@ -1,10 +1,16 @@
 package cn.bdqfork.core.util;
 
+import cn.bdqfork.core.annotation.Order;
+import cn.bdqfork.core.factory.processor.OrderAware;
+
 import javax.inject.Provider;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author bdq
@@ -69,6 +75,46 @@ public class BeanUtils {
      */
     public static boolean checkIfSubType(Class<?> clazz, Class<?> target) {
         return isSubType(clazz, target) || isSubType(target, clazz);
+    }
+
+    /**
+     * 对bean的集合进行排序，order越小越前，其他的统一放最后，用户实现的order的value必须大于零
+     *
+     * @return 排序好的beanList
+     */
+    public static <T> List<T> sortByOrder(Collection<T> beans) {
+        return beans.stream()
+                .sorted(Comparator.comparing(BeanUtils::getOrder))
+                .collect(Collectors.toList());
+    }
+
+    private static <T> int getOrder(T bean) {
+
+        if (bean instanceof OrderAware) {
+            OrderAware orderAware = (OrderAware) bean;
+            int order = orderAware.getOrder();
+            if (order >= 0) {
+                return order;
+            } else {
+                throw new IllegalStateException(String.format("illegal order value %s, order value should >= 0!", order));
+            }
+        } else {
+            Class<?> clazz = bean.getClass();
+
+            clazz = AopUtils.getTargetClass(clazz);
+
+            if (clazz.isAnnotationPresent(Order.class)) {
+                int order = clazz.getAnnotation(Order.class).value();
+                if (order >= 0) {
+                    return order;
+                } else {
+                    throw new IllegalStateException(String.format("illegal order value %s, order value should >= 0!", order));
+                }
+            }
+        }
+
+
+        return Integer.MAX_VALUE;
     }
 
 }

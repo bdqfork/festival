@@ -1,10 +1,13 @@
 package cn.bdqfork.context;
 
+import cn.bdqfork.configration.reader.GenericResourceReader;
+import cn.bdqfork.configration.reader.ResourceReader;
 import cn.bdqfork.context.aware.BeanFactoryAware;
 import cn.bdqfork.context.aware.ClassLoaderAware;
 import cn.bdqfork.context.aware.ResourceReaderAware;
 import cn.bdqfork.context.factory.AnnotationBeanDefinitionReader;
 import cn.bdqfork.core.exception.BeansException;
+import cn.bdqfork.core.exception.NoSuchBeanException;
 import cn.bdqfork.core.factory.AbstractBeanFactory;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.factory.DefaultBeanFactory;
@@ -13,11 +16,13 @@ import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.processor.BeanFactoryPostProcessor;
 import cn.bdqfork.core.factory.processor.BeanPostProcessor;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
-import cn.bdqfork.configration.reader.GenericResourceReader;
-import cn.bdqfork.configration.reader.ResourceReader;
+import cn.bdqfork.core.util.BeanUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+
 
 /**
  * @author bdq
@@ -197,8 +202,19 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         if (log.isTraceEnabled()) {
             log.trace("register bean processor !");
         }
-        for (BeanPostProcessor beanPostProcessor : delegateBeanFactory.getBeans(BeanPostProcessor.class).values()) {
-            delegateBeanFactory.addPostBeanProcessor(beanPostProcessor);
+        Collection<BeanPostProcessor> processors = null;
+        try {
+            processors = delegateBeanFactory.getBeans(BeanPostProcessor.class).values();
+        } catch (NoSuchBeanException e) {
+            if (log.isTraceEnabled()) {
+                log.trace("no register BeanPost processor !");
+            }
+        }
+        if (processors != null) {
+            List<BeanPostProcessor> sortedProcessorList = BeanUtils.sortByOrder(processors);
+            for (BeanPostProcessor beanPostProcessor : sortedProcessorList) {
+                delegateBeanFactory.addPostBeanProcessor(beanPostProcessor);
+            }
         }
     }
 
@@ -207,16 +223,38 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
             log.trace("register BeanFactory processor !");
         }
 
-        for (BeanFactoryPostProcessor factoryPostProcessor : delegateBeanFactory.getBeans(BeanFactoryPostProcessor.class).values()) {
-            factoryPostProcessor.postProcessBeanFactory(delegateBeanFactory);
+        Collection<BeanFactoryPostProcessor> processors = null;
+        try {
+            processors = delegateBeanFactory.getBeans(BeanFactoryPostProcessor.class).values();
+
+        } catch (NoSuchBeanException e) {
+            if (log.isTraceEnabled()) {
+                log.trace("no register BeanFactory found !");
+            }
+        }
+        if (processors != null) {
+            List<BeanFactoryPostProcessor> sortedProcessorList = BeanUtils.sortByOrder(processors);
+            for (BeanFactoryPostProcessor factoryPostProcessor : sortedProcessorList) {
+                factoryPostProcessor.postProcessBeanFactory(delegateBeanFactory);
+            }
         }
 
         if (log.isTraceEnabled()) {
             log.trace("register BeanFactoryAware processor !");
         }
 
-        for (BeanFactoryAware beanFactoryAware : delegateBeanFactory.getBeans(BeanFactoryAware.class).values()) {
-            beanFactoryAware.setBeanFactory(delegateBeanFactory);
+        Collection<BeanFactoryAware> beanFactoryAwares = null;
+        try {
+            beanFactoryAwares = delegateBeanFactory.getBeans(BeanFactoryAware.class).values();
+        } catch (NoSuchBeanException e) {
+            if (log.isTraceEnabled()) {
+                log.trace("no register BeanFactoryAware found !");
+            }
+        }
+        if (beanFactoryAwares != null) {
+            for (BeanFactoryAware beanFactoryAware : beanFactoryAwares) {
+                beanFactoryAware.setBeanFactory(delegateBeanFactory);
+            }
         }
 
     }
@@ -242,4 +280,5 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
     protected void doClose() throws InterruptedException {
         delegateBeanFactory.destroySingletons();
     }
+
 }
