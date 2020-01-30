@@ -79,9 +79,7 @@ public class BeanUtils {
 
     /**
      * 对bean的集合进行排序，order越小越前，其他的统一放最后，用户实现的order的value必须大于零
-     * @param beans
-     * @param <T>
-     * @return
+     * @return 排序好的beanList
      */
     public static <T> List<T> sort(Collection<T> beans) {
         return beans
@@ -94,21 +92,24 @@ public class BeanUtils {
 
         int order = Integer.MAX_VALUE;
 
-        if (OrderAware.class.isAssignableFrom(bean.getClass())) {
-            if (((OrderAware) bean).getOrder() >= 0) {
-                return ((OrderAware) bean).getOrder();
+        if (bean instanceof OrderAware) {
+            int value = ((OrderAware) bean).getOrder();
+            if (value >= 0) {
+                return value;
+            } else {
+                throw new IllegalStateException("illegal order");
             }
         }
 
         Class<?> clazz = bean.getClass();
 
-        if (AopUtils.isProxy(clazz)) {
-            clazz = AopUtils.getTargetClass(clazz);
-        }
+        clazz = AopUtils.getTargetClass(clazz);
 
         if (clazz.isAnnotationPresent(Order.class)) {
-            if ((clazz.getDeclaredAnnotation(Order.class)).value() >= 0) {
-                order = (clazz.getDeclaredAnnotation(Order.class)).value();
+            if (clazz.getDeclaredAnnotation(Order.class).value() >= 0) {
+                order = clazz.getDeclaredAnnotation(Order.class).value();
+            } else {
+                throw new IllegalStateException("illegal order");
             }
         }
 

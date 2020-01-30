@@ -196,41 +196,51 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         }
     }
 
-    protected void registerBeanPostProcessor() throws BeansException {
+    protected void registerBeanPostProcessor(){
         if (log.isTraceEnabled()) {
             log.trace("register bean processor !");
         }
-        if (delegateBeanFactory.getBeans(BeanPostProcessor.class) != null) {
-            List<BeanPostProcessor> sortedProcessorList = BeanUtils.sort(delegateBeanFactory.getBeans(BeanPostProcessor.class).values());
+        try {
+            Collection<BeanPostProcessor> processors = delegateBeanFactory.getBeans(BeanPostProcessor.class).values();
+            List<BeanPostProcessor> sortedProcessorList = BeanUtils.sort(processors);
             for (BeanPostProcessor beanPostProcessor : sortedProcessorList) {
                 delegateBeanFactory.addPostBeanProcessor(beanPostProcessor);
             }
-        } else if (log.isTraceEnabled()) {
-            log.trace("no register BeanPost processor !");
+        } catch (BeansException e) {
+            if (log.isTraceEnabled()) {
+                log.trace("no register BeanPost processor !");
+            }
         }
     }
 
-    protected void processBeanFactory() throws BeansException {
+    protected void processBeanFactory() {
         if (log.isTraceEnabled()) {
             log.trace("register BeanFactory processor !");
         }
 
-        if (delegateBeanFactory.getBeans(BeanFactoryPostProcessor.class) != null) {
-            List<BeanFactoryPostProcessor> sortedProcessorList = BeanUtils.sort(delegateBeanFactory.getBeans(BeanFactoryPostProcessor.class).values());
+        try {
+            Collection<BeanFactoryPostProcessor> processors = delegateBeanFactory.getBeans(BeanFactoryPostProcessor.class).values();
+            List<BeanFactoryPostProcessor> sortedProcessorList = BeanUtils.sort(processors);
             for (BeanFactoryPostProcessor factoryPostProcessor : sortedProcessorList) {
                 factoryPostProcessor.postProcessBeanFactory(delegateBeanFactory);
             }
-        } else if (log.isTraceEnabled()) {
-            log.trace("no register BeanFactory processor !");
+        } catch (BeansException e) {
+            if (log.isTraceEnabled()) {
+                log.trace("no register BeanFactory processor !");
+            }
         }
-
 
         if (log.isTraceEnabled()) {
             log.trace("register BeanFactoryAware processor !");
         }
-
-        for (BeanFactoryAware beanFactoryAware : delegateBeanFactory.getBeans(BeanFactoryAware.class).values()) {
-            beanFactoryAware.setBeanFactory(delegateBeanFactory);
+        try {
+            for (BeanFactoryAware beanFactoryAware : delegateBeanFactory.getBeans(BeanFactoryAware.class).values()) {
+                beanFactoryAware.setBeanFactory(delegateBeanFactory);
+            }
+        } catch (BeansException e) {
+            if (log.isTraceEnabled()) {
+                log.trace("no register BeanFactoryAware processor !");
+            }
         }
 
     }
