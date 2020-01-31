@@ -19,7 +19,7 @@ public class MyOrder2processor implements BeanPostProcessor {
 
     @Override
     public Object postProcessAfterInitializtion(String beanName, Object bean) throws BeansException {
-        System.out.println("MyOrder3processor After Initializtion");
+        System.out.println("MyOrder2processor After Initializtion");
         return bean;
     }
 }

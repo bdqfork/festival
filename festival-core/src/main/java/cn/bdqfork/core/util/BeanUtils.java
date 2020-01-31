@@ -98,9 +98,8 @@ public class BeanUtils {
                 throw new IllegalStateException(String.format("illegal order value %s, order value should >= 0!", order));
             }
         } else {
-            Class<?> clazz = bean.getClass();
 
-            clazz = AopUtils.getTargetClass(clazz);
+            Class<?> clazz = AopUtils.getTargetClass(bean);
 
             if (clazz.isAnnotationPresent(Order.class)) {
                 int order = clazz.getAnnotation(Order.class).value();

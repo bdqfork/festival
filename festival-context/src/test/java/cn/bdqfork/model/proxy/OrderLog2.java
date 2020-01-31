@@ -12,7 +12,7 @@ import javax.inject.Singleton;
 @Singleton
 @Named
 @Aspect
-@Order(11)
+@Order(2)
 public class OrderLog2 {
 
     @Before("pointcut()")
