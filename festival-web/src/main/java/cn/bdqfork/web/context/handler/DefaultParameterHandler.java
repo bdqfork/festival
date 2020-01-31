@@ -1,6 +1,6 @@
 package cn.bdqfork.web.context.handler;
 
-import io.vertx.reactivex.core.MultiMap;
+import io.vertx.reactivex.ext.web.RoutingContext;
 
 import java.lang.reflect.Parameter;
 
@@ -11,13 +11,7 @@ import java.lang.reflect.Parameter;
 public class DefaultParameterHandler extends AbstractParameterHandler {
 
     @Override
-    protected Object[] handleQueryParams(MultiMap multiMap, Parameter[] parameters) {
+    protected Object[] doHandle(RoutingContext routingContext, Parameter[] parameters) {
         return new Object[0];
     }
-
-    @Override
-    protected Object[] handleFormAttributes(MultiMap multiMap, Parameter[] parameters) {
-        return new Object[0];
-    }
-
 }
