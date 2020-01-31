@@ -28,6 +28,7 @@ import java.util.Optional;
 public class DefaultMappingHandler implements RouteMappingHandler {
     private List<Filter> filters = new LinkedList<>();
     private ResultHandler resultHandler = new DefaultResultHandler();
+    private ParameterHandler parameterHandler = new DefaultParameterHandler();
     protected Vertx vertx;
 
     public DefaultMappingHandler(Vertx vertx) {
@@ -55,8 +56,9 @@ public class DefaultMappingHandler implements RouteMappingHandler {
             FilterChain filterChain = new FilterChain() {
                 @Override
                 public void doFilter(RoutingContext routingContext) {
+                    Object[] args = parameterHandler.handle(routingContext, routeMethod.getParameters());
                     Observable.fromArray(routingContext)
-                            .map(context -> invokeRouteMethod(routingContext, routeAttribute, routeMethod))
+                            .map(context -> invokeRouteMethod(routeAttribute.getBean(), routeMethod, args))
                             .subscribe(optional -> {
                                 if (optional.isPresent()) {
                                     resultHandler.handle(routingContext, optional.get());
@@ -72,8 +74,8 @@ public class DefaultMappingHandler implements RouteMappingHandler {
         });
     }
 
-    private Optional<Object> invokeRouteMethod(RoutingContext routingContext, RouteAttribute routeAttribute, Method routeMethod) throws InvocationTargetException, IllegalAccessException {
-        return Optional.ofNullable(ReflectUtils.invokeMethod(routeAttribute.getBean(), routeMethod, routingContext));
+    private Optional<Object> invokeRouteMethod(Object routeBean, Method routeMethod, Object[] args) throws InvocationTargetException, IllegalAccessException {
+        return Optional.ofNullable(ReflectUtils.invokeMethod(routeBean, routeMethod, args));
     }
 
     protected FilterChain buildFilterChain(FilterChain filterChain) {
