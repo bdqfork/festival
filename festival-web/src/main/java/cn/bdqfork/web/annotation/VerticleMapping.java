@@ -10,6 +10,8 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
+ * 该注解用于将服务转化为Verticle，服务之间的调用将通过EventBus进行通信。
+ *
  * @author bdq
  * @since 2020/1/21
  */

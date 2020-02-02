@@ -28,11 +28,6 @@
             <version>0.3</version>
         </dependency>
         <dependency>
-            <artifactId>festival-security</artifactId>
-            <groupId>cn.bdqfork</groupId>
-            <version>0.3</version>
-        </dependency>
-        <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-auth-shiro</artifactId>
             <version>3.8.5</version>

@@ -6,11 +6,12 @@ import cn.bdqfork.core.exception.NoSuchBeanException;
 import cn.bdqfork.core.factory.BeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
-import cn.bdqfork.web.service.HessianMessageCodec;
 import cn.bdqfork.web.processor.VerticleProxyProcessor;
+import cn.bdqfork.web.service.HessianMessageCodec;
 import cn.bdqfork.web.util.VertxUtils;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.reactivex.core.Vertx;
+import io.vertx.reactivex.ext.web.Router;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CountDownLatch;
@@ -23,6 +24,7 @@ import java.util.concurrent.CountDownLatch;
 public class WebApplicationContext extends AnnotationApplicationContext {
     private static final String SERVER_OPTIONS_NAME = "serverOptions";
     private Vertx vertx;
+    private Router router;
 
     public WebApplicationContext(String... scanPaths) throws BeansException {
         super(scanPaths);
@@ -74,6 +76,7 @@ public class WebApplicationContext extends AnnotationApplicationContext {
     protected void registerBean() throws BeansException {
         super.registerBean();
         registerVertx();
+        registerRouter();
         registerWebServer();
     }
 
@@ -81,11 +84,23 @@ public class WebApplicationContext extends AnnotationApplicationContext {
         try {
             vertx = getBeanFactory().getBean(Vertx.class);
         } catch (NoSuchBeanException e) {
-            if (log.isTraceEnabled()) {
-                log.trace("can't find Vertx, will use default!");
+            if (log.isDebugEnabled()) {
+                log.debug("can't find Vertx, will use default!");
             }
             getBeanFactory().registerSingleton("vertx", VertxUtils.getVertx());
             vertx = getBeanFactory().getBean(Vertx.class);
+        }
+    }
+
+    private void registerRouter() throws BeansException {
+        try {
+            router = getBeanFactory().getBean(Router.class);
+        } catch (NoSuchBeanException e) {
+            if (log.isDebugEnabled()) {
+                log.debug("can't find Vertx, will use default!");
+            }
+            getBeanFactory().registerSingleton("router", Router.router(vertx));
+            router = getBeanFactory().getBean(Router.class);
         }
     }
 
@@ -105,8 +120,24 @@ public class WebApplicationContext extends AnnotationApplicationContext {
     @Override
     protected void processEnvironment() throws BeansException {
         super.processEnvironment();
-        for (VertxAware vertxAware : getBeanFactory().getBeans(VertxAware.class).values()) {
-            vertxAware.setVertx(vertx);
+        try {
+            for (VertxAware vertxAware : getBeanFactory().getBeans(VertxAware.class).values()) {
+                vertxAware.setVertx(vertx);
+            }
+        } catch (NoSuchBeanException e) {
+            if (log.isDebugEnabled()) {
+                log.debug("no vertx aware found!");
+            }
+        }
+
+        try {
+            for (RouterAware routerAware : getBeanFactory().getBeans(RouterAware.class).values()) {
+                routerAware.setRouter(router);
+            }
+        } catch (NoSuchBeanException e) {
+            if (log.isDebugEnabled()) {
+                log.debug("no router aware found!");
+            }
         }
 
     }

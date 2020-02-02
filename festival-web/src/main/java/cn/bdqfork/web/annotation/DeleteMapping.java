@@ -10,6 +10,8 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
+ * 用于DELETE请求
+ *
  * @author bdq
  * @since 2020/1/21
  */
