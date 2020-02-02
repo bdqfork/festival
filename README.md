@@ -10,6 +10,9 @@ V0.3版本大量重构，对BeanFactory进行了抽象，使得项目结构更�
 5. 支持集合注入。
 6. 支持Aspect注解实现AOP拦截。
 7. 支持配置文件属性注入。
+8. 对vertx进行封装，使用注解实现webserver。
+9. 封装vertx的auth模块，实现权限管理功能。
+10. 支持使用filter来拦截请求。
 
 该框架实现了jsr330规范和jsr250规范，实现了基本的依赖注入功能。
 
@@ -19,11 +22,19 @@ core设计如下：
 aop设计如下：
 ![aop-design](images/aop-design.png)
 
+web设计如下：
+![aop-design](images/mvc-design.png)
+
 #### 更新日志:
 
 1. 去除了V0.2版本中的Spring注解，仅支持jsr330和jsr250注解
 2. 重新设计了项目，尽可能的面向接口编程
 
 ##### todolist:
-1. 完善测试用例
-2. 优化aop功能
+1. 参数注入
+2. luncher封装
+3. 缓存
+4. 服务监控
+5. verticle service group
+6. @produces,@consumer以及跨域
+7. 用户自定义handler
