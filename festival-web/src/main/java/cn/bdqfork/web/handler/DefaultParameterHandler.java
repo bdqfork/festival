@@ -47,6 +47,7 @@ public class DefaultParameterHandler extends AbstractParameterHandler {
                     paramsMap.put(entry.getKey(), entry.getValue());
                 }
                 args.add(paramsMap);
+                continue;
             }
 
             if (!ReflectUtils.isPrimitiveOrWrapper(parameterType)) {
@@ -78,6 +79,7 @@ public class DefaultParameterHandler extends AbstractParameterHandler {
                 args.add(castToPrimitive(param.defaultValue(), parameterType));
 
             }
+
         }
         return args.toArray();
     }
