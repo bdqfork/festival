@@ -1,13 +1,14 @@
 package cn.bdqfork.web.context.handler;
 
 import cn.bdqfork.web.context.annotation.Param;
+import io.vertx.core.http.HttpMethod;
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.reactivex.ext.web.RoutingContext;
 
 import java.lang.reflect.Parameter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author bdq
@@ -17,18 +18,17 @@ public class DefaultParameterHandler extends AbstractParameterHandler {
 
     @Override
     protected Object[] doHandle(RoutingContext routingContext, Parameter[] parameters) {
-        Map<String, String> rawParameters = resolveRequestAsMap(routingContext);
+        Map<String, String> rawParameters = resolveParametersAsMap(routingContext);
         Object[] res = new Object[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
             if (parameters[i].getType() == RoutingContext.class) {
                 res[i] = routingContext;
+            } else if (parameters[i].getType() == HttpServerRequest.class) {
+                res[i] = routingContext.request();
+            } else if (parameters[i].getType() == HttpServerResponse.class) {
+                res[i] = routingContext.response();
             } else {
-                String parsedArg = null;
-                try {
-                    parsedArg = parseArg(rawParameters, parameters[i]);
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
+                String parsedArg = parseArg(rawParameters, parameters[i]);
                 if (parameters[i].getClass() != null && parsedArg != null) {
                     Class<?> parameterType = parameters[i].getType();
                     try {
@@ -42,11 +42,21 @@ public class DefaultParameterHandler extends AbstractParameterHandler {
                             res[i] = Double.parseDouble(parsedArg);
                         } else if (parameterType == Float.class || parameterType == float.class) {
                             res[i] = Float.parseFloat(parsedArg);
+                        } else if (parameterType == Short.class || parameterType == short.class) {
+                            res[i] = Short.parseShort(parsedArg);
+                        } else if (parameterType == Byte.class || parameterType == byte.class) {
+                            res[i] = Byte.parseByte(parsedArg);
+                        } else if (parameterType == Character.class || parameterType == char.class) {
+                            if (parsedArg.length() == 1) {
+                                res[i] = parsedArg.charAt(0);
+                            }
+                        } else if (parameterType == Boolean.class || parameterType == boolean.class) {
+                            res[i] = Boolean.parseBoolean(parsedArg);
                         } else {
                             res[i] = null;
                         }
                     } catch (NumberFormatException e) {
-                        System.out.println(e.getMessage());
+                        res[i] = null;
                     }
                 }
             }
@@ -54,72 +64,27 @@ public class DefaultParameterHandler extends AbstractParameterHandler {
         return res;
     }
 
-    private Map<String, String> resolveRequestAsMap(RoutingContext routingContext) {
+    private Map<String, String> resolveParametersAsMap(RoutingContext routingContext) {
         Map<String, String> res = new HashMap<>();
-        for (Map.Entry<String, String> entry: routingContext.queryParams()) {
-            res.put(entry.getKey(), entry.getValue());
-        }
+        if (routingContext.request().method() == HttpMethod.GET) {
+            for (Map.Entry<String, String> entry : routingContext.queryParams()) {
+                res.put(entry.getKey(), entry.getValue());
+            }
+        } else {
+
+        } 
         return res;
     }
 
-    private String parseArg(Map<String, String> rawParameters, Parameter parameter) throws Exception {
-
+    private String parseArg(Map<String, String> rawParameters, Parameter parameter) {
+        String res = "";
         if (parameter.isAnnotationPresent(Param.class)) {
             Param param = parameter.getAnnotation(Param.class);
-            if (param.type() != Object.class) {
-                return injectByType(rawParameters, param);
-            } else {
-                return injectByName(rawParameters, param);
+            res = rawParameters.get(param.value());
+            if (res == null || res.isEmpty()) {
+                res = param.defaultValue();
             }
         }
-        throw new Exception("parse failed");
+        return res;
     }
-
-    private static String injectByType(Map<String, String> rawParameters, Param param) throws Exception {
-        Class<?> type = param.type();
-        String defaultValue = param.defaultValue();
-        if (type == int.class || type == Integer.class || type == long.class || type == Long.class) {
-            for (Map.Entry<String, String> entry: rawParameters.entrySet()){
-                if (isInteger(entry.getValue())) {
-                    return entry.getValue();
-                }
-            }
-            return defaultValue;
-        }
-        if (type == float.class || type == Float.class || type == double.class || type == Double.class) {
-            for (Map.Entry<String, String> entry: rawParameters.entrySet()){
-                if (isFloat(entry.getValue())) {
-                    return entry.getValue();
-                }
-            }
-            return defaultValue;
-        }
-
-        if (type == String.class) {
-            for (Map.Entry<String, String> entry: rawParameters.entrySet()){
-                if (!(isInteger(entry.getValue()) && isFloat(entry.getValue()))) {
-                    return entry.getValue();
-                }
-            }
-            return defaultValue;
-        }
-        return defaultValue;
-    }
-
-    private static String injectByName(Map<String, String> rawParameter, Param param) {
-        return rawParameter.get(param.value());
-    }
-
-    private static boolean isInteger(String str) {
-        Pattern pattern = Pattern.compile("-?[0-9]+.?[0-9]+");
-        Matcher isNum = pattern.matcher(str);
-        return isNum.matches();
-    }
-
-    private static boolean isFloat(String str) {
-        Pattern pattern = Pattern.compile("[-+]?[0-9]*\\.?[0-9]+");
-        Matcher isNum = pattern.matcher(str);
-        return isNum.matches();
-    }
-
 }
