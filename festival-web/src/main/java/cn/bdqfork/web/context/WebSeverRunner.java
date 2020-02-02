@@ -24,6 +24,7 @@ import io.vertx.reactivex.ext.auth.AuthProvider;
 import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.handler.AuthHandler;
 import io.vertx.reactivex.ext.web.handler.BodyHandler;
+import io.vertx.reactivex.ext.web.handler.LoggerHandler;
 import io.vertx.reactivex.ext.web.handler.SessionHandler;
 import io.vertx.reactivex.ext.web.sstore.LocalSessionStore;
 import io.vertx.reactivex.ext.web.sstore.SessionStore;
@@ -49,11 +50,13 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
     public void start(Promise<Void> startPromise) throws Exception {
         Router router = Router.router(vertx);
 
+        router.route().handler(LoggerHandler.create());
+
         registerSessionHandler(router);
 
-        registerRouteMapping(router);
-
         registerBodyHandler(router);
+
+        registerRouteMapping(router);
 
         startServer(router);
 

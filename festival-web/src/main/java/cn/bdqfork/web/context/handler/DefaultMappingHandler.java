@@ -56,9 +56,9 @@ public class DefaultMappingHandler implements RouteMappingHandler {
             FilterChain filterChain = new FilterChain() {
                 @Override
                 public void doFilter(RoutingContext routingContext) {
-                    Object[] args = parameterHandler.handle(routingContext, routeMethod.getParameters());
-                    Observable.fromArray(routingContext)
-                            .map(context -> invokeRouteMethod(routeAttribute.getBean(), routeMethod, args))
+                    Observable.fromArray(routingContext.request())
+                            .map(request -> parameterHandler.handle(routingContext, routeMethod.getParameters()))
+                            .map(args -> invokeRouteMethod(routeAttribute.getBean(), routeMethod, args))
                             .subscribe(optional -> {
                                 if (optional.isPresent()) {
                                     resultHandler.handle(routingContext, optional.get());

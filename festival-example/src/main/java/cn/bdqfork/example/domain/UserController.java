@@ -1,14 +1,14 @@
 package cn.bdqfork.example.domain;
 
 import cn.bdqfork.core.factory.DisposableBean;
-import cn.bdqfork.web.context.annotation.GetMapping;
-import cn.bdqfork.web.context.annotation.RouteMapping;
-import cn.bdqfork.web.context.annotation.Route;
 import cn.bdqfork.security.annotation.Auth;
 import cn.bdqfork.security.annotation.PermitAll;
 import cn.bdqfork.security.annotation.PermitAllowed;
 import cn.bdqfork.security.annotation.RolesAllowed;
 import cn.bdqfork.security.common.LogicType;
+import cn.bdqfork.web.context.annotation.GetMapping;
+import cn.bdqfork.web.context.annotation.Route;
+import cn.bdqfork.web.context.annotation.RouteMapping;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
