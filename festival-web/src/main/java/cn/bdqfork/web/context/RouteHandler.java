@@ -97,6 +97,8 @@ public class RouteHandler {
         String signature = generateRouteSignature(routeMapping, path);
         if (registedRoutes.contains(signature)) {
             throw new IllegalStateException(String.format("conflict mapping %s !", signature));
+        } else {
+            registedRoutes.add(signature);
         }
 
         if (log.isInfoEnabled()) {
