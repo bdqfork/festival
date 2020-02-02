@@ -49,7 +49,7 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
     @Override
     public void start(Promise<Void> startPromise) throws Exception {
 
-        router.route().handler(LoggerHandler.create());
+        registerLoggingHandler(router);
 
         registerSessionHandler(router);
 
@@ -60,6 +60,16 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
         startServer(router);
 
         startPromise.complete();
+    }
+
+    private void registerLoggingHandler(Router router) throws BeansException {
+        LoggerHandler loggerHandler;
+        try {
+            loggerHandler = beanFactory.getBean(LoggerHandler.class);
+        } catch (NoSuchBeanException e) {
+            loggerHandler = LoggerHandler.create();
+        }
+        router.route().handler(loggerHandler);
     }
 
     private void registerSessionHandler(io.vertx.reactivex.ext.web.Router router) throws BeansException {
