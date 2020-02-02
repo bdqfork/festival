@@ -57,9 +57,8 @@ public class UserController implements DisposableBean {
 
     @PermitAll
     @GetMapping("/hello4")
-    public String[] hello4(RoutingContext routingContext) {
-        String[] strings = new String[]{"test1", "test2", "test3"};
-        return strings;
+    public String[] hello4() {
+        return new String[]{"test1", "test2", "test3"};
     }
 
     @RolesAllowed(value = {"role:administrator", "role:hispassword"}, logic = LogicType.AND)
