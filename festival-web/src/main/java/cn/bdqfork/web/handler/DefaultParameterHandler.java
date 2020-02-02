@@ -22,7 +22,7 @@ public class DefaultParameterHandler extends AbstractParameterHandler {
 
     @Override
     protected Object[] doHandle(RoutingContext routingContext, Parameter[] parameters) {
-        MultiMap params = resolveParameters(routingContext);
+        MultiMap params = resolveParams(routingContext);
 
         List<Object> args = new ArrayList<>(parameters.length);
 
@@ -63,7 +63,9 @@ public class DefaultParameterHandler extends AbstractParameterHandler {
 
             } else if (param.required()) {
 
-                throw new IllegalStateException(String.format("param %s is required but not received !", name));
+                throw new IllegalStateException(String.format("%s %s param %s is required but not received !",
+                        routingContext.request().method(),
+                        routingContext.request().path(), name));
 
             } else {
 
@@ -110,7 +112,7 @@ public class DefaultParameterHandler extends AbstractParameterHandler {
         throw new IllegalArgumentException(String.format("unsupport type %s!", type.getCanonicalName()));
     }
 
-    private MultiMap resolveParameters(RoutingContext routingContext) {
+    private MultiMap resolveParams(RoutingContext routingContext) {
         if (routingContext.request().method() == HttpMethod.GET) {
             return routingContext.queryParams();
         } else {
