@@ -1,5 +1,6 @@
 package cn.bdqfork.example.domain;
 
+import cn.bdqfork.example.model.User;
 import cn.bdqfork.web.annotation.*;
 import io.vertx.reactivex.core.http.HttpServerRequest;
 import io.vertx.reactivex.core.http.HttpServerResponse;
@@ -62,5 +63,14 @@ public class TestRestfulController {
     @PostMapping("/map")
     public Map<String, String> postMap(Map<String, String> user) {
         return user;
+    }
+
+    @PostMapping("/postUser")
+    public Map<String, Object> postObject(User user) {
+        Map<String, Object> res = new HashMap<>();
+        res.put("id", user.getId());
+        res.put("name", user.getUsername());
+        res.put("isActive", user.isActive());
+        return res;
     }
 }

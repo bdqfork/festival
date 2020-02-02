@@ -9,6 +9,7 @@ import io.vertx.reactivex.core.http.HttpServerRequest;
 import io.vertx.reactivex.core.http.HttpServerResponse;
 import io.vertx.reactivex.ext.web.RoutingContext;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
 import java.util.*;
 
@@ -51,7 +52,13 @@ public class DefaultParameterHandler extends AbstractParameterHandler {
                 continue;
             }
 
+
             if (!ReflectUtils.isPrimitiveOrWrapper(parameterType)) {
+                try {
+                    args.add(castToObject(params, parameterType));
+                } catch (IllegalAccessException | InstantiationException e) {
+                    throw new IllegalStateException(String.format("new instance of %s failed!", parameterType.getName()));
+                }
                 continue;
             }
 
@@ -83,6 +90,22 @@ public class DefaultParameterHandler extends AbstractParameterHandler {
 
         }
         return args.toArray();
+    }
+
+    private <T> T castToObject(MultiMap params, Class<T> type) throws IllegalAccessException, InstantiationException {
+        T parameterObject = type.newInstance();
+        Field[] fields = parameterObject.getClass().getDeclaredFields();
+        for (Field field: fields) {
+            String fieldStr = params.get(field.getName());
+            Class<?> fieldType = field.getType();
+            if (fieldType == String.class) {
+                ReflectUtils.setValue(parameterObject, field, fieldStr);
+                continue;
+            }
+            Object fieldValue = castToPrimitive(fieldStr, field.getType());
+            ReflectUtils.setValue(parameterObject, field, fieldValue);
+        }
+        return parameterObject;
     }
 
     private Object castToPrimitive(String value, Class<?> type) {
