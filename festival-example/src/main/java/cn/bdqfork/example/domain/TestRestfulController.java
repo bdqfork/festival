@@ -1,6 +1,6 @@
 package cn.bdqfork.example.domain;
 
-import cn.bdqfork.web.context.annotation.*;
+import cn.bdqfork.web.annotation.*;
 import io.vertx.reactivex.core.http.HttpServerRequest;
 import io.vertx.reactivex.core.http.HttpServerResponse;
 import io.vertx.reactivex.ext.web.RoutingContext;
@@ -36,7 +36,7 @@ public class TestRestfulController {
         return "id: " + request.getParam("id");
     }
 
-    @GetMapping("/hello")
+    @GetMapping("/hello4")
     public String hello3(@Param("id") int id) {
         return "id: " + id;
     }

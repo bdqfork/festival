@@ -1,6 +1,7 @@
 package cn.bdqfork.web.handler;
 
-import cn.bdqfork.web.context.annotation.Param;
+import cn.bdqfork.core.util.AnnotationUtils;
+import cn.bdqfork.web.annotation.Param;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.reactivex.core.MultiMap;
 import io.vertx.reactivex.core.http.HttpServerRequest;
@@ -8,8 +9,9 @@ import io.vertx.reactivex.core.http.HttpServerResponse;
 import io.vertx.reactivex.ext.web.RoutingContext;
 
 import java.lang.reflect.Parameter;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author bdq
@@ -19,77 +21,97 @@ public class DefaultParameterHandler extends AbstractParameterHandler {
 
     @Override
     protected Object[] doHandle(RoutingContext routingContext, Parameter[] parameters) {
-        Map<String, String> rawParameters = resolveParametersAsMap(routingContext);
-        Object[] res = new Object[parameters.length];
-        for (int i = 0; i < parameters.length; i++) {
-            if (parameters[i].getType() == RoutingContext.class) {
-                res[i] = routingContext;
-            } else if (parameters[i].getType() == HttpServerRequest.class) {
-                res[i] = routingContext.request();
-            } else if (parameters[i].getType() == HttpServerResponse.class) {
-                res[i] = routingContext.response();
+        MultiMap params = resolveParameters(routingContext);
+
+        List<Object> args = new ArrayList<>(parameters.length);
+
+        for (Parameter parameter : parameters) {
+
+            Class<?> parameterType = parameter.getType();
+
+            if (parameterType == RoutingContext.class) {
+                args.add(routingContext);
+                continue;
+            }
+            if (parameterType == HttpServerRequest.class) {
+                args.add(routingContext.request());
+                continue;
+            }
+            if (parameterType == HttpServerResponse.class) {
+                args.add(routingContext.response());
+                continue;
+            }
+
+            if (!AnnotationUtils.isAnnotationPresent(parameter, Param.class)) {
+                continue;
+            }
+
+            Param param = AnnotationUtils.getMergedAnnotation(parameter, Param.class);
+
+            String name = Objects.requireNonNull(param).value();
+
+            String paramValue = params.get(name);
+
+            if (params.contains(name)) {
+
+                args.add(castToPrimitive(paramValue, parameterType));
+
+            } else if (param.required()) {
+
+                throw new IllegalStateException(String.format("param %s is required but not received !", name));
+
             } else {
-                String parsedArg = parseArg(rawParameters, parameters[i]);
-                if (parameters[i].getClass() != null && parsedArg != null) {
-                    Class<?> parameterType = parameters[i].getType();
-                    try {
-                        if (parameterType == String.class) {
-                            res[i] = parsedArg;
-                        } else if (parameterType == Integer.class || parameterType == int.class) {
-                            res[i] = Integer.parseInt(parsedArg);
-                        } else if (parameterType == Long.class || parameterType == long.class) {
-                            res[i] = Long.parseLong(parsedArg);
-                        } else if (parameterType == Double.class || parameterType == double.class) {
-                            res[i] = Double.parseDouble(parsedArg);
-                        } else if (parameterType == Float.class || parameterType == float.class) {
-                            res[i] = Float.parseFloat(parsedArg);
-                        } else if (parameterType == Short.class || parameterType == short.class) {
-                            res[i] = Short.parseShort(parsedArg);
-                        } else if (parameterType == Byte.class || parameterType == byte.class) {
-                            res[i] = Byte.parseByte(parsedArg);
-                        } else if (parameterType == Character.class || parameterType == char.class) {
-                            if (parsedArg.length() == 1) {
-                                res[i] = parsedArg.charAt(0);
-                            }
-                        } else if (parameterType == Boolean.class || parameterType == boolean.class) {
-                            res[i] = Boolean.parseBoolean(parsedArg);
-                        } else {
-                            res[i] = null;
-                        }
-                    } catch (NumberFormatException e) {
-                        res[i] = null;
-                    }
-                }
+
+                args.add(castToPrimitive(param.defaultValue(), parameterType));
+
             }
         }
-        return res;
+        return args.toArray();
     }
 
-    private Map<String, String> resolveParametersAsMap(RoutingContext routingContext) {
-        Map<String, String> res = new HashMap<>();
+    private Object castToPrimitive(String value, Class<?> type) {
+        if (type == Integer.class || type == int.class) {
+            return Integer.valueOf(value);
+        }
+
+        if (type == Long.class || type == long.class) {
+            return Long.valueOf(value);
+        }
+
+        if (type == Double.class || type == double.class) {
+            return Double.valueOf(value);
+        }
+
+        if (type == Float.class || type == float.class) {
+            return Float.valueOf(value);
+        }
+
+        if (type == Short.class || type == short.class) {
+            return Short.parseShort(value);
+        }
+
+        if (type == Byte.class || type == byte.class) {
+            return Byte.parseByte(value);
+        }
+
+        if (type == Character.class || type == char.class) {
+            return value.toCharArray()[0];
+        }
+
+        if (type == Boolean.class || type == boolean.class) {
+            return Boolean.valueOf(value);
+        }
+
+        throw new IllegalArgumentException(String.format("unsupport type %s!", type.getCanonicalName()));
+    }
+
+    private MultiMap resolveParameters(RoutingContext routingContext) {
         if (routingContext.request().method() == HttpMethod.GET) {
-            for (Map.Entry<String, String> entry : routingContext.queryParams()) {
-                res.put(entry.getKey(), entry.getValue());
-            }
+            return routingContext.queryParams();
         } else {
             HttpServerRequest httpServerRequest = routingContext.request();
-            MultiMap multiMap = httpServerRequest.formAttributes();
-            for (Map.Entry<String, String> entry : multiMap) {
-                res.put(entry.getKey(), entry.getValue());
-            }
-        } 
-        return res;
+            return httpServerRequest.formAttributes();
+        }
     }
 
-    private String parseArg(Map<String, String> rawParameters, Parameter parameter) {
-        String res = "";
-        if (parameter.isAnnotationPresent(Param.class)) {
-            Param param = parameter.getAnnotation(Param.class);
-            res = rawParameters.get(param.value());
-            if (res == null || res.isEmpty()) {
-                res = param.defaultValue();
-            }
-        }
-        return res;
-    }
 }

@@ -18,7 +18,14 @@ public @interface Param {
     String value();
 
     /**
+     * 是否必须参数
+     *
+     * @return
+     */
+    boolean required() default true;
+
+    /**
      * 默认值
      */
-    String defaultValue() default "";
+    String defaultValue() default "null";
 }

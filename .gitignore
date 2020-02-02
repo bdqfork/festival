@@ -25,3 +25,4 @@ target/
 /nbdist/
 /.nb-gradle/
 .vscode
+file-uploads/
