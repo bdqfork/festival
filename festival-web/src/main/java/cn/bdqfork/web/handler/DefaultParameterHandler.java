@@ -40,6 +40,7 @@ public class DefaultParameterHandler extends AbstractParameterHandler {
                 args.add(routingContext.response());
                 continue;
             }
+
             if (parameterType == Map.class) {
                 Map<String, String> paramsMap = new HashMap<>();
                 for (Map.Entry<String, String> entry :

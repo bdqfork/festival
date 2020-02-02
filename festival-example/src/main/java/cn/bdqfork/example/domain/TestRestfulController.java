@@ -58,4 +58,9 @@ public class TestRestfulController {
     public Boolean deleteUser(@Param("id") Long id) {
         return id == 12;
     }
+
+    @PostMapping("/map")
+    public Map<String, String> postMap(Map<String, String> user) {
+        return user;
+    }
 }
