@@ -40,14 +40,14 @@ import java.util.List;
  * @since 2020/1/21
  */
 @Slf4j
-public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware, ResourceReaderAware {
+public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware, ResourceReaderAware, RouterAware {
     private ConfigurableBeanFactory beanFactory;
     private HttpServer httpServer;
     private ResourceReader resourceReader;
+    private Router router;
 
     @Override
     public void start(Promise<Void> startPromise) throws Exception {
-        Router router = Router.router(vertx);
 
         router.route().handler(LoggerHandler.create());
 
@@ -245,4 +245,8 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
         this.resourceReader = resourceReader;
     }
 
+    @Override
+    public void setRouter(Router router) throws BeansException {
+        this.router = router;
+    }
 }

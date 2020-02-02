@@ -1,6 +1,7 @@
 package cn.bdqfork.web.handler;
 
 import cn.bdqfork.core.util.AnnotationUtils;
+import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.web.annotation.Param;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.reactivex.core.MultiMap;
@@ -39,6 +40,10 @@ public class DefaultParameterHandler extends AbstractParameterHandler {
             }
             if (parameterType == HttpServerResponse.class) {
                 args.add(routingContext.response());
+                continue;
+            }
+
+            if (!ReflectUtils.isPrimitiveOrWrapper(parameterType)) {
                 continue;
             }
 
