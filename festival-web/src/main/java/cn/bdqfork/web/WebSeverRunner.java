@@ -1,4 +1,4 @@
-package cn.bdqfork.web.context;
+package cn.bdqfork.web;
 
 import cn.bdqfork.configration.reader.ResourceReader;
 import cn.bdqfork.context.aware.BeanFactoryAware;
@@ -12,9 +12,9 @@ import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.StringUtils;
 import cn.bdqfork.web.constant.ApplicationProperty;
-import cn.bdqfork.web.context.annotation.Route;
-import cn.bdqfork.web.context.filter.AuthFilter;
-import cn.bdqfork.web.context.filter.Filter;
+import cn.bdqfork.web.annotation.Route;
+import cn.bdqfork.web.filter.AuthFilter;
+import cn.bdqfork.web.filter.Filter;
 import io.reactivex.Completable;
 import io.vertx.core.Promise;
 import io.vertx.reactivex.core.AbstractVerticle;

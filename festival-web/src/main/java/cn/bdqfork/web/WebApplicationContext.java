@@ -1,4 +1,4 @@
-package cn.bdqfork.web.context;
+package cn.bdqfork.web;
 
 import cn.bdqfork.context.AnnotationApplicationContext;
 import cn.bdqfork.core.exception.BeansException;
@@ -6,7 +6,7 @@ import cn.bdqfork.core.exception.NoSuchBeanException;
 import cn.bdqfork.core.factory.BeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
-import cn.bdqfork.web.context.service.HessianMessageCodec;
+import cn.bdqfork.web.service.HessianMessageCodec;
 import cn.bdqfork.web.processor.VerticleProxyProcessor;
 import cn.bdqfork.web.util.VertxUtils;
 import io.vertx.core.DeploymentOptions;
