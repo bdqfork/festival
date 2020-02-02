@@ -2,10 +2,9 @@ package cn.bdqfork.web.context.handler;
 
 import cn.bdqfork.web.context.annotation.Param;
 import io.vertx.core.http.HttpMethod;
-import io.vertx.core.http.HttpServerRequest;
-import io.vertx.core.http.HttpServerResponse;
 import io.vertx.reactivex.core.MultiMap;
 import io.vertx.reactivex.core.http.HttpServerRequest;
+import io.vertx.reactivex.core.http.HttpServerResponse;
 import io.vertx.reactivex.ext.web.RoutingContext;
 
 import java.lang.reflect.Parameter;
@@ -73,8 +72,11 @@ public class DefaultParameterHandler extends AbstractParameterHandler {
                 res.put(entry.getKey(), entry.getValue());
             }
         } else {
-        HttpServerRequest httpServerRequest = routingContext.request();
-        MultiMap multiMap = httpServerRequest.formAttributes();
+            HttpServerRequest httpServerRequest = routingContext.request();
+            MultiMap multiMap = httpServerRequest.formAttributes();
+            for (Map.Entry<String, String> entry : multiMap) {
+                res.put(entry.getKey(), entry.getValue());
+            }
         } 
         return res;
     }
