@@ -9,9 +9,7 @@ import io.vertx.reactivex.core.http.HttpServerResponse;
 import io.vertx.reactivex.ext.web.RoutingContext;
 
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author bdq
@@ -40,6 +38,14 @@ public class DefaultParameterHandler extends AbstractParameterHandler {
             if (parameterType == HttpServerResponse.class) {
                 args.add(routingContext.response());
                 continue;
+            }
+            if (parameterType == Map.class) {
+                Map<String, String> paramsMap = new HashMap<>();
+                for (Map.Entry<String, String> entry :
+                        params) {
+                    paramsMap.put(entry.getKey(), entry.getValue());
+                }
+                args.add(paramsMap);
             }
 
             if (!AnnotationUtils.isAnnotationPresent(parameter, Param.class)) {
