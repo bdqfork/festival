@@ -18,11 +18,6 @@ public @interface Param {
     String value();
 
     /**
-     * 参数类型，可选，如果指定了类型，则按指定类型注入，否则按参数名注入
-     */
-    Class<?> type() default Object.class;
-
-    /**
      * 默认值
      */
     String defaultValue() default "";
