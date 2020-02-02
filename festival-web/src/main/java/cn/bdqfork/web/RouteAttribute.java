@@ -1,11 +1,10 @@
-package cn.bdqfork.web.context;
+package cn.bdqfork.web;
 
 import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.security.annotation.Auth;
 import cn.bdqfork.security.annotation.PermitAll;
 import cn.bdqfork.security.annotation.PermitAllowed;
 import cn.bdqfork.security.annotation.RolesAllowed;
-import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.handler.AuthHandler;
 
 import java.lang.reflect.Method;
@@ -16,8 +15,6 @@ import java.lang.reflect.Method;
  */
 public class RouteAttribute {
 
-    private Router router;
-
     private Object bean;
 
     private String baseUrl;
@@ -25,14 +22,6 @@ public class RouteAttribute {
     private Method routeMethod;
 
     private AuthHandler authHandler;
-
-    public Router getRouter() {
-        return router;
-    }
-
-    public void setRouter(Router router) {
-        this.router = router;
-    }
 
     public Object getBean() {
         return bean;
@@ -94,8 +83,6 @@ public class RouteAttribute {
     }
 
     public static class Builder {
-        private Router router;
-
         private Object bean;
 
         private String baseUrl;
@@ -103,11 +90,6 @@ public class RouteAttribute {
         private Method routeMethod;
 
         private AuthHandler authHandler;
-
-        public Builder setRouter(Router router) {
-            this.router = router;
-            return this;
-        }
 
         public Builder setBean(Object bean) {
             this.bean = bean;
@@ -131,7 +113,6 @@ public class RouteAttribute {
 
         public RouteAttribute build() {
             RouteAttribute attribute = new RouteAttribute();
-            attribute.setRouter(router);
             attribute.setBean(bean);
             attribute.setBaseUrl(baseUrl);
             attribute.setRouteMethod(routeMethod);

@@ -1,6 +1,6 @@
 package cn.bdqfork.example.config;
 
-import cn.bdqfork.web.context.filter.AuthFilter;
+import cn.bdqfork.web.filter.AuthFilter;
 import cn.bdqfork.configration.Configration;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.shiro.ShiroAuthOptions;

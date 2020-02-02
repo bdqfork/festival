@@ -1,11 +1,11 @@
-package cn.bdqfork.web.context.filter;
+package cn.bdqfork.web.filter;
 
 import cn.bdqfork.core.factory.processor.OrderAware;
-import cn.bdqfork.web.context.RouteAttribute;
-import cn.bdqfork.web.context.handler.RouteMappingHandler;
+import cn.bdqfork.web.RouteAttribute;
 import cn.bdqfork.security.annotation.PermitAllowed;
 import cn.bdqfork.security.annotation.RolesAllowed;
 import cn.bdqfork.security.util.SecurityUtils;
+import cn.bdqfork.web.RouteHandler;
 import io.reactivex.Observable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
@@ -25,7 +25,7 @@ public class AuthFilter implements Filter, OrderAware {
     @Override
     public void doFilter(RoutingContext routingContext, FilterChain filterChain) {
         RouteAttribute routeAttribute = (RouteAttribute) routingContext.data()
-                .get(RouteMappingHandler.ROUTE_ATTRIBETE_KEY);
+                .get(RouteHandler.ROUTE_ATTRIBETE_KEY);
         if (routeAttribute == null || !routeAttribute.requireAuth()) {
             filterChain.doFilter(routingContext);
             return;

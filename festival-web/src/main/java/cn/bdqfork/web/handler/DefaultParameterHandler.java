@@ -1,4 +1,4 @@
-package cn.bdqfork.web.context.handler;
+package cn.bdqfork.web.handler;
 
 import cn.bdqfork.web.context.annotation.Param;
 import io.vertx.core.http.HttpMethod;

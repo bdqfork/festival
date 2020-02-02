@@ -6,9 +6,9 @@ import cn.bdqfork.security.annotation.PermitAll;
 import cn.bdqfork.security.annotation.PermitAllowed;
 import cn.bdqfork.security.annotation.RolesAllowed;
 import cn.bdqfork.security.common.LogicType;
-import cn.bdqfork.web.context.annotation.GetMapping;
-import cn.bdqfork.web.context.annotation.Route;
-import cn.bdqfork.web.context.annotation.RouteMapping;
+import cn.bdqfork.web.annotation.GetMapping;
+import cn.bdqfork.web.annotation.Route;
+import cn.bdqfork.web.annotation.RouteMapping;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -57,9 +57,8 @@ public class UserController implements DisposableBean {
 
     @PermitAll
     @GetMapping("/hello4")
-    public String[] hello4(RoutingContext routingContext) {
-        String[] strings = new String[]{"test1", "test2", "test3"};
-        return strings;
+    public String[] hello4() {
+        return new String[]{"test1", "test2", "test3"};
     }
 
     @RolesAllowed(value = {"role:administrator", "role:hispassword"}, logic = LogicType.AND)

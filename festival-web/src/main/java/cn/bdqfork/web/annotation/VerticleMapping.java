@@ -1,7 +1,7 @@
-package cn.bdqfork.web.context.annotation;
+package cn.bdqfork.web.annotation;
 
-import io.vertx.core.http.HttpMethod;
-
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -13,10 +13,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * @author bdq
  * @since 2020/1/21
  */
-@RouteMapping(method = HttpMethod.POST)
+@Singleton
+@Named
 @Documented
 @Retention(RUNTIME)
-@Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
-public @interface PostMapping {
-    String value();
+@Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
+public @interface VerticleMapping {
+    String value() default "";
 }
