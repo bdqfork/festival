@@ -42,7 +42,6 @@
             <artifactId>festival-security</artifactId>
             <groupId>cn.bdqfork</groupId>
             <version>0.3</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

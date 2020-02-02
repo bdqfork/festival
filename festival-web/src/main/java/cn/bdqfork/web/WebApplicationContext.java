@@ -125,7 +125,9 @@ public class WebApplicationContext extends AnnotationApplicationContext {
                 vertxAware.setVertx(vertx);
             }
         } catch (NoSuchBeanException e) {
-            //
+            if (log.isDebugEnabled()) {
+                log.debug("no vertx aware found!");
+            }
         }
 
         try {
@@ -133,7 +135,9 @@ public class WebApplicationContext extends AnnotationApplicationContext {
                 routerAware.setRouter(router);
             }
         } catch (NoSuchBeanException e) {
-            //
+            if (log.isDebugEnabled()) {
+                log.debug("no router aware found!");
+            }
         }
 
     }
