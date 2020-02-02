@@ -7,11 +7,13 @@ import cn.bdqfork.security.annotation.PermitAllowed;
 import cn.bdqfork.security.annotation.RolesAllowed;
 import cn.bdqfork.security.common.LogicType;
 import cn.bdqfork.web.annotation.GetMapping;
+import cn.bdqfork.web.annotation.PostMapping;
 import cn.bdqfork.web.annotation.Route;
 import cn.bdqfork.web.annotation.RouteMapping;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.vertx.reactivex.ext.web.FileUpload;
 import io.vertx.reactivex.ext.web.RoutingContext;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,6 +35,14 @@ public class UserController implements DisposableBean {
     @Named("ServiceImpl1")
     @Inject
     private IService iService;
+
+    @PermitAll
+    @PostMapping("/file")
+    public void file(RoutingContext routingContext) {
+        for (FileUpload fileUpload : routingContext.fileUploads()) {
+            System.out.println(fileUpload.fileName());
+        }
+    }
 
     @PermitAll
     @GetMapping("/hello")

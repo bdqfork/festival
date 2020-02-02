@@ -137,6 +137,9 @@ public class RouteHandler {
                             if (optional.isPresent()) {
                                 resultHandler.handle(routingContext, optional.get());
                             }
+                            if (!routingContext.response().ended()) {
+                                routingContext.response().end();
+                            }
                         }, e -> {
                             log.error(e.getMessage(), e);
                             routingContext.fail(500, e);
