@@ -66,10 +66,12 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
         LoggerHandler loggerHandler;
         try {
             loggerHandler = beanFactory.getBean(LoggerHandler.class);
+            router.route().handler(loggerHandler);
         } catch (NoSuchBeanException e) {
-            loggerHandler = LoggerHandler.create();
+            if (log.isDebugEnabled()) {
+                log.debug("no logger handler registed!");
+            }
         }
-        router.route().handler(loggerHandler);
     }
 
     private void registerSessionHandler(io.vertx.reactivex.ext.web.Router router) throws BeansException {
