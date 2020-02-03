@@ -14,16 +14,6 @@
 
     <dependencies>
         <dependency>
-            <artifactId>festival-context</artifactId>
-            <groupId>com.github.bdqfork</groupId>
-            <version>0.3</version>
-        </dependency>
-        <dependency>
-            <artifactId>festival-aop</artifactId>
-            <groupId>com.github.bdqfork</groupId>
-            <version>0.3</version>
-        </dependency>
-        <dependency>
             <artifactId>festival-web</artifactId>
             <groupId>com.github.bdqfork</groupId>
             <version>0.3</version>
