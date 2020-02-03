@@ -31,8 +31,8 @@
     </developers>
 
     <scm>
-        <connection>scm:git@github.com:bdqfork/festival.git</connection>
-        <developerConnection>scm:git@github.com:bdqfork/festival.git</developerConnection>
+        <connection>scm:git:git@github.com:bdqfork/festival.git</connection>
+        <developerConnection>scm:git:git@github.com:bdqfork/festival.git</developerConnection>
         <url>https://github.com/bdqfork/festival</url>
     </scm>
 
