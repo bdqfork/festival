@@ -7,7 +7,7 @@
     <groupId>com.github.bdqfork</groupId>
     <artifactId>festival-parent</artifactId>
 
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3</version>
     <modules>
         <module>festival-aop</module>
         <module>festival-core</module>
@@ -206,15 +206,6 @@
                             <serverId>oss</serverId>
                             <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                             <autoReleaseAfterClose>false</autoReleaseAfterClose>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-release-plugin</artifactId>
-                        <version>2.5.3</version>
-                        <configuration>
-                            <tagNameFormat>v@{project.version}</tagNameFormat>
-                            <autoVersionSubmodules>true</autoVersionSubmodules>
                         </configuration>
                     </plugin>
                 </plugins>

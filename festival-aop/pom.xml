@@ -5,12 +5,12 @@
     <parent>
         <artifactId>festival-parent</artifactId>
         <groupId>com.github.bdqfork</groupId>
-        <version>0.3-SNAPSHOT</version>
+        <version>0.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>festival-aop</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3</version>
 
     <dependencies>
         <dependency>
@@ -33,7 +33,7 @@
         <dependency>
             <groupId>com.github.bdqfork</groupId>
             <artifactId>festival-core</artifactId>
-            <version>0.3-SNAPSHOT</version>
+            <version>0.3</version>
         </dependency>
     </dependencies>
 </project>

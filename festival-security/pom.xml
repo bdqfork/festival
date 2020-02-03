@@ -5,12 +5,12 @@
     <parent>
         <artifactId>festival-parent</artifactId>
         <groupId>com.github.bdqfork</groupId>
-        <version>0.3-SNAPSHOT</version>
+        <version>0.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>festival-security</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3</version>
 
     <dependencies>
         <dependency>
