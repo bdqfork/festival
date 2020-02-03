@@ -7,7 +7,7 @@
     <groupId>com.github.bdqfork</groupId>
     <artifactId>festival-parent</artifactId>
 
-    <version>0.3</version>
+    <version>0.3-SNAPSHOT</version>
     <modules>
         <module>festival-aop</module>
         <module>festival-core</module>
