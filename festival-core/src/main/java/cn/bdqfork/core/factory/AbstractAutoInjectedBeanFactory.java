@@ -151,12 +151,12 @@ public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactor
     }
 
     /**
-     * 解决多重依赖
+     * 解析多重依赖
      *
      * @param multInjectedPoint 多重依赖注入点
      * @param beanName          bean名称
-     * @return
-     * @throws UnsatisfiedBeanException
+     * @return 解析之后的参数实例
+     * @throws UnsatisfiedBeanException 找不到依赖实例
      */
     @Override
     public Object[] resovleMultDependence(MultInjectedPoint multInjectedPoint, String beanName) throws UnsatisfiedBeanException {

@@ -22,8 +22,8 @@ public interface ResourceReader {
      *
      * @param propertyName 资源名称
      * @param defaultValue 默认值
-     * @param <T>
-     * @return
+     * @param <T>          泛型
+     * @return 属性值
      */
     <T> T readProperty(String propertyName, T defaultValue);
 

@@ -86,10 +86,10 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
     /**
      * 创建并注册实例
      *
-     * @param beanName
-     * @param provider
-     * @return
-     * @throws BeansException
+     * @param beanName bean名称
+     * @param provider provider实例
+     * @return bean实例
+     * @throws BeansException 重复注册相同bean时抛出
      */
     public Object getSingleton(String beanName, Provider<?> provider) throws BeansException {
         synchronized (singletons) {
