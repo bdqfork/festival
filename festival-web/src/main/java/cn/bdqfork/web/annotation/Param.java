@@ -19,8 +19,6 @@ public @interface Param {
 
     /**
      * 是否必须参数
-     *
-     * @return
      */
     boolean required() default true;
 

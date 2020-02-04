@@ -10,10 +10,10 @@ import cn.bdqfork.core.proxy.TargetClassAware;
  */
 public class AopUtils {
     /**
-     * 获取代理类的真实类
+     * 获取代理类的真实类型
      *
-     * @param candidate
-     * @return
+     * @param candidate 需要获取真实类型的对象
+     * @return 真实类型
      */
     public static Class<?> getTargetClass(Object candidate) {
         if (isProxy(candidate) && candidate instanceof TargetClassAware) {
@@ -25,8 +25,8 @@ public class AopUtils {
     /**
      * 是否是代理类
      *
-     * @param candidate
-     * @return
+     * @param candidate 待验证实例
+     * @return 是否是代理类
      */
     public static boolean isProxy(Object candidate) {
         return candidate instanceof FestivalProxy;
