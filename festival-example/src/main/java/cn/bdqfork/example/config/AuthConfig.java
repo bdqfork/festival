@@ -18,6 +18,8 @@ import javax.inject.Singleton;
  * @author bdq
  * @since 2020/1/28
  */
+@Singleton
+@Configration
 public class AuthConfig {
 
     @Singleton
