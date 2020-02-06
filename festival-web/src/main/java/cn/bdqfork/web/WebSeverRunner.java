@@ -83,7 +83,9 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
 
         AuthProvider authProvider = getAuthProvider();
 
-        sessionHandler.setAuthProvider(authProvider);
+        if (authProvider != null) {
+            sessionHandler.setAuthProvider(authProvider);
+        }
 
         router.route().handler(sessionHandler);
     }

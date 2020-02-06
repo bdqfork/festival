@@ -39,3 +39,4 @@ web设计如下：
 5. verticle service group
 6. @produces,@consumer以及跨域
 7. 用户自定义handler
+8. 将@Route和@RouteMapping合并
