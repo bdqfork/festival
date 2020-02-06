@@ -16,7 +16,7 @@
         <dependency>
             <artifactId>festival-web</artifactId>
             <groupId>com.github.bdqfork</groupId>
-            <version>0.3</version>
+            <version>0.3.1</version>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
