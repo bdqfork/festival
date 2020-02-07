@@ -1,6 +1,6 @@
 package cn.bdqfork.web;
 
-import cn.bdqfork.configration.reader.ResourceReader;
+import cn.bdqfork.context.configuration.reader.ResourceReader;
 import cn.bdqfork.context.aware.BeanFactoryAware;
 import cn.bdqfork.context.aware.ResourceReaderAware;
 import cn.bdqfork.core.exception.BeansException;

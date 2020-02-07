@@ -1,7 +1,7 @@
 package cn.bdqfork.model.configration;
 
 
-import cn.bdqfork.configration.Configration;
+import cn.bdqfork.context.configuration.Configuration;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -14,7 +14,7 @@ import javax.inject.Singleton;
  */
 
 @Singleton
-@Configration
+@Configuration
 public class FactoryMethodBean {
 
     @Named

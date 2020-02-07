@@ -1,4 +1,4 @@
-package cn.bdqfork.configration;
+package cn.bdqfork.context.configuration;
 
 import javax.inject.Named;
 import java.lang.annotation.*;
@@ -13,11 +13,7 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
-public @interface Configration {
-    /**
-     * 配置前缀
-     */
-    String prefix() default "";
+public @interface Configuration {
 
     String value() default "";
 }

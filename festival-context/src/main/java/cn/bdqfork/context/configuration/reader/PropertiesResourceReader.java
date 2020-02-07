@@ -1,4 +1,4 @@
-package cn.bdqfork.configration.reader;
+package cn.bdqfork.context.configuration.reader;
 
 import java.io.IOException;
 import java.io.InputStream;

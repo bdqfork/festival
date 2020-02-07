@@ -1,4 +1,4 @@
-package cn.bdqfork.configration;
+package cn.bdqfork.context.configuration;
 
 
 import java.lang.annotation.*;

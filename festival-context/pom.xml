@@ -10,16 +10,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>festival-context</artifactId>
-    <version>0.3</version>
+    <version>0.3.1</version>
 
     <dependencies>
         <dependency>
-            <artifactId>festival-core</artifactId>
-            <groupId>com.github.bdqfork</groupId>
-            <version>0.3</version>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
         </dependency>
+
         <dependency>
-            <artifactId>festival-configration</artifactId>
+            <artifactId>festival-core</artifactId>
             <groupId>com.github.bdqfork</groupId>
             <version>0.3</version>
         </dependency>
