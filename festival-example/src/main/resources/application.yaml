@@ -1,3 +1,5 @@
 server:
   host: 127.0.0.1
   port: 8080
+  uploads:
+    limit: 2147483648
