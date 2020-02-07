@@ -1,7 +1,7 @@
 package cn.bdqfork.context;
 
-import cn.bdqfork.configration.reader.GenericResourceReader;
-import cn.bdqfork.configration.reader.ResourceReader;
+import cn.bdqfork.context.configuration.reader.GenericResourceReader;
+import cn.bdqfork.context.configuration.reader.ResourceReader;
 import cn.bdqfork.context.aware.BeanFactoryAware;
 import cn.bdqfork.context.aware.ClassLoaderAware;
 import cn.bdqfork.context.aware.ResourceReaderAware;

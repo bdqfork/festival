@@ -1,4 +1,4 @@
-package cn.bdqfork.configration.reader;
+package cn.bdqfork.context.configuration.reader;
 
 import cn.bdqfork.core.util.FileUtils;
 import lombok.extern.slf4j.Slf4j;

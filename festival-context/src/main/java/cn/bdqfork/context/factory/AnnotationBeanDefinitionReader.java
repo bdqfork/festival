@@ -1,5 +1,6 @@
 package cn.bdqfork.context.factory;
 
+import cn.bdqfork.context.configuration.Configuration;
 import cn.bdqfork.core.exception.ResolvedException;
 import cn.bdqfork.core.exception.ScopeException;
 import cn.bdqfork.core.factory.AbstractBeanFactory;
@@ -11,9 +12,8 @@ import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.core.util.StringUtils;
-import cn.bdqfork.configration.Configration;
-import cn.bdqfork.configration.Value;
-import cn.bdqfork.configration.reader.ResourceReader;
+import cn.bdqfork.context.configuration.Value;
+import cn.bdqfork.context.configuration.reader.ResourceReader;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.PostConstruct;
@@ -156,17 +156,17 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
 
                 ResourceReader resourceReader = getResourceReader();
 
-                Configration configration = AnnotationUtils.getMergedAnnotation(candidate, Configration.class);
-                assert configration != null;
+                Configuration configuration = AnnotationUtils.getMergedAnnotation(candidate, Configuration.class);
+                assert configuration != null;
 
                 Value value = AnnotationUtils.getAnnotation(field, Value.class);
 
                 String propertyKey;
 
-                if (StringUtils.isEmpty(configration.prefix())) {
+                if (StringUtils.isEmpty(configuration.value())) {
                     propertyKey = value.value();
                 } else {
-                    propertyKey = configration.prefix() + "." + value.value();
+                    propertyKey = configuration.value() + "." + value.value();
                 }
 
                 InjectedPoint injectedPoint = new InjectedPoint(field.getType(), true);
@@ -215,7 +215,7 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
     }
 
     private boolean checkIfInjectedProperty(Field field) {
-        return AnnotationUtils.isAnnotationPresent(field.getDeclaringClass(), Configration.class) &&
+        return AnnotationUtils.isAnnotationPresent(field.getDeclaringClass(), Configuration.class) &&
                 field.isAnnotationPresent(Value.class);
     }
 

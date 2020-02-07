@@ -1,7 +1,7 @@
 package cn.bdqfork.context.factory;
 
-import cn.bdqfork.configration.Configration;
-import cn.bdqfork.configration.reader.ResourceReader;
+import cn.bdqfork.context.configuration.Configuration;
+import cn.bdqfork.context.configuration.reader.ResourceReader;
 import cn.bdqfork.context.annotation.ComponentScan;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.ConflictedBeanException;
@@ -72,7 +72,7 @@ public abstract class AbstractBeanDefinitionReader {
     }
 
     private boolean checkScanBean(Class<?> beanClass) {
-        return AnnotationUtils.isAnnotationPresent(beanClass, Configration.class)
+        return AnnotationUtils.isAnnotationPresent(beanClass, Configuration.class)
                 && AnnotationUtils.isAnnotationPresent(beanClass, ComponentScan.class);
     }
 
@@ -95,7 +95,7 @@ public abstract class AbstractBeanDefinitionReader {
         }
 
         Set<Class<?>> configBeanClasses = beanClasses.stream()
-                .filter(beanClass -> AnnotationUtils.isAnnotationPresent(beanClass, Configration.class))
+                .filter(beanClass -> AnnotationUtils.isAnnotationPresent(beanClass, Configuration.class))
                 .collect(Collectors.toSet());
 
         for (Class<?> configBeanClass : configBeanClasses) {

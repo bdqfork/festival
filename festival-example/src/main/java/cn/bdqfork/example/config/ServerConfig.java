@@ -1,6 +1,6 @@
 package cn.bdqfork.example.config;
 
-import cn.bdqfork.configration.Configration;
+import cn.bdqfork.context.configuration.Configuration;
 import io.vertx.core.DeploymentOptions;
 
 import javax.inject.Named;
@@ -11,7 +11,7 @@ import javax.inject.Singleton;
  * @since 2020/1/24
  */
 @Singleton
-@Configration
+@Configuration
 public class ServerConfig {
     @Singleton
     @Named

@@ -1,4 +1,4 @@
-package cn.bdqfork.configration.reader;
+package cn.bdqfork.context.configuration.reader;
 
 /**
  * 资源读取器，用于读取资源文件

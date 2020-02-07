@@ -1,7 +1,7 @@
 package cn.bdqfork.context.aware;
 
 import cn.bdqfork.core.exception.BeansException;
-import cn.bdqfork.configration.reader.ResourceReader;
+import cn.bdqfork.context.configuration.reader.ResourceReader;
 
 /**
  * @author bdq

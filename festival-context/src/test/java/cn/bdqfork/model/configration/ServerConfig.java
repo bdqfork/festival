@@ -1,8 +1,8 @@
 package cn.bdqfork.model.configration;
 
-import cn.bdqfork.configration.Configration;
-import cn.bdqfork.configration.Value;
 import cn.bdqfork.context.annotation.ComponentScan;
+import cn.bdqfork.context.configuration.Configuration;
+import cn.bdqfork.context.configuration.Value;
 
 import javax.inject.Singleton;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
  */
 @Singleton
 @ComponentScan("cn.bdqfork.model.bean.normal")
-@Configration(prefix = "server")
+@Configuration("server")
 public class ServerConfig {
     @Value("localhost")
     private String localhost;

@@ -1,7 +1,7 @@
 package cn.bdqfork.example.config;
 
+import cn.bdqfork.context.configuration.Configuration;
 import cn.bdqfork.web.filter.AuthFilter;
-import cn.bdqfork.configration.Configration;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.shiro.ShiroAuthOptions;
 import io.vertx.ext.auth.shiro.ShiroAuthRealmType;
@@ -19,7 +19,7 @@ import javax.inject.Singleton;
  * @since 2020/1/28
  */
 @Singleton
-@Configration
+@Configuration
 public class AuthConfig {
 
     @Singleton

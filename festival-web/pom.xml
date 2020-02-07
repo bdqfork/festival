@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>festival-web</artifactId>
-    <version>0.3.2</version>
+    <version>0.3.3</version>
 
     <dependencies>
         <dependency>
@@ -30,7 +30,7 @@
         <dependency>
             <artifactId>festival-context</artifactId>
             <groupId>com.github.bdqfork</groupId>
-            <version>0.3</version>
+            <version>0.3.1</version>
         </dependency>
 
         <dependency>
