@@ -1,11 +1,13 @@
 package cn.bdqfork.example.domain;
 
+import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.DisposableBean;
 import cn.bdqfork.security.annotation.Auth;
 import cn.bdqfork.security.annotation.PermitAll;
 import cn.bdqfork.security.annotation.PermitAllowed;
 import cn.bdqfork.security.annotation.RolesAllowed;
 import cn.bdqfork.security.common.LogicType;
+import cn.bdqfork.web.RouterAware;
 import cn.bdqfork.web.annotation.GetMapping;
 import cn.bdqfork.web.annotation.PostMapping;
 import cn.bdqfork.web.annotation.Route;
@@ -13,7 +15,9 @@ import cn.bdqfork.web.annotation.RouteMapping;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.reactivex.ext.web.FileUpload;
+import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.RoutingContext;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,8 +34,9 @@ import javax.inject.Singleton;
 @Singleton
 @RouteMapping("/users")
 @Route
-public class UserController implements DisposableBean {
+public class UserController implements DisposableBean, RouterAware {
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private Router router;
     @Named("ServiceImpl1")
     @Inject
     private IService iService;
@@ -45,7 +50,7 @@ public class UserController implements DisposableBean {
     }
 
     @PermitAll
-    @GetMapping("/hello")
+    @RouteMapping(value = "/hello", method = HttpMethod.GET)
     public void hello(RoutingContext routingContext) {
         routingContext.response()
                 .putHeader("content-type", "text/plain")
@@ -95,5 +100,10 @@ public class UserController implements DisposableBean {
 
     public void destroy() throws Exception {
         compositeDisposable.dispose();
+    }
+
+    @Override
+    public void setRouter(Router router) throws BeansException {
+        this.router = router;
     }
 }

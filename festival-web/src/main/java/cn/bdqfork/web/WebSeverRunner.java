@@ -213,10 +213,13 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
             bodyHandler.setUploadsDirectory(uploadsDirectory);
         }
 
-        Long limit = resourceReader.readProperty(ApplicationProperty.SERVER_UPLOAD_LIMIT);
-        if (limit != null) {
-            bodyHandler.setBodyLimit(limit);
+        Object limit = resourceReader.readProperty(ApplicationProperty.SERVER_UPLOAD_LIMIT);
+        if (limit instanceof Integer) {
+            bodyHandler.setBodyLimit((Integer) limit);
+        } else if (limit instanceof Long) {
+            bodyHandler.setBodyLimit((Long) limit);
         }
+
     }
 
     private void startServer(io.vertx.reactivex.ext.web.Router router) {
