@@ -13,7 +13,7 @@ import java.util.List;
  */
 @Singleton
 @ComponentScan("cn.bdqfork.model.bean.normal")
-@Configuration("server")
+@Configuration(prefix = "server")
 public class ServerConfig {
     @Value("localhost")
     private String localhost;

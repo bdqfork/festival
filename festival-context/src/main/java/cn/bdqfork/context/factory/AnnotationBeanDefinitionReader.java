@@ -163,10 +163,10 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
 
                 String propertyKey;
 
-                if (StringUtils.isEmpty(configuration.value())) {
+                if (StringUtils.isEmpty(configuration.prefix())) {
                     propertyKey = value.value();
                 } else {
-                    propertyKey = configuration.value() + "." + value.value();
+                    propertyKey = configuration.prefix() + "." + value.value();
                 }
 
                 InjectedPoint injectedPoint = new InjectedPoint(field.getType(), true);
