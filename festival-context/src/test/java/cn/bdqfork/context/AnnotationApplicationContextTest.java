@@ -230,7 +230,7 @@ public class AnnotationApplicationContextTest {
      * @throws BeansException
      */
     @Test
-    public void testConfigration() throws Exception {
+    public void testConfiguration() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.configration");
         annotationApplicationContext.start();
         Server server = annotationApplicationContext.getBean(Server.class);

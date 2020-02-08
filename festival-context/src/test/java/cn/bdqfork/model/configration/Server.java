@@ -9,7 +9,7 @@ import javax.inject.Singleton;
  * @since 2020/1/9
  */
 @Singleton
-@Named
+@Named("Server")
 public class Server {
     @Inject
     private ServerConfig serverConfig;
