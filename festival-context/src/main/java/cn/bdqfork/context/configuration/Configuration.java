@@ -14,6 +14,13 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 public @interface Configuration {
+    /**
+     * 配置项的前缀
+     */
+    String prefix() default "";
 
+    /**
+     * @see javax.inject.Named
+     */
     String value() default "";
 }
