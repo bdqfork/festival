@@ -1,4 +1,4 @@
-package cn.bdqfork.model.configration;
+package cn.bdqfork.model.configuration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -9,7 +9,7 @@ import javax.inject.Singleton;
  * @since 2020/1/9
  */
 @Singleton
-@Named("Server")
+@Named
 public class Server {
     @Inject
     private ServerConfig serverConfig;

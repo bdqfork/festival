@@ -1,4 +1,4 @@
-package cn.bdqfork.model.configration;
+package cn.bdqfork.model.configuration;
 
 /**
  * 工厂方法将要注册的bean

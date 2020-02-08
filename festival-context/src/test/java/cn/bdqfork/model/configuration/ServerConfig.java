@@ -1,4 +1,4 @@
-package cn.bdqfork.model.configration;
+package cn.bdqfork.model.configuration;
 
 import cn.bdqfork.context.annotation.ComponentScan;
 import cn.bdqfork.context.configuration.Configuration;
