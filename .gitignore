@@ -27,3 +27,4 @@ target/
 file-uploads/
 .gradle
 build/
+out/
