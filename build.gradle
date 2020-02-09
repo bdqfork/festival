@@ -24,7 +24,6 @@ allprojects {
 }
 
 subprojects {
-    apply plugin: 'java'
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
@@ -47,6 +46,7 @@ subprojects {
     }
 
     sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
 
     task sourcesJar(type: Jar) {
         from sourceSets.main.allJava

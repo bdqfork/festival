@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.bdqfork.core.util.AnnotationUtilsTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2020-02-09T13:34:23" hostname="bdq" time="0.012">
-  <properties/>
-  <testcase name="getMergedAnnotation" classname="cn.bdqfork.core.util.AnnotationUtilsTest" time="0.011"/>
-  <testcase name="isAnnotationPresent" classname="cn.bdqfork.core.util.AnnotationUtilsTest" time="0.0"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

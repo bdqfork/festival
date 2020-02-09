@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"cn.bdqfork.context","h":"","u":""},{"l":"cn.bdqfork.context.annotation","h":"","u":""},{"l":"cn.bdqfork.context.aware","h":"","u":""},{"l":"cn.bdqfork.context.configuration","h":"","u":""},{"l":"cn.bdqfork.context.configuration.reader","h":"","u":""},{"l":"cn.bdqfork.context.factory","h":"","u":""},{"l":"所有程序包","h":"","u":"allpackages-index.html"}]

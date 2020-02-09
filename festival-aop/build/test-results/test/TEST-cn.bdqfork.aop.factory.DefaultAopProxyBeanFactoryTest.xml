@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.bdqfork.aop.factory.DefaultAopProxyBeanFactoryTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2020-02-09T13:34:20" hostname="bdq" time="0.101">
-  <properties/>
-  <testcase name="createAopProxyBean" classname="cn.bdqfork.aop.factory.DefaultAopProxyBeanFactoryTest" time="0.101"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

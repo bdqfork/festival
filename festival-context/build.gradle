@@ -3,6 +3,6 @@ def libs = rootProject.ext.libraries
 dependencies {
     implementation "org.yaml:snakeyaml:${libs.snakeyaml}"
     implementation "javax.annotation:javax.annotation-api:${libs.jsr250}"
-    compile project(':festival-core')
+    api project(':festival-core')
     testImplementation project(':festival-aop')
 }

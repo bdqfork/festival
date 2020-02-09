@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"cn.bdqfork.example","h":"","u":""},{"l":"cn.bdqfork.example.config","h":"","u":""},{"l":"cn.bdqfork.example.domain","h":"","u":""},{"l":"所有程序包","h":"","u":"allpackages-index.html"}]

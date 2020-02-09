@@ -1,5 +1,5 @@
 def libs = rootProject.ext.libraries
 
 dependencies {
-    compile "javax.inject:javax.inject:${libs.jsr330}"
+    api "javax.inject:javax.inject:${libs.jsr330}"
 }
