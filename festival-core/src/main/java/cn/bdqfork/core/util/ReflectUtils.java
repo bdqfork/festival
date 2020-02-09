@@ -19,10 +19,10 @@ public class ReflectUtils {
     private static final String SUFFIX = ".class";
 
     /**
-     * 根据包名获取获取Class
+     * 根据包名获取Class
      *
      * @param packageName 包名
-     * @return Set<Class < ?>> 包名为null或者空字符串，则返回空集合
+     * @return 返回一个Class集合，如果包名为null或者空字符串，则返回空集合
      */
     public static Set<Class<?>> getClasses(String packageName) {
         if (packageName == null || "".equals(packageName)) {
@@ -100,6 +100,12 @@ public class ReflectUtils {
         return classes;
     }
 
+    /**
+     * 获取方法签名，签名由方法名和参数类型决定
+     *
+     * @param method 方法
+     * @return 方法签名字符串
+     */
     public static String getSignature(Method method) {
         StringBuilder signBuilder = new StringBuilder();
         signBuilder.append(method.getName())
@@ -116,6 +122,12 @@ public class ReflectUtils {
         return signBuilder.toString();
     }
 
+    /**
+     * 如果是泛型，则返回真实的泛型类型，否则返回原类型
+     *
+     * @param type 待解析类型
+     * @return 类型数组
+     */
     public static Type[] getActualType(Type type) {
         if (type instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType) type;
@@ -124,16 +136,33 @@ public class ReflectUtils {
         return new Type[]{type};
     }
 
+    /**
+     * 使得私有反射实例可以访问
+     *
+     * @param accessibleObject 私有反射实例
+     */
     public static void makeAccessible(AccessibleObject accessibleObject) {
         accessibleObject.setAccessible(true);
     }
 
+    /**
+     * 是否是可注入的配置类型
+     *
+     * @param clazz 类型
+     * @return true 或者 false
+     */
     public static boolean isInjectableValueType(Class<?> clazz) {
         return isPrimitiveOrWrapper(clazz) ||
                 clazz.equals(java.util.Map.class) ||
                 clazz.isArray();
     }
 
+    /**
+     * 是否是基本类型以及包装类
+     *
+     * @param clazz 待判断的类
+     * @return true 或者 false
+     */
     public static boolean isPrimitiveOrWrapper(Class<?> clazz) {
         return clazz.equals(java.lang.Integer.class) ||
                 clazz.equals(java.lang.Byte.class) ||
@@ -147,14 +176,38 @@ public class ReflectUtils {
                 clazz.isPrimitive();
     }
 
-    public static Object invokeMethod(Object object, Method method, Object... args) throws InvocationTargetException, IllegalAccessException {
+    /**
+     * 执行反射方法
+     *
+     * @param object 实例
+     * @param method 方法
+     * @param args   参数
+     * @return 方法调用结果
+     * @throws InvocationTargetException 方法执行异常
+     */
+    public static Object invokeMethod(Object object, Method method, Object... args) throws InvocationTargetException {
         makeAccessible(method);
-        return method.invoke(object, args);
+        try {
+            return method.invoke(object, args);
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
-    public static void setValue(Object object, Field field, Object value) throws IllegalAccessException {
+    /**
+     * 设置属性值
+     *
+     * @param object 实例
+     * @param field  属性
+     * @param value  属性值
+     */
+    public static void setValue(Object object, Field field, Object value) {
         makeAccessible(field);
-        field.set(object, value);
+        try {
+            field.set(object, value);
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
 }

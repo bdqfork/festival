@@ -1,10 +1,10 @@
 package cn.bdqfork.web;
 
 import cn.bdqfork.core.util.AnnotationUtils;
-import cn.bdqfork.security.annotation.Auth;
-import cn.bdqfork.security.annotation.PermitAll;
-import cn.bdqfork.security.annotation.PermitAllowed;
-import cn.bdqfork.security.annotation.RolesAllowed;
+import cn.bdqfork.web.annotation.Auth;
+import cn.bdqfork.web.annotation.PermitAll;
+import cn.bdqfork.web.annotation.PermitAllowed;
+import cn.bdqfork.web.annotation.RolesAllowed;
 import io.vertx.reactivex.ext.web.handler.AuthHandler;
 
 import java.lang.reflect.Method;

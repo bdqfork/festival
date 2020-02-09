@@ -1,0 +1,12 @@
+ª[ TRACE] [2020-02-09 21:34:23.482] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.bean.SingletonBeanServiceImpl !
+Å[ TRACE] [2020-02-09 21:34:23.488] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.bean.SingletonBeanServiceImpl using constructor!
+¼[ TRACE] [2020-02-09 21:34:23.489] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.bean.SingletonBeanServiceImpl by injected constructor !
+×[ TRACE] [2020-02-09 21:34:23.489] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.bean.SingletonBeanServiceImpl is null, will use default constructor !
+Å[ TRACE] [2020-02-09 21:34:23.497] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.bean.SingletonBeanServiceImpl using constructor!
+¼[ TRACE] [2020-02-09 21:34:23.498] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.bean.SingletonBeanServiceImpl by injected constructor !
+×[ TRACE] [2020-02-09 21:34:23.498] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.bean.SingletonBeanServiceImpl is null, will use default constructor !
+%postProcessBeforeInitializtion......
+$postProcessAfterInitializtion......
+Å[ TRACE] [2020-02-09 21:34:23.499] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.bean.SingletonBeanServiceImpl using constructor!
+¼[ TRACE] [2020-02-09 21:34:23.499] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.bean.SingletonBeanServiceImpl by injected constructor !
+×[ TRACE] [2020-02-09 21:34:23.500] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.bean.SingletonBeanServiceImpl is null, will use default constructor !

@@ -1,0 +1,9 @@
+def libs = rootProject.ext.libraries
+
+dependencies {
+    implementation "org.javassist:javassist:${libs.javassist}"
+    implementation "cglib:cglib:${libs.cglib}"
+    implementation "org.objenesis:objenesis:${libs.objenesis}"
+    compile "org.aspectj:aspectjweaver:${libs.aspectjweaver}"
+    implementation project(':festival-core')
+}

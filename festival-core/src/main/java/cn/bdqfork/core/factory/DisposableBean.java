@@ -10,7 +10,7 @@ public interface DisposableBean {
     /**
      * 销毁方法
      *
-     * @throws Exception
+     * @throws Exception 异常
      */
     void destroy() throws Exception;
 }

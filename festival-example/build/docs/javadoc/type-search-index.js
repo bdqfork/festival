@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"AuthConfig","h":"","u":""},{"l":"IService","h":"","u":""},{"l":"ServerConfig","h":"","u":""},{"l":"ServiceImpl","h":"","u":""},{"l":"ServiceImpl2","h":"","u":""},{"l":"TestRestfulController","h":"","u":""},{"l":"UserController","h":"","u":""},{"l":"WebApplicationRunnerTest","h":"","u":""},{"l":"所有类","h":"","u":"allclasses-index.html"}]

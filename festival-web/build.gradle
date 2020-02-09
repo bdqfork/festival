@@ -1,0 +1,9 @@
+def libs = rootProject.ext.libraries
+
+dependencies {
+    compileOnly "io.vertx:vertx-web:${libs.vertx}"
+    compileOnly "io.vertx:vertx-rx-java2:${libs.vertx}"
+    implementation "com.caucho:hessian:${libs.hessian}"
+    compile project(':festival-context')
+    implementation project(':festival-aop')
+}

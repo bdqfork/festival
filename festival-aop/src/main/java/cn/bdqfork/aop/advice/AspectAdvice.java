@@ -33,7 +33,7 @@ public interface AspectAdvice extends Advice {
     /**
      * 注入切面通知方法
      *
-     * @param aspectAdviceMethod
+     * @param aspectAdviceMethod 切面方法
      */
     void setAspectAdviceMethod(Method aspectAdviceMethod);
 }

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.github.bdqfork</groupId>
+  <artifactId>festival-web</artifactId>
+  <version>0.4</version>
+  <packaging>pom</packaging>
+  <name>festival-parent</name>
+  <description>A responsive web framework with ioc function based on vertx.</description>
+  <url>https://github.com/bdqfork/festival</url>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>bdqfork</name>
+      <email>bdqsky@163.com</email>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:git@github.com:bdqfork/festival.git</connection>
+    <developerConnection>scm:git:git@github.com:bdqfork/festival.git</developerConnection>
+    <url>https://github.com/bdqfork/festival</url>
+  </scm>
+</project>

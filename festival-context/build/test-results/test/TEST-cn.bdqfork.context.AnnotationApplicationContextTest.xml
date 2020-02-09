@@ -1,0 +1,694 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cn.bdqfork.context.AnnotationApplicationContextTest" tests="21" skipped="0" failures="0" errors="0" timestamp="2020-02-09T13:34:21" hostname="bdq" time="0.865">
+  <properties/>
+  <testcase name="testJSR250Intercept" classname="cn.bdqfork.context.AnnotationApplicationContextTest" time="0.462"/>
+  <testcase name="testPrototypeSetterCycle" classname="cn.bdqfork.context.AnnotationApplicationContextTest" time="0.024"/>
+  <testcase name="testResolveException" classname="cn.bdqfork.context.AnnotationApplicationContextTest" time="0.008"/>
+  <testcase name="testGetBeans" classname="cn.bdqfork.context.AnnotationApplicationContextTest" time="0.017"/>
+  <testcase name="testAop" classname="cn.bdqfork.context.AnnotationApplicationContextTest" time="0.039"/>
+  <testcase name="testConstructorCycle" classname="cn.bdqfork.context.AnnotationApplicationContextTest" time="0.011"/>
+  <testcase name="testOrderedProcessor" classname="cn.bdqfork.context.AnnotationApplicationContextTest" time="0.021"/>
+  <testcase name="testGetFactoryBeanDefinition" classname="cn.bdqfork.context.AnnotationApplicationContextTest" time="0.044"/>
+  <testcase name="testIsSingleton" classname="cn.bdqfork.context.AnnotationApplicationContextTest" time="0.007"/>
+  <testcase name="testComponentScan" classname="cn.bdqfork.context.AnnotationApplicationContextTest" time="0.014"/>
+  <testcase name="testContainBean" classname="cn.bdqfork.context.AnnotationApplicationContextTest" time="0.009"/>
+  <testcase name="testUnsatisfiedBeanException" classname="cn.bdqfork.context.AnnotationApplicationContextTest" time="0.017"/>
+  <testcase name="testJSR250Setter" classname="cn.bdqfork.context.AnnotationApplicationContextTest" time="0.019"/>
+  <testcase name="testGetBeanByName" classname="cn.bdqfork.context.AnnotationApplicationContextTest" time="0.011"/>
+  <testcase name="testFieldCycle" classname="cn.bdqfork.context.AnnotationApplicationContextTest" time="0.036"/>
+  <testcase name="testIsPrototype" classname="cn.bdqfork.context.AnnotationApplicationContextTest" time="0.008"/>
+  <testcase name="testSetterCycle" classname="cn.bdqfork.context.AnnotationApplicationContextTest" time="0.037"/>
+  <testcase name="testPrototypeFieldCycle" classname="cn.bdqfork.context.AnnotationApplicationContextTest" time="0.012"/>
+  <testcase name="testGetSpecificBean" classname="cn.bdqfork.context.AnnotationApplicationContextTest" time="0.01"/>
+  <testcase name="testCollectionPropertyInjected" classname="cn.bdqfork.context.AnnotationApplicationContextTest" time="0.031"/>
+  <testcase name="testConfigration" classname="cn.bdqfork.context.AnnotationApplicationContextTest" time="0.02"/>
+  <system-out><![CDATA[[ INFO ] [2020-02-09 21:34:22.022] cn.bdqfork.context.AnnotationApplicationContext [55] [Test worker]- enable jsr250 !
+[ INFO ] [2020-02-09 21:34:22.027] cn.bdqfork.context.AnnotationApplicationContext [61] [Test worker]- enable aop !
+[ TRACE] [2020-02-09 21:34:22.030] cn.bdqfork.context.AnnotationApplicationContext [79] [Test worker]- create BeanFactory of type cn.bdqfork.core.factory.DefaultJSR250BeanFactory !
+[ TRACE] [2020-02-09 21:34:22.032] cn.bdqfork.context.AnnotationApplicationContext [86] [Test worker]- register ResourceReader of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.034] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.035] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.context.configuration.reader.GenericResourceReader using constructor!
+[ TRACE] [2020-02-09 21:34:22.036] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.context.configuration.reader.GenericResourceReader by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.036] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.context.configuration.reader.GenericResourceReader is null, will use default constructor !
+[ INFO ] [2020-02-09 21:34:22.039] cn.bdqfork.context.configuration.reader.GenericResourceReader [20] [Test worker]- find config file application.yaml, will use it !
+[ TRACE] [2020-02-09 21:34:22.101] cn.bdqfork.context.AnnotationApplicationContext [110] [Test worker]- register aop processor !
+[ TRACE] [2020-02-09 21:34:22.103] cn.bdqfork.context.AnnotationApplicationContext [151] [Test worker]- scan bean by path cn.bdqfork.model.jsr250 !
+[ TRACE] [2020-02-09 21:34:22.120] cn.bdqfork.context.AnnotationApplicationContext [171] [Test worker]- register BeanDefinition !
+[ TRACE] [2020-02-09 21:34:22.129] cn.bdqfork.context.AnnotationApplicationContext [191] [Test worker]- process environment !
+[ TRACE] [2020-02-09 21:34:22.131] cn.bdqfork.context.AnnotationApplicationContext [223] [Test worker]- register BeanFactory processor !
+[ TRACE] [2020-02-09 21:34:22.132] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.aop.processor.AopProxyProcessor !
+[ TRACE] [2020-02-09 21:34:22.132] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.aop.processor.AopProxyProcessor using constructor!
+[ TRACE] [2020-02-09 21:34:22.133] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.aop.processor.AopProxyProcessor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.133] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.aop.processor.AopProxyProcessor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.137] cn.bdqfork.context.AnnotationApplicationContext [243] [Test worker]- register BeanFactoryAware processor !
+[ TRACE] [2020-02-09 21:34:22.138] cn.bdqfork.context.AnnotationApplicationContext [203] [Test worker]- register bean processor !
+[ TRACE] [2020-02-09 21:34:22.138] cn.bdqfork.context.AnnotationApplicationContext [136] [Test worker]- register shutdown hook !
+[ TRACE] [2020-02-09 21:34:22.139] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.jsr250.JSR250FieldServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.140] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.jsr250.JSR250FieldServiceImpl using constructor!
+[ TRACE] [2020-02-09 21:34:22.140] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.jsr250.JSR250FieldServiceImpl by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.140] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.jsr250.JSR250FieldServiceImpl is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.141] cn.bdqfork.core.factory.DefaultBeanFactory [115] [Test worker]- do injected field jsr250FieldCycleDao for bean cn.bdqfork.model.jsr250.JSR250FieldServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.141] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName , type cn.bdqfork.model.jsr250.JSR250FieldCycleDao and require is true for bean jSR250FieldServiceImpl with injected point !
+[ TRACE] [2020-02-09 21:34:22.141] cn.bdqfork.core.factory.DefaultBeanFactory [185] [Test worker]- resovle object dependence by type cn.bdqfork.model.jsr250.JSR250FieldCycleDao !
+[ TRACE] [2020-02-09 21:34:22.142] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.jsr250.JSR250FieldCycleDaoImpl !
+[ TRACE] [2020-02-09 21:34:22.142] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.jsr250.JSR250FieldCycleDaoImpl using constructor!
+[ TRACE] [2020-02-09 21:34:22.143] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.jsr250.JSR250FieldCycleDaoImpl by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.143] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.jsr250.JSR250FieldCycleDaoImpl is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.143] cn.bdqfork.core.factory.DefaultBeanFactory [115] [Test worker]- do injected field jsr250FieldService for bean cn.bdqfork.model.jsr250.JSR250FieldCycleDaoImpl !
+[ TRACE] [2020-02-09 21:34:22.144] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName jSR250FieldServiceImpl, type cn.bdqfork.model.jsr250.JSR250FieldService and require is true for bean jSR250FieldCycleDaoImpl with injected point !
+[ TRACE] [2020-02-09 21:34:22.144] cn.bdqfork.core.factory.DefaultBeanFactory [144] [Test worker]- resovle dependence by name jSR250FieldServiceImpl and type cn.bdqfork.model.jsr250.JSR250FieldService !
+[ TRACE] [2020-02-09 21:34:22.145] cn.bdqfork.core.factory.DefaultBeanFactory [33] [Test worker]- invoke InitializingBean !
+afterPropertiesSet......
+[ TRACE] [2020-02-09 21:34:22.145] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.jsr250.JSR250FieldCycleDaoImpl !
+init......
+[ TRACE] [2020-02-09 21:34:22.236] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.jsr250.JSR250FieldServiceImpl !
+[ INFO ] [2020-02-09 21:34:22.239] cn.bdqfork.context.AnnotationApplicationContext [270] [Test worker]- closing context !
+[ TRACE] [2020-02-09 21:34:22.240] cn.bdqfork.core.factory.AbstractBeanFactory [141] [Test worker]- destroy singletons !
+[ TRACE] [2020-02-09 21:34:22.240] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [40] [Test worker]- execute PreDestroy method for bean cn.bdqfork.model.jsr250.JSR250FieldServiceImpl !
+[ DEBUG] [2020-02-09 21:34:22.241] cn.bdqfork.core.factory.AbstractBeanFactory [153] [Test worker]- invoke dispose method for bean jSR250FieldCycleDaoImpl !
+destroy......
+[ TRACE] [2020-02-09 21:34:22.248] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [40] [Test worker]- execute PreDestroy method for bean cn.bdqfork.model.jsr250.JSR250FieldCycleDaoImpl !
+preDestroy......
+[ INFO ] [2020-02-09 21:34:22.249] cn.bdqfork.context.AnnotationApplicationContext [277] [Test worker]- closed context !
+[ TRACE] [2020-02-09 21:34:22.251] cn.bdqfork.context.AnnotationApplicationContext [79] [Test worker]- create BeanFactory of type cn.bdqfork.core.factory.DefaultJSR250BeanFactory !
+[ TRACE] [2020-02-09 21:34:22.251] cn.bdqfork.context.AnnotationApplicationContext [86] [Test worker]- register ResourceReader of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.251] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.252] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.context.configuration.reader.GenericResourceReader using constructor!
+[ TRACE] [2020-02-09 21:34:22.253] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.context.configuration.reader.GenericResourceReader by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.253] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.context.configuration.reader.GenericResourceReader is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.255] cn.bdqfork.context.AnnotationApplicationContext [110] [Test worker]- register aop processor !
+[ TRACE] [2020-02-09 21:34:22.255] cn.bdqfork.context.AnnotationApplicationContext [151] [Test worker]- scan bean by path cn.bdqfork.model.cycle !
+[ TRACE] [2020-02-09 21:34:22.266] cn.bdqfork.context.AnnotationApplicationContext [171] [Test worker]- register BeanDefinition !
+[ TRACE] [2020-02-09 21:34:22.270] cn.bdqfork.context.AnnotationApplicationContext [191] [Test worker]- process environment !
+[ TRACE] [2020-02-09 21:34:22.270] cn.bdqfork.context.AnnotationApplicationContext [223] [Test worker]- register BeanFactory processor !
+[ TRACE] [2020-02-09 21:34:22.271] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.aop.processor.AopProxyProcessor !
+[ TRACE] [2020-02-09 21:34:22.271] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.aop.processor.AopProxyProcessor using constructor!
+[ TRACE] [2020-02-09 21:34:22.272] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.aop.processor.AopProxyProcessor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.272] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.aop.processor.AopProxyProcessor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.273] cn.bdqfork.context.AnnotationApplicationContext [243] [Test worker]- register BeanFactoryAware processor !
+[ TRACE] [2020-02-09 21:34:22.273] cn.bdqfork.context.AnnotationApplicationContext [203] [Test worker]- register bean processor !
+[ TRACE] [2020-02-09 21:34:22.274] cn.bdqfork.context.AnnotationApplicationContext [136] [Test worker]- register shutdown hook !
+[ TRACE] [2020-02-09 21:34:22.275] cn.bdqfork.context.AnnotationApplicationContext [79] [Test worker]- create BeanFactory of type cn.bdqfork.core.factory.DefaultJSR250BeanFactory !
+[ TRACE] [2020-02-09 21:34:22.275] cn.bdqfork.context.AnnotationApplicationContext [86] [Test worker]- register ResourceReader of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.276] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.277] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.context.configuration.reader.GenericResourceReader using constructor!
+[ TRACE] [2020-02-09 21:34:22.277] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.context.configuration.reader.GenericResourceReader by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.278] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.context.configuration.reader.GenericResourceReader is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.280] cn.bdqfork.context.AnnotationApplicationContext [110] [Test worker]- register aop processor !
+[ TRACE] [2020-02-09 21:34:22.280] cn.bdqfork.context.AnnotationApplicationContext [151] [Test worker]- scan bean by path cn.bdqfork.model.bean.exception !
+[ TRACE] [2020-02-09 21:34:22.283] cn.bdqfork.context.AnnotationApplicationContext [171] [Test worker]- register BeanDefinition !
+[ TRACE] [2020-02-09 21:34:22.284] cn.bdqfork.context.AnnotationApplicationContext [79] [Test worker]- create BeanFactory of type cn.bdqfork.core.factory.DefaultJSR250BeanFactory !
+[ TRACE] [2020-02-09 21:34:22.284] cn.bdqfork.context.AnnotationApplicationContext [86] [Test worker]- register ResourceReader of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.285] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.285] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.context.configuration.reader.GenericResourceReader using constructor!
+[ TRACE] [2020-02-09 21:34:22.285] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.context.configuration.reader.GenericResourceReader by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.286] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.context.configuration.reader.GenericResourceReader is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.287] cn.bdqfork.context.AnnotationApplicationContext [110] [Test worker]- register aop processor !
+[ TRACE] [2020-02-09 21:34:22.288] cn.bdqfork.context.AnnotationApplicationContext [151] [Test worker]- scan bean by path cn.bdqfork.model.bean.normal !
+[ TRACE] [2020-02-09 21:34:22.289] cn.bdqfork.context.AnnotationApplicationContext [171] [Test worker]- register BeanDefinition !
+[ TRACE] [2020-02-09 21:34:22.290] cn.bdqfork.context.AnnotationApplicationContext [191] [Test worker]- process environment !
+[ TRACE] [2020-02-09 21:34:22.290] cn.bdqfork.context.AnnotationApplicationContext [223] [Test worker]- register BeanFactory processor !
+[ TRACE] [2020-02-09 21:34:22.291] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.aop.processor.AopProxyProcessor !
+[ TRACE] [2020-02-09 21:34:22.291] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.aop.processor.AopProxyProcessor using constructor!
+[ TRACE] [2020-02-09 21:34:22.292] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.aop.processor.AopProxyProcessor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.292] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.aop.processor.AopProxyProcessor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.293] cn.bdqfork.context.AnnotationApplicationContext [243] [Test worker]- register BeanFactoryAware processor !
+[ TRACE] [2020-02-09 21:34:22.294] cn.bdqfork.context.AnnotationApplicationContext [203] [Test worker]- register bean processor !
+[ TRACE] [2020-02-09 21:34:22.295] cn.bdqfork.context.AnnotationApplicationContext [136] [Test worker]- register shutdown hook !
+[ TRACE] [2020-02-09 21:34:22.295] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.bean.normal.SingletonBeanServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.296] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.bean.normal.SingletonBeanServiceImpl using constructor!
+[ TRACE] [2020-02-09 21:34:22.296] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.bean.normal.SingletonBeanServiceImpl by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.296] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.bean.normal.SingletonBeanServiceImpl is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.297] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.bean.normal.SingletonBeanServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.301] cn.bdqfork.context.AnnotationApplicationContext [79] [Test worker]- create BeanFactory of type cn.bdqfork.core.factory.DefaultJSR250BeanFactory !
+[ TRACE] [2020-02-09 21:34:22.301] cn.bdqfork.context.AnnotationApplicationContext [86] [Test worker]- register ResourceReader of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.302] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.302] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.context.configuration.reader.GenericResourceReader using constructor!
+[ TRACE] [2020-02-09 21:34:22.302] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.context.configuration.reader.GenericResourceReader by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.303] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.context.configuration.reader.GenericResourceReader is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.305] cn.bdqfork.context.AnnotationApplicationContext [110] [Test worker]- register aop processor !
+[ TRACE] [2020-02-09 21:34:22.305] cn.bdqfork.context.AnnotationApplicationContext [151] [Test worker]- scan bean by path cn.bdqfork.model.proxy !
+[ TRACE] [2020-02-09 21:34:22.310] cn.bdqfork.context.AnnotationApplicationContext [171] [Test worker]- register BeanDefinition !
+[ TRACE] [2020-02-09 21:34:22.317] cn.bdqfork.context.AnnotationApplicationContext [191] [Test worker]- process environment !
+[ TRACE] [2020-02-09 21:34:22.317] cn.bdqfork.context.AnnotationApplicationContext [223] [Test worker]- register BeanFactory processor !
+[ TRACE] [2020-02-09 21:34:22.318] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.aop.processor.AopProxyProcessor !
+[ TRACE] [2020-02-09 21:34:22.318] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.aop.processor.AopProxyProcessor using constructor!
+[ TRACE] [2020-02-09 21:34:22.318] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.aop.processor.AopProxyProcessor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.319] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.aop.processor.AopProxyProcessor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.320] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.proxy.Log !
+[ TRACE] [2020-02-09 21:34:22.320] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.proxy.Log using constructor!
+[ TRACE] [2020-02-09 21:34:22.321] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.proxy.Log by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.321] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.proxy.Log is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.321] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.proxy.Log !
+[ TRACE] [2020-02-09 21:34:22.323] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.proxy.OrderLog2 !
+[ TRACE] [2020-02-09 21:34:22.323] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.proxy.OrderLog2 using constructor!
+[ TRACE] [2020-02-09 21:34:22.324] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.proxy.OrderLog2 by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.324] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.proxy.OrderLog2 is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.324] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.proxy.OrderLog2 !
+[ TRACE] [2020-02-09 21:34:22.325] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.proxy.OrderLog1 !
+[ TRACE] [2020-02-09 21:34:22.325] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.proxy.OrderLog1 using constructor!
+[ TRACE] [2020-02-09 21:34:22.326] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.proxy.OrderLog1 by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.326] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.proxy.OrderLog1 is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.327] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.proxy.OrderLog1 !
+[ TRACE] [2020-02-09 21:34:22.328] cn.bdqfork.context.AnnotationApplicationContext [243] [Test worker]- register BeanFactoryAware processor !
+[ TRACE] [2020-02-09 21:34:22.328] cn.bdqfork.context.AnnotationApplicationContext [203] [Test worker]- register bean processor !
+[ TRACE] [2020-02-09 21:34:22.328] cn.bdqfork.context.AnnotationApplicationContext [136] [Test worker]- register shutdown hook !
+[ TRACE] [2020-02-09 21:34:22.329] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.proxy.AopProxyTestBean !
+[ TRACE] [2020-02-09 21:34:22.329] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.proxy.AopProxyTestBean using constructor!
+[ TRACE] [2020-02-09 21:34:22.330] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.proxy.AopProxyTestBean by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.330] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.proxy.AopProxyTestBean is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.330] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.proxy.AopProxyTestBean !
+执行环绕通知方法Order1，目标方法执行之前
+执行前置通知方法Order1
+执行前置通知方法Order2
+执行前置通知方法
+processing
+执行环绕通知方法Order1，目标方法执行之后
+执行后置通知方法Order1，return : OK
+执行后置通知方法，return : OK
+执行环绕通知方法Order1，目标方法执行之前
+执行前置通知方法Order1
+执行前置通知方法Order2
+执行前置通知方法
+执行异常抛出通知方法Order1，Exception : java.lang.reflect.InvocationTargetException
+执行异常抛出通知方法，Exception : java.lang.reflect.InvocationTargetException
+执行环绕通知方法，目标方法执行之前
+执行前置通知方法Order1
+执行前置通知方法Order2
+执行前置通知方法
+执行异常抛出通知方法Order1，Exception : java.lang.reflect.InvocationTargetException
+执行异常抛出通知方法，Exception : java.lang.reflect.InvocationTargetException
+[ TRACE] [2020-02-09 21:34:22.340] cn.bdqfork.context.AnnotationApplicationContext [79] [Test worker]- create BeanFactory of type cn.bdqfork.core.factory.DefaultJSR250BeanFactory !
+[ TRACE] [2020-02-09 21:34:22.340] cn.bdqfork.context.AnnotationApplicationContext [86] [Test worker]- register ResourceReader of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.341] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.341] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.context.configuration.reader.GenericResourceReader using constructor!
+[ TRACE] [2020-02-09 21:34:22.341] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.context.configuration.reader.GenericResourceReader by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.342] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.context.configuration.reader.GenericResourceReader is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.344] cn.bdqfork.context.AnnotationApplicationContext [110] [Test worker]- register aop processor !
+[ TRACE] [2020-02-09 21:34:22.344] cn.bdqfork.context.AnnotationApplicationContext [151] [Test worker]- scan bean by path cn.bdqfork.model.cycle !
+[ TRACE] [2020-02-09 21:34:22.347] cn.bdqfork.context.AnnotationApplicationContext [171] [Test worker]- register BeanDefinition !
+[ TRACE] [2020-02-09 21:34:22.348] cn.bdqfork.context.AnnotationApplicationContext [191] [Test worker]- process environment !
+[ TRACE] [2020-02-09 21:34:22.349] cn.bdqfork.context.AnnotationApplicationContext [223] [Test worker]- register BeanFactory processor !
+[ TRACE] [2020-02-09 21:34:22.349] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.aop.processor.AopProxyProcessor !
+[ TRACE] [2020-02-09 21:34:22.349] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.aop.processor.AopProxyProcessor using constructor!
+[ TRACE] [2020-02-09 21:34:22.350] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.aop.processor.AopProxyProcessor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.350] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.aop.processor.AopProxyProcessor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.350] cn.bdqfork.context.AnnotationApplicationContext [243] [Test worker]- register BeanFactoryAware processor !
+[ TRACE] [2020-02-09 21:34:22.351] cn.bdqfork.context.AnnotationApplicationContext [203] [Test worker]- register bean processor !
+[ TRACE] [2020-02-09 21:34:22.351] cn.bdqfork.context.AnnotationApplicationContext [136] [Test worker]- register shutdown hook !
+[ TRACE] [2020-02-09 21:34:22.352] cn.bdqfork.context.AnnotationApplicationContext [79] [Test worker]- create BeanFactory of type cn.bdqfork.core.factory.DefaultJSR250BeanFactory !
+[ TRACE] [2020-02-09 21:34:22.352] cn.bdqfork.context.AnnotationApplicationContext [86] [Test worker]- register ResourceReader of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.352] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.352] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.context.configuration.reader.GenericResourceReader using constructor!
+[ TRACE] [2020-02-09 21:34:22.353] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.context.configuration.reader.GenericResourceReader by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.353] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.context.configuration.reader.GenericResourceReader is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.354] cn.bdqfork.context.AnnotationApplicationContext [110] [Test worker]- register aop processor !
+[ TRACE] [2020-02-09 21:34:22.354] cn.bdqfork.context.AnnotationApplicationContext [151] [Test worker]- scan bean by path cn.bdqfork.model.processor !
+[ TRACE] [2020-02-09 21:34:22.356] cn.bdqfork.context.AnnotationApplicationContext [171] [Test worker]- register BeanDefinition !
+[ TRACE] [2020-02-09 21:34:22.357] cn.bdqfork.context.AnnotationApplicationContext [191] [Test worker]- process environment !
+[ TRACE] [2020-02-09 21:34:22.357] cn.bdqfork.context.AnnotationApplicationContext [223] [Test worker]- register BeanFactory processor !
+[ TRACE] [2020-02-09 21:34:22.358] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.aop.processor.AopProxyProcessor !
+[ TRACE] [2020-02-09 21:34:22.358] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.aop.processor.AopProxyProcessor using constructor!
+[ TRACE] [2020-02-09 21:34:22.359] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.aop.processor.AopProxyProcessor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.359] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.aop.processor.AopProxyProcessor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.360] cn.bdqfork.context.AnnotationApplicationContext [243] [Test worker]- register BeanFactoryAware processor !
+[ TRACE] [2020-02-09 21:34:22.360] cn.bdqfork.context.AnnotationApplicationContext [203] [Test worker]- register bean processor !
+[ TRACE] [2020-02-09 21:34:22.361] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.processor.MyOrder1processor !
+[ TRACE] [2020-02-09 21:34:22.361] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.processor.MyOrder1processor using constructor!
+[ TRACE] [2020-02-09 21:34:22.361] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.processor.MyOrder1processor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.362] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.processor.MyOrder1processor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.362] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.processor.MyOrder1processor !
+[ TRACE] [2020-02-09 21:34:22.362] cn.bdqfork.core.factory.AbstractBeanFactory [102] [Test worker]- get prototype of type cn.bdqfork.model.processor.MyOrderProcessor !
+[ TRACE] [2020-02-09 21:34:22.363] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.processor.MyOrderProcessor using constructor!
+[ TRACE] [2020-02-09 21:34:22.363] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.processor.MyOrderProcessor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.363] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.processor.MyOrderProcessor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.364] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.processor.MyOrderProcessor !
+[ TRACE] [2020-02-09 21:34:22.364] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.processor.MyOrder2processor !
+[ TRACE] [2020-02-09 21:34:22.364] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.processor.MyOrder2processor using constructor!
+[ TRACE] [2020-02-09 21:34:22.365] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.processor.MyOrder2processor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.365] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.processor.MyOrder2processor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.365] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.processor.MyOrder2processor !
+[ TRACE] [2020-02-09 21:34:22.366] cn.bdqfork.context.AnnotationApplicationContext [136] [Test worker]- register shutdown hook !
+[ TRACE] [2020-02-09 21:34:22.366] cn.bdqfork.core.factory.AbstractBeanFactory [102] [Test worker]- get prototype of type cn.bdqfork.model.processor.TestBean !
+[ TRACE] [2020-02-09 21:34:22.366] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.processor.TestBean using constructor!
+[ TRACE] [2020-02-09 21:34:22.367] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.processor.TestBean by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.367] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.processor.TestBean is null, will use default constructor !
+MyOrder1processor Before Initializtion
+MyOrder2processor Before Initializtion
+MyOrderProcessor Before Initializtion
+[ TRACE] [2020-02-09 21:34:22.369] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.processor.TestBean !
+MyOrder1processor After Initializtion
+MyOrder2processor After Initializtion
+MyOrderProcessor After Initializtion
+[ TRACE] [2020-02-09 21:34:22.373] cn.bdqfork.context.AnnotationApplicationContext [79] [Test worker]- create BeanFactory of type cn.bdqfork.core.factory.DefaultJSR250BeanFactory !
+[ TRACE] [2020-02-09 21:34:22.373] cn.bdqfork.context.AnnotationApplicationContext [86] [Test worker]- register ResourceReader of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.374] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.374] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.context.configuration.reader.GenericResourceReader using constructor!
+[ TRACE] [2020-02-09 21:34:22.374] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.context.configuration.reader.GenericResourceReader by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.375] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.context.configuration.reader.GenericResourceReader is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.377] cn.bdqfork.context.AnnotationApplicationContext [110] [Test worker]- register aop processor !
+[ TRACE] [2020-02-09 21:34:22.378] cn.bdqfork.context.AnnotationApplicationContext [151] [Test worker]- scan bean by path cn.bdqfork.model.configration !
+[ TRACE] [2020-02-09 21:34:22.385] cn.bdqfork.context.AnnotationApplicationContext [171] [Test worker]- register BeanDefinition !
+[ TRACE] [2020-02-09 21:34:22.387] cn.bdqfork.context.AnnotationApplicationContext [191] [Test worker]- process environment !
+[ TRACE] [2020-02-09 21:34:22.387] cn.bdqfork.context.AnnotationApplicationContext [223] [Test worker]- register BeanFactory processor !
+[ TRACE] [2020-02-09 21:34:22.387] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.aop.processor.AopProxyProcessor !
+[ TRACE] [2020-02-09 21:34:22.388] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.aop.processor.AopProxyProcessor using constructor!
+[ TRACE] [2020-02-09 21:34:22.388] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.aop.processor.AopProxyProcessor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.389] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.aop.processor.AopProxyProcessor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.389] cn.bdqfork.context.AnnotationApplicationContext [243] [Test worker]- register BeanFactoryAware processor !
+[ TRACE] [2020-02-09 21:34:22.390] cn.bdqfork.context.AnnotationApplicationContext [203] [Test worker]- register bean processor !
+[ TRACE] [2020-02-09 21:34:22.390] cn.bdqfork.context.AnnotationApplicationContext [136] [Test worker]- register shutdown hook !
+[ TRACE] [2020-02-09 21:34:22.390] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.configration.Server !
+[ TRACE] [2020-02-09 21:34:22.391] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.configration.Server using constructor!
+[ TRACE] [2020-02-09 21:34:22.391] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.configration.Server by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.391] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.configration.Server is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.392] cn.bdqfork.core.factory.DefaultBeanFactory [115] [Test worker]- do injected field serverConfig for bean cn.bdqfork.model.configration.Server !
+[ TRACE] [2020-02-09 21:34:22.392] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName , type cn.bdqfork.model.configration.ServerConfig and require is true for bean server with injected point !
+[ TRACE] [2020-02-09 21:34:22.393] cn.bdqfork.core.factory.DefaultBeanFactory [185] [Test worker]- resovle object dependence by type cn.bdqfork.model.configration.ServerConfig !
+[ TRACE] [2020-02-09 21:34:22.393] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.configration.ServerConfig !
+[ TRACE] [2020-02-09 21:34:22.394] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.configration.ServerConfig using constructor!
+[ TRACE] [2020-02-09 21:34:22.394] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.configration.ServerConfig by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.395] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.configration.ServerConfig is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.395] cn.bdqfork.core.factory.DefaultBeanFactory [115] [Test worker]- do injected field localhost for bean cn.bdqfork.model.configration.ServerConfig !
+[ TRACE] [2020-02-09 21:34:22.396] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName , type java.lang.String and require is true for bean serverConfig with injected point !
+[ TRACE] [2020-02-09 21:34:22.396] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [145] [Test worker]- dependence beanName , type java.lang.String and require is true for bean serverConfig exist, will return exist value !
+[ TRACE] [2020-02-09 21:34:22.397] cn.bdqfork.core.factory.DefaultBeanFactory [115] [Test worker]- do injected field names for bean cn.bdqfork.model.configration.ServerConfig !
+[ TRACE] [2020-02-09 21:34:22.397] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName , type java.util.List and require is true for bean serverConfig with injected point !
+[ TRACE] [2020-02-09 21:34:22.398] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [145] [Test worker]- dependence beanName , type java.util.List and require is true for bean serverConfig exist, will return exist value !
+[ TRACE] [2020-02-09 21:34:22.398] cn.bdqfork.core.factory.DefaultBeanFactory [115] [Test worker]- do injected field port for bean cn.bdqfork.model.configration.ServerConfig !
+[ TRACE] [2020-02-09 21:34:22.398] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName , type int and require is true for bean serverConfig with injected point !
+[ TRACE] [2020-02-09 21:34:22.399] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [145] [Test worker]- dependence beanName , type int and require is true for bean serverConfig exist, will return exist value !
+[ TRACE] [2020-02-09 21:34:22.399] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.configration.ServerConfig !
+[ TRACE] [2020-02-09 21:34:22.404] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.configration.Server !
+[ TRACE] [2020-02-09 21:34:22.408] cn.bdqfork.core.factory.AbstractBeanFactory [102] [Test worker]- get prototype of type cn.bdqfork.model.configration.FactoryBean !
+[ TRACE] [2020-02-09 21:34:22.408] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [69] [Test worker]- create instance for cn.bdqfork.model.configration.FactoryBean using factory method!
+[ TRACE] [2020-02-09 21:34:22.409] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName , type cn.bdqfork.model.configration.Server and require is true for bean factoryBean with injected point !
+[ TRACE] [2020-02-09 21:34:22.409] cn.bdqfork.core.factory.DefaultBeanFactory [185] [Test worker]- resovle object dependence by type cn.bdqfork.model.configration.Server !
+[ TRACE] [2020-02-09 21:34:22.409] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.configration.FactoryMethodBean !
+[ TRACE] [2020-02-09 21:34:22.410] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.configration.FactoryMethodBean using constructor!
+[ TRACE] [2020-02-09 21:34:22.410] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.configration.FactoryMethodBean by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.410] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.configration.FactoryMethodBean is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.411] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.configration.FactoryMethodBean !
+FactoryBean{server=Server{serverConfig=ServerConfig{localhost='127.0.0.1', port=80, names=[name1, name2]}}}
+[ TRACE] [2020-02-09 21:34:22.417] cn.bdqfork.context.AnnotationApplicationContext [79] [Test worker]- create BeanFactory of type cn.bdqfork.core.factory.DefaultJSR250BeanFactory !
+[ TRACE] [2020-02-09 21:34:22.417] cn.bdqfork.context.AnnotationApplicationContext [86] [Test worker]- register ResourceReader of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.418] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.418] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.context.configuration.reader.GenericResourceReader using constructor!
+[ TRACE] [2020-02-09 21:34:22.419] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.context.configuration.reader.GenericResourceReader by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.419] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.context.configuration.reader.GenericResourceReader is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.420] cn.bdqfork.context.AnnotationApplicationContext [110] [Test worker]- register aop processor !
+[ TRACE] [2020-02-09 21:34:22.421] cn.bdqfork.context.AnnotationApplicationContext [151] [Test worker]- scan bean by path cn.bdqfork.model.bean.normal !
+[ TRACE] [2020-02-09 21:34:22.421] cn.bdqfork.context.AnnotationApplicationContext [171] [Test worker]- register BeanDefinition !
+[ TRACE] [2020-02-09 21:34:22.422] cn.bdqfork.context.AnnotationApplicationContext [191] [Test worker]- process environment !
+[ TRACE] [2020-02-09 21:34:22.422] cn.bdqfork.context.AnnotationApplicationContext [223] [Test worker]- register BeanFactory processor !
+[ TRACE] [2020-02-09 21:34:22.422] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.aop.processor.AopProxyProcessor !
+[ TRACE] [2020-02-09 21:34:22.423] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.aop.processor.AopProxyProcessor using constructor!
+[ TRACE] [2020-02-09 21:34:22.423] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.aop.processor.AopProxyProcessor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.423] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.aop.processor.AopProxyProcessor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.424] cn.bdqfork.context.AnnotationApplicationContext [243] [Test worker]- register BeanFactoryAware processor !
+[ TRACE] [2020-02-09 21:34:22.424] cn.bdqfork.context.AnnotationApplicationContext [203] [Test worker]- register bean processor !
+[ TRACE] [2020-02-09 21:34:22.424] cn.bdqfork.context.AnnotationApplicationContext [136] [Test worker]- register shutdown hook !
+[ TRACE] [2020-02-09 21:34:22.425] cn.bdqfork.context.AnnotationApplicationContext [79] [Test worker]- create BeanFactory of type cn.bdqfork.core.factory.DefaultJSR250BeanFactory !
+[ TRACE] [2020-02-09 21:34:22.425] cn.bdqfork.context.AnnotationApplicationContext [86] [Test worker]- register ResourceReader of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.426] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.427] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.context.configuration.reader.GenericResourceReader using constructor!
+[ TRACE] [2020-02-09 21:34:22.427] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.context.configuration.reader.GenericResourceReader by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.428] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.context.configuration.reader.GenericResourceReader is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.430] cn.bdqfork.context.AnnotationApplicationContext [110] [Test worker]- register aop processor !
+[ TRACE] [2020-02-09 21:34:22.430] cn.bdqfork.context.AnnotationApplicationContext [151] [Test worker]- scan bean by path cn.bdqfork.model.configration !
+[ TRACE] [2020-02-09 21:34:22.432] cn.bdqfork.context.AnnotationApplicationContext [171] [Test worker]- register BeanDefinition !
+[ TRACE] [2020-02-09 21:34:22.432] cn.bdqfork.context.AnnotationApplicationContext [191] [Test worker]- process environment !
+[ TRACE] [2020-02-09 21:34:22.433] cn.bdqfork.context.AnnotationApplicationContext [223] [Test worker]- register BeanFactory processor !
+[ TRACE] [2020-02-09 21:34:22.434] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.aop.processor.AopProxyProcessor !
+[ TRACE] [2020-02-09 21:34:22.434] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.aop.processor.AopProxyProcessor using constructor!
+[ TRACE] [2020-02-09 21:34:22.434] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.aop.processor.AopProxyProcessor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.435] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.aop.processor.AopProxyProcessor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.435] cn.bdqfork.context.AnnotationApplicationContext [243] [Test worker]- register BeanFactoryAware processor !
+[ TRACE] [2020-02-09 21:34:22.436] cn.bdqfork.context.AnnotationApplicationContext [203] [Test worker]- register bean processor !
+[ TRACE] [2020-02-09 21:34:22.436] cn.bdqfork.context.AnnotationApplicationContext [136] [Test worker]- register shutdown hook !
+[ TRACE] [2020-02-09 21:34:22.437] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.bean.normal.SingletonBeanServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.437] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.bean.normal.SingletonBeanServiceImpl using constructor!
+[ TRACE] [2020-02-09 21:34:22.437] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.bean.normal.SingletonBeanServiceImpl by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.438] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.bean.normal.SingletonBeanServiceImpl is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.438] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.bean.normal.SingletonBeanServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.439] cn.bdqfork.context.AnnotationApplicationContext [79] [Test worker]- create BeanFactory of type cn.bdqfork.core.factory.DefaultJSR250BeanFactory !
+[ TRACE] [2020-02-09 21:34:22.440] cn.bdqfork.context.AnnotationApplicationContext [86] [Test worker]- register ResourceReader of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.440] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.441] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.context.configuration.reader.GenericResourceReader using constructor!
+[ TRACE] [2020-02-09 21:34:22.441] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.context.configuration.reader.GenericResourceReader by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.442] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.context.configuration.reader.GenericResourceReader is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.443] cn.bdqfork.context.AnnotationApplicationContext [110] [Test worker]- register aop processor !
+[ TRACE] [2020-02-09 21:34:22.443] cn.bdqfork.context.AnnotationApplicationContext [151] [Test worker]- scan bean by path cn.bdqfork.model.bean.normal !
+[ TRACE] [2020-02-09 21:34:22.444] cn.bdqfork.context.AnnotationApplicationContext [171] [Test worker]- register BeanDefinition !
+[ TRACE] [2020-02-09 21:34:22.445] cn.bdqfork.context.AnnotationApplicationContext [191] [Test worker]- process environment !
+[ TRACE] [2020-02-09 21:34:22.445] cn.bdqfork.context.AnnotationApplicationContext [223] [Test worker]- register BeanFactory processor !
+[ TRACE] [2020-02-09 21:34:22.445] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.aop.processor.AopProxyProcessor !
+[ TRACE] [2020-02-09 21:34:22.446] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.aop.processor.AopProxyProcessor using constructor!
+[ TRACE] [2020-02-09 21:34:22.446] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.aop.processor.AopProxyProcessor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.447] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.aop.processor.AopProxyProcessor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.447] cn.bdqfork.context.AnnotationApplicationContext [243] [Test worker]- register BeanFactoryAware processor !
+[ TRACE] [2020-02-09 21:34:22.447] cn.bdqfork.context.AnnotationApplicationContext [203] [Test worker]- register bean processor !
+[ TRACE] [2020-02-09 21:34:22.448] cn.bdqfork.context.AnnotationApplicationContext [136] [Test worker]- register shutdown hook !
+[ TRACE] [2020-02-09 21:34:22.448] cn.bdqfork.context.AnnotationApplicationContext [79] [Test worker]- create BeanFactory of type cn.bdqfork.core.factory.DefaultJSR250BeanFactory !
+[ TRACE] [2020-02-09 21:34:22.449] cn.bdqfork.context.AnnotationApplicationContext [86] [Test worker]- register ResourceReader of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.449] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.449] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.context.configuration.reader.GenericResourceReader using constructor!
+[ TRACE] [2020-02-09 21:34:22.450] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.context.configuration.reader.GenericResourceReader by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.450] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.context.configuration.reader.GenericResourceReader is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.451] cn.bdqfork.context.AnnotationApplicationContext [110] [Test worker]- register aop processor !
+[ TRACE] [2020-02-09 21:34:22.452] cn.bdqfork.context.AnnotationApplicationContext [151] [Test worker]- scan bean by path cn.bdqfork.model.bean.exception.unsatisfied !
+[ TRACE] [2020-02-09 21:34:22.453] cn.bdqfork.context.AnnotationApplicationContext [171] [Test worker]- register BeanDefinition !
+[ TRACE] [2020-02-09 21:34:22.453] cn.bdqfork.context.AnnotationApplicationContext [191] [Test worker]- process environment !
+[ TRACE] [2020-02-09 21:34:22.454] cn.bdqfork.context.AnnotationApplicationContext [223] [Test worker]- register BeanFactory processor !
+[ TRACE] [2020-02-09 21:34:22.454] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.aop.processor.AopProxyProcessor !
+[ TRACE] [2020-02-09 21:34:22.454] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.aop.processor.AopProxyProcessor using constructor!
+[ TRACE] [2020-02-09 21:34:22.455] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.aop.processor.AopProxyProcessor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.455] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.aop.processor.AopProxyProcessor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.456] cn.bdqfork.context.AnnotationApplicationContext [243] [Test worker]- register BeanFactoryAware processor !
+[ TRACE] [2020-02-09 21:34:22.456] cn.bdqfork.context.AnnotationApplicationContext [203] [Test worker]- register bean processor !
+[ TRACE] [2020-02-09 21:34:22.456] cn.bdqfork.context.AnnotationApplicationContext [136] [Test worker]- register shutdown hook !
+[ TRACE] [2020-02-09 21:34:22.457] cn.bdqfork.core.factory.AbstractBeanFactory [102] [Test worker]- get prototype of type cn.bdqfork.model.bean.exception.unsatisfied.WrongInjectedBean !
+[ TRACE] [2020-02-09 21:34:22.457] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.bean.exception.unsatisfied.WrongInjectedBean using constructor!
+[ TRACE] [2020-02-09 21:34:22.457] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.bean.exception.unsatisfied.WrongInjectedBean by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.457] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.bean.exception.unsatisfied.WrongInjectedBean is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.458] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.bean.exception.unsatisfied.WrongInjectedBean !
+[ TRACE] [2020-02-09 21:34:22.461] cn.bdqfork.core.factory.AbstractBeanFactory [102] [Test worker]- get prototype of type cn.bdqfork.model.bean.exception.unsatisfied.UnsatisfiedBeanExceptionBean !
+[ TRACE] [2020-02-09 21:34:22.462] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.bean.exception.unsatisfied.UnsatisfiedBeanExceptionBean using constructor!
+[ TRACE] [2020-02-09 21:34:22.462] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.bean.exception.unsatisfied.UnsatisfiedBeanExceptionBean by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.463] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.bean.exception.unsatisfied.UnsatisfiedBeanExceptionBean is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.464] cn.bdqfork.core.factory.DefaultBeanFactory [126] [Test worker]- do injected method setInjectedBean for bean cn.bdqfork.model.bean.exception.unsatisfied.UnsatisfiedBeanExceptionBean !
+[ TRACE] [2020-02-09 21:34:22.464] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName injectedBean, type cn.bdqfork.model.bean.exception.InjectedBean and require is true for bean unsatisfiedBeanExceptionBean with injected point !
+[ TRACE] [2020-02-09 21:34:22.465] cn.bdqfork.core.factory.DefaultBeanFactory [144] [Test worker]- resovle dependence by name injectedBean and type cn.bdqfork.model.bean.exception.InjectedBean !
+[ TRACE] [2020-02-09 21:34:22.466] cn.bdqfork.context.AnnotationApplicationContext [79] [Test worker]- create BeanFactory of type cn.bdqfork.core.factory.DefaultJSR250BeanFactory !
+[ TRACE] [2020-02-09 21:34:22.466] cn.bdqfork.context.AnnotationApplicationContext [86] [Test worker]- register ResourceReader of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.466] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.467] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.context.configuration.reader.GenericResourceReader using constructor!
+[ TRACE] [2020-02-09 21:34:22.467] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.context.configuration.reader.GenericResourceReader by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.467] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.context.configuration.reader.GenericResourceReader is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.469] cn.bdqfork.context.AnnotationApplicationContext [110] [Test worker]- register aop processor !
+[ TRACE] [2020-02-09 21:34:22.469] cn.bdqfork.context.AnnotationApplicationContext [151] [Test worker]- scan bean by path cn.bdqfork.model.jsr250 !
+[ TRACE] [2020-02-09 21:34:22.470] cn.bdqfork.context.AnnotationApplicationContext [171] [Test worker]- register BeanDefinition !
+[ TRACE] [2020-02-09 21:34:22.471] cn.bdqfork.context.AnnotationApplicationContext [191] [Test worker]- process environment !
+[ TRACE] [2020-02-09 21:34:22.471] cn.bdqfork.context.AnnotationApplicationContext [223] [Test worker]- register BeanFactory processor !
+[ TRACE] [2020-02-09 21:34:22.471] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.aop.processor.AopProxyProcessor !
+[ TRACE] [2020-02-09 21:34:22.471] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.aop.processor.AopProxyProcessor using constructor!
+[ TRACE] [2020-02-09 21:34:22.472] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.aop.processor.AopProxyProcessor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.472] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.aop.processor.AopProxyProcessor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.472] cn.bdqfork.context.AnnotationApplicationContext [243] [Test worker]- register BeanFactoryAware processor !
+[ TRACE] [2020-02-09 21:34:22.473] cn.bdqfork.context.AnnotationApplicationContext [203] [Test worker]- register bean processor !
+[ TRACE] [2020-02-09 21:34:22.473] cn.bdqfork.context.AnnotationApplicationContext [136] [Test worker]- register shutdown hook !
+[ TRACE] [2020-02-09 21:34:22.473] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.jsr250.JSR250FieldServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.473] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.jsr250.JSR250FieldServiceImpl using constructor!
+[ TRACE] [2020-02-09 21:34:22.474] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.jsr250.JSR250FieldServiceImpl by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.474] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.jsr250.JSR250FieldServiceImpl is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.474] cn.bdqfork.core.factory.DefaultBeanFactory [115] [Test worker]- do injected field jsr250FieldCycleDao for bean cn.bdqfork.model.jsr250.JSR250FieldServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.474] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName , type cn.bdqfork.model.jsr250.JSR250FieldCycleDao and require is true for bean jSR250FieldServiceImpl with injected point !
+[ TRACE] [2020-02-09 21:34:22.476] cn.bdqfork.core.factory.DefaultBeanFactory [185] [Test worker]- resovle object dependence by type cn.bdqfork.model.jsr250.JSR250FieldCycleDao !
+[ TRACE] [2020-02-09 21:34:22.477] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.jsr250.JSR250FieldCycleDaoImpl !
+[ TRACE] [2020-02-09 21:34:22.478] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.jsr250.JSR250FieldCycleDaoImpl using constructor!
+[ TRACE] [2020-02-09 21:34:22.478] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.jsr250.JSR250FieldCycleDaoImpl by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.479] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.jsr250.JSR250FieldCycleDaoImpl is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.479] cn.bdqfork.core.factory.DefaultBeanFactory [115] [Test worker]- do injected field jsr250FieldService for bean cn.bdqfork.model.jsr250.JSR250FieldCycleDaoImpl !
+[ TRACE] [2020-02-09 21:34:22.480] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName jSR250FieldServiceImpl, type cn.bdqfork.model.jsr250.JSR250FieldService and require is true for bean jSR250FieldCycleDaoImpl with injected point !
+[ TRACE] [2020-02-09 21:34:22.480] cn.bdqfork.core.factory.DefaultBeanFactory [144] [Test worker]- resovle dependence by name jSR250FieldServiceImpl and type cn.bdqfork.model.jsr250.JSR250FieldService !
+[ TRACE] [2020-02-09 21:34:22.481] cn.bdqfork.core.factory.DefaultBeanFactory [33] [Test worker]- invoke InitializingBean !
+afterPropertiesSet......
+[ TRACE] [2020-02-09 21:34:22.481] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.jsr250.JSR250FieldCycleDaoImpl !
+init......
+[ TRACE] [2020-02-09 21:34:22.482] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.jsr250.JSR250FieldServiceImpl !
+[ INFO ] [2020-02-09 21:34:22.483] cn.bdqfork.context.AnnotationApplicationContext [270] [Test worker]- closing context !
+[ TRACE] [2020-02-09 21:34:22.483] cn.bdqfork.core.factory.AbstractBeanFactory [141] [Test worker]- destroy singletons !
+[ TRACE] [2020-02-09 21:34:22.483] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [40] [Test worker]- execute PreDestroy method for bean cn.bdqfork.model.jsr250.JSR250FieldServiceImpl !
+[ DEBUG] [2020-02-09 21:34:22.483] cn.bdqfork.core.factory.AbstractBeanFactory [153] [Test worker]- invoke dispose method for bean jSR250FieldCycleDaoImpl !
+destroy......
+[ TRACE] [2020-02-09 21:34:22.484] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [40] [Test worker]- execute PreDestroy method for bean cn.bdqfork.model.jsr250.JSR250FieldCycleDaoImpl !
+preDestroy......
+[ INFO ] [2020-02-09 21:34:22.485] cn.bdqfork.context.AnnotationApplicationContext [277] [Test worker]- closed context !
+[ TRACE] [2020-02-09 21:34:22.485] cn.bdqfork.context.AnnotationApplicationContext [79] [Test worker]- create BeanFactory of type cn.bdqfork.core.factory.DefaultJSR250BeanFactory !
+[ TRACE] [2020-02-09 21:34:22.485] cn.bdqfork.context.AnnotationApplicationContext [86] [Test worker]- register ResourceReader of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.486] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.486] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.context.configuration.reader.GenericResourceReader using constructor!
+[ TRACE] [2020-02-09 21:34:22.487] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.context.configuration.reader.GenericResourceReader by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.487] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.context.configuration.reader.GenericResourceReader is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.488] cn.bdqfork.context.AnnotationApplicationContext [110] [Test worker]- register aop processor !
+[ TRACE] [2020-02-09 21:34:22.489] cn.bdqfork.context.AnnotationApplicationContext [151] [Test worker]- scan bean by path cn.bdqfork.model.bean.normal !
+[ TRACE] [2020-02-09 21:34:22.489] cn.bdqfork.context.AnnotationApplicationContext [171] [Test worker]- register BeanDefinition !
+[ TRACE] [2020-02-09 21:34:22.490] cn.bdqfork.context.AnnotationApplicationContext [191] [Test worker]- process environment !
+[ TRACE] [2020-02-09 21:34:22.490] cn.bdqfork.context.AnnotationApplicationContext [223] [Test worker]- register BeanFactory processor !
+[ TRACE] [2020-02-09 21:34:22.491] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.aop.processor.AopProxyProcessor !
+[ TRACE] [2020-02-09 21:34:22.491] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.aop.processor.AopProxyProcessor using constructor!
+[ TRACE] [2020-02-09 21:34:22.491] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.aop.processor.AopProxyProcessor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.492] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.aop.processor.AopProxyProcessor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.492] cn.bdqfork.context.AnnotationApplicationContext [243] [Test worker]- register BeanFactoryAware processor !
+[ TRACE] [2020-02-09 21:34:22.492] cn.bdqfork.context.AnnotationApplicationContext [203] [Test worker]- register bean processor !
+[ TRACE] [2020-02-09 21:34:22.493] cn.bdqfork.context.AnnotationApplicationContext [136] [Test worker]- register shutdown hook !
+[ TRACE] [2020-02-09 21:34:22.493] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.bean.normal.SingletonBeanServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.494] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.bean.normal.SingletonBeanServiceImpl using constructor!
+[ TRACE] [2020-02-09 21:34:22.494] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.bean.normal.SingletonBeanServiceImpl by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.494] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.bean.normal.SingletonBeanServiceImpl is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.495] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.bean.normal.SingletonBeanServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.496] cn.bdqfork.context.AnnotationApplicationContext [79] [Test worker]- create BeanFactory of type cn.bdqfork.core.factory.DefaultJSR250BeanFactory !
+[ TRACE] [2020-02-09 21:34:22.496] cn.bdqfork.context.AnnotationApplicationContext [86] [Test worker]- register ResourceReader of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.497] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.497] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.context.configuration.reader.GenericResourceReader using constructor!
+[ TRACE] [2020-02-09 21:34:22.497] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.context.configuration.reader.GenericResourceReader by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.498] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.context.configuration.reader.GenericResourceReader is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.499] cn.bdqfork.context.AnnotationApplicationContext [110] [Test worker]- register aop processor !
+[ TRACE] [2020-02-09 21:34:22.499] cn.bdqfork.context.AnnotationApplicationContext [151] [Test worker]- scan bean by path cn.bdqfork.model.cycle !
+[ TRACE] [2020-02-09 21:34:22.502] cn.bdqfork.context.AnnotationApplicationContext [171] [Test worker]- register BeanDefinition !
+[ TRACE] [2020-02-09 21:34:22.503] cn.bdqfork.context.AnnotationApplicationContext [191] [Test worker]- process environment !
+[ TRACE] [2020-02-09 21:34:22.503] cn.bdqfork.context.AnnotationApplicationContext [223] [Test worker]- register BeanFactory processor !
+[ TRACE] [2020-02-09 21:34:22.504] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.aop.processor.AopProxyProcessor !
+[ TRACE] [2020-02-09 21:34:22.504] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.aop.processor.AopProxyProcessor using constructor!
+[ TRACE] [2020-02-09 21:34:22.504] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.aop.processor.AopProxyProcessor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.505] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.aop.processor.AopProxyProcessor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.506] cn.bdqfork.context.AnnotationApplicationContext [243] [Test worker]- register BeanFactoryAware processor !
+[ TRACE] [2020-02-09 21:34:22.506] cn.bdqfork.context.AnnotationApplicationContext [203] [Test worker]- register bean processor !
+[ TRACE] [2020-02-09 21:34:22.507] cn.bdqfork.context.AnnotationApplicationContext [136] [Test worker]- register shutdown hook !
+[ TRACE] [2020-02-09 21:34:22.507] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.cycle.FieldCycleServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.507] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.cycle.FieldCycleServiceImpl using constructor!
+[ TRACE] [2020-02-09 21:34:22.508] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.cycle.FieldCycleServiceImpl by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.508] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.cycle.FieldCycleServiceImpl is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.509] cn.bdqfork.core.factory.DefaultBeanFactory [115] [Test worker]- do injected field fieldCycleDao for bean cn.bdqfork.model.cycle.FieldCycleServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.510] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName , type cn.bdqfork.model.cycle.FieldCycleDao and require is true for bean fieldCycleServiceImpl with injected point !
+[ TRACE] [2020-02-09 21:34:22.510] cn.bdqfork.core.factory.DefaultBeanFactory [185] [Test worker]- resovle object dependence by type cn.bdqfork.model.cycle.FieldCycleDao !
+[ TRACE] [2020-02-09 21:34:22.511] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.cycle.FieldCycleDaoImpl !
+[ TRACE] [2020-02-09 21:34:22.511] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.cycle.FieldCycleDaoImpl using constructor!
+[ TRACE] [2020-02-09 21:34:22.511] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.cycle.FieldCycleDaoImpl by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.512] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.cycle.FieldCycleDaoImpl is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.512] cn.bdqfork.core.factory.DefaultBeanFactory [115] [Test worker]- do injected field fieldCycleService for bean cn.bdqfork.model.cycle.FieldCycleDaoImpl !
+[ TRACE] [2020-02-09 21:34:22.513] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName , type cn.bdqfork.model.cycle.FieldCycleService and require is true for bean fieldCycleDaoImpl with injected point !
+[ TRACE] [2020-02-09 21:34:22.513] cn.bdqfork.core.factory.DefaultBeanFactory [185] [Test worker]- resovle object dependence by type cn.bdqfork.model.cycle.FieldCycleService !
+[ TRACE] [2020-02-09 21:34:22.514] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.cycle.FieldCycleDaoImpl !
+[ TRACE] [2020-02-09 21:34:22.517] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.cycle.FieldCycleServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.520] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.cycle.ProviderFieldCycleServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.521] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.cycle.ProviderFieldCycleServiceImpl using constructor!
+[ TRACE] [2020-02-09 21:34:22.521] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.cycle.ProviderFieldCycleServiceImpl by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.521] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.cycle.ProviderFieldCycleServiceImpl is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.522] cn.bdqfork.core.factory.DefaultBeanFactory [115] [Test worker]- do injected field providerFieldCycleDao for bean cn.bdqfork.model.cycle.ProviderFieldCycleServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.523] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName , type cn.bdqfork.model.cycle.ProviderFieldCycleDao and require is true for bean providerFieldCycleServiceImpl with injected point !
+[ TRACE] [2020-02-09 21:34:22.523] cn.bdqfork.core.factory.DefaultBeanFactory [185] [Test worker]- resovle object dependence by type cn.bdqfork.model.cycle.ProviderFieldCycleDao !
+[ TRACE] [2020-02-09 21:34:22.523] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.cycle.ProviderFieldCycleDaoImpl !
+[ TRACE] [2020-02-09 21:34:22.524] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.cycle.ProviderFieldCycleDaoImpl using constructor!
+[ TRACE] [2020-02-09 21:34:22.524] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.cycle.ProviderFieldCycleDaoImpl by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.524] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.cycle.ProviderFieldCycleDaoImpl is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.525] cn.bdqfork.core.factory.DefaultBeanFactory [115] [Test worker]- do injected field providerFieldCycleService for bean cn.bdqfork.model.cycle.ProviderFieldCycleDaoImpl !
+[ TRACE] [2020-02-09 21:34:22.525] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName , type cn.bdqfork.model.cycle.ProviderFieldCycleService and require is true for bean providerFieldCycleDaoImpl with injected point !
+[ TRACE] [2020-02-09 21:34:22.525] cn.bdqfork.core.factory.DefaultBeanFactory [185] [Test worker]- resovle object dependence by type cn.bdqfork.model.cycle.ProviderFieldCycleService !
+[ TRACE] [2020-02-09 21:34:22.526] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.cycle.ProviderFieldCycleDaoImpl !
+[ TRACE] [2020-02-09 21:34:22.529] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.cycle.ProviderFieldCycleServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.533] cn.bdqfork.context.AnnotationApplicationContext [79] [Test worker]- create BeanFactory of type cn.bdqfork.core.factory.DefaultJSR250BeanFactory !
+[ TRACE] [2020-02-09 21:34:22.534] cn.bdqfork.context.AnnotationApplicationContext [86] [Test worker]- register ResourceReader of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.534] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.535] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.context.configuration.reader.GenericResourceReader using constructor!
+[ TRACE] [2020-02-09 21:34:22.535] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.context.configuration.reader.GenericResourceReader by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.535] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.context.configuration.reader.GenericResourceReader is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.537] cn.bdqfork.context.AnnotationApplicationContext [110] [Test worker]- register aop processor !
+[ TRACE] [2020-02-09 21:34:22.537] cn.bdqfork.context.AnnotationApplicationContext [151] [Test worker]- scan bean by path cn.bdqfork.model.bean.normal !
+[ TRACE] [2020-02-09 21:34:22.538] cn.bdqfork.context.AnnotationApplicationContext [171] [Test worker]- register BeanDefinition !
+[ TRACE] [2020-02-09 21:34:22.538] cn.bdqfork.context.AnnotationApplicationContext [191] [Test worker]- process environment !
+[ TRACE] [2020-02-09 21:34:22.538] cn.bdqfork.context.AnnotationApplicationContext [223] [Test worker]- register BeanFactory processor !
+[ TRACE] [2020-02-09 21:34:22.539] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.aop.processor.AopProxyProcessor !
+[ TRACE] [2020-02-09 21:34:22.539] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.aop.processor.AopProxyProcessor using constructor!
+[ TRACE] [2020-02-09 21:34:22.539] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.aop.processor.AopProxyProcessor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.540] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.aop.processor.AopProxyProcessor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.540] cn.bdqfork.context.AnnotationApplicationContext [243] [Test worker]- register BeanFactoryAware processor !
+[ TRACE] [2020-02-09 21:34:22.540] cn.bdqfork.context.AnnotationApplicationContext [203] [Test worker]- register bean processor !
+[ TRACE] [2020-02-09 21:34:22.540] cn.bdqfork.context.AnnotationApplicationContext [136] [Test worker]- register shutdown hook !
+[ TRACE] [2020-02-09 21:34:22.541] cn.bdqfork.context.AnnotationApplicationContext [79] [Test worker]- create BeanFactory of type cn.bdqfork.core.factory.DefaultJSR250BeanFactory !
+[ TRACE] [2020-02-09 21:34:22.541] cn.bdqfork.context.AnnotationApplicationContext [86] [Test worker]- register ResourceReader of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.542] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.542] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.context.configuration.reader.GenericResourceReader using constructor!
+[ TRACE] [2020-02-09 21:34:22.542] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.context.configuration.reader.GenericResourceReader by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.542] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.context.configuration.reader.GenericResourceReader is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.544] cn.bdqfork.context.AnnotationApplicationContext [110] [Test worker]- register aop processor !
+[ TRACE] [2020-02-09 21:34:22.544] cn.bdqfork.context.AnnotationApplicationContext [151] [Test worker]- scan bean by path cn.bdqfork.model.cycle !
+[ TRACE] [2020-02-09 21:34:22.547] cn.bdqfork.context.AnnotationApplicationContext [171] [Test worker]- register BeanDefinition !
+[ TRACE] [2020-02-09 21:34:22.548] cn.bdqfork.context.AnnotationApplicationContext [191] [Test worker]- process environment !
+[ TRACE] [2020-02-09 21:34:22.548] cn.bdqfork.context.AnnotationApplicationContext [223] [Test worker]- register BeanFactory processor !
+[ TRACE] [2020-02-09 21:34:22.549] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.aop.processor.AopProxyProcessor !
+[ TRACE] [2020-02-09 21:34:22.549] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.aop.processor.AopProxyProcessor using constructor!
+[ TRACE] [2020-02-09 21:34:22.549] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.aop.processor.AopProxyProcessor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.550] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.aop.processor.AopProxyProcessor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.550] cn.bdqfork.context.AnnotationApplicationContext [243] [Test worker]- register BeanFactoryAware processor !
+[ TRACE] [2020-02-09 21:34:22.551] cn.bdqfork.context.AnnotationApplicationContext [203] [Test worker]- register bean processor !
+[ TRACE] [2020-02-09 21:34:22.551] cn.bdqfork.context.AnnotationApplicationContext [136] [Test worker]- register shutdown hook !
+[ TRACE] [2020-02-09 21:34:22.551] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.cycle.SetterCycleServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.552] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.cycle.SetterCycleServiceImpl using constructor!
+[ TRACE] [2020-02-09 21:34:22.552] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.cycle.SetterCycleServiceImpl by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.552] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.cycle.SetterCycleServiceImpl is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.553] cn.bdqfork.core.factory.DefaultBeanFactory [126] [Test worker]- do injected method setDao for bean cn.bdqfork.model.cycle.SetterCycleServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.553] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName , type cn.bdqfork.model.cycle.SetterCycleDao and require is true for bean setterCycleServiceImpl with injected point !
+[ TRACE] [2020-02-09 21:34:22.554] cn.bdqfork.core.factory.DefaultBeanFactory [185] [Test worker]- resovle object dependence by type cn.bdqfork.model.cycle.SetterCycleDao !
+[ TRACE] [2020-02-09 21:34:22.554] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.cycle.SetterCycleDaoImpl !
+[ TRACE] [2020-02-09 21:34:22.554] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.cycle.SetterCycleDaoImpl using constructor!
+[ TRACE] [2020-02-09 21:34:22.555] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.cycle.SetterCycleDaoImpl by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.555] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.cycle.SetterCycleDaoImpl is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.555] cn.bdqfork.core.factory.DefaultBeanFactory [126] [Test worker]- do injected method setService for bean cn.bdqfork.model.cycle.SetterCycleDaoImpl !
+[ TRACE] [2020-02-09 21:34:22.556] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName , type cn.bdqfork.model.cycle.SetterCycleService and require is true for bean setterCycleDaoImpl with injected point !
+[ TRACE] [2020-02-09 21:34:22.556] cn.bdqfork.core.factory.DefaultBeanFactory [185] [Test worker]- resovle object dependence by type cn.bdqfork.model.cycle.SetterCycleService !
+[ TRACE] [2020-02-09 21:34:22.556] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.cycle.SetterCycleDaoImpl !
+[ TRACE] [2020-02-09 21:34:22.559] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.cycle.SetterCycleServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.563] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.cycle.ProviderSetterCycleServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.564] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.cycle.ProviderSetterCycleServiceImpl using constructor!
+[ TRACE] [2020-02-09 21:34:22.564] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.cycle.ProviderSetterCycleServiceImpl by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.564] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.cycle.ProviderSetterCycleServiceImpl is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.565] cn.bdqfork.core.factory.DefaultBeanFactory [126] [Test worker]- do injected method setDao for bean cn.bdqfork.model.cycle.ProviderSetterCycleServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.566] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName , type javax.inject.Provider<cn.bdqfork.model.cycle.ProviderCycleSetterDao> and require is true for bean providerSetterCycleServiceImpl with injected point !
+[ TRACE] [2020-02-09 21:34:22.566] cn.bdqfork.core.factory.DefaultBeanFactory [185] [Test worker]- resovle object dependence by type cn.bdqfork.model.cycle.ProviderCycleSetterDao !
+[ TRACE] [2020-02-09 21:34:22.567] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.cycle.ProviderSetterCycleDaoImpl !
+[ TRACE] [2020-02-09 21:34:22.567] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.cycle.ProviderSetterCycleDaoImpl using constructor!
+[ TRACE] [2020-02-09 21:34:22.567] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.cycle.ProviderSetterCycleDaoImpl by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.568] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.cycle.ProviderSetterCycleDaoImpl is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.568] cn.bdqfork.core.factory.DefaultBeanFactory [126] [Test worker]- do injected method setService for bean cn.bdqfork.model.cycle.ProviderSetterCycleDaoImpl !
+[ TRACE] [2020-02-09 21:34:22.569] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName , type javax.inject.Provider<cn.bdqfork.model.cycle.ProviderSetterCycleService> and require is true for bean providerSetterCycleDaoImpl with injected point !
+[ TRACE] [2020-02-09 21:34:22.569] cn.bdqfork.core.factory.DefaultBeanFactory [185] [Test worker]- resovle object dependence by type cn.bdqfork.model.cycle.ProviderSetterCycleService !
+[ TRACE] [2020-02-09 21:34:22.570] cn.bdqfork.core.factory.DefaultBeanFactory [209] [Test worker]- create provider for javax.inject.Provider<cn.bdqfork.model.cycle.ProviderSetterCycleService> !
+[ TRACE] [2020-02-09 21:34:22.570] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.cycle.ProviderSetterCycleDaoImpl !
+[ TRACE] [2020-02-09 21:34:22.574] cn.bdqfork.core.factory.DefaultBeanFactory [209] [Test worker]- create provider for javax.inject.Provider<cn.bdqfork.model.cycle.ProviderCycleSetterDao> !
+[ TRACE] [2020-02-09 21:34:22.574] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.cycle.ProviderSetterCycleServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.579] cn.bdqfork.context.AnnotationApplicationContext [79] [Test worker]- create BeanFactory of type cn.bdqfork.core.factory.DefaultJSR250BeanFactory !
+[ TRACE] [2020-02-09 21:34:22.579] cn.bdqfork.context.AnnotationApplicationContext [86] [Test worker]- register ResourceReader of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.580] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.580] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.context.configuration.reader.GenericResourceReader using constructor!
+[ TRACE] [2020-02-09 21:34:22.580] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.context.configuration.reader.GenericResourceReader by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.581] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.context.configuration.reader.GenericResourceReader is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.583] cn.bdqfork.context.AnnotationApplicationContext [110] [Test worker]- register aop processor !
+[ TRACE] [2020-02-09 21:34:22.583] cn.bdqfork.context.AnnotationApplicationContext [151] [Test worker]- scan bean by path cn.bdqfork.model.cycle !
+[ TRACE] [2020-02-09 21:34:22.586] cn.bdqfork.context.AnnotationApplicationContext [171] [Test worker]- register BeanDefinition !
+[ TRACE] [2020-02-09 21:34:22.587] cn.bdqfork.context.AnnotationApplicationContext [191] [Test worker]- process environment !
+[ TRACE] [2020-02-09 21:34:22.587] cn.bdqfork.context.AnnotationApplicationContext [223] [Test worker]- register BeanFactory processor !
+[ TRACE] [2020-02-09 21:34:22.588] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.aop.processor.AopProxyProcessor !
+[ TRACE] [2020-02-09 21:34:22.588] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.aop.processor.AopProxyProcessor using constructor!
+[ TRACE] [2020-02-09 21:34:22.589] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.aop.processor.AopProxyProcessor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.589] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.aop.processor.AopProxyProcessor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.590] cn.bdqfork.context.AnnotationApplicationContext [243] [Test worker]- register BeanFactoryAware processor !
+[ TRACE] [2020-02-09 21:34:22.590] cn.bdqfork.context.AnnotationApplicationContext [203] [Test worker]- register bean processor !
+[ TRACE] [2020-02-09 21:34:22.590] cn.bdqfork.context.AnnotationApplicationContext [136] [Test worker]- register shutdown hook !
+[ TRACE] [2020-02-09 21:34:22.591] cn.bdqfork.context.AnnotationApplicationContext [79] [Test worker]- create BeanFactory of type cn.bdqfork.core.factory.DefaultJSR250BeanFactory !
+[ TRACE] [2020-02-09 21:34:22.591] cn.bdqfork.context.AnnotationApplicationContext [86] [Test worker]- register ResourceReader of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.592] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.592] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.context.configuration.reader.GenericResourceReader using constructor!
+[ TRACE] [2020-02-09 21:34:22.592] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.context.configuration.reader.GenericResourceReader by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.593] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.context.configuration.reader.GenericResourceReader is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.594] cn.bdqfork.context.AnnotationApplicationContext [110] [Test worker]- register aop processor !
+[ TRACE] [2020-02-09 21:34:22.595] cn.bdqfork.context.AnnotationApplicationContext [151] [Test worker]- scan bean by path cn.bdqfork.model.bean.normal !
+[ TRACE] [2020-02-09 21:34:22.595] cn.bdqfork.context.AnnotationApplicationContext [171] [Test worker]- register BeanDefinition !
+[ TRACE] [2020-02-09 21:34:22.595] cn.bdqfork.context.AnnotationApplicationContext [191] [Test worker]- process environment !
+[ TRACE] [2020-02-09 21:34:22.596] cn.bdqfork.context.AnnotationApplicationContext [223] [Test worker]- register BeanFactory processor !
+[ TRACE] [2020-02-09 21:34:22.596] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.aop.processor.AopProxyProcessor !
+[ TRACE] [2020-02-09 21:34:22.597] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.aop.processor.AopProxyProcessor using constructor!
+[ TRACE] [2020-02-09 21:34:22.597] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.aop.processor.AopProxyProcessor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.597] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.aop.processor.AopProxyProcessor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.598] cn.bdqfork.context.AnnotationApplicationContext [243] [Test worker]- register BeanFactoryAware processor !
+[ TRACE] [2020-02-09 21:34:22.598] cn.bdqfork.context.AnnotationApplicationContext [203] [Test worker]- register bean processor !
+[ TRACE] [2020-02-09 21:34:22.599] cn.bdqfork.context.AnnotationApplicationContext [136] [Test worker]- register shutdown hook !
+[ TRACE] [2020-02-09 21:34:22.599] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.bean.normal.SingletonBeanServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.599] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.bean.normal.SingletonBeanServiceImpl using constructor!
+[ TRACE] [2020-02-09 21:34:22.600] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.bean.normal.SingletonBeanServiceImpl by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.600] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.bean.normal.SingletonBeanServiceImpl is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.600] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.bean.normal.SingletonBeanServiceImpl !
+[ TRACE] [2020-02-09 21:34:22.602] cn.bdqfork.context.AnnotationApplicationContext [79] [Test worker]- create BeanFactory of type cn.bdqfork.core.factory.DefaultJSR250BeanFactory !
+[ TRACE] [2020-02-09 21:34:22.602] cn.bdqfork.context.AnnotationApplicationContext [86] [Test worker]- register ResourceReader of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.602] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.603] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.context.configuration.reader.GenericResourceReader using constructor!
+[ TRACE] [2020-02-09 21:34:22.603] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.context.configuration.reader.GenericResourceReader by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.603] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.context.configuration.reader.GenericResourceReader is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.605] cn.bdqfork.context.AnnotationApplicationContext [110] [Test worker]- register aop processor !
+[ TRACE] [2020-02-09 21:34:22.605] cn.bdqfork.context.AnnotationApplicationContext [151] [Test worker]- scan bean by path cn.bdqfork.model.collection !
+[ TRACE] [2020-02-09 21:34:22.608] cn.bdqfork.context.AnnotationApplicationContext [171] [Test worker]- register BeanDefinition !
+[ TRACE] [2020-02-09 21:34:22.608] cn.bdqfork.context.AnnotationApplicationContext [191] [Test worker]- process environment !
+[ TRACE] [2020-02-09 21:34:22.609] cn.bdqfork.context.AnnotationApplicationContext [223] [Test worker]- register BeanFactory processor !
+[ TRACE] [2020-02-09 21:34:22.609] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.aop.processor.AopProxyProcessor !
+[ TRACE] [2020-02-09 21:34:22.610] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.aop.processor.AopProxyProcessor using constructor!
+[ TRACE] [2020-02-09 21:34:22.610] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.aop.processor.AopProxyProcessor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.611] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.aop.processor.AopProxyProcessor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.611] cn.bdqfork.context.AnnotationApplicationContext [243] [Test worker]- register BeanFactoryAware processor !
+[ TRACE] [2020-02-09 21:34:22.612] cn.bdqfork.context.AnnotationApplicationContext [203] [Test worker]- register bean processor !
+[ TRACE] [2020-02-09 21:34:22.612] cn.bdqfork.context.AnnotationApplicationContext [136] [Test worker]- register shutdown hook !
+[ TRACE] [2020-02-09 21:34:22.612] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.collection.CollectionPropertyService !
+[ TRACE] [2020-02-09 21:34:22.613] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.collection.CollectionPropertyService using constructor!
+[ TRACE] [2020-02-09 21:34:22.613] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.collection.CollectionPropertyService by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.614] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.collection.CollectionPropertyService is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.614] cn.bdqfork.core.factory.DefaultBeanFactory [115] [Test worker]- do injected field daoMap for bean cn.bdqfork.model.collection.CollectionPropertyService !
+[ TRACE] [2020-02-09 21:34:22.615] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName , type java.util.Map<java.lang.String, cn.bdqfork.model.collection.CollectionPropertyDao> and require is true for bean collectionPropertyService with injected point !
+[ TRACE] [2020-02-09 21:34:22.615] cn.bdqfork.core.factory.DefaultBeanFactory [176] [Test worker]- resovle map dependences by type cn.bdqfork.model.collection.CollectionPropertyDao !
+[ TRACE] [2020-02-09 21:34:22.616] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.collection.CollectionPropertyDaoImpl1 !
+[ TRACE] [2020-02-09 21:34:22.616] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.collection.CollectionPropertyDaoImpl1 using constructor!
+[ TRACE] [2020-02-09 21:34:22.616] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.collection.CollectionPropertyDaoImpl1 by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.617] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.collection.CollectionPropertyDaoImpl1 is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.617] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.collection.CollectionPropertyDaoImpl1 !
+[ TRACE] [2020-02-09 21:34:22.620] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.collection.CollectionPropertyDaoImpl2 !
+[ TRACE] [2020-02-09 21:34:22.620] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.collection.CollectionPropertyDaoImpl2 using constructor!
+[ TRACE] [2020-02-09 21:34:22.621] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.collection.CollectionPropertyDaoImpl2 by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.621] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.collection.CollectionPropertyDaoImpl2 is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.622] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.collection.CollectionPropertyDaoImpl2 !
+[ TRACE] [2020-02-09 21:34:22.625] cn.bdqfork.core.factory.DefaultBeanFactory [115] [Test worker]- do injected field daos for bean cn.bdqfork.model.collection.CollectionPropertyService !
+[ TRACE] [2020-02-09 21:34:22.626] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName , type java.util.List<cn.bdqfork.model.collection.CollectionPropertyDao> and require is true for bean collectionPropertyService with injected point !
+[ TRACE] [2020-02-09 21:34:22.626] cn.bdqfork.core.factory.DefaultBeanFactory [166] [Test worker]- resovle collection dependences by type cn.bdqfork.model.collection.CollectionPropertyDao !
+[ TRACE] [2020-02-09 21:34:22.627] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.collection.CollectionPropertyService !
+[ TRACE] [2020-02-09 21:34:22.633] cn.bdqfork.context.AnnotationApplicationContext [79] [Test worker]- create BeanFactory of type cn.bdqfork.core.factory.DefaultJSR250BeanFactory !
+[ TRACE] [2020-02-09 21:34:22.634] cn.bdqfork.context.AnnotationApplicationContext [86] [Test worker]- register ResourceReader of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.634] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.context.configuration.reader.GenericResourceReader !
+[ TRACE] [2020-02-09 21:34:22.634] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.context.configuration.reader.GenericResourceReader using constructor!
+[ TRACE] [2020-02-09 21:34:22.635] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.context.configuration.reader.GenericResourceReader by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.635] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.context.configuration.reader.GenericResourceReader is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.638] cn.bdqfork.context.AnnotationApplicationContext [110] [Test worker]- register aop processor !
+[ TRACE] [2020-02-09 21:34:22.638] cn.bdqfork.context.AnnotationApplicationContext [151] [Test worker]- scan bean by path cn.bdqfork.model.configration !
+[ TRACE] [2020-02-09 21:34:22.639] cn.bdqfork.context.AnnotationApplicationContext [171] [Test worker]- register BeanDefinition !
+[ TRACE] [2020-02-09 21:34:22.640] cn.bdqfork.context.AnnotationApplicationContext [191] [Test worker]- process environment !
+[ TRACE] [2020-02-09 21:34:22.640] cn.bdqfork.context.AnnotationApplicationContext [223] [Test worker]- register BeanFactory processor !
+[ TRACE] [2020-02-09 21:34:22.640] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.aop.processor.AopProxyProcessor !
+[ TRACE] [2020-02-09 21:34:22.640] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.aop.processor.AopProxyProcessor using constructor!
+[ TRACE] [2020-02-09 21:34:22.641] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.aop.processor.AopProxyProcessor by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.641] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.aop.processor.AopProxyProcessor is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.642] cn.bdqfork.context.AnnotationApplicationContext [243] [Test worker]- register BeanFactoryAware processor !
+[ TRACE] [2020-02-09 21:34:22.642] cn.bdqfork.context.AnnotationApplicationContext [203] [Test worker]- register bean processor !
+[ TRACE] [2020-02-09 21:34:22.642] cn.bdqfork.context.AnnotationApplicationContext [136] [Test worker]- register shutdown hook !
+[ TRACE] [2020-02-09 21:34:22.643] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.configration.Server !
+[ TRACE] [2020-02-09 21:34:22.644] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.configration.Server using constructor!
+[ TRACE] [2020-02-09 21:34:22.644] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.configration.Server by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.645] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.configration.Server is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.646] cn.bdqfork.core.factory.DefaultBeanFactory [115] [Test worker]- do injected field serverConfig for bean cn.bdqfork.model.configration.Server !
+[ TRACE] [2020-02-09 21:34:22.646] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName , type cn.bdqfork.model.configration.ServerConfig and require is true for bean server with injected point !
+[ TRACE] [2020-02-09 21:34:22.647] cn.bdqfork.core.factory.DefaultBeanFactory [185] [Test worker]- resovle object dependence by type cn.bdqfork.model.configration.ServerConfig !
+[ TRACE] [2020-02-09 21:34:22.647] cn.bdqfork.core.factory.AbstractBeanFactory [90] [Test worker]- get singleton of type cn.bdqfork.model.configration.ServerConfig !
+[ TRACE] [2020-02-09 21:34:22.647] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [75] [Test worker]- create instance for cn.bdqfork.model.configration.ServerConfig using constructor!
+[ TRACE] [2020-02-09 21:34:22.647] cn.bdqfork.core.factory.DefaultBeanFactory [54] [Test worker]- instantiate bean cn.bdqfork.model.configration.ServerConfig by injected constructor !
+[ TRACE] [2020-02-09 21:34:22.648] cn.bdqfork.core.factory.DefaultBeanFactory [63] [Test worker]- injected constructor for bean cn.bdqfork.model.configration.ServerConfig is null, will use default constructor !
+[ TRACE] [2020-02-09 21:34:22.648] cn.bdqfork.core.factory.DefaultBeanFactory [115] [Test worker]- do injected field localhost for bean cn.bdqfork.model.configration.ServerConfig !
+[ TRACE] [2020-02-09 21:34:22.648] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName , type java.lang.String and require is true for bean serverConfig with injected point !
+[ TRACE] [2020-02-09 21:34:22.649] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [145] [Test worker]- dependence beanName , type java.lang.String and require is true for bean serverConfig exist, will return exist value !
+[ TRACE] [2020-02-09 21:34:22.649] cn.bdqfork.core.factory.DefaultBeanFactory [115] [Test worker]- do injected field names for bean cn.bdqfork.model.configration.ServerConfig !
+[ TRACE] [2020-02-09 21:34:22.649] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName , type java.util.List and require is true for bean serverConfig with injected point !
+[ TRACE] [2020-02-09 21:34:22.650] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [145] [Test worker]- dependence beanName , type java.util.List and require is true for bean serverConfig exist, will return exist value !
+[ TRACE] [2020-02-09 21:34:22.650] cn.bdqfork.core.factory.DefaultBeanFactory [115] [Test worker]- do injected field port for bean cn.bdqfork.model.configration.ServerConfig !
+[ TRACE] [2020-02-09 21:34:22.650] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [134] [Test worker]- resolve dependence beanName , type int and require is true for bean serverConfig with injected point !
+[ TRACE] [2020-02-09 21:34:22.651] cn.bdqfork.core.factory.AbstractAutoInjectedBeanFactory [145] [Test worker]- dependence beanName , type int and require is true for bean serverConfig exist, will return exist value !
+[ TRACE] [2020-02-09 21:34:22.651] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.configration.ServerConfig !
+[ TRACE] [2020-02-09 21:34:22.652] cn.bdqfork.core.factory.AbstractJSR250BeanFactory [21] [Test worker]- execute PostConstuct method for bean cn.bdqfork.model.configration.Server !
+name1
+name2
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

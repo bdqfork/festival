@@ -1,0 +1,19 @@
+def libs = rootProject.ext.libraries
+
+dependencies {
+    implementation project(':festival-web')
+    implementation "io.vertx:vertx-web:${libs.vertx}"
+    implementation "io.vertx:vertx-rx-java2:${libs.vertx}"
+    implementation "io.vertx:vertx-auth-shiro:${libs.vertx}"
+}
+
+tasks.withType(PublishToMavenRepository) {
+    onlyIf {
+        false
+    }
+}
+tasks.withType(PublishToMavenLocal) {
+    onlyIf {
+        false
+    }
+}
