@@ -1,8 +1,8 @@
 package cn.bdqfork.web;
 
-import cn.bdqfork.context.configuration.reader.ResourceReader;
 import cn.bdqfork.context.aware.BeanFactoryAware;
 import cn.bdqfork.context.aware.ResourceReaderAware;
+import cn.bdqfork.context.configuration.reader.ResourceReader;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.NoSuchBeanException;
 import cn.bdqfork.core.factory.BeanFactory;
@@ -11,8 +11,8 @@ import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.StringUtils;
-import cn.bdqfork.web.constant.ApplicationProperty;
 import cn.bdqfork.web.annotation.RouteController;
+import cn.bdqfork.web.constant.ApplicationProperty;
 import cn.bdqfork.web.filter.AuthFilter;
 import cn.bdqfork.web.filter.Filter;
 import io.reactivex.Completable;
@@ -30,7 +30,6 @@ import io.vertx.reactivex.ext.web.sstore.SessionStore;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -140,17 +139,26 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
         return authProvider;
     }
 
-    private void registerRouteMapping(io.vertx.reactivex.ext.web.Router router) throws Exception {
+    private void registerRouteMapping(Router router) throws Exception {
 
         AuthHandler authHandler = getAuthHandler();
 
-        RouteHandler routeHandler = new RouteHandler(router, authHandler);
+        List<RouteAttribute> routeAttributes = new RouteResolver().resolve(getRouteBeans());
 
-        getOrderedFilters().forEach(routeHandler::registerFilter);
+        RouteManager routeManager = new RouteManager(router, authHandler);
 
-        registerAuthFilterIfNeed(routeHandler);
+        List<Filter> filters = new LinkedList<>();
 
-        routeHandler.resolve(getRouteBeans());
+        registerAuthFilterIfNeed(filters);
+
+        filters = getOrderedFilters(filters);
+
+        filters.forEach(routeManager::registerFilter);
+
+        for (RouteAttribute routeAttribute : routeAttributes) {
+            routeManager.handle(routeAttribute);
+        }
+
 
     }
 
@@ -178,26 +186,24 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
         return beans;
     }
 
-    private Collection<Filter> getOrderedFilters() throws BeansException {
-        Collection<Filter> filters;
+    private List<Filter> getOrderedFilters(List<Filter> filters) throws BeansException {
         try {
-            filters = beanFactory.getBeans(Filter.class).values();
+            filters.addAll(beanFactory.getBeans(Filter.class).values());
         } catch (NoSuchBeanException e) {
             if (log.isDebugEnabled()) {
                 log.debug("no filter found!");
             }
-            filters = Collections.emptyList();
         }
         List<Filter> orderedfilters = BeanUtils.sortByOrder(filters);
         Collections.reverse(orderedfilters);
         return orderedfilters;
     }
 
-    private void registerAuthFilterIfNeed(RouteHandler routeHandler) throws BeansException {
+    private void registerAuthFilterIfNeed(List<Filter> filters) throws BeansException {
         try {
             beanFactory.getBean(AuthFilter.class);
         } catch (NoSuchBeanException e) {
-            routeHandler.registerFilter(new AuthFilter());
+            filters.add(new AuthFilter());
         }
     }
 

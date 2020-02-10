@@ -3,7 +3,7 @@ package cn.bdqfork.web.filter;
 import cn.bdqfork.core.factory.processor.OrderAware;
 import cn.bdqfork.web.PermitHolder;
 import cn.bdqfork.web.RouteAttribute;
-import cn.bdqfork.web.RouteHandler;
+import cn.bdqfork.web.RouteManager;
 import cn.bdqfork.web.util.SecurityUtils;
 import io.reactivex.Observable;
 import io.reactivex.functions.BiFunction;
@@ -24,7 +24,7 @@ public class AuthFilter implements Filter, OrderAware {
     @Override
     public void doFilter(RoutingContext routingContext, FilterChain filterChain) {
         RouteAttribute routeAttribute = (RouteAttribute) routingContext.data()
-                .get(RouteHandler.ROUTE_ATTRIBETE_KEY);
+                .get(RouteManager.ROUTE_ATTRIBETE_KEY);
         if (routeAttribute == null || !routeAttribute.isAuth()) {
             filterChain.doFilter(routingContext);
             return;
