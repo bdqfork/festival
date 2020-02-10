@@ -95,7 +95,7 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
 
         try {
             return ReflectUtils.invokeMethod(configBean, factoryMethod, args);
-        } catch (InvocationTargetException | IllegalAccessException e) {
+        } catch (InvocationTargetException e) {
             throw new BeansException(e);
         }
 
@@ -116,11 +116,7 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
         }
         Object value = resovleDependence(injectedPoint, beanName);
         ReflectUtils.makeAccessible(field);
-        try {
-            ReflectUtils.setValue(instance, field, value);
-        } catch (IllegalAccessException e) {
-            throw new FailedInjectedFieldException(e);
-        }
+        ReflectUtils.setValue(instance, field, value);
     }
 
 
@@ -132,7 +128,7 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
         Object arg = resovleDependence(injectedPoint, beanName);
         try {
             ReflectUtils.invokeMethod(instance, method, arg);
-        } catch (IllegalAccessException | InvocationTargetException e) {
+        } catch (InvocationTargetException e) {
             throw new FailedInjectedMethodException(e);
         }
     }

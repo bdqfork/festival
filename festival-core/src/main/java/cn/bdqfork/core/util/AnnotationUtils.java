@@ -114,7 +114,7 @@ public class AnnotationUtils {
     private static Object getValue(Annotation vistedAnnotation, Method method) {
         try {
             return ReflectUtils.invokeMethod(vistedAnnotation, method);
-        } catch (InvocationTargetException | IllegalAccessException e) {
+        } catch (InvocationTargetException e) {
             throw new IllegalStateException(e);
         }
     }

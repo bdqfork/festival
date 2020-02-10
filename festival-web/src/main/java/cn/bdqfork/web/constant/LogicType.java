@@ -1,4 +1,4 @@
-package cn.bdqfork.security.common;
+package cn.bdqfork.web.constant;
 
 /**
  * @author bdq

@@ -130,7 +130,7 @@ public class ClassGenerator {
 
     /**
      * 生成构造方法，最终生成的方法文本示例如下
-     * modifier <init> (parameters) throws exceptions{
+     * modifier &lt;init&gt; (parameters) throws exceptions{
      * body
      * }
      *
@@ -256,7 +256,7 @@ public class ClassGenerator {
      *
      * @param classLoader      ClassLoader
      * @param protectionDomain ProtectionDomain
-     * @return Class<?>
+     * @return 生成的Class
      */
     public Class<?> toClass(ClassLoader classLoader, ProtectionDomain protectionDomain) {
         try {

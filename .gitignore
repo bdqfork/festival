@@ -19,10 +19,12 @@ target/
 
 ### NetBeans ###
 /nbproject/private/
-/build/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
 .vscode
 file-uploads/
+.gradle
+build/
+out/

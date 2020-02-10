@@ -1,11 +1,11 @@
-package cn.bdqfork.security.annotation;
+package cn.bdqfork.web.annotation;
 
-import cn.bdqfork.security.common.LogicType;
+import cn.bdqfork.web.constant.LogicType;
 
 import java.lang.annotation.*;
 
 /**
- * 表示哪些权限可以访问api
+ * 表示哪些角色可以访问api
  *
  * @author bdq
  * @since 2020/1/27
@@ -14,7 +14,7 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
-public @interface PermitAllowed {
+public @interface RolesAllowed {
     String[] value();
 
     LogicType logic() default LogicType.AND;

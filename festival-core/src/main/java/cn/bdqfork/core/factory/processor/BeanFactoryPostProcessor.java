@@ -14,7 +14,7 @@ public interface BeanFactoryPostProcessor {
      * 执行后置处理
      *
      * @param beanFactory 可配置bean工厂
-     * @throws BeansException
+     * @throws BeansException 异常
      */
     void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException;
 }

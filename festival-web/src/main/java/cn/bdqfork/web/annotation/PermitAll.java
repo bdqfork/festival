@@ -1,4 +1,4 @@
-package cn.bdqfork.security.annotation;
+package cn.bdqfork.web.annotation;
 
 import java.lang.annotation.*;
 

@@ -1,6 +1,6 @@
-package cn.bdqfork.security.util;
+package cn.bdqfork.web.util;
 
-import cn.bdqfork.security.common.LogicType;
+import cn.bdqfork.web.constant.LogicType;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.functions.Function;

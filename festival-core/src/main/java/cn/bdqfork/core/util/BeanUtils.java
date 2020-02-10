@@ -80,6 +80,8 @@ public class BeanUtils {
     /**
      * 对bean的集合进行排序，order越小越前，其他的统一放最后，用户实现的order的value必须大于零
      *
+     * @param <T>   实现了getOrder或者被@Order注解的类
+     * @param beans 待排序的集合
      * @return 排序好的beanList
      */
     public static <T> List<T> sortByOrder(Collection<T> beans) {

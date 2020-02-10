@@ -2,11 +2,11 @@ package cn.bdqfork.example.domain;
 
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.DisposableBean;
-import cn.bdqfork.security.annotation.Auth;
-import cn.bdqfork.security.annotation.PermitAll;
-import cn.bdqfork.security.annotation.PermitAllowed;
-import cn.bdqfork.security.annotation.RolesAllowed;
-import cn.bdqfork.security.common.LogicType;
+import cn.bdqfork.web.annotation.Auth;
+import cn.bdqfork.web.annotation.PermitAll;
+import cn.bdqfork.web.annotation.PermitAllowed;
+import cn.bdqfork.web.annotation.RolesAllowed;
+import cn.bdqfork.web.constant.LogicType;
 import cn.bdqfork.web.RouterAware;
 import cn.bdqfork.web.annotation.GetMapping;
 import cn.bdqfork.web.annotation.PostMapping;

@@ -1,6 +1,8 @@
 package cn.bdqfork.context.factory;
 
 import cn.bdqfork.context.configuration.Configuration;
+import cn.bdqfork.context.configuration.Value;
+import cn.bdqfork.context.configuration.reader.ResourceReader;
 import cn.bdqfork.core.exception.ResolvedException;
 import cn.bdqfork.core.exception.ScopeException;
 import cn.bdqfork.core.factory.AbstractBeanFactory;
@@ -12,8 +14,6 @@ import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.core.util.StringUtils;
-import cn.bdqfork.context.configuration.Value;
-import cn.bdqfork.context.configuration.reader.ResourceReader;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.PostConstruct;
