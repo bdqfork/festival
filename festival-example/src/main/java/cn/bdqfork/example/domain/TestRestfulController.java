@@ -11,8 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Singleton
-@Route
-@RouteMapping("/test")
+@RouteController("/test")
 public class TestRestfulController {
 
     @GetMapping("/hello")

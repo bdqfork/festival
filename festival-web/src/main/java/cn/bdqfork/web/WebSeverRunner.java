@@ -12,7 +12,7 @@ import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.StringUtils;
 import cn.bdqfork.web.constant.ApplicationProperty;
-import cn.bdqfork.web.annotation.Route;
+import cn.bdqfork.web.annotation.RouteController;
 import cn.bdqfork.web.filter.AuthFilter;
 import cn.bdqfork.web.filter.Filter;
 import io.reactivex.Completable;
@@ -169,7 +169,7 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
     private List<Object> getRouteBeans() throws BeansException {
         List<Object> beans = new LinkedList<>();
         for (BeanDefinition beanDefinition : beanFactory.getBeanDefinitions().values()) {
-            if (AnnotationUtils.isAnnotationPresent(beanDefinition.getBeanClass(), Route.class)) {
+            if (AnnotationUtils.isAnnotationPresent(beanDefinition.getBeanClass(), RouteController.class)) {
                 String beanName = beanDefinition.getBeanName();
                 Object bean = beanFactory.getBean(beanName);
                 beans.add(bean);

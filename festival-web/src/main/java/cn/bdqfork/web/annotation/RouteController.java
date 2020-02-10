@@ -11,9 +11,10 @@ import java.lang.annotation.*;
  */
 @Optimize
 @Named
+@RouteMapping
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
-public @interface Route {
+public @interface RouteController {
     String value() default "";
 }
