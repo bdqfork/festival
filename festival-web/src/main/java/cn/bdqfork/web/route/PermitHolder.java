@@ -1,4 +1,4 @@
-package cn.bdqfork.web;
+package cn.bdqfork.web.route;
 
 import cn.bdqfork.web.annotation.PermitAllowed;
 import cn.bdqfork.web.annotation.RolesAllowed;
@@ -11,6 +11,11 @@ import cn.bdqfork.web.constant.LogicType;
 public class PermitHolder {
     private String[] permits;
     private LogicType logicType;
+
+    public PermitHolder(LogicType logicType, String... permits) {
+        this.logicType = logicType;
+        this.permits = permits;
+    }
 
     public PermitHolder(PermitAllowed permitAllowed) {
         permits = permitAllowed.value();

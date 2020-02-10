@@ -1,9 +1,9 @@
-package cn.bdqfork.web.filter;
+package cn.bdqfork.web.route.filter;
 
 import cn.bdqfork.core.factory.processor.OrderAware;
-import cn.bdqfork.web.PermitHolder;
-import cn.bdqfork.web.RouteAttribute;
-import cn.bdqfork.web.RouteManager;
+import cn.bdqfork.web.route.PermitHolder;
+import cn.bdqfork.web.route.RouteAttribute;
+import cn.bdqfork.web.route.RouteManager;
 import cn.bdqfork.web.util.SecurityUtils;
 import io.reactivex.Observable;
 import io.reactivex.functions.BiFunction;
@@ -25,7 +25,7 @@ public class AuthFilter implements Filter, OrderAware {
     public void doFilter(RoutingContext routingContext, FilterChain filterChain) {
         RouteAttribute routeAttribute = (RouteAttribute) routingContext.data()
                 .get(RouteManager.ROUTE_ATTRIBETE_KEY);
-        if (routeAttribute == null || !routeAttribute.isAuth()) {
+        if (routeAttribute == null || !routeAttribute.isAuth() || routeAttribute.isPermitAll()) {
             filterChain.doFilter(routingContext);
             return;
         }

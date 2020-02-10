@@ -1,4 +1,4 @@
-package cn.bdqfork.web.handler;
+package cn.bdqfork.web.route.handler;
 
 import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.ReflectUtils;

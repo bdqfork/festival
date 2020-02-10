@@ -1,12 +1,12 @@
-package cn.bdqfork.web;
+package cn.bdqfork.web.route;
 
 import cn.bdqfork.core.util.ReflectUtils;
-import cn.bdqfork.web.filter.Filter;
-import cn.bdqfork.web.filter.FilterChain;
-import cn.bdqfork.web.handler.DefaultParameterHandler;
-import cn.bdqfork.web.handler.DefaultResultHandler;
-import cn.bdqfork.web.handler.ParameterHandler;
-import cn.bdqfork.web.handler.ResultHandler;
+import cn.bdqfork.web.route.filter.Filter;
+import cn.bdqfork.web.route.filter.FilterChain;
+import cn.bdqfork.web.route.handler.DefaultParameterHandler;
+import cn.bdqfork.web.route.handler.DefaultResultHandler;
+import cn.bdqfork.web.route.handler.ParameterHandler;
+import cn.bdqfork.web.route.handler.ResultHandler;
 import io.reactivex.Observable;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.reactivex.ext.web.Route;
@@ -53,7 +53,7 @@ public class RouteManager {
         handle(routeAttribute, null);
     }
 
-    public void handle(RouteAttribute routeAttribute, RouteInvocationHolder invocationHolder) {
+    public void handle(RouteAttribute routeAttribute, RouteInvocation invocation) {
 
         String path = routeAttribute.getUrl();
         HttpMethod httpMethod = routeAttribute.getHttpMethod();
@@ -68,28 +68,43 @@ public class RouteManager {
 
         Route route = router.route(httpMethod, path);
 
-        if (!routeAttribute.isPermitAll()) {
+        if (authHandler != null && routeAttribute.isAuth() && !routeAttribute.isPermitAll()) {
             route.handler(authHandler);
         }
 
-        if (invocationHolder == null) {
+        if (invocation == null) {
             if (log.isInfoEnabled()) {
                 log.info("custom {} mapping path:{}!", httpMethod.name(), path);
             }
-            route.handler(routeAttribute.getContextHandler());
-            return;
+
+            FilterChain invoker = new FilterChain() {
+                @Override
+                public void doFilter(RoutingContext routingContext) {
+                    routeAttribute.getContextHandler().handle(routingContext);
+                }
+            };
+
+            FilterChain filterChain = buildFilterChain(invoker);
+
+            doHandler(routeAttribute, route, filterChain);
+
+        } else {
+            if (log.isInfoEnabled()) {
+                log.info("{} mapping path:{} to {}:{}!", httpMethod.name(), path,
+                        invocation.method.getDeclaringClass().getCanonicalName(),
+                        ReflectUtils.getSignature(invocation.method));
+            }
+
+            FilterChain invoker = createInvokeHandler(invocation.bean, invocation.method);
+
+            FilterChain filterChain = buildFilterChain(invoker);
+
+            doHandler(routeAttribute, route, filterChain);
         }
 
-        if (log.isInfoEnabled()) {
-            log.info("{} mapping path:{} to {}:{}!", httpMethod.name(), path,
-                    invocationHolder.method.getDeclaringClass().getCanonicalName(),
-                    ReflectUtils.getSignature(invocationHolder.method));
-        }
+    }
 
-        FilterChain invoker = createInvokeHandler(invocationHolder.bean, invocationHolder.method);
-
-        FilterChain filterChain = buildFilterChain(invoker);
-
+    private void doHandler(RouteAttribute routeAttribute, Route route, FilterChain filterChain) {
         route.handler(routingContext -> {
             routingContext.data().put(ROUTE_ATTRIBETE_KEY, routeAttribute);
             filterChain.doFilter(routingContext);
@@ -138,16 +153,6 @@ public class RouteManager {
                         });
             }
         };
-    }
-
-    public static class RouteInvocationHolder {
-        Object bean;
-        Method method;
-
-        public RouteInvocationHolder(Object bean, Method method) {
-            this.bean = bean;
-            this.method = method;
-        }
     }
 
 }

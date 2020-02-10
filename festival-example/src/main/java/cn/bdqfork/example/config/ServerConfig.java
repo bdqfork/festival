@@ -1,9 +1,12 @@
 package cn.bdqfork.example.config;
 
 import cn.bdqfork.context.configuration.Configuration;
-import cn.bdqfork.web.RouteAttribute;
+import cn.bdqfork.web.constant.LogicType;
+import cn.bdqfork.web.route.PermitHolder;
+import cn.bdqfork.web.route.RouteAttribute;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.reactivex.ext.web.handler.ErrorHandler;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -24,12 +27,32 @@ public class ServerConfig {
 
     @Singleton
     @Named
-    public RouteAttribute routeAttribute() {
+    public ErrorHandler errorHandler() {
+        return ErrorHandler.create(true);
+    }
+
+    @Singleton
+    @Named("route1")
+    public RouteAttribute customRoute() {
         return RouteAttribute.builder()
                 .httpMethod(HttpMethod.GET)
                 .url("/custom")
                 .contextHandler(routingContext -> {
                     routingContext.response().end("test custom!");
+                })
+                .build();
+    }
+
+    @Singleton
+    @Named("route2")
+    public RouteAttribute customRoute2() {
+        return RouteAttribute.builder()
+                .httpMethod(HttpMethod.GET)
+                .url("/custom2")
+                .auth(true)
+                .rolesAllowed(new PermitHolder(LogicType.OR, "role:administrator", "role:hispassword"))
+                .contextHandler(routingContext -> {
+                    routingContext.response().end("test custom2!");
                 })
                 .build();
     }

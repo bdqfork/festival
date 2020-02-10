@@ -9,30 +9,31 @@ import cn.bdqfork.core.factory.BeanFactory;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.util.AnnotationUtils;
-import cn.bdqfork.core.util.AopUtils;
 import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.StringUtils;
-import cn.bdqfork.web.annotation.*;
+import cn.bdqfork.web.annotation.RouteController;
 import cn.bdqfork.web.constant.ApplicationProperty;
-import cn.bdqfork.web.filter.AuthFilter;
-import cn.bdqfork.web.filter.Filter;
+import cn.bdqfork.web.route.RouteAttribute;
+import cn.bdqfork.web.route.RouteManager;
+import cn.bdqfork.web.route.RouteResolver;
+import cn.bdqfork.web.route.SessionManager;
+import cn.bdqfork.web.route.filter.AuthFilter;
+import cn.bdqfork.web.route.filter.Filter;
 import io.reactivex.Completable;
 import io.vertx.core.Promise;
 import io.vertx.reactivex.core.AbstractVerticle;
 import io.vertx.reactivex.core.http.HttpServer;
-import io.vertx.reactivex.ext.auth.AuthProvider;
 import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.handler.AuthHandler;
 import io.vertx.reactivex.ext.web.handler.BodyHandler;
 import io.vertx.reactivex.ext.web.handler.LoggerHandler;
-import io.vertx.reactivex.ext.web.handler.SessionHandler;
-import io.vertx.reactivex.ext.web.sstore.LocalSessionStore;
-import io.vertx.reactivex.ext.web.sstore.SessionStore;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author bdq
@@ -61,6 +62,13 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
         startPromise.complete();
     }
 
+    private void registerSessionHandler(Router router) throws BeansException {
+        SessionManager sessionManager = new SessionManager(router, vertx);
+        sessionManager.setBeanFactory(beanFactory);
+        sessionManager.setResourceReader(resourceReader);
+        sessionManager.registerSessionHandler();
+    }
+
     private void registerLoggingHandler(Router router) throws BeansException {
         LoggerHandler loggerHandler;
         try {
@@ -73,160 +81,29 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
         }
     }
 
-    private void registerSessionHandler(io.vertx.reactivex.ext.web.Router router) throws BeansException {
-        SessionStore sessionStore = getOrCreateSessionStore();
-
-        SessionHandler sessionHandler = SessionHandler.create(sessionStore);
-
-        resolveAndSetSessionProperties(sessionHandler);
-
-        AuthProvider authProvider = getAuthProvider();
-
-        if (authProvider != null) {
-            sessionHandler.setAuthProvider(authProvider);
-        }
-
-        router.route().handler(sessionHandler);
-    }
-
-    private SessionStore getOrCreateSessionStore() throws BeansException {
-        SessionStore sessionStore;
-        try {
-            sessionStore = beanFactory.getBean(SessionStore.class);
-        } catch (NoSuchBeanException e) {
-            sessionStore = LocalSessionStore.create(vertx);
-        }
-        return sessionStore;
-    }
-
-    private void resolveAndSetSessionProperties(SessionHandler sessionHandler) {
-        Boolean cookieHttpOnly = resourceReader.readProperty(ApplicationProperty.SERVER_COOKIE_HTTP_ONLY);
-        if (cookieHttpOnly != null) {
-            sessionHandler.setCookieHttpOnlyFlag(cookieHttpOnly);
-        }
-
-        Boolean cookieSecure = resourceReader.readProperty(ApplicationProperty.SERVER_COOKIE_SECURE);
-        if (cookieSecure != null) {
-            sessionHandler.setCookieSecureFlag(cookieSecure);
-        }
-
-        Long sessionTimeout = resourceReader.readProperty(ApplicationProperty.SERVER_SESSION_TIMEOUT);
-        if (sessionTimeout != null) {
-            sessionHandler.setSessionTimeout(sessionTimeout);
-        }
-
-        String sessionCookieName = resourceReader.readProperty(ApplicationProperty.SERVER_SESSION_COOKIE_NAME);
-        if (!StringUtils.isEmpty(sessionCookieName)) {
-            sessionHandler.setSessionCookieName(sessionCookieName);
-        }
-
-        String sessionCookiePath = resourceReader.readProperty(ApplicationProperty.SERVER_SESSION_COOKIE_PATH);
-        if (!StringUtils.isEmpty(sessionCookiePath)) {
-            sessionHandler.setSessionCookiePath(sessionCookiePath);
-        }
-
-    }
-
-    private AuthProvider getAuthProvider() {
-        AuthProvider authProvider = null;
-        try {
-            authProvider = beanFactory.getBean(AuthProvider.class);
-        } catch (BeansException e) {
-            if (log.isDebugEnabled()) {
-                log.debug("no auth provider");
-            }
-        }
-        return authProvider;
-    }
-
     private void registerRouteMapping(Router router) throws Exception {
-        AuthHandler authHandler = getAuthHandler();
+        RouteManager routeManager = new RouteManager(router, getAuthHandler());
 
-        RouteManager routeManager = new RouteManager(router, authHandler);
+        registerFilters(routeManager);
 
-        List<Filter> filters = new LinkedList<>();
+        RouteResolver routeResolver = new RouteResolver();
 
-        registerAuthFilterIfNeed(filters);
+        routeResolver.resovle(getRouteBeans()).forEach(routeManager::handle);
 
-        filters = getOrderedFilters(filters);
-
-        filters.forEach(routeManager::registerFilter);
-
-        doRegisterMapping(routeManager);
-
-        Collection<RouteAttribute> customRoutes = getCustomRoute();
+        Collection<RouteAttribute> customRoutes = getCustomRoutes();
 
         customRoutes.forEach(routeManager::handle);
 
     }
 
-    private Collection<RouteAttribute> getCustomRoute() throws BeansException {
+    private void registerFilters(RouteManager routeManager) throws BeansException {
+        getOrderedFilters().forEach(routeManager::registerFilter);
+    }
+
+    private Collection<RouteAttribute> getCustomRoutes() throws BeansException {
         return beanFactory.getBeans(RouteAttribute.class).values();
     }
 
-    private void doRegisterMapping(RouteManager routeManager) throws BeansException {
-        for (Object routeBean : getRouteBeans()) {
-
-            Class<?> beanClass = AopUtils.getTargetClass(routeBean);
-            String baseUrl = resolveBaseUrl(beanClass);
-
-            for (Method method : beanClass.getDeclaredMethods()) {
-
-                if (!AnnotationUtils.isAnnotationPresent(method, RouteMapping.class)) {
-                    continue;
-                }
-
-                RouteMapping routeMapping = AnnotationUtils.getMergedAnnotation(method, RouteMapping.class);
-
-                RouteAttribute attribute = RouteAttribute.builder()
-                        .url(baseUrl + routeMapping.value())
-                        .httpMethod(routeMapping.method())
-                        .build();
-
-                resolveAuthInfo(attribute, beanClass, method);
-
-                routeManager.handle(attribute, new RouteManager.RouteInvocationHolder(routeBean, method));
-            }
-        }
-    }
-
-    private void resolveAuthInfo(RouteAttribute routeAttribute, Class<?> beanClass, Method routeMethod) {
-        if (!checkIfAuth(beanClass, routeMethod)) {
-            return;
-        }
-        routeAttribute.setAuth(true);
-
-        boolean permitAll = AnnotationUtils.isAnnotationPresent(routeMethod, PermitAll.class);
-
-        routeAttribute.setPermitAll(permitAll);
-
-        if (permitAll) {
-            return;
-        }
-
-        PermitAllowed permitAllowed = AnnotationUtils.getMergedAnnotation(routeMethod, PermitAllowed.class);
-        if (permitAllowed != null) {
-            routeAttribute.setPermitAllowed(new PermitHolder(permitAllowed));
-        }
-
-        RolesAllowed rolesAllowed = AnnotationUtils.getMergedAnnotation(routeMethod, RolesAllowed.class);
-        if (rolesAllowed != null) {
-            routeAttribute.setRolesAllowed(new PermitHolder(rolesAllowed));
-        }
-
-    }
-
-    private boolean checkIfAuth(Class<?> beanClass, Method routeMethod) {
-        return AnnotationUtils.isAnnotationPresent(beanClass, Auth.class) || AnnotationUtils.isAnnotationPresent(routeMethod, Auth.class);
-    }
-
-    private String resolveBaseUrl(Class<?> beanClass) {
-        if (AnnotationUtils.isAnnotationPresent(beanClass, RouteMapping.class)) {
-            return Objects.requireNonNull(AnnotationUtils.getMergedAnnotation(beanClass, RouteMapping.class))
-                    .value();
-        }
-        return "";
-    }
 
     private AuthHandler getAuthHandler() throws BeansException {
         AuthHandler authHandler = null;
@@ -252,17 +129,18 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
         return beans;
     }
 
-    private List<Filter> getOrderedFilters(List<Filter> filters) throws BeansException {
+    private List<Filter> getOrderedFilters() throws BeansException {
         try {
-            filters.addAll(beanFactory.getBeans(Filter.class).values());
+            Collection<Filter> filters = beanFactory.getBeans(Filter.class).values();
+            List<Filter> orderedfilters = BeanUtils.sortByOrder(filters);
+            Collections.reverse(orderedfilters);
+            return orderedfilters;
         } catch (NoSuchBeanException e) {
             if (log.isDebugEnabled()) {
                 log.debug("no filter found!");
             }
+            return Collections.emptyList();
         }
-        List<Filter> orderedfilters = BeanUtils.sortByOrder(filters);
-        Collections.reverse(orderedfilters);
-        return orderedfilters;
     }
 
     private void registerAuthFilterIfNeed(List<Filter> filters) throws BeansException {

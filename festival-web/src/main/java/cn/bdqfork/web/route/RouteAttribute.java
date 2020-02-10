@@ -1,9 +1,10 @@
-package cn.bdqfork.web;
+package cn.bdqfork.web.route;
 
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.reactivex.ext.web.RoutingContext;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,7 @@ import lombok.Setter;
  * @author bdq
  * @since 2020/1/27
  */
+@EqualsAndHashCode
 @Builder
 @Getter
 @Setter

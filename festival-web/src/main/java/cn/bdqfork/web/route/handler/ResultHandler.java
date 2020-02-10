@@ -1,4 +1,4 @@
-package cn.bdqfork.web.handler;
+package cn.bdqfork.web.route.handler;
 
 import io.vertx.reactivex.ext.web.RoutingContext;
 
