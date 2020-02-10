@@ -38,6 +38,6 @@ web设计如下：
 4. 服务监控
 5. verticle service group
 6. @produces,@consumer以及跨域
-7. 用户自定义handler
-8. ssl支持
-9. 自定义配置文件路径
+7. ssl支持
+8. 自定义配置文件路径
+9. 移除vertx-java
