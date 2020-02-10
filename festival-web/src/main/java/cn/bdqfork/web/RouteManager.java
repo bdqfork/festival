@@ -45,10 +45,17 @@ public class RouteManager {
         this.authHandler = authHandler;
     }
 
-    public void handle(RouteAttribute routeAttribute) {
-        Method routeMethod = routeAttribute.getRouteMethod();
+    public void registerFilter(Filter filter) {
+        filters.add(filter);
+    }
 
-        String path = routeAttribute.getBaseUrl() + routeAttribute.getUrl();
+    public void handle(RouteAttribute routeAttribute) {
+        handle(routeAttribute, null);
+    }
+
+    public void handle(RouteAttribute routeAttribute, RouteInvocationHolder invocationHolder) {
+
+        String path = routeAttribute.getUrl();
         HttpMethod httpMethod = routeAttribute.getHttpMethod();
 
         String signature = generateRouteSignature(httpMethod, path);
@@ -59,20 +66,33 @@ public class RouteManager {
             registedRoutes.add(signature);
         }
 
-        if (log.isInfoEnabled()) {
-            log.info("{} mapping path:{} to {}:{}!", httpMethod.name(), path, routeMethod.getDeclaringClass()
-                    .getCanonicalName(), ReflectUtils.getSignature(routeMethod));
-        }
-
         Route route = router.route(httpMethod, path);
 
         if (!routeAttribute.isPermitAll()) {
             route.handler(authHandler);
         }
 
+        if (invocationHolder == null) {
+            if (log.isInfoEnabled()) {
+                log.info("custom {} mapping path:{}!", httpMethod.name(), path);
+            }
+            route.handler(routeAttribute.getContextHandler());
+            return;
+        }
+
+        if (log.isInfoEnabled()) {
+            log.info("{} mapping path:{} to {}:{}!", httpMethod.name(), path,
+                    invocationHolder.method.getDeclaringClass().getCanonicalName(),
+                    ReflectUtils.getSignature(invocationHolder.method));
+        }
+
+        FilterChain invoker = createInvokeHandler(invocationHolder.bean, invocationHolder.method);
+
+        FilterChain filterChain = buildFilterChain(invoker);
+
         route.handler(routingContext -> {
             routingContext.data().put(ROUTE_ATTRIBETE_KEY, routeAttribute);
-            buildFilterChain(routeAttribute).doFilter(routingContext);
+            filterChain.doFilter(routingContext);
         });
     }
 
@@ -88,9 +108,7 @@ public class RouteManager {
         }
     }
 
-    protected FilterChain buildFilterChain(RouteAttribute routeAttribute) {
-        FilterChain filterChain = createInvokeHandler(routeAttribute);
-
+    protected FilterChain buildFilterChain(FilterChain filterChain) {
         for (Filter filter : filters) {
             FilterChain finalFilterChain = filterChain;
             filterChain = new FilterChain() {
@@ -103,20 +121,13 @@ public class RouteManager {
         return filterChain;
     }
 
-    private FilterChain createInvokeHandler(RouteAttribute routeAttribute) {
+    private FilterChain createInvokeHandler(Object routeBean, Method routeMethod) {
         return new FilterChain() {
             @Override
             public void doFilter(RoutingContext routingContext) {
                 Observable.fromArray(routingContext.request())
-                        .map(request -> {
-                            Method routeMethod = routeAttribute.getRouteMethod();
-                            return parameterHandler.handle(routingContext, routeMethod.getParameters());
-                        })
-                        .map(args -> {
-                            Object routeBean = routeAttribute.getBean();
-                            Method routeMethod = routeAttribute.getRouteMethod();
-                            return invokeRouteMethod(routeBean, routeMethod, args);
-                        })
+                        .map(request -> parameterHandler.handle(routingContext, routeMethod.getParameters()))
+                        .map(args -> invokeRouteMethod(routeBean, routeMethod, args))
                         .subscribe(optional -> {
                             if (optional.isPresent()) {
                                 resultHandler.handle(routingContext, optional.get());
@@ -129,7 +140,14 @@ public class RouteManager {
         };
     }
 
-    public void registerFilter(Filter filter) {
-        filters.add(filter);
+    public static class RouteInvocationHolder {
+        Object bean;
+        Method method;
+
+        public RouteInvocationHolder(Object bean, Method method) {
+            this.bean = bean;
+            this.method = method;
+        }
     }
+
 }

@@ -1,11 +1,11 @@
 package cn.bdqfork.web;
 
+import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.reactivex.ext.web.RoutingContext;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.lang.reflect.Method;
 
 /**
  * @author bdq
@@ -16,15 +16,7 @@ import java.lang.reflect.Method;
 @Setter
 public class RouteAttribute {
     /**
-     * 路由bean
-     */
-    private Object bean;
-    /**
-     * base url
-     */
-    private String baseUrl;
-    /**
-     * mapping url
+     * url
      */
     private String url;
 
@@ -34,10 +26,9 @@ public class RouteAttribute {
     private HttpMethod httpMethod;
 
     /**
-     * mapping方法
+     * route handler
      */
-    private Method routeMethod;
-
+    private Handler<RoutingContext> contextHandler;
     /**
      * 访问权限
      */

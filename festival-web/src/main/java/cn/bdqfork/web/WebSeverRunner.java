@@ -9,9 +9,10 @@ import cn.bdqfork.core.factory.BeanFactory;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.util.AnnotationUtils;
+import cn.bdqfork.core.util.AopUtils;
 import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.StringUtils;
-import cn.bdqfork.web.annotation.RouteController;
+import cn.bdqfork.web.annotation.*;
 import cn.bdqfork.web.constant.ApplicationProperty;
 import cn.bdqfork.web.filter.AuthFilter;
 import cn.bdqfork.web.filter.Filter;
@@ -29,10 +30,9 @@ import io.vertx.reactivex.ext.web.sstore.LocalSessionStore;
 import io.vertx.reactivex.ext.web.sstore.SessionStore;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author bdq
@@ -140,10 +140,7 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
     }
 
     private void registerRouteMapping(Router router) throws Exception {
-
         AuthHandler authHandler = getAuthHandler();
-
-        List<RouteAttribute> routeAttributes = new RouteResolver().resolve(getRouteBeans());
 
         RouteManager routeManager = new RouteManager(router, authHandler);
 
@@ -155,11 +152,80 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
 
         filters.forEach(routeManager::registerFilter);
 
-        for (RouteAttribute routeAttribute : routeAttributes) {
-            routeManager.handle(routeAttribute);
+        doRegisterMapping(routeManager);
+
+        Collection<RouteAttribute> customRoutes = getCustomRoute();
+
+        customRoutes.forEach(routeManager::handle);
+
+    }
+
+    private Collection<RouteAttribute> getCustomRoute() throws BeansException {
+        return beanFactory.getBeans(RouteAttribute.class).values();
+    }
+
+    private void doRegisterMapping(RouteManager routeManager) throws BeansException {
+        for (Object routeBean : getRouteBeans()) {
+
+            Class<?> beanClass = AopUtils.getTargetClass(routeBean);
+            String baseUrl = resolveBaseUrl(beanClass);
+
+            for (Method method : beanClass.getDeclaredMethods()) {
+
+                if (!AnnotationUtils.isAnnotationPresent(method, RouteMapping.class)) {
+                    continue;
+                }
+
+                RouteMapping routeMapping = AnnotationUtils.getMergedAnnotation(method, RouteMapping.class);
+
+                RouteAttribute attribute = RouteAttribute.builder()
+                        .url(baseUrl + routeMapping.value())
+                        .httpMethod(routeMapping.method())
+                        .build();
+
+                resolveAuthInfo(attribute, beanClass, method);
+
+                routeManager.handle(attribute, new RouteManager.RouteInvocationHolder(routeBean, method));
+            }
+        }
+    }
+
+    private void resolveAuthInfo(RouteAttribute routeAttribute, Class<?> beanClass, Method routeMethod) {
+        if (!checkIfAuth(beanClass, routeMethod)) {
+            return;
+        }
+        routeAttribute.setAuth(true);
+
+        boolean permitAll = AnnotationUtils.isAnnotationPresent(routeMethod, PermitAll.class);
+
+        routeAttribute.setPermitAll(permitAll);
+
+        if (permitAll) {
+            return;
         }
 
+        PermitAllowed permitAllowed = AnnotationUtils.getMergedAnnotation(routeMethod, PermitAllowed.class);
+        if (permitAllowed != null) {
+            routeAttribute.setPermitAllowed(new PermitHolder(permitAllowed));
+        }
 
+        RolesAllowed rolesAllowed = AnnotationUtils.getMergedAnnotation(routeMethod, RolesAllowed.class);
+        if (rolesAllowed != null) {
+            routeAttribute.setRolesAllowed(new PermitHolder(rolesAllowed));
+        }
+
+    }
+
+    private boolean checkIfAuth(Class<?> beanClass, Method routeMethod) {
+        return AnnotationUtils.isAnnotationPresent(beanClass, Auth.class) || AnnotationUtils.isAnnotationPresent(routeMethod, Auth.class);
+    }
+
+    private String resolveBaseUrl(Class<?> beanClass) {
+        if (AnnotationUtils.isAnnotationPresent(beanClass, RouteMapping.class)) {
+            return Objects.requireNonNull(AnnotationUtils.getMergedAnnotation(beanClass, RouteMapping.class))
+                    .value();
+        }
+        return "";
     }
 
     private AuthHandler getAuthHandler() throws BeansException {
