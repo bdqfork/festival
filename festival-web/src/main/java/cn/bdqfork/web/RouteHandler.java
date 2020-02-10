@@ -3,7 +3,7 @@ package cn.bdqfork.web;
 import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.AopUtils;
 import cn.bdqfork.core.util.ReflectUtils;
-import cn.bdqfork.web.annotation.RouteMapping;
+import cn.bdqfork.web.annotation.*;
 import cn.bdqfork.web.filter.Filter;
 import cn.bdqfork.web.filter.FilterChain;
 import cn.bdqfork.web.handler.DefaultParameterHandler;
@@ -11,6 +11,7 @@ import cn.bdqfork.web.handler.DefaultResultHandler;
 import cn.bdqfork.web.handler.ParameterHandler;
 import cn.bdqfork.web.handler.ResultHandler;
 import io.reactivex.Observable;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.reactivex.ext.web.Route;
 import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.RoutingContext;
@@ -53,16 +54,25 @@ public class RouteHandler {
         for (Object routeBean : beans) {
 
             Class<?> beanClass = AopUtils.getTargetClass(routeBean);
-
             String baseUrl = resolveBaseUrl(beanClass);
 
-            for (Method declaredMethod : beanClass.getDeclaredMethods()) {
+            for (Method method : beanClass.getDeclaredMethods()) {
 
-                if (!AnnotationUtils.isAnnotationPresent(declaredMethod, RouteMapping.class)) {
+                if (!AnnotationUtils.isAnnotationPresent(method, RouteMapping.class)) {
                     continue;
                 }
 
-                RouteAttribute attribute = buildRouteAttribute(routeBean, baseUrl, declaredMethod);
+                RouteMapping routeMapping = AnnotationUtils.getMergedAnnotation(method, RouteMapping.class);
+
+                RouteAttribute attribute = RouteAttribute.builder()
+                        .routeMethod(method)
+                        .bean(routeBean)
+                        .baseUrl(baseUrl)
+                        .url(routeMapping.value())
+                        .httpMethod(routeMapping.method())
+                        .build();
+
+                resolveAuthInfo(attribute, beanClass, method);
 
                 attributes.add(attribute);
             }
@@ -71,13 +81,34 @@ public class RouteHandler {
         attributes.forEach(this::handle);
     }
 
-    private RouteAttribute buildRouteAttribute(Object routeBean, String baseUrl, Method routeMethod) {
-        return RouteAttribute.builder()
-                .setRouteMethod(routeMethod)
-                .setBean(routeBean)
-                .setBaseUrl(baseUrl)
-                .setAuthHandler(authHandler)
-                .build();
+    private void resolveAuthInfo(RouteAttribute routeAttribute, Class<?> beanClass, Method routeMethod) {
+        if (!checkIfAuth(beanClass, routeMethod)) {
+            return;
+        }
+        routeAttribute.setAuth(true);
+
+        boolean permitAll = AnnotationUtils.isAnnotationPresent(routeMethod, PermitAll.class);
+
+        routeAttribute.setPermitAll(permitAll);
+
+        if (permitAll) {
+            return;
+        }
+
+        PermitAllowed permitAllowed = AnnotationUtils.getMergedAnnotation(routeMethod, PermitAllowed.class);
+        if (permitAllowed != null) {
+            routeAttribute.setPermitAllowed(new PermitHolder(permitAllowed));
+        }
+
+        RolesAllowed rolesAllowed = AnnotationUtils.getMergedAnnotation(routeMethod, RolesAllowed.class);
+        if (rolesAllowed != null) {
+            routeAttribute.setRolesAllowed(new PermitHolder(rolesAllowed));
+        }
+
+    }
+
+    private boolean checkIfAuth(Class<?> beanClass, Method routeMethod) {
+        return AnnotationUtils.isAnnotationPresent(beanClass, Auth.class) || AnnotationUtils.isAnnotationPresent(routeMethod, Auth.class);
     }
 
     private String resolveBaseUrl(Class<?> beanClass) {
@@ -91,10 +122,11 @@ public class RouteHandler {
     private void handle(RouteAttribute routeAttribute) {
         Method routeMethod = routeAttribute.getRouteMethod();
 
-        RouteMapping routeMapping = AnnotationUtils.getMergedAnnotation(routeMethod, RouteMapping.class);
-        String path = routeAttribute.getBaseUrl() + Objects.requireNonNull(routeMapping).value();
+        String path = routeAttribute.getBaseUrl() + routeAttribute.getUrl();
+        HttpMethod httpMethod = routeAttribute.getHttpMethod();
 
-        String signature = generateRouteSignature(routeMapping, path);
+        String signature = generateRouteSignature(httpMethod, path);
+
         if (registedRoutes.contains(signature)) {
             throw new IllegalStateException(String.format("conflict mapping %s !", signature));
         } else {
@@ -102,47 +134,36 @@ public class RouteHandler {
         }
 
         if (log.isInfoEnabled()) {
-            log.info("{} mapping path:{} to {}:{}!", routeMapping.method().name(), path, routeMethod.getDeclaringClass()
+            log.info("{} mapping path:{} to {}:{}!", httpMethod.name(), path, routeMethod.getDeclaringClass()
                     .getCanonicalName(), ReflectUtils.getSignature(routeMethod));
         }
 
-        Route route = router.route(routeMapping.method(), path);
+        Route route = router.route(httpMethod, path);
 
-        if (routeAttribute.requireAuth()) {
-            route.handler(routeAttribute.getAuthHandler());
+        if (!routeAttribute.isPermitAll()) {
+            route.handler(authHandler);
         }
 
         route.handler(routingContext -> {
             routingContext.data().put(ROUTE_ATTRIBETE_KEY, routeAttribute);
-            buildFilterChain(routeAttribute, routeMethod).doFilter(routingContext);
+            buildFilterChain(routeAttribute).doFilter(routingContext);
         });
     }
 
-    private String generateRouteSignature(RouteMapping routeMapping, String path) {
-        return routeMapping.method().name() + ":" + path;
+    private String generateRouteSignature(HttpMethod httpMethod, String path) {
+        return httpMethod.name() + ":" + path;
     }
 
-    private Optional<Object> invokeRouteMethod(Object routeBean, Method routeMethod, Object[] args) throws InvocationTargetException, IllegalAccessException {
-        return Optional.ofNullable(ReflectUtils.invokeMethod(routeBean, routeMethod, args));
+    private Optional<Object> invokeRouteMethod(Object routeBean, Method routeMethod, Object[] args) {
+        try {
+            return Optional.ofNullable(ReflectUtils.invokeMethod(routeBean, routeMethod, args));
+        } catch (InvocationTargetException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
-    protected FilterChain buildFilterChain(RouteAttribute routeAttribute, Method routeMethod) {
-        FilterChain filterChain = new FilterChain() {
-            @Override
-            public void doFilter(RoutingContext routingContext) {
-                Observable.fromArray(routingContext.request())
-                        .map(request -> parameterHandler.handle(routingContext, routeMethod.getParameters()))
-                        .map(args -> invokeRouteMethod(routeAttribute.getBean(), routeMethod, args))
-                        .subscribe(optional -> {
-                            if (optional.isPresent()) {
-                                resultHandler.handle(routingContext, optional.get());
-                            }
-                        }, e -> {
-                            log.error(e.getMessage(), e);
-                            routingContext.fail(500, e);
-                        });
-            }
-        };
+    protected FilterChain buildFilterChain(RouteAttribute routeAttribute) {
+        FilterChain filterChain = createInvokeHandler(routeAttribute);
 
         for (Filter filter : filters) {
             FilterChain finalFilterChain = filterChain;
@@ -154,6 +175,32 @@ public class RouteHandler {
             };
         }
         return filterChain;
+    }
+
+    private FilterChain createInvokeHandler(RouteAttribute routeAttribute) {
+        return new FilterChain() {
+            @Override
+            public void doFilter(RoutingContext routingContext) {
+                Observable.fromArray(routingContext.request())
+                        .map(request -> {
+                            Method routeMethod = routeAttribute.getRouteMethod();
+                            return parameterHandler.handle(routingContext, routeMethod.getParameters());
+                        })
+                        .map(args -> {
+                            Object routeBean = routeAttribute.getBean();
+                            Method routeMethod = routeAttribute.getRouteMethod();
+                            return invokeRouteMethod(routeBean, routeMethod, args);
+                        })
+                        .subscribe(optional -> {
+                            if (optional.isPresent()) {
+                                resultHandler.handle(routingContext, optional.get());
+                            }
+                        }, e -> {
+                            log.error(e.getMessage(), e);
+                            routingContext.fail(500, e);
+                        });
+            }
+        };
     }
 
     public void registerFilter(Filter filter) {

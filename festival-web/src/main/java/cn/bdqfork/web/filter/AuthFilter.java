@@ -1,11 +1,10 @@
 package cn.bdqfork.web.filter;
 
 import cn.bdqfork.core.factory.processor.OrderAware;
+import cn.bdqfork.web.PermitHolder;
 import cn.bdqfork.web.RouteAttribute;
-import cn.bdqfork.web.annotation.PermitAllowed;
-import cn.bdqfork.web.annotation.RolesAllowed;
-import cn.bdqfork.web.util.SecurityUtils;
 import cn.bdqfork.web.RouteHandler;
+import cn.bdqfork.web.util.SecurityUtils;
 import io.reactivex.Observable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
@@ -26,28 +25,27 @@ public class AuthFilter implements Filter, OrderAware {
     public void doFilter(RoutingContext routingContext, FilterChain filterChain) {
         RouteAttribute routeAttribute = (RouteAttribute) routingContext.data()
                 .get(RouteHandler.ROUTE_ATTRIBETE_KEY);
-        if (routeAttribute == null || !routeAttribute.requireAuth()) {
+        if (routeAttribute == null || !routeAttribute.isAuth()) {
             filterChain.doFilter(routingContext);
             return;
         }
 
         User user = routingContext.user();
 
-        PermitAllowed permitAllowed = routeAttribute.getPermits();
+        PermitHolder permitAllowed = routeAttribute.getPermitAllowed();
 
-        Observable<Boolean> permitObservable;
+        Observable<Boolean> permitObservable = Observable.just(true);
+
         if (permitAllowed != null) {
-            permitObservable = SecurityUtils.isPermited(user, permitAllowed.value(), permitAllowed.logic());
-        } else {
-            permitObservable = Observable.just(true);
+            permitObservable = SecurityUtils.isPermited(user, permitAllowed.getPermits(), permitAllowed.getLogicType());
         }
 
-        RolesAllowed rolesAllowed = routeAttribute.getRoles();
-        Observable<Boolean> rolesObservable;
+        PermitHolder rolesAllowed = routeAttribute.getRolesAllowed();
+
+        Observable<Boolean> rolesObservable = Observable.just(true);
+
         if (rolesAllowed != null) {
-            rolesObservable = SecurityUtils.isPermited(user, rolesAllowed.value(), rolesAllowed.logic());
-        } else {
-            rolesObservable = Observable.just(true);
+            rolesObservable = SecurityUtils.isPermited(user, rolesAllowed.getPermits(), rolesAllowed.getLogicType());
         }
 
         Observable.combineLatest(permitObservable, rolesObservable,
