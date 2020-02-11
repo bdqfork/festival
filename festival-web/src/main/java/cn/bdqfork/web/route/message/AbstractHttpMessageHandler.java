@@ -1,4 +1,4 @@
-package cn.bdqfork.web.route.handler;
+package cn.bdqfork.web.route.message;
 
 import io.vertx.core.http.HttpMethod;
 import io.vertx.reactivex.core.http.HttpServerRequest;
@@ -10,7 +10,7 @@ import java.lang.reflect.Parameter;
  * @author bdq
  * @since 2020/1/31
  */
-public abstract class AbstractParameterHandler implements ParameterHandler {
+public abstract class AbstractHttpMessageHandler implements HttpMessageHandler {
     @Override
     public Object[] handle(RoutingContext routingContext, Parameter[] parameters) {
         HttpServerRequest httpServerRequest = routingContext.request();

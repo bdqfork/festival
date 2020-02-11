@@ -37,6 +37,9 @@ web设计如下：
 3. 缓存
 4. 服务监控
 5. verticle service group
-6. @produces,@consumer以及跨域
-7. 自定义配置文件路径
-8. resource reader基本类型转换，以及unsupport异常
+6. @produces,@consumer
+7. 跨域
+8. 自定义配置文件路径
+9. resource reader基本类型转换，以及unsupport异常
+10. 自定义handler 已完成!
+11. 合并@Route和@RouteMapping为@RouteController

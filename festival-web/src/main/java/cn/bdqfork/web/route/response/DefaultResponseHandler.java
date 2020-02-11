@@ -1,4 +1,4 @@
-package cn.bdqfork.web.route.handler;
+package cn.bdqfork.web.route.response;
 
 import cn.bdqfork.core.util.ReflectUtils;
 import io.reactivex.Observable;
@@ -9,7 +9,7 @@ import io.vertx.reactivex.ext.web.RoutingContext;
  * @author bdq
  * @since 2020/1/30
  */
-public class DefaultResultHandler implements ResultHandler {
+public class DefaultResponseHandler implements ResponseHandler {
     @Override
     public void handle(RoutingContext routingContext, Object result) {
         if (result == null) {

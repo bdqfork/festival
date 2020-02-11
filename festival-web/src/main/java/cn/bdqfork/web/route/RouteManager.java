@@ -3,10 +3,10 @@ package cn.bdqfork.web.route;
 import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.web.route.filter.Filter;
 import cn.bdqfork.web.route.filter.FilterChain;
-import cn.bdqfork.web.route.handler.DefaultParameterHandler;
-import cn.bdqfork.web.route.handler.DefaultResultHandler;
-import cn.bdqfork.web.route.handler.ParameterHandler;
-import cn.bdqfork.web.route.handler.ResultHandler;
+import cn.bdqfork.web.route.message.DefaultHttpMessageHandler;
+import cn.bdqfork.web.route.message.HttpMessageHandler;
+import cn.bdqfork.web.route.response.DefaultResponseHandler;
+import cn.bdqfork.web.route.response.ResponseHandler;
 import io.reactivex.Observable;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.reactivex.ext.web.Route;
@@ -32,9 +32,9 @@ public class RouteManager {
 
     private List<Filter> filters = new LinkedList<>();
 
-    private ResultHandler resultHandler = new DefaultResultHandler();
+    private ResponseHandler responseHandler = new DefaultResponseHandler();
 
-    private ParameterHandler parameterHandler = new DefaultParameterHandler();
+    private HttpMessageHandler httpMessageHandler = new DefaultHttpMessageHandler();
 
     private Router router;
 
@@ -141,11 +141,11 @@ public class RouteManager {
             @Override
             public void doFilter(RoutingContext routingContext) {
                 Observable.fromArray(routingContext.request())
-                        .map(request -> parameterHandler.handle(routingContext, routeMethod.getParameters()))
+                        .map(request -> httpMessageHandler.handle(routingContext, routeMethod.getParameters()))
                         .map(args -> invokeRouteMethod(routeBean, routeMethod, args))
                         .subscribe(optional -> {
                             if (optional.isPresent()) {
-                                resultHandler.handle(routingContext, optional.get());
+                                responseHandler.handle(routingContext, optional.get());
                             }
                         }, e -> {
                             log.error(e.getMessage(), e);
