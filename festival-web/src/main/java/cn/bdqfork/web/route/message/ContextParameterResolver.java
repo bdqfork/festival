@@ -1,6 +1,5 @@
 package cn.bdqfork.web.route.message;
 
-import io.vertx.core.http.HttpMethod;
 import io.vertx.reactivex.core.MultiMap;
 import io.vertx.reactivex.core.http.HttpServerRequest;
 import io.vertx.reactivex.core.http.HttpServerResponse;
@@ -42,15 +41,6 @@ public class ContextParameterResolver extends AbstractParameterResolver {
                 parameterType == HttpServerResponse.class ||
                 parameterType == MultiMap.class;
 
-    }
-
-    private MultiMap resolveParams(RoutingContext routingContext) {
-        if (routingContext.request().method() == HttpMethod.GET) {
-            return routingContext.queryParams();
-        } else {
-            HttpServerRequest httpServerRequest = routingContext.request();
-            return httpServerRequest.formAttributes();
-        }
     }
 
 }

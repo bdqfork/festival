@@ -4,9 +4,7 @@ import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.core.util.StringUtils;
 import cn.bdqfork.web.annotation.Param;
-import io.vertx.core.http.HttpMethod;
 import io.vertx.reactivex.core.MultiMap;
-import io.vertx.reactivex.core.http.HttpServerRequest;
 import io.vertx.reactivex.ext.web.RoutingContext;
 
 import java.lang.reflect.Parameter;
@@ -52,15 +50,6 @@ public class PrimitiveParameterResolver extends AbstractParameterResolver {
     @Override
     protected boolean resolvable(Parameter parameter) {
         return ReflectUtils.isPrimitiveOrWrapper(parameter.getType());
-    }
-
-    private MultiMap resolveParams(RoutingContext routingContext) {
-        if (routingContext.request().method() == HttpMethod.GET) {
-            return routingContext.queryParams();
-        } else {
-            HttpServerRequest httpServerRequest = routingContext.request();
-            return httpServerRequest.formAttributes();
-        }
     }
 
 }

@@ -1,5 +1,8 @@
 package cn.bdqfork.web.route.message;
 
+import io.vertx.core.http.HttpMethod;
+import io.vertx.reactivex.core.MultiMap;
+import io.vertx.reactivex.core.http.HttpServerRequest;
 import io.vertx.reactivex.ext.web.RoutingContext;
 
 import java.lang.reflect.Parameter;
@@ -30,4 +33,13 @@ public abstract class AbstractParameterResolver implements ParameterResolver {
     protected abstract Object doResolve(Parameter parameter, RoutingContext routingContext);
 
     protected abstract boolean resolvable(Parameter parameter);
+
+    protected MultiMap resolveParams(RoutingContext routingContext) {
+        if (routingContext.request().method() == HttpMethod.GET) {
+            return routingContext.queryParams();
+        } else {
+            HttpServerRequest httpServerRequest = routingContext.request();
+            return httpServerRequest.formAttributes();
+        }
+    }
 }
