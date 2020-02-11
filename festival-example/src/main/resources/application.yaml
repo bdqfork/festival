@@ -4,6 +4,6 @@ server:
   ssl:
     enable: true
     path: test.jks
-    password: 123456
+    password: '123456'
   uploads:
     limit: 2147483648

@@ -208,8 +208,7 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
         if (sslEnable) {
             options.setSsl(sslEnable);
             String path = resourceReader.readProperty(ServerProperty.SERVER_SSL_PATH);
-            //todo:refactor
-            String password = resourceReader.readProperty(ServerProperty.SERVER_SSL_PASSWORD).toString();
+            String password = resourceReader.readProperty(ServerProperty.SERVER_SSL_PASSWORD);
             JksOptions jksOptions = new JksOptions()
                     .setPath(path)
                     .setPassword(password);
