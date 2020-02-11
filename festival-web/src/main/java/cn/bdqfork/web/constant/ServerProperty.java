@@ -4,7 +4,7 @@ package cn.bdqfork.web.constant;
  * @author bdq
  * @since 2020/1/28
  */
-public class ApplicationProperty {
+public class ServerProperty {
     public static final String DEFAULT_HOST = "localhost";
     public static final Integer DEFAULT_PORT = 8080;
 
@@ -17,4 +17,8 @@ public class ApplicationProperty {
     public static final String SERVER_SESSION_TIMEOUT = "server.session.timeout";
     public static final String SERVER_SESSION_COOKIE_NAME = "server.session.cookie.name";
     public static final String SERVER_SESSION_COOKIE_PATH = "server.session.cookie.path";
+
+    public static final String SERVER_SSL_ENABLE = "server.ssl.enable";
+    public static final String SERVER_SSL_PATH = "server.ssl.path";
+    public static final String SERVER_SSL_PASSWORD = "server.ssl.password";
 }

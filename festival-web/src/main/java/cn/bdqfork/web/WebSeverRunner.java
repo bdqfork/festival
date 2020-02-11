@@ -12,24 +12,24 @@ import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.StringUtils;
 import cn.bdqfork.web.annotation.RouteController;
-import cn.bdqfork.web.constant.ApplicationProperty;
+import cn.bdqfork.web.constant.ServerProperty;
 import cn.bdqfork.web.route.RouteAttribute;
 import cn.bdqfork.web.route.RouteManager;
 import cn.bdqfork.web.route.RouteResolver;
 import cn.bdqfork.web.route.SessionManager;
-import cn.bdqfork.web.route.filter.AuthFilter;
 import cn.bdqfork.web.route.filter.Filter;
-import io.reactivex.Completable;
+import io.reactivex.disposables.Disposable;
 import io.vertx.core.Promise;
+import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.net.JksOptions;
 import io.vertx.reactivex.core.AbstractVerticle;
-import io.vertx.reactivex.core.http.HttpServer;
+import io.vertx.reactivex.core.net.SocketAddress;
 import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.handler.AuthHandler;
 import io.vertx.reactivex.ext.web.handler.BodyHandler;
 import io.vertx.reactivex.ext.web.handler.LoggerHandler;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -42,9 +42,10 @@ import java.util.List;
 @Slf4j
 public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware, ResourceReaderAware, RouterAware {
     private ConfigurableBeanFactory beanFactory;
-    private HttpServer httpServer;
+    private Disposable disposable;
     private ResourceReader resourceReader;
     private Router router;
+
 
     @Override
     public void start(Promise<Void> startPromise) throws Exception {
@@ -143,14 +144,6 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
         }
     }
 
-    private void registerAuthFilterIfNeed(List<Filter> filters) throws BeansException {
-        try {
-            beanFactory.getBean(AuthFilter.class);
-        } catch (NoSuchBeanException e) {
-            filters.add(new AuthFilter());
-        }
-    }
-
     private void registerBodyHandler(io.vertx.reactivex.ext.web.Router router) {
         BodyHandler bodyHandler = BodyHandler.create();
         resolveAndSetBodyProperties(bodyHandler);
@@ -158,12 +151,12 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
     }
 
     private void resolveAndSetBodyProperties(BodyHandler bodyHandler) {
-        String uploadsDirectory = resourceReader.readProperty(ApplicationProperty.SERVER_UPLOAD_DERICTORY);
+        String uploadsDirectory = resourceReader.readProperty(ServerProperty.SERVER_UPLOAD_DERICTORY);
         if (!StringUtils.isEmpty(uploadsDirectory)) {
             bodyHandler.setUploadsDirectory(uploadsDirectory);
         }
 
-        Object limit = resourceReader.readProperty(ApplicationProperty.SERVER_UPLOAD_LIMIT);
+        Object limit = resourceReader.readProperty(ServerProperty.SERVER_UPLOAD_LIMIT);
         if (limit instanceof Integer) {
             bodyHandler.setBodyLimit((Integer) limit);
         } else if (limit instanceof Long) {
@@ -172,34 +165,69 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
 
     }
 
-    private void startServer(io.vertx.reactivex.ext.web.Router router) {
-        InetSocketAddress inetSocketAddress = resolveAddress();
-        httpServer = vertx.createHttpServer();
-        httpServer.requestHandler(router)
-                .rxListen(inetSocketAddress.getPort(), inetSocketAddress.getHostName())
+    private void startServer(io.vertx.reactivex.ext.web.Router router) throws BeansException {
+        SocketAddress socketAddress = resolveAddress();
+        HttpServerOptions options = resolveHttpServerOptions(socketAddress);
+
+        disposable = vertx.createHttpServer(options)
+                .requestHandler(router)
+                .rxListen()
+                .doOnDispose(() -> {
+                    log.info("closed web server !");
+                })
                 .subscribe(httpServer -> {
                     if (log.isInfoEnabled()) {
-                        log.info("stated http server at {}:{}!",
-                                inetSocketAddress.getHostName(), inetSocketAddress.getPort());
+                        log.info("stated web server at {}:{}!",
+                                socketAddress.host(), socketAddress.port());
                     }
                 }, e -> {
                     if (log.isErrorEnabled()) {
-                        log.error("failed to start http server at {}:{}!",
-                                inetSocketAddress.getHostName(), inetSocketAddress.getPort(), e);
+                        log.error("failed to start web server at {}:{}!",
+                                socketAddress.host(), socketAddress.port(), e);
                     }
                     vertx.close();
                 });
     }
 
-    private InetSocketAddress resolveAddress() {
-        String host = resourceReader.readProperty(ApplicationProperty.SERVER_HOST, ApplicationProperty.DEFAULT_HOST);
-        Integer port = resourceReader.readProperty(ApplicationProperty.SERVER_PORT, ApplicationProperty.DEFAULT_PORT);
-        return new InetSocketAddress(host, port);
+    private HttpServerOptions resolveHttpServerOptions(SocketAddress socketAddress) throws BeansException {
+        HttpServerOptions options;
+        try {
+            options = beanFactory.getBean(HttpServerOptions.class);
+            options = new HttpServerOptions(options);
+        } catch (NoSuchBeanException e) {
+            if (log.isInfoEnabled()) {
+                log.info("use default web server options!");
+            }
+            options = new HttpServerOptions();
+        }
+
+        options.setHost(socketAddress.host())
+                .setPort(socketAddress.port());
+
+        Boolean sslEnable = resourceReader.readProperty(ServerProperty.SERVER_SSL_ENABLE, false);
+        if (sslEnable) {
+            options.setSsl(sslEnable);
+            String path = resourceReader.readProperty(ServerProperty.SERVER_SSL_PATH);
+            //todo:refactor
+            String password = resourceReader.readProperty(ServerProperty.SERVER_SSL_PASSWORD).toString();
+            JksOptions jksOptions = new JksOptions()
+                    .setPath(path)
+                    .setPassword(password);
+            options.setKeyCertOptions(jksOptions);
+        }
+        return options;
+    }
+
+    private SocketAddress resolveAddress() {
+        String host = resourceReader.readProperty(ServerProperty.SERVER_HOST, ServerProperty.DEFAULT_HOST);
+        Integer port = resourceReader.readProperty(ServerProperty.SERVER_PORT, ServerProperty.DEFAULT_PORT);
+        return SocketAddress.inetSocketAddress(port, host);
     }
 
     @Override
-    public Completable rxStop() {
-        return httpServer.rxClose().doOnComplete(() -> log.info("closed web server !"));
+    public void stop(Promise<Void> stopPromise) throws Exception {
+        disposable.dispose();
+        stopPromise.complete();
     }
 
     @Override

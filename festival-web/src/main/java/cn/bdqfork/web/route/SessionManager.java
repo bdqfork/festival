@@ -7,7 +7,7 @@ import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.NoSuchBeanException;
 import cn.bdqfork.core.factory.BeanFactory;
 import cn.bdqfork.core.util.StringUtils;
-import cn.bdqfork.web.constant.ApplicationProperty;
+import cn.bdqfork.web.constant.ServerProperty;
 import io.vertx.reactivex.core.Vertx;
 import io.vertx.reactivex.ext.auth.AuthProvider;
 import io.vertx.reactivex.ext.web.Router;
@@ -69,27 +69,27 @@ public class SessionManager implements BeanFactoryAware, ResourceReaderAware {
     }
 
     private void resolveAndSetSessionProperties(SessionHandler sessionHandler) {
-        Boolean cookieHttpOnly = resourceReader.readProperty(ApplicationProperty.SERVER_COOKIE_HTTP_ONLY);
+        Boolean cookieHttpOnly = resourceReader.readProperty(ServerProperty.SERVER_COOKIE_HTTP_ONLY);
         if (cookieHttpOnly != null) {
             sessionHandler.setCookieHttpOnlyFlag(cookieHttpOnly);
         }
 
-        Boolean cookieSecure = resourceReader.readProperty(ApplicationProperty.SERVER_COOKIE_SECURE);
+        Boolean cookieSecure = resourceReader.readProperty(ServerProperty.SERVER_COOKIE_SECURE);
         if (cookieSecure != null) {
             sessionHandler.setCookieSecureFlag(cookieSecure);
         }
 
-        Long sessionTimeout = resourceReader.readProperty(ApplicationProperty.SERVER_SESSION_TIMEOUT);
+        Long sessionTimeout = resourceReader.readProperty(ServerProperty.SERVER_SESSION_TIMEOUT);
         if (sessionTimeout != null) {
             sessionHandler.setSessionTimeout(sessionTimeout);
         }
 
-        String sessionCookieName = resourceReader.readProperty(ApplicationProperty.SERVER_SESSION_COOKIE_NAME);
+        String sessionCookieName = resourceReader.readProperty(ServerProperty.SERVER_SESSION_COOKIE_NAME);
         if (!StringUtils.isEmpty(sessionCookieName)) {
             sessionHandler.setSessionCookieName(sessionCookieName);
         }
 
-        String sessionCookiePath = resourceReader.readProperty(ApplicationProperty.SERVER_SESSION_COOKIE_PATH);
+        String sessionCookiePath = resourceReader.readProperty(ServerProperty.SERVER_SESSION_COOKIE_PATH);
         if (!StringUtils.isEmpty(sessionCookiePath)) {
             sessionHandler.setSessionCookiePath(sessionCookiePath);
         }

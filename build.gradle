@@ -9,7 +9,7 @@ ext {
             objenesis    : '3.1',
             aspectjweaver: '1.9.4',
             snakeyaml    : '1.25',
-            vertx        : '3.8.5',
+            vertx        : '3.8.4',
             hessian      : '4.0.63'
     ]
 }
