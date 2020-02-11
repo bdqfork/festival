@@ -2,7 +2,7 @@ server:
   host: 127.0.0.1
   port: 8080
   ssl:
-    enable: true
+    enable: false
     path: test.jks
     password: '123456'
   uploads:
