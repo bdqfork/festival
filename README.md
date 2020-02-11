@@ -41,5 +41,5 @@ web设计如下：
 7. 跨域
 8. 自定义配置文件路径
 9. resource reader基本类型转换，以及unsupport异常
-10. 自定义handler 已完成!
-11. 合并@Route和@RouteMapping为@RouteController
+10. 自定义handler注入 已完成!
+11. 合并@Route和@RouteMapping为@RouteController 已完成!
