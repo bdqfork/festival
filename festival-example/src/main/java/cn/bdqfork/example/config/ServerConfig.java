@@ -4,7 +4,6 @@ import cn.bdqfork.context.configuration.Configuration;
 import cn.bdqfork.web.constant.LogicType;
 import cn.bdqfork.web.route.PermitHolder;
 import cn.bdqfork.web.route.RouteAttribute;
-import io.vertx.core.DeploymentOptions;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.reactivex.ext.web.handler.ErrorHandler;
 
@@ -18,13 +17,6 @@ import javax.inject.Singleton;
 @Singleton
 @Configuration
 public class ServerConfig {
-    @Singleton
-    @Named
-    public DeploymentOptions deploymentOptions() {
-        return new DeploymentOptions().setWorker(true)
-                .setWorkerPoolSize(50);
-    }
-
     @Singleton
     @Named
     public ErrorHandler errorHandler() {
