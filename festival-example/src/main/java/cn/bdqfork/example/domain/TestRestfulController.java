@@ -1,7 +1,7 @@
 package cn.bdqfork.example.domain;
 
 import cn.bdqfork.example.model.User;
-import cn.bdqfork.web.annotation.*;
+import cn.bdqfork.web.route.annotation.*;
 import io.vertx.reactivex.core.MultiMap;
 import io.vertx.reactivex.core.http.HttpServerRequest;
 import io.vertx.reactivex.core.http.HttpServerResponse;

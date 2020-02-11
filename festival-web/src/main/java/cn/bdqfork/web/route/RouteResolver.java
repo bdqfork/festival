@@ -4,6 +4,7 @@ import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.AopUtils;
 import cn.bdqfork.web.annotation.*;
+import cn.bdqfork.web.route.annotation.RouteMapping;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;

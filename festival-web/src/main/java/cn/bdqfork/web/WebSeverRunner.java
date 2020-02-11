@@ -11,7 +11,7 @@ import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.StringUtils;
-import cn.bdqfork.web.annotation.RouteController;
+import cn.bdqfork.web.route.annotation.RouteController;
 import cn.bdqfork.web.constant.ServerProperty;
 import cn.bdqfork.web.route.RouteAttribute;
 import cn.bdqfork.web.route.RouteManager;

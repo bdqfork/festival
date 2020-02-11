@@ -1,4 +1,4 @@
-package cn.bdqfork.web.annotation;
+package cn.bdqfork.web.route.annotation;
 
 import java.lang.annotation.*;
 

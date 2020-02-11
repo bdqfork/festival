@@ -3,7 +3,7 @@ package cn.bdqfork.web.route.message;
 import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.core.util.StringUtils;
-import cn.bdqfork.web.annotation.Param;
+import cn.bdqfork.web.route.annotation.Param;
 import io.vertx.reactivex.core.MultiMap;
 import io.vertx.reactivex.ext.web.RoutingContext;
 
