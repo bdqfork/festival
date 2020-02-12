@@ -1,11 +1,12 @@
 package cn.bdqfork.example.config;
 
+import cn.bdqfork.aop.annotation.Optimize;
 import cn.bdqfork.context.configuration.Configuration;
 import cn.bdqfork.web.constant.LogicType;
 import cn.bdqfork.web.route.PermitHolder;
 import cn.bdqfork.web.route.RouteAttribute;
 import io.vertx.core.http.HttpMethod;
-import io.vertx.reactivex.ext.web.handler.ErrorHandler;
+import io.vertx.reactivex.ext.web.handler.LoggerHandler;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -17,10 +18,12 @@ import javax.inject.Singleton;
 @Singleton
 @Configuration
 public class ServerConfig {
+
+    @Optimize
     @Singleton
     @Named
-    public ErrorHandler errorHandler() {
-        return ErrorHandler.create(true);
+    public LoggerHandler loggerHandler() {
+        return LoggerHandler.create();
     }
 
     @Singleton

@@ -1,13 +1,12 @@
 package cn.bdqfork.web.route;
 
 import cn.bdqfork.core.util.ReflectUtils;
-import cn.bdqfork.web.route.filter.Filter;
 import cn.bdqfork.web.route.filter.FilterChain;
+import cn.bdqfork.web.route.filter.FilterManager;
 import cn.bdqfork.web.route.message.DefaultHttpMessageHandler;
 import cn.bdqfork.web.route.message.HttpMessageHandler;
 import cn.bdqfork.web.route.response.DefaultResponseHandler;
 import cn.bdqfork.web.route.response.ResponseHandler;
-import io.reactivex.Observable;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.reactivex.ext.web.Route;
 import io.vertx.reactivex.ext.web.Router;
@@ -15,9 +14,9 @@ import io.vertx.reactivex.ext.web.RoutingContext;
 import io.vertx.reactivex.ext.web.handler.AuthHandler;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -30,23 +29,25 @@ public class RouteManager {
 
     private final Set<String> registedRoutes = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-    private List<Filter> filters = new LinkedList<>();
-
     private ResponseHandler responseHandler = new DefaultResponseHandler();
 
     private HttpMessageHandler httpMessageHandler = new DefaultHttpMessageHandler();
+
+    private FilterManager filterManager;
 
     private Router router;
 
     private AuthHandler authHandler;
 
-    public RouteManager(Router router, AuthHandler authHandler) {
+    public RouteManager(Router router, FilterManager filterManager) {
         this.router = router;
-        this.authHandler = authHandler;
+        this.filterManager = filterManager;
     }
 
-    public void registerFilter(Filter filter) {
-        filters.add(filter);
+    public RouteManager(Router router, FilterManager filterManager, AuthHandler authHandler) {
+        this.router = router;
+        this.filterManager = filterManager;
+        this.authHandler = authHandler;
     }
 
     public void handle(RouteAttribute routeAttribute) {
@@ -54,40 +55,21 @@ public class RouteManager {
     }
 
     public void handle(RouteAttribute routeAttribute, RouteInvocation invocation) {
-
         String path = routeAttribute.getUrl();
         HttpMethod httpMethod = routeAttribute.getHttpMethod();
 
-        String signature = generateRouteSignature(httpMethod, path);
-
-        if (registedRoutes.contains(signature)) {
-            throw new IllegalStateException(String.format("conflict mapping %s !", signature));
-        } else {
-            registedRoutes.add(signature);
-        }
+        checkIfConflict(path, httpMethod);
 
         Route route = router.route(httpMethod, path);
 
-        if (authHandler != null && routeAttribute.isAuth() && !routeAttribute.isPermitAll()) {
-            route.handler(authHandler);
-        }
+        checkAndSetAuth(routeAttribute, route);
 
         if (invocation == null) {
             if (log.isInfoEnabled()) {
                 log.info("custom {} mapping path:{}!", httpMethod.name(), path);
             }
 
-            FilterChain invoker = new FilterChain() {
-                @Override
-                public void doFilter(RoutingContext routingContext) {
-                    routeAttribute.getContextHandler().handle(routingContext);
-                }
-            };
-
-            FilterChain filterChain = buildFilterChain(invoker);
-
-            doHandler(routeAttribute, route, filterChain);
-
+            handleCustomMapping(routeAttribute, route);
         } else {
             if (log.isInfoEnabled()) {
                 log.info("{} mapping path:{} to {}:{}!", httpMethod.name(), path,
@@ -95,13 +77,50 @@ public class RouteManager {
                         ReflectUtils.getSignature(invocation.method));
             }
 
-            FilterChain invoker = createInvokeHandler(invocation.bean, invocation.method);
-
-            FilterChain filterChain = buildFilterChain(invoker);
-
-            doHandler(routeAttribute, route, filterChain);
+            handleMapping(routeAttribute, invocation, route);
         }
 
+    }
+
+    private void checkIfConflict(String path, HttpMethod httpMethod) {
+        String signature = generateRouteSignature(httpMethod, path);
+
+        if (registedRoutes.contains(signature)) {
+            throw new IllegalStateException(String.format("conflict mapping %s !", signature));
+        } else {
+            registedRoutes.add(signature);
+        }
+    }
+
+    private String generateRouteSignature(HttpMethod httpMethod, String path) {
+        return httpMethod.name() + ":" + path;
+    }
+
+    private void checkAndSetAuth(RouteAttribute routeAttribute, Route route) {
+        if (authHandler != null && routeAttribute.isAuth() && !routeAttribute.isPermitAll()) {
+            route.handler(authHandler);
+        }
+    }
+
+    private void handleCustomMapping(RouteAttribute routeAttribute, Route route) {
+        FilterChain invoker = new FilterChain() {
+            @Override
+            public void doFilter(RoutingContext routingContext) {
+                routeAttribute.getContextHandler().handle(routingContext);
+            }
+        };
+
+        FilterChain filterChain = filterManager.buildFilterChain(invoker);
+
+        doHandler(routeAttribute, route, filterChain);
+    }
+
+    private void handleMapping(RouteAttribute routeAttribute, RouteInvocation invocation, Route route) {
+        FilterChain invoker = createInvokeHandler(invocation.bean, invocation.method);
+
+        FilterChain filterChain = filterManager.buildFilterChain(invoker);
+
+        doHandler(routeAttribute, route, filterChain);
     }
 
     private void doHandler(RouteAttribute routeAttribute, Route route, FilterChain filterChain) {
@@ -111,46 +130,18 @@ public class RouteManager {
         });
     }
 
-    private String generateRouteSignature(HttpMethod httpMethod, String path) {
-        return httpMethod.name() + ":" + path;
-    }
-
-    private Optional<Object> invokeRouteMethod(Object routeBean, Method routeMethod, Object[] args) {
-        try {
-            return Optional.ofNullable(ReflectUtils.invokeMethod(routeBean, routeMethod, args));
-        } catch (InvocationTargetException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    protected FilterChain buildFilterChain(FilterChain filterChain) {
-        for (Filter filter : filters) {
-            FilterChain finalFilterChain = filterChain;
-            filterChain = new FilterChain() {
-                @Override
-                public void doFilter(RoutingContext routingContext) {
-                    filter.doFilter(routingContext, finalFilterChain);
-                }
-            };
-        }
-        return filterChain;
-    }
-
     private FilterChain createInvokeHandler(Object routeBean, Method routeMethod) {
         return new FilterChain() {
             @Override
             public void doFilter(RoutingContext routingContext) {
-                Observable.fromArray(routingContext.request())
-                        .map(request -> httpMessageHandler.handle(routingContext, routeMethod.getParameters()))
-                        .map(args -> invokeRouteMethod(routeBean, routeMethod, args))
-                        .subscribe(optional -> {
-                            if (optional.isPresent()) {
-                                responseHandler.handle(routingContext, optional.get());
-                            }
-                        }, e -> {
-                            log.error(e.getMessage(), e);
-                            routingContext.fail(500, e);
-                        });
+                try {
+                    Object[] args = httpMessageHandler.handle(routingContext, routeMethod.getParameters());
+                    Object result = ReflectUtils.invokeMethod(routeBean, routeMethod, args);
+                    responseHandler.handle(routingContext, result);
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                    routingContext.fail(500, e);
+                }
             }
         };
     }

@@ -9,5 +9,5 @@ import java.lang.reflect.Parameter;
  * @since 2020/1/31
  */
 public interface HttpMessageHandler {
-    Object[] handle(RoutingContext routingContext, Parameter[] parameters);
+    Object[] handle(RoutingContext routingContext, Parameter[] parameters) throws Exception;
 }

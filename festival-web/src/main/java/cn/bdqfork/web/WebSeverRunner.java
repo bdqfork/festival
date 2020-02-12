@@ -18,6 +18,7 @@ import cn.bdqfork.web.route.RouteManager;
 import cn.bdqfork.web.route.RouteResolver;
 import cn.bdqfork.web.route.SessionManager;
 import cn.bdqfork.web.route.filter.Filter;
+import cn.bdqfork.web.route.filter.FilterManager;
 import io.reactivex.disposables.Disposable;
 import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServerOptions;
@@ -83,9 +84,13 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
     }
 
     private void registerRouteMapping(Router router) throws Exception {
-        RouteManager routeManager = new RouteManager(router, getAuthHandler());
+        FilterManager filterManager = new FilterManager();
 
-        registerFilters(routeManager);
+        filterManager.registerFilters(getOrderedFilters());
+
+        AuthHandler authHandler = getAuthHandler();
+
+        RouteManager routeManager = new RouteManager(router, filterManager, authHandler);
 
         RouteResolver routeResolver = new RouteResolver();
 
@@ -97,25 +102,20 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
 
     }
 
-    private void registerFilters(RouteManager routeManager) throws BeansException {
-        getOrderedFilters().forEach(routeManager::registerFilter);
-    }
-
     private Collection<RouteAttribute> getCustomRoutes() throws BeansException {
         return beanFactory.getBeans(RouteAttribute.class).values();
     }
 
 
     private AuthHandler getAuthHandler() throws BeansException {
-        AuthHandler authHandler = null;
         try {
-            authHandler = beanFactory.getBean(AuthHandler.class);
+            return beanFactory.getBean(AuthHandler.class);
         } catch (NoSuchBeanException e) {
             if (log.isDebugEnabled()) {
                 log.debug("no auth handler found!");
             }
         }
-        return authHandler;
+        return null;
     }
 
     private List<Object> getRouteBeans() throws BeansException {
