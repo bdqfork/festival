@@ -1,4 +1,4 @@
-package cn.bdqfork.web;
+package cn.bdqfork.web.server;
 
 import cn.bdqfork.context.aware.BeanFactoryAware;
 import cn.bdqfork.context.aware.ResourceReaderAware;
@@ -11,123 +11,114 @@ import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.StringUtils;
-import cn.bdqfork.web.route.annotation.RouteController;
 import cn.bdqfork.web.constant.ServerProperty;
-import cn.bdqfork.web.route.RouteAttribute;
-import cn.bdqfork.web.route.RouteManager;
-import cn.bdqfork.web.route.RouteResolver;
-import cn.bdqfork.web.route.SessionManager;
+import cn.bdqfork.web.route.*;
+import cn.bdqfork.web.route.annotation.RouteController;
 import cn.bdqfork.web.route.filter.Filter;
 import cn.bdqfork.web.route.filter.FilterManager;
 import io.reactivex.disposables.Disposable;
-import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.http.HttpVersion;
 import io.vertx.core.net.JksOptions;
-import io.vertx.reactivex.core.AbstractVerticle;
 import io.vertx.reactivex.core.net.SocketAddress;
 import io.vertx.reactivex.ext.web.Router;
-import io.vertx.reactivex.ext.web.handler.AuthHandler;
-import io.vertx.reactivex.ext.web.handler.BodyHandler;
-import io.vertx.reactivex.ext.web.handler.LoggerHandler;
+import io.vertx.reactivex.ext.web.handler.*;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author bdq
- * @since 2020/1/21
+ * @since 2020/2/12
  */
 @Slf4j
-public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware, ResourceReaderAware, RouterAware {
+public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAware, ResourceReaderAware {
     private ConfigurableBeanFactory beanFactory;
-    private Disposable disposable;
     private ResourceReader resourceReader;
-    private Router router;
-
+    private Disposable disposable;
 
     @Override
-    public void start(Promise<Void> startPromise) throws Exception {
-
-        registerLoggingHandler(router);
-
+    protected void registerCoreHandler(Router router) throws Exception {
         registerSessionHandler(router);
-
         registerBodyHandler(router);
-
-        registerRouteMapping(router);
-
-        startServer(router);
-
-        startPromise.complete();
     }
 
-    private void registerSessionHandler(Router router) throws BeansException {
+    private void registerSessionHandler(Router router) throws Exception {
         SessionManager sessionManager = new SessionManager(router, vertx);
         sessionManager.setBeanFactory(beanFactory);
         sessionManager.setResourceReader(resourceReader);
         sessionManager.registerSessionHandler();
     }
 
-    private void registerLoggingHandler(Router router) throws BeansException {
-        LoggerHandler loggerHandler;
+    private void registerBodyHandler(Router router) {
+        BodyHandler bodyHandler = BodyHandler.create();
+
+        String uploadsDirectory = resourceReader.readProperty(ServerProperty.SERVER_UPLOAD_DERICTORY);
+        if (!StringUtils.isEmpty(uploadsDirectory)) {
+            bodyHandler.setUploadsDirectory(uploadsDirectory);
+        }
+
+        Object limit = resourceReader.readProperty(ServerProperty.SERVER_UPLOAD_LIMIT);
+        if (limit instanceof Integer) {
+            bodyHandler.setBodyLimit((Integer) limit);
+        } else if (limit instanceof Long) {
+            bodyHandler.setBodyLimit((Long) limit);
+        }
+
+        router.route().handler(bodyHandler);
+    }
+
+    @Override
+    protected void registerOptionHandler(Router router) throws Exception {
         try {
-            loggerHandler = beanFactory.getBean(LoggerHandler.class);
+            LoggerHandler loggerHandler = beanFactory.getBean(LoggerHandler.class);
             router.route().handler(loggerHandler);
         } catch (NoSuchBeanException e) {
             if (log.isDebugEnabled()) {
                 log.debug("no logger handler registed!");
             }
         }
+        try {
+            ErrorHandler errorHandler = beanFactory.getBean(ErrorHandler.class);
+            router.route().handler(errorHandler);
+        } catch (NoSuchBeanException e) {
+            if (log.isDebugEnabled()) {
+                log.debug("no error handler registed!");
+            }
+        }
+
+        try {
+            CorsHandler corsHandler = beanFactory.getBean(CorsHandler.class);
+            router.route().handler(corsHandler);
+        } catch (NoSuchBeanException e) {
+            if (log.isDebugEnabled()) {
+                log.debug("no cors handler registed!");
+            }
+        }
     }
 
-    private void registerRouteMapping(Router router) throws Exception {
+    @Override
+    protected void registerRouteMapping(Router router) throws Exception {
         FilterManager filterManager = new FilterManager();
-
         filterManager.registerFilters(getOrderedFilters());
 
-        AuthHandler authHandler = getAuthHandler();
-
-        RouteManager routeManager = new RouteManager(router, filterManager, authHandler);
-
-        RouteResolver routeResolver = new RouteResolver();
-
-        routeResolver.resovle(getRouteBeans()).forEach(routeManager::handle);
-
-        Collection<RouteAttribute> customRoutes = getCustomRoutes();
-
-        customRoutes.forEach(routeManager::handle);
-
-    }
-
-    private Collection<RouteAttribute> getCustomRoutes() throws BeansException {
-        return beanFactory.getBeans(RouteAttribute.class).values();
-    }
-
-
-    private AuthHandler getAuthHandler() throws BeansException {
+        AuthHandler authHandler = null;
         try {
-            return beanFactory.getBean(AuthHandler.class);
+            authHandler = beanFactory.getBean(AuthHandler.class);
         } catch (NoSuchBeanException e) {
             if (log.isDebugEnabled()) {
                 log.debug("no auth handler found!");
             }
         }
-        return null;
-    }
 
-    private List<Object> getRouteBeans() throws BeansException {
-        List<Object> beans = new LinkedList<>();
-        for (BeanDefinition beanDefinition : beanFactory.getBeanDefinitions().values()) {
-            if (AnnotationUtils.isAnnotationPresent(beanDefinition.getBeanClass(), RouteController.class)) {
-                String beanName = beanDefinition.getBeanName();
-                Object bean = beanFactory.getBean(beanName);
-                beans.add(bean);
-            }
-        }
-        return beans;
+        RouteManager routeManager = new RouteManager(router, filterManager, authHandler);
+
+        RouteResolver routeResolver = new RouteResolver();
+        Map<RouteAttribute, RouteInvocation> routes = routeResolver.resovle(getRouteBeans());
+        routes.forEach(routeManager::handle);
+
+        Collection<RouteAttribute> customRoutes = beanFactory.getBeans(RouteAttribute.class).values();
+        customRoutes.forEach(routeManager::handle);
     }
 
     private List<Filter> getOrderedFilters() throws BeansException {
@@ -144,30 +135,21 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
         }
     }
 
-    private void registerBodyHandler(io.vertx.reactivex.ext.web.Router router) {
-        BodyHandler bodyHandler = BodyHandler.create();
-        resolveAndSetBodyProperties(bodyHandler);
-        router.route().handler(bodyHandler);
+    private List<Object> getRouteBeans() throws BeansException {
+        List<Object> beans = new LinkedList<>();
+        for (BeanDefinition beanDefinition : beanFactory.getBeanDefinitions().values()) {
+            if (AnnotationUtils.isAnnotationPresent(beanDefinition.getBeanClass(), RouteController.class)) {
+                String beanName = beanDefinition.getBeanName();
+                Object bean = beanFactory.getBean(beanName);
+                beans.add(bean);
+            }
+        }
+        return beans;
     }
 
-    private void resolveAndSetBodyProperties(BodyHandler bodyHandler) {
-        String uploadsDirectory = resourceReader.readProperty(ServerProperty.SERVER_UPLOAD_DERICTORY);
-        if (!StringUtils.isEmpty(uploadsDirectory)) {
-            bodyHandler.setUploadsDirectory(uploadsDirectory);
-        }
-
-        Object limit = resourceReader.readProperty(ServerProperty.SERVER_UPLOAD_LIMIT);
-        if (limit instanceof Integer) {
-            bodyHandler.setBodyLimit((Integer) limit);
-        } else if (limit instanceof Long) {
-            bodyHandler.setBodyLimit((Long) limit);
-        }
-
-    }
-
-    private void startServer(io.vertx.reactivex.ext.web.Router router) throws BeansException {
-        SocketAddress socketAddress = resolveAddress();
-        HttpServerOptions options = resolveHttpServerOptions(socketAddress);
+    @Override
+    protected void doStart() throws Exception {
+        HttpServerOptions options = resolveHttpServerOptions();
 
         disposable = vertx.createHttpServer(options)
                 .requestHandler(router)
@@ -178,18 +160,18 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
                 .subscribe(httpServer -> {
                     if (log.isInfoEnabled()) {
                         log.info("stated web server at {}:{}!",
-                                socketAddress.host(), socketAddress.port());
+                                options.getHost(), options.getPort());
                     }
                 }, e -> {
                     if (log.isErrorEnabled()) {
                         log.error("failed to start web server at {}:{}!",
-                                socketAddress.host(), socketAddress.port(), e);
+                                options.getHost(), options.getPort(), e);
                     }
                     vertx.close();
                 });
     }
 
-    private HttpServerOptions resolveHttpServerOptions(SocketAddress socketAddress) throws BeansException {
+    private HttpServerOptions resolveHttpServerOptions() throws BeansException {
         HttpServerOptions options;
         try {
             options = beanFactory.getBean(HttpServerOptions.class);
@@ -201,8 +183,17 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
             options = new HttpServerOptions();
         }
 
+        SocketAddress socketAddress = resolveAddress();
         options.setHost(socketAddress.host())
                 .setPort(socketAddress.port());
+
+        Boolean enableHttp2 = resourceReader.readProperty(ServerProperty.SERVER_HTTP2_ENABLE, false);
+        if (enableHttp2) {
+            if (log.isInfoEnabled()) {
+                log.info("http2 enabled!");
+            }
+            options.getAlpnVersions().add(HttpVersion.HTTP_2);
+        }
 
         Boolean sslEnable = resourceReader.readProperty(ServerProperty.SERVER_SSL_ENABLE, false);
         if (sslEnable) {
@@ -214,6 +205,7 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
                     .setPassword(password);
             options.setKeyCertOptions(jksOptions);
         }
+
         return options;
     }
 
@@ -224,9 +216,8 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
     }
 
     @Override
-    public void stop(Promise<Void> stopPromise) throws Exception {
+    protected void doStop() throws Exception {
         disposable.dispose();
-        stopPromise.complete();
     }
 
     @Override
@@ -237,10 +228,5 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
     @Override
     public void setResourceReader(ResourceReader resourceReader) throws BeansException {
         this.resourceReader = resourceReader;
-    }
-
-    @Override
-    public void setRouter(Router router) throws BeansException {
-        this.router = router;
     }
 }

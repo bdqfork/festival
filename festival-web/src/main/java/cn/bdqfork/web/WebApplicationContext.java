@@ -7,6 +7,9 @@ import cn.bdqfork.core.factory.BeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import cn.bdqfork.web.processor.VerticleProxyProcessor;
+import cn.bdqfork.web.server.DefaultWebServer;
+import cn.bdqfork.web.server.WebServer;
+import cn.bdqfork.web.server.WebVerticle;
 import cn.bdqfork.web.service.HessianMessageCodec;
 import cn.bdqfork.web.util.VertxUtils;
 import io.vertx.core.DeploymentOptions;
@@ -38,10 +41,16 @@ public class WebApplicationContext extends AnnotationApplicationContext {
 
         vertx.eventBus().registerCodec(new HessianMessageCodec());
 
-        WebSeverRunner runner = beanFactory.getBean(WebSeverRunner.class);
+        DeploymentOptions options = getDeploymentOptions(beanFactory);
 
+        WebServer webServer = beanFactory.getBean(WebServer.class);
+
+        WebVerticle webVerticle = new WebVerticle(webServer);
+        vertx.deployVerticle(webVerticle, options);
+    }
+
+    private DeploymentOptions getDeploymentOptions(BeanFactory beanFactory) throws BeansException {
         DeploymentOptions options;
-
         try {
             options = beanFactory.getSpecificBean(SERVER_OPTIONS_NAME, DeploymentOptions.class);
 
@@ -59,7 +68,7 @@ public class WebApplicationContext extends AnnotationApplicationContext {
             options = new DeploymentOptions();
 
         }
-        vertx.deployVerticle(runner, options);
+        return options;
     }
 
     @Override
@@ -106,12 +115,9 @@ public class WebApplicationContext extends AnnotationApplicationContext {
 
     private void registerWebServer() throws BeansException {
         BeanDefinitionRegistry registry = getBeanFactory();
-        if (registry.containBeanDefinition("webserver")) {
-            return;
-        }
         BeanDefinition beanDefinition = BeanDefinition.builder()
                 .setScope(BeanDefinition.SINGLETON)
-                .setBeanClass(WebSeverRunner.class)
+                .setBeanClass(DefaultWebServer.class)
                 .setBeanName("webserver")
                 .build();
         registry.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition);

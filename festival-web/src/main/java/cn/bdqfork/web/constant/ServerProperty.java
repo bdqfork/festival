@@ -21,4 +21,5 @@ public class ServerProperty {
     public static final String SERVER_SSL_ENABLE = "server.ssl.enable";
     public static final String SERVER_SSL_PATH = "server.ssl.path";
     public static final String SERVER_SSL_PASSWORD = "server.ssl.password";
+    public static final String SERVER_HTTP2_ENABLE = "server.http2.enable";
 }

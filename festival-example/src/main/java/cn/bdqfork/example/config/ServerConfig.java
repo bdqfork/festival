@@ -1,11 +1,12 @@
 package cn.bdqfork.example.config;
 
-import cn.bdqfork.aop.annotation.Optimize;
 import cn.bdqfork.context.configuration.Configuration;
+import cn.bdqfork.web.annotation.VertxBean;
 import cn.bdqfork.web.constant.LogicType;
 import cn.bdqfork.web.route.PermitHolder;
 import cn.bdqfork.web.route.RouteAttribute;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.reactivex.ext.web.handler.CorsHandler;
 import io.vertx.reactivex.ext.web.handler.LoggerHandler;
 
 import javax.inject.Named;
@@ -19,11 +20,17 @@ import javax.inject.Singleton;
 @Configuration
 public class ServerConfig {
 
-    @Optimize
     @Singleton
-    @Named
+    @VertxBean
     public LoggerHandler loggerHandler() {
         return LoggerHandler.create();
+    }
+
+    @Singleton
+    @VertxBean
+    public CorsHandler corsHandler() {
+        return CorsHandler.create("vertx.io")
+                .allowedMethod(HttpMethod.GET);
     }
 
     @Singleton

@@ -1,6 +1,8 @@
 server:
   host: 127.0.0.1
   port: 8080
+  http2:
+    enable: true
   ssl:
     enable: false
     path: test.jks
