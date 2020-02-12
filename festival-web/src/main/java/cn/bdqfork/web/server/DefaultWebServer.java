@@ -39,7 +39,10 @@ public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAw
 
     @Override
     protected void registerCoreHandler(Router router) throws Exception {
+        router.route().handler(ResponseContentTypeHandler.create());
+
         registerSessionHandler(router);
+
         registerBodyHandler(router);
     }
 

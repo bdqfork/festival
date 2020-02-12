@@ -32,11 +32,13 @@ public class TestRestfulController {
         response.putHeader("content-type", "text/plain").end("hello2");
     }
 
+    @Produces("application/json")
     @GetMapping("/hello3")
     public String hello3(HttpServerRequest request) {
         return "id: " + request.getParam("id");
     }
 
+    @Produces({"text/plain", "application/json"})
     @GetMapping("/hello4")
     public String hello3(@Param("id") int id) {
         return "id: " + id;

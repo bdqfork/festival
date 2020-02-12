@@ -28,6 +28,16 @@ public class RouteAttribute {
     private HttpMethod httpMethod;
 
     /**
+     * produces
+     */
+    private String produces;
+
+    /**
+     * consumes
+     */
+    private String consumes;
+
+    /**
      * route handler
      */
     private Handler<RoutingContext> contextHandler;

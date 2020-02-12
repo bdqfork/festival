@@ -4,6 +4,8 @@ import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.AopUtils;
 import cn.bdqfork.web.annotation.*;
+import cn.bdqfork.web.route.annotation.Consumes;
+import cn.bdqfork.web.route.annotation.Produces;
 import cn.bdqfork.web.route.annotation.RouteMapping;
 
 import java.lang.reflect.Method;
@@ -38,6 +40,20 @@ public class RouteResolver {
                         .url(baseUrl + routeMapping.value())
                         .httpMethod(routeMapping.method())
                         .build();
+
+                Produces produces = AnnotationUtils.getMergedAnnotation(method, Produces.class);
+                if (produces != null) {
+                    for (String produce : produces.value()) {
+                        attribute.setProduces(produce);
+                    }
+                }
+
+                Consumes consumes = AnnotationUtils.getMergedAnnotation(method, Consumes.class);
+                if (consumes != null) {
+                    for (String consume : consumes.value()) {
+                        attribute.setConsumes(consume);
+                    }
+                }
 
                 resolveAuthInfo(attribute, beanClass, method);
 

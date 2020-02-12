@@ -1,13 +1,15 @@
 package cn.bdqfork.web.route;
 
 import cn.bdqfork.core.util.ReflectUtils;
+import cn.bdqfork.core.util.StringUtils;
 import cn.bdqfork.web.route.filter.FilterChain;
 import cn.bdqfork.web.route.filter.FilterManager;
 import cn.bdqfork.web.route.message.DefaultHttpMessageHandler;
 import cn.bdqfork.web.route.message.HttpMessageHandler;
-import cn.bdqfork.web.route.response.DefaultResponseHandler;
-import cn.bdqfork.web.route.response.ResponseHandler;
+import cn.bdqfork.web.route.response.GenericResponseHandler;
+import cn.bdqfork.web.route.response.ResponseHandleStrategy;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.reactivex.core.http.HttpServerResponse;
 import io.vertx.reactivex.ext.web.Route;
 import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.RoutingContext;
@@ -29,7 +31,7 @@ public class RouteManager {
 
     private final Set<String> registedRoutes = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-    private ResponseHandler responseHandler = new DefaultResponseHandler();
+    private ResponseHandleStrategy responseHandleStrategy = new GenericResponseHandler();
 
     private HttpMessageHandler httpMessageHandler = new DefaultHttpMessageHandler();
 
@@ -62,6 +64,8 @@ public class RouteManager {
 
         Route route = router.route(httpMethod, path);
 
+        checkAndSetContentType(routeAttribute, route);
+
         checkAndSetAuth(routeAttribute, route);
 
         if (invocation == null) {
@@ -80,6 +84,16 @@ public class RouteManager {
             handleMapping(routeAttribute, invocation, route);
         }
 
+    }
+
+    private void checkAndSetContentType(RouteAttribute routeAttribute, Route route) {
+        if (!StringUtils.isEmpty(routeAttribute.getConsumes())) {
+            route.consumes(routeAttribute.getConsumes());
+        }
+
+        if (!StringUtils.isEmpty(routeAttribute.getProduces())) {
+            route.produces(routeAttribute.getProduces());
+        }
     }
 
     private void checkIfConflict(String path, HttpMethod httpMethod) {
@@ -137,7 +151,9 @@ public class RouteManager {
                 try {
                     Object[] args = httpMessageHandler.handle(routingContext, routeMethod.getParameters());
                     Object result = ReflectUtils.invokeMethod(routeBean, routeMethod, args);
-                    responseHandler.handle(routingContext, result);
+                    String contentType = routingContext.getAcceptableContentType();
+                    HttpServerResponse response = routingContext.response();
+                    responseHandleStrategy.handle(response, contentType, result);
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
                     routingContext.fail(500, e);
