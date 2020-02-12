@@ -65,18 +65,6 @@ public class BeanUtils {
         return target.isAssignableFrom(clazz);
     }
 
-
-    /**
-     * 判断clazz是否为target类型或子类型，如果是，返回true，否则返回false
-     *
-     * @param clazz  待判断类型
-     * @param target 目标类型
-     * @return boolean
-     */
-    public static boolean checkIfSubType(Class<?> clazz, Class<?> target) {
-        return isSubType(clazz, target) || isSubType(target, clazz);
-    }
-
     /**
      * 对bean的集合进行排序，order越小越前，其他的统一放最后，用户实现的order的value必须大于零
      *
