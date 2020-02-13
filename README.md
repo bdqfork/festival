@@ -40,7 +40,7 @@ web设计如下：
 + @produces,@consumer 已完成!
 + 跨域 已完成!
 + 自定义配置文件路径
-+ resource reader基本类型转换，以及unsupport异常
++ resource reader基本类型转换，以及unsupport异常 已完成！
 + 自定义handler注入 已完成!
 + 合并@Route和@RouteMapping为@RouteController 已完成!
 + 支持http2 已完成！
