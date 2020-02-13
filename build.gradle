@@ -10,7 +10,8 @@ ext {
             aspectjweaver: '1.9.4',
             snakeyaml    : '1.25',
             vertx        : '3.8.4',
-            hessian      : '4.0.63'
+            hessian      : '4.0.63',
+            beanutils    : '1.9.4',
     ]
 }
 
@@ -55,7 +56,7 @@ subprojects {
     }
 
     tasks.withType(Javadoc) {
-        options.addStringOption('Xdoclint:none','-quiet')
+        options.addStringOption('Xdoclint:none', '-quiet')
         options.addStringOption('encoding', 'UTF-8')
         options.addStringOption('charSet', 'UTF-8')
     }
