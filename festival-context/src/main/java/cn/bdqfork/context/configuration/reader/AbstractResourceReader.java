@@ -39,22 +39,22 @@ public abstract class AbstractResourceReader implements ResourceReader {
         return (T) value;
     }
 
-    @SuppressWarnings("unchecked")
-    private <T> Object castIfNeed(Class<T> type, Object value) {
+    private Object castIfNeed(Class<?> type, Object value) {
         if (ReflectUtils.isPrimitiveOrWrapper(type)) {
             return StringUtils.castToPrimitive(value.toString(), type);
         }
 
         if (!ReflectUtils.isCollection(type)) {
-            return getInstance(type, (Map<String, Object>) value);
+            return getInstance(type, value);
         }
         return value;
     }
 
-    private <T> Object getInstance(Class<T> type, Map<String, Object> value) {
+    @SuppressWarnings("unchecked")
+    private <T> Object getInstance(Class<T> type, Object value) {
         try {
             Object instance = type.newInstance();
-            BeanUtils.populate(instance, value);
+            BeanUtils.populate(instance, (Map<String, ?>) value);
             return instance;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new IllegalStateException(e);
