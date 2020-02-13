@@ -16,6 +16,10 @@ import cn.bdqfork.web.route.*;
 import cn.bdqfork.web.route.annotation.RouteController;
 import cn.bdqfork.web.route.filter.Filter;
 import cn.bdqfork.web.route.filter.FilterChainFactory;
+import cn.bdqfork.web.route.message.DefaultHttpMessageHandler;
+import cn.bdqfork.web.route.message.HttpMessageHandler;
+import cn.bdqfork.web.route.message.resolver.AbstractParameterResolver;
+import cn.bdqfork.web.route.message.resolver.ParameterResolverFactory;
 import io.reactivex.disposables.Disposable;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpVersion;
@@ -100,9 +104,37 @@ public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAw
 
     @Override
     protected void registerRouteMapping(Router router) throws Exception {
+
+        RouteManager routeManager = new RouteManager(router);
+
         FilterChainFactory filterChainFactory = new FilterChainFactory();
         filterChainFactory.registerFilters(getOrderedFilters());
+        routeManager.setFilterChainFactory(filterChainFactory);
 
+        AuthHandler authHandler = getAuthHandler();
+        routeManager.setAuthHandler(authHandler);
+
+        HttpMessageHandler httpMessageHandler = createHttpMessageHandler();
+
+        routeManager.setHttpMessageHandler(httpMessageHandler);
+
+        RouteResolver routeResolver = new RouteResolver();
+        Map<RouteAttribute, RouteInvocation> routes = routeResolver.resovle(getRouteBeans());
+        routes.forEach(routeManager::handle);
+
+        Collection<RouteAttribute> customRoutes = beanFactory.getBeans(RouteAttribute.class).values();
+        customRoutes.forEach(routeManager::handle);
+    }
+
+    private HttpMessageHandler createHttpMessageHandler() throws BeansException {
+        ParameterResolverFactory parameterResolverFactory = new ParameterResolverFactory();
+        Collection<AbstractParameterResolver> parameterResolvers = beanFactory.getBeans(AbstractParameterResolver.class)
+                .values();
+        parameterResolverFactory.registerResolver(parameterResolvers);
+        return new DefaultHttpMessageHandler(parameterResolverFactory);
+    }
+
+    private AuthHandler getAuthHandler() throws BeansException {
         AuthHandler authHandler = null;
         try {
             authHandler = beanFactory.getBean(AuthHandler.class);
@@ -111,15 +143,7 @@ public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAw
                 log.debug("no auth handler found!");
             }
         }
-
-        RouteManager routeManager = new RouteManager(router, filterChainFactory, authHandler);
-
-        RouteResolver routeResolver = new RouteResolver();
-        Map<RouteAttribute, RouteInvocation> routes = routeResolver.resovle(getRouteBeans());
-        routes.forEach(routeManager::handle);
-
-        Collection<RouteAttribute> customRoutes = beanFactory.getBeans(RouteAttribute.class).values();
-        customRoutes.forEach(routeManager::handle);
+        return authHandler;
     }
 
     private List<Filter> getOrderedFilters() throws BeansException {

@@ -17,7 +17,7 @@ public class FilterChain implements Filter {
     }
 
     public FilterChain(List<Filter> filters) {
-        this.filters = filters;
+        this.filters.addAll(filters);
     }
 
     public void registerFilter(Filter filter) {

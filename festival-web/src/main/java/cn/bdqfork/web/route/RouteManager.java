@@ -2,9 +2,9 @@ package cn.bdqfork.web.route;
 
 import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.core.util.StringUtils;
+import cn.bdqfork.web.route.filter.Filter;
 import cn.bdqfork.web.route.filter.FilterChain;
 import cn.bdqfork.web.route.filter.FilterChainFactory;
-import cn.bdqfork.web.route.message.DefaultHttpMessageHandler;
 import cn.bdqfork.web.route.message.HttpMessageHandler;
 import cn.bdqfork.web.route.response.GenericResponseHandler;
 import cn.bdqfork.web.route.response.ResponseHandleStrategy;
@@ -33,23 +33,16 @@ public class RouteManager {
 
     private ResponseHandleStrategy responseHandleStrategy = new GenericResponseHandler();
 
-    private HttpMessageHandler httpMessageHandler = new DefaultHttpMessageHandler();
+    private Router router;
+
+    private HttpMessageHandler httpMessageHandler;
 
     private FilterChainFactory filterChainFactory;
 
-    private Router router;
-
     private AuthHandler authHandler;
 
-    public RouteManager(Router router, FilterChainFactory filterChainFactory) {
+    public RouteManager(Router router) {
         this.router = router;
-        this.filterChainFactory = filterChainFactory;
-    }
-
-    public RouteManager(Router router, FilterChainFactory filterChainFactory, AuthHandler authHandler) {
-        this.router = router;
-        this.filterChainFactory = filterChainFactory;
-        this.authHandler = authHandler;
     }
 
     public void handle(RouteAttribute routeAttribute) {
@@ -117,12 +110,7 @@ public class RouteManager {
     }
 
     private void handleCustomMapping(RouteAttribute routeAttribute, Route route) {
-        FilterChain invoker = new FilterChain() {
-            @Override
-            public void doFilter(RoutingContext routingContext) {
-                routeAttribute.getContextHandler().handle(routingContext);
-            }
-        };
+        Filter invoker = (routingContext, filterChain) -> routeAttribute.getContextHandler().handle(routingContext);
 
         FilterChain filterChain = filterChainFactory.getFilterChain(invoker);
 
@@ -130,7 +118,7 @@ public class RouteManager {
     }
 
     private void handleMapping(RouteAttribute routeAttribute, RouteInvocation invocation, Route route) {
-        FilterChain invoker = createInvokeHandler(invocation.bean, invocation.method);
+        Filter invoker = createInvokeHandler(invocation.bean, invocation.method);
 
         FilterChain filterChain = filterChainFactory.getFilterChain(invoker);
 
@@ -144,10 +132,10 @@ public class RouteManager {
         });
     }
 
-    private FilterChain createInvokeHandler(Object routeBean, Method routeMethod) {
-        return new FilterChain() {
+    private Filter createInvokeHandler(Object routeBean, Method routeMethod) {
+        return new Filter() {
             @Override
-            public void doFilter(RoutingContext routingContext) {
+            public void doFilter(RoutingContext routingContext, FilterChain filterChain) {
                 try {
                     Object[] args = httpMessageHandler.handle(routingContext, routeMethod.getParameters());
                     Object result = ReflectUtils.invokeMethod(routeBean, routeMethod, args);
@@ -162,4 +150,15 @@ public class RouteManager {
         };
     }
 
+    public void setHttpMessageHandler(HttpMessageHandler httpMessageHandler) {
+        this.httpMessageHandler = httpMessageHandler;
+    }
+
+    public void setFilterChainFactory(FilterChainFactory filterChainFactory) {
+        this.filterChainFactory = filterChainFactory;
+    }
+
+    public void setAuthHandler(AuthHandler authHandler) {
+        this.authHandler = authHandler;
+    }
 }
