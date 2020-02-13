@@ -355,7 +355,7 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
         if (actualType.isInterface()) {
             for (Map.Entry<String, BeanDefinition> entry : definitionMap.entrySet()) {
                 BeanDefinition beanDefinition = entry.getValue();
-                if (BeanUtils.checkIfSubType(actualType, beanDefinition.getBeanClass())) {
+                if (BeanUtils.isSubType(beanDefinition.getBeanClass(), actualType)) {
                     return entry.getKey();
                 }
             }

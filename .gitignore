@@ -28,3 +28,4 @@ file-uploads/
 .gradle
 build/
 out/
+gradle.properties

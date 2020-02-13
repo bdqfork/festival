@@ -8,10 +8,10 @@ import cn.bdqfork.web.annotation.PermitAllowed;
 import cn.bdqfork.web.annotation.RolesAllowed;
 import cn.bdqfork.web.constant.LogicType;
 import cn.bdqfork.web.RouterAware;
-import cn.bdqfork.web.annotation.GetMapping;
-import cn.bdqfork.web.annotation.PostMapping;
-import cn.bdqfork.web.annotation.Route;
-import cn.bdqfork.web.annotation.RouteMapping;
+import cn.bdqfork.web.route.annotation.GetMapping;
+import cn.bdqfork.web.route.annotation.PostMapping;
+import cn.bdqfork.web.route.annotation.RouteController;
+import cn.bdqfork.web.route.annotation.RouteMapping;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -32,8 +32,7 @@ import javax.inject.Singleton;
 @Auth
 @Slf4j
 @Singleton
-@RouteMapping("/users")
-@Route
+@RouteController("/users")
 public class UserController implements DisposableBean, RouterAware {
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private Router router;

@@ -32,13 +32,15 @@ web设计如下：
 2. 重新设计了项目，尽可能的面向接口编程
 
 ##### todolist:
-1. 参数注入
-2. luncher封装
-3. 缓存
-4. 服务监控
-5. verticle service group
-6. @produces,@consumer以及跨域
-7. 用户自定义handler
-8. 将@Route和@RouteMapping合并
-9. ssl支持
-10. 自定义配置文件路径
++ 参数注入
++ luncher封装
++ 缓存
++ 服务监控
++ verticle service group
++ @produces,@consumer 已完成!
++ 跨域 已完成!
++ 自定义配置文件路径
++ resource reader基本类型转换，以及unsupport异常
++ 自定义handler注入 已完成!
++ 合并@Route和@RouteMapping为@RouteController 已完成!
++ 支持http2 已完成！

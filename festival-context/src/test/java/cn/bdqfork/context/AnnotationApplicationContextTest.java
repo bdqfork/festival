@@ -8,19 +8,14 @@ import cn.bdqfork.core.exception.UnsatisfiedBeanException;
 import cn.bdqfork.model.bean.exception.ResolveExceptionBean;
 import cn.bdqfork.model.bean.exception.unsatisfied.UnsatisfiedBeanExceptionBean;
 import cn.bdqfork.model.bean.normal.SingletonBeanService;
-import cn.bdqfork.model.collection.CollectionPropertyDao;
 import cn.bdqfork.model.collection.CollectionPropertyService;
-import cn.bdqfork.model.configration.FactoryBean;
-import cn.bdqfork.model.configration.Server;
-import cn.bdqfork.model.configration.ServerConfig;
+import cn.bdqfork.model.configuration.FactoryBean;
+import cn.bdqfork.model.configuration.Server;
+import cn.bdqfork.model.configuration.ServerConfig;
 import cn.bdqfork.model.cycle.*;
 import cn.bdqfork.model.jsr250.JSR250FieldService;
-import cn.bdqfork.model.processor.MyOrder1processor;
-import cn.bdqfork.model.processor.MyOrderProcessor;
 import cn.bdqfork.model.proxy.AopProxyTestBean;
 import org.junit.Test;
-
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -130,7 +125,7 @@ public class AnnotationApplicationContextTest {
 
     @Test
     public void testGetFactoryBeanDefinition() throws Exception {
-        AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.configration");
+        AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.configuration");
         annotationApplicationContext.start();
         FactoryBean factoryBean = annotationApplicationContext.getBean(FactoryBean.class);
         System.out.println(factoryBean);
@@ -230,8 +225,8 @@ public class AnnotationApplicationContextTest {
      * @throws BeansException
      */
     @Test
-    public void testConfigration() throws Exception {
-        AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.configration");
+    public void testConfiguration() throws Exception {
+        AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.configuration");
         annotationApplicationContext.start();
         Server server = annotationApplicationContext.getBean(Server.class);
         ServerConfig serverConfig = server.getServerConfig();
@@ -246,7 +241,7 @@ public class AnnotationApplicationContextTest {
 
     @Test
     public void testComponentScan() throws Exception {
-        AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.configration");
+        AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.configuration");
         annotationApplicationContext.start();
         SingletonBeanService beanService = annotationApplicationContext.getBean(SingletonBeanService.class);
         assert beanService != null;

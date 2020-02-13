@@ -15,6 +15,7 @@ import cn.bdqfork.core.factory.processor.OrderAware;
 import cn.bdqfork.core.util.AnnotationUtils;
 import org.aspectj.lang.annotation.Aspect;
 
+import java.lang.reflect.Executable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -70,15 +71,28 @@ public class AopProxyProcessor implements BeanPostProcessor, BeanFactoryPostProc
                 .collect(Collectors.toList());
         config.setInterfaces(interfaces);
 
-        if (checkIfOptimize(beanDefinition, beanClass)) {
+        if (checkIfOptimize(beanDefinition)) {
             config.setOptimze(true);
         }
 
         return aopProxyBeanFactory.createAopProxyBean(config);
     }
 
-    private boolean checkIfOptimize(BeanDefinition beanDefinition, Class<?> beanClass) {
-        return beanDefinition instanceof ManagedBeanDefinition || AnnotationUtils.isAnnotationPresent(beanClass, Optimize.class);
+    private boolean checkIfOptimize(BeanDefinition beanDefinition) {
+        if (beanDefinition instanceof ManagedBeanDefinition) {
+            return true;
+        }
+
+        Class<?> beanClass = beanDefinition.getBeanClass();
+        if (AnnotationUtils.isAnnotationPresent(beanClass, Optimize.class)) {
+            return true;
+        }
+
+        Executable executable = beanDefinition.getConstructor();
+        if (AnnotationUtils.isAnnotationPresent(executable, Optimize.class)) {
+            return true;
+        }
+        return false;
     }
 
     @Override

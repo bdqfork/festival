@@ -251,7 +251,7 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
     public List<BeanDefinition> getBeanDefinitions(Class<?> beanType) {
         return beanDefinitionMap.values()
                 .stream()
-                .filter(beanDefinition -> BeanUtils.checkIfSubType(beanDefinition.getBeanClass(), beanType))
+                .filter(beanDefinition -> BeanUtils.isSubType(beanDefinition.getBeanClass(), beanType))
                 .collect(Collectors.toList());
     }
 
