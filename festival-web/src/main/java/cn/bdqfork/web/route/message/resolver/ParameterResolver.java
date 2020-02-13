@@ -1,4 +1,4 @@
-package cn.bdqfork.web.route.message;
+package cn.bdqfork.web.route.message.resolver;
 
 import io.vertx.reactivex.ext.web.RoutingContext;
 
