@@ -15,7 +15,7 @@ import cn.bdqfork.web.constant.ServerProperty;
 import cn.bdqfork.web.route.*;
 import cn.bdqfork.web.route.annotation.RouteController;
 import cn.bdqfork.web.route.filter.Filter;
-import cn.bdqfork.web.route.filter.FilterManager;
+import cn.bdqfork.web.route.filter.FilterChainFactory;
 import io.reactivex.disposables.Disposable;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpVersion;
@@ -102,8 +102,8 @@ public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAw
 
     @Override
     protected void registerRouteMapping(Router router) throws Exception {
-        FilterManager filterManager = new FilterManager();
-        filterManager.registerFilters(getOrderedFilters());
+        FilterChainFactory filterChainFactory = new FilterChainFactory();
+        filterChainFactory.registerFilters(getOrderedFilters());
 
         AuthHandler authHandler = null;
         try {
@@ -114,7 +114,7 @@ public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAw
             }
         }
 
-        RouteManager routeManager = new RouteManager(router, filterManager, authHandler);
+        RouteManager routeManager = new RouteManager(router, filterChainFactory, authHandler);
 
         RouteResolver routeResolver = new RouteResolver();
         Map<RouteAttribute, RouteInvocation> routes = routeResolver.resovle(getRouteBeans());

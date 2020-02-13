@@ -3,7 +3,7 @@ package cn.bdqfork.web.route;
 import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.core.util.StringUtils;
 import cn.bdqfork.web.route.filter.FilterChain;
-import cn.bdqfork.web.route.filter.FilterManager;
+import cn.bdqfork.web.route.filter.FilterChainFactory;
 import cn.bdqfork.web.route.message.DefaultHttpMessageHandler;
 import cn.bdqfork.web.route.message.HttpMessageHandler;
 import cn.bdqfork.web.route.response.GenericResponseHandler;
@@ -35,20 +35,20 @@ public class RouteManager {
 
     private HttpMessageHandler httpMessageHandler = new DefaultHttpMessageHandler();
 
-    private FilterManager filterManager;
+    private FilterChainFactory filterChainFactory;
 
     private Router router;
 
     private AuthHandler authHandler;
 
-    public RouteManager(Router router, FilterManager filterManager) {
+    public RouteManager(Router router, FilterChainFactory filterChainFactory) {
         this.router = router;
-        this.filterManager = filterManager;
+        this.filterChainFactory = filterChainFactory;
     }
 
-    public RouteManager(Router router, FilterManager filterManager, AuthHandler authHandler) {
+    public RouteManager(Router router, FilterChainFactory filterChainFactory, AuthHandler authHandler) {
         this.router = router;
-        this.filterManager = filterManager;
+        this.filterChainFactory = filterChainFactory;
         this.authHandler = authHandler;
     }
 
@@ -124,7 +124,7 @@ public class RouteManager {
             }
         };
 
-        FilterChain filterChain = filterManager.buildFilterChain(invoker);
+        FilterChain filterChain = filterChainFactory.getFilterChain(invoker);
 
         doHandler(routeAttribute, route, filterChain);
     }
@@ -132,7 +132,7 @@ public class RouteManager {
     private void handleMapping(RouteAttribute routeAttribute, RouteInvocation invocation, Route route) {
         FilterChain invoker = createInvokeHandler(invocation.bean, invocation.method);
 
-        FilterChain filterChain = filterManager.buildFilterChain(invoker);
+        FilterChain filterChain = filterChainFactory.getFilterChain(invoker);
 
         doHandler(routeAttribute, route, filterChain);
     }
