@@ -51,8 +51,8 @@ public class GenericResourceReader implements ResourceReader {
     }
 
     @Override
-    public <T> T readProperty(String propertyName, T defaultValue) {
-        T value = readProperty(propertyName,null);
+    public <T> T readProperty(String propertyName, Class<T> type, T defaultValue) {
+        T value = readProperty(propertyName, type);
         if (value != null) {
             return value;
         }

@@ -158,7 +158,7 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
 
                 Type[] actualTypes = ReflectUtils.getActualType(type);
 
-                if (BeanUtils.isCollection(type)) {
+                if (BeanUtils.isList(type)) {
 
                     Class<?> actualType = (Class<?>) actualTypes[0];
 
@@ -251,7 +251,7 @@ public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
     public List<BeanDefinition> getBeanDefinitions(Class<?> beanType) {
         return beanDefinitionMap.values()
                 .stream()
-                .filter(beanDefinition -> BeanUtils.isSubType(beanDefinition.getBeanClass(), beanType))
+                .filter(beanDefinition -> ReflectUtils.isSubType(beanDefinition.getBeanClass(), beanType))
                 .collect(Collectors.toList());
     }
 

@@ -1,6 +1,11 @@
 package cn.bdqfork.context.configuration.reader;
 
+import cn.bdqfork.core.util.ReflectUtils;
+import cn.bdqfork.core.util.StringUtils;
+import org.apache.commons.beanutils.BeanUtils;
+
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -26,21 +31,46 @@ public abstract class AbstractResourceReader implements ResourceReader {
         if (cache.containsKey(propertyName)) {
             return (T) cache.get(propertyName);
         }
-        T value = doReadProperty(propertyName, type);
+        Object value = doReadProperty(propertyName);
+
+        value = castIfNeed(type, value);
+
         cache.put(propertyName, value);
+        return (T) value;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> Object castIfNeed(Class<T> type, Object value) {
+        if (ReflectUtils.isPrimitiveOrWrapper(type)) {
+            return StringUtils.castToPrimitive(value.toString(), type);
+        }
+
+        if (!ReflectUtils.isCollection(type)) {
+            return getInstance(type, (Map<String, Object>) value);
+        }
         return value;
     }
 
+    private <T> Object getInstance(Class<T> type, Map<String, Object> value) {
+        try {
+            Object instance = type.newInstance();
+            BeanUtils.populate(instance, value);
+            return instance;
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     @Override
-    public <T> T readProperty(String propertyName, T defaultValue) {
-        T value = readProperty(propertyName, null);
+    public <T> T readProperty(String propertyName, Class<T> type, T defaultValue) {
+        T value = readProperty(propertyName, type);
         if (value != null) {
             return value;
         }
         return defaultValue;
     }
 
-    protected abstract <T> T doReadProperty(String propertyName, Class<T> type);
+    protected abstract Object doReadProperty(String propertyName);
 
     public String getResourcePath() {
         return resourcePath;

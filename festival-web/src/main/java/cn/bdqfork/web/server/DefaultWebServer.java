@@ -56,16 +56,14 @@ public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAw
     private void registerBodyHandler(Router router) {
         BodyHandler bodyHandler = BodyHandler.create();
 
-        String uploadsDirectory = resourceReader.readProperty(ServerProperty.SERVER_UPLOAD_DERICTORY);
+        String uploadsDirectory = resourceReader.readProperty(ServerProperty.SERVER_UPLOAD_DERICTORY, String.class);
         if (!StringUtils.isEmpty(uploadsDirectory)) {
             bodyHandler.setUploadsDirectory(uploadsDirectory);
         }
 
-        Object limit = resourceReader.readProperty(ServerProperty.SERVER_UPLOAD_LIMIT);
-        if (limit instanceof Integer) {
-            bodyHandler.setBodyLimit((Integer) limit);
-        } else if (limit instanceof Long) {
-            bodyHandler.setBodyLimit((Long) limit);
+        Long limit = resourceReader.readProperty(ServerProperty.SERVER_UPLOAD_LIMIT, Long.class);
+        if (limit != null) {
+            bodyHandler.setBodyLimit(limit);
         }
 
         router.route().handler(bodyHandler);
@@ -190,7 +188,7 @@ public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAw
         options.setHost(socketAddress.host())
                 .setPort(socketAddress.port());
 
-        Boolean enableHttp2 = resourceReader.readProperty(ServerProperty.SERVER_HTTP2_ENABLE, false);
+        Boolean enableHttp2 = resourceReader.readProperty(ServerProperty.SERVER_HTTP2_ENABLE, Boolean.class, false);
         if (enableHttp2) {
             if (log.isInfoEnabled()) {
                 log.info("http2 enabled!");
@@ -198,11 +196,11 @@ public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAw
             options.getAlpnVersions().add(HttpVersion.HTTP_2);
         }
 
-        Boolean sslEnable = resourceReader.readProperty(ServerProperty.SERVER_SSL_ENABLE, false);
+        Boolean sslEnable = resourceReader.readProperty(ServerProperty.SERVER_SSL_ENABLE, Boolean.class, false);
         if (sslEnable) {
             options.setSsl(sslEnable);
-            String path = resourceReader.readProperty(ServerProperty.SERVER_SSL_PATH);
-            String password = resourceReader.readProperty(ServerProperty.SERVER_SSL_PASSWORD);
+            String path = resourceReader.readProperty(ServerProperty.SERVER_SSL_PATH, String.class);
+            String password = resourceReader.readProperty(ServerProperty.SERVER_SSL_PASSWORD, String.class);
             JksOptions jksOptions = new JksOptions()
                     .setPath(path)
                     .setPassword(password);
@@ -213,8 +211,8 @@ public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAw
     }
 
     private SocketAddress resolveAddress() {
-        String host = resourceReader.readProperty(ServerProperty.SERVER_HOST, ServerProperty.DEFAULT_HOST);
-        Integer port = resourceReader.readProperty(ServerProperty.SERVER_PORT, ServerProperty.DEFAULT_PORT);
+        String host = resourceReader.readProperty(ServerProperty.SERVER_HOST, String.class, ServerProperty.DEFAULT_HOST);
+        Integer port = resourceReader.readProperty(ServerProperty.SERVER_PORT, Integer.class, ServerProperty.DEFAULT_PORT);
         return SocketAddress.inetSocketAddress(port, host);
     }
 

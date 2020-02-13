@@ -34,7 +34,7 @@ public class BeanUtils {
         }
     }
 
-    public static boolean isCollection(Type type) {
+    public static boolean isList(Type type) {
         if (type instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType) type;
             Type rawType = parameterizedType.getRawType();
@@ -54,16 +54,6 @@ public class BeanUtils {
         }
     }
 
-    /**
-     * 判断clazz是否为target类型或子类型，如果是，返回true，否则返回false
-     *
-     * @param clazz  待判断类型
-     * @param target 目标类型
-     * @return boolean
-     */
-    public static boolean isSubType(Class<?> clazz, Class<?> target) {
-        return target.isAssignableFrom(clazz);
-    }
 
     /**
      * 对bean的集合进行排序，order越小越前，其他的统一放最后，用户实现的order的value必须大于零

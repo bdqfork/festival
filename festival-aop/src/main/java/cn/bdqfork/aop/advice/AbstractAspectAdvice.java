@@ -1,6 +1,6 @@
 package cn.bdqfork.aop.advice;
 
-import cn.bdqfork.core.util.BeanUtils;
+import cn.bdqfork.core.util.ReflectUtils;
 import org.aspectj.lang.JoinPoint;
 
 import java.lang.reflect.Method;
@@ -36,7 +36,7 @@ public abstract class AbstractAspectAdvice implements AspectAdvice {
         Parameter[] parameters = aspectAdviceMethod.getParameters();
         Object[] adviceArgs = new Object[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
-            if (BeanUtils.isSubType(parameters[i].getType(), clazz)) {
+            if (ReflectUtils.isSubType(parameters[i].getType(), clazz)) {
                 adviceArgs[i] = joinPoint;
             } else {
                 adviceArgs[i] = value;

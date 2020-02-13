@@ -51,6 +51,10 @@ public class StringUtils {
             return (T) Boolean.valueOf(value);
         }
 
+        if (type == String.class) {
+            return (T) value;
+        }
+
         throw new IllegalArgumentException(String.format("unsupport type %s!", type.getCanonicalName()));
     }
 }

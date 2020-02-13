@@ -11,7 +11,6 @@ import cn.bdqfork.core.factory.MultInjectedPoint;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.definition.ManagedBeanDefinition;
 import cn.bdqfork.core.util.AnnotationUtils;
-import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.core.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -355,7 +354,7 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
         if (actualType.isInterface()) {
             for (Map.Entry<String, BeanDefinition> entry : definitionMap.entrySet()) {
                 BeanDefinition beanDefinition = entry.getValue();
-                if (BeanUtils.isSubType(beanDefinition.getBeanClass(), actualType)) {
+                if (ReflectUtils.isSubType(beanDefinition.getBeanClass(), actualType)) {
                     return entry.getKey();
                 }
             }

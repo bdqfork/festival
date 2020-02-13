@@ -8,7 +8,7 @@ import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import cn.bdqfork.core.factory.registry.DefaultSingletonBeanRegistry;
 import cn.bdqfork.core.util.AopUtils;
-import cn.bdqfork.core.util.BeanUtils;
+import cn.bdqfork.core.util.ReflectUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -46,7 +46,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
     @Override
     public <T> T getSpecificBean(String beanName, Class<T> clazz) throws BeansException {
         Object bean = getBean(beanName);
-        if (BeanUtils.isSubType(bean.getClass(), clazz)) {
+        if (ReflectUtils.isSubType(bean.getClass(), clazz)) {
             return (T) bean;
         } else {
             throw new NoSuchBeanException(String.format("there is no such bean of class %s !", clazz.getCanonicalName()));

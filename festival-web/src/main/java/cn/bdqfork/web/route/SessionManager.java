@@ -69,27 +69,27 @@ public class SessionManager implements BeanFactoryAware, ResourceReaderAware {
     }
 
     private void resolveAndSetSessionProperties(SessionHandler sessionHandler) {
-        Boolean cookieHttpOnly = resourceReader.readProperty(ServerProperty.SERVER_COOKIE_HTTP_ONLY);
+        Boolean cookieHttpOnly = resourceReader.readProperty(ServerProperty.SERVER_COOKIE_HTTP_ONLY, Boolean.class);
         if (cookieHttpOnly != null) {
             sessionHandler.setCookieHttpOnlyFlag(cookieHttpOnly);
         }
 
-        Boolean cookieSecure = resourceReader.readProperty(ServerProperty.SERVER_COOKIE_SECURE);
+        Boolean cookieSecure = resourceReader.readProperty(ServerProperty.SERVER_COOKIE_SECURE, Boolean.class);
         if (cookieSecure != null) {
             sessionHandler.setCookieSecureFlag(cookieSecure);
         }
 
-        Long sessionTimeout = resourceReader.readProperty(ServerProperty.SERVER_SESSION_TIMEOUT);
+        Long sessionTimeout = resourceReader.readProperty(ServerProperty.SERVER_SESSION_TIMEOUT, Long.class);
         if (sessionTimeout != null) {
             sessionHandler.setSessionTimeout(sessionTimeout);
         }
 
-        String sessionCookieName = resourceReader.readProperty(ServerProperty.SERVER_SESSION_COOKIE_NAME);
+        String sessionCookieName = resourceReader.readProperty(ServerProperty.SERVER_SESSION_COOKIE_NAME, String.class);
         if (!StringUtils.isEmpty(sessionCookieName)) {
             sessionHandler.setSessionCookieName(sessionCookieName);
         }
 
-        String sessionCookiePath = resourceReader.readProperty(ServerProperty.SERVER_SESSION_COOKIE_PATH);
+        String sessionCookiePath = resourceReader.readProperty(ServerProperty.SERVER_SESSION_COOKIE_PATH, String.class);
         if (!StringUtils.isEmpty(sessionCookiePath)) {
             sessionHandler.setSessionCookiePath(sessionCookiePath);
         }
