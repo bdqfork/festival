@@ -37,7 +37,7 @@ web设计如下：
 + 缓存
 + 服务监控
 + verticle service group
-+ @produces,@consumer
++ @produces,@consumer 已完成!
 + 跨域 已完成!
 + 自定义配置文件路径
 + resource reader基本类型转换，以及unsupport异常
