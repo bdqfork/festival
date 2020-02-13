@@ -234,9 +234,6 @@ public class AnnotationApplicationContextTest {
         for (String name : serverConfig.getNames()) {
             System.out.println(name);
         }
-        assertEquals(serverConfig.getTestPropertiesChar(), 'a');
-        assertEquals(serverConfig.getTestPropertiesLong(), 5);
-        assertEquals(serverConfig.getTestPropertiesDouble(), 1.234, 0.001);
     }
 
     @Test

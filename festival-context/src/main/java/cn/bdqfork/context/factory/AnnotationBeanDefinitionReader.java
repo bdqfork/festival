@@ -2,6 +2,7 @@ package cn.bdqfork.context.factory;
 
 import cn.bdqfork.context.configuration.Configuration;
 import cn.bdqfork.context.configuration.Value;
+import cn.bdqfork.context.configuration.reader.GenericResourceReader;
 import cn.bdqfork.context.configuration.reader.ResourceReader;
 import cn.bdqfork.core.exception.ResolvedException;
 import cn.bdqfork.core.exception.ScopeException;
@@ -11,6 +12,7 @@ import cn.bdqfork.core.factory.MultInjectedPoint;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.definition.ManagedBeanDefinition;
 import cn.bdqfork.core.util.AnnotationUtils;
+import cn.bdqfork.core.util.FileUtils;
 import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.core.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,7 @@ import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.io.IOException;
 import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -153,8 +156,6 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
                     throw new ResolvedException(String.format("the field %s is final or not base type !", field.getName()));
                 }
 
-                ResourceReader resourceReader = getResourceReader();
-
                 Configuration configuration = AnnotationUtils.getMergedAnnotation(candidate, Configuration.class);
                 assert configuration != null;
 
@@ -170,6 +171,17 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
 
                 InjectedPoint injectedPoint = new InjectedPoint(field.getType(), true);
 
+                ResourceReader resourceReader;
+                if (!StringUtils.isEmpty(configuration.location())) {
+                    try {
+                        resourceReader = new GenericResourceReader(configuration.location());
+                    } catch (IOException e) {
+                        throw new IllegalStateException(String.format("Load properties %s failure!", configuration.location()));
+                    }
+                } else {
+                    resourceReader = getResourceReader();
+                }
+
                 Object propertyValue;
                 try {
                     propertyValue = resourceReader.readProperty(propertyKey, field.getType());
@@ -177,7 +189,7 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
                     throw new ResolvedException(throwable.getCause());
                 }
 
-                if(propertyValue == null){
+                if (propertyValue == null) {
                     if (log.isInfoEnabled()) {
                         log.debug("Cannot find property {} !", propertyKey);
                     }

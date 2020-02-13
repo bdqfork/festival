@@ -1,0 +1,5 @@
+  int: 5
+  float: 1.234
+  byte: 1
+  char: a
+  boolean: true
