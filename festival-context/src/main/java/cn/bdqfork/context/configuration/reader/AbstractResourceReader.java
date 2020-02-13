@@ -32,9 +32,9 @@ public abstract class AbstractResourceReader implements ResourceReader {
             return (T) cache.get(propertyName);
         }
         Object value = doReadProperty(propertyName);
-
-        value = castIfNeed(type, value);
-
+        if (value != null) {
+            value = castIfNeed(type, value);
+        }
         cache.put(propertyName, value);
         return (T) value;
     }
