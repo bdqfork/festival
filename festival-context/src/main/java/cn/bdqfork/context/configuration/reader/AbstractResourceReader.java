@@ -22,25 +22,25 @@ public abstract class AbstractResourceReader implements ResourceReader {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T readProperty(String propertyName) {
+    public <T> T readProperty(String propertyName, Class<T> type) {
         if (cache.containsKey(propertyName)) {
             return (T) cache.get(propertyName);
         }
-        T value = doReadProperty(propertyName);
+        T value = doReadProperty(propertyName, type);
         cache.put(propertyName, value);
         return value;
     }
 
     @Override
     public <T> T readProperty(String propertyName, T defaultValue) {
-        T value = readProperty(propertyName);
+        T value = readProperty(propertyName, null);
         if (value != null) {
             return value;
         }
         return defaultValue;
     }
 
-    protected abstract <T> T doReadProperty(String propertyName);
+    protected abstract <T> T doReadProperty(String propertyName, Class<T> type);
 
     public String getResourcePath() {
         return resourcePath;

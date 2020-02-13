@@ -128,7 +128,7 @@ public abstract class AbstractBeanDefinitionReader {
                 String beanName;
                 Named named = AnnotationUtils.getMergedAnnotation(method, Named.class);
                 if (named == null || StringUtils.isEmpty(named.value())) {
-                    beanName = getBeanNameGenerator().generateBeanName(method.getReturnType());
+                    beanName = methodName;
                 } else {
                     beanName = named.value();
                 }
