@@ -299,7 +299,7 @@ public class AnnotationApplicationContextTest {
 
     @Test
     public void testGetFactoryBeanByMethodName() throws Exception {
-        AnnotationApplicationContext applicationContext = new AnnotationApplicationContext("cn.bdqfork.model.configration");
+        AnnotationApplicationContext applicationContext = new AnnotationApplicationContext("cn.bdqfork.model.configuration");
         applicationContext.start();
         assert applicationContext.getBean("getService") != null;
     }
