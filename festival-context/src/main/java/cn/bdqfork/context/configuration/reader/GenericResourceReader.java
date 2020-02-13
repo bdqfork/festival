@@ -1,6 +1,7 @@
 package cn.bdqfork.context.configuration.reader;
 
 import cn.bdqfork.core.util.FileUtils;
+import cn.bdqfork.core.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -34,6 +35,9 @@ public class GenericResourceReader implements ResourceReader {
     }
 
     public GenericResourceReader(String resourcePath) throws IOException {
+        if (StringUtils.isEmpty(resourcePath)) {
+            throw new IllegalArgumentException("resource path can't be empty");
+        }
         if (resourcePath.endsWith(".yaml")) {
             resourceReader = new YamlResourceReader(resourcePath);
             return;
