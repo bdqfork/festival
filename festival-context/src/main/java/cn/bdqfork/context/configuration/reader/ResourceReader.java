@@ -15,7 +15,7 @@ public interface ResourceReader {
      * @param propertyName 资源名称
      * @return 配置项内容
      */
-    <T> T readProperty(String propertyName);
+    <T> T readProperty(String propertyName, Class<T> type);
 
     /**
      * 根据配置项读取配置内容

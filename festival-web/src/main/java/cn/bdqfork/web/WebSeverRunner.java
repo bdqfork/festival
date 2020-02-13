@@ -101,27 +101,27 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
     }
 
     private void resolveAndSetSessionProperties(SessionHandler sessionHandler) {
-        Boolean cookieHttpOnly = resourceReader.readProperty(ApplicationProperty.SERVER_COOKIE_HTTP_ONLY);
+        Boolean cookieHttpOnly = resourceReader.readProperty(ApplicationProperty.SERVER_COOKIE_HTTP_ONLY, null);
         if (cookieHttpOnly != null) {
             sessionHandler.setCookieHttpOnlyFlag(cookieHttpOnly);
         }
 
-        Boolean cookieSecure = resourceReader.readProperty(ApplicationProperty.SERVER_COOKIE_SECURE);
+        Boolean cookieSecure = resourceReader.readProperty(ApplicationProperty.SERVER_COOKIE_SECURE, null);
         if (cookieSecure != null) {
             sessionHandler.setCookieSecureFlag(cookieSecure);
         }
 
-        Long sessionTimeout = resourceReader.readProperty(ApplicationProperty.SERVER_SESSION_TIMEOUT);
+        Long sessionTimeout = resourceReader.readProperty(ApplicationProperty.SERVER_SESSION_TIMEOUT, null);
         if (sessionTimeout != null) {
             sessionHandler.setSessionTimeout(sessionTimeout);
         }
 
-        String sessionCookieName = resourceReader.readProperty(ApplicationProperty.SERVER_SESSION_COOKIE_NAME);
+        String sessionCookieName = resourceReader.readProperty(ApplicationProperty.SERVER_SESSION_COOKIE_NAME, null);
         if (!StringUtils.isEmpty(sessionCookieName)) {
             sessionHandler.setSessionCookieName(sessionCookieName);
         }
 
-        String sessionCookiePath = resourceReader.readProperty(ApplicationProperty.SERVER_SESSION_COOKIE_PATH);
+        String sessionCookiePath = resourceReader.readProperty(ApplicationProperty.SERVER_SESSION_COOKIE_PATH, null);
         if (!StringUtils.isEmpty(sessionCookiePath)) {
             sessionHandler.setSessionCookiePath(sessionCookiePath);
         }
@@ -208,12 +208,12 @@ public class WebSeverRunner extends AbstractVerticle implements BeanFactoryAware
     }
 
     private void resolveAndSetBodyProperties(BodyHandler bodyHandler) {
-        String uploadsDirectory = resourceReader.readProperty(ApplicationProperty.SERVER_UPLOAD_DERICTORY);
+        String uploadsDirectory = resourceReader.readProperty(ApplicationProperty.SERVER_UPLOAD_DERICTORY, null);
         if (!StringUtils.isEmpty(uploadsDirectory)) {
             bodyHandler.setUploadsDirectory(uploadsDirectory);
         }
 
-        Object limit = resourceReader.readProperty(ApplicationProperty.SERVER_UPLOAD_LIMIT);
+        Object limit = resourceReader.readProperty(ApplicationProperty.SERVER_UPLOAD_LIMIT, null);
         if (limit instanceof Integer) {
             bodyHandler.setBodyLimit((Integer) limit);
         } else if (limit instanceof Long) {

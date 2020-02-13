@@ -173,9 +173,16 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader
 
                 Object propertyValue;
                 try {
-                    propertyValue = resourceReader.readProperty(propertyKey);
+                    propertyValue = resourceReader.readProperty(propertyKey, field.getType());
                 } catch (Throwable throwable) {
                     throw new ResolvedException(throwable.getCause());
+                }
+
+                if(propertyValue == null){
+                    if (log.isInfoEnabled()) {
+                        log.debug("Cannot find property {} !", propertyKey);
+                    }
+                    continue;
                 }
 
                 injectedPoint.setValue(propertyValue);

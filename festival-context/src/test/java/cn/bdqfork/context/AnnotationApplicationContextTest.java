@@ -132,7 +132,7 @@ public class AnnotationApplicationContextTest {
     public void testGetFactoryBeanDefinition() throws Exception {
         AnnotationApplicationContext annotationApplicationContext = new AnnotationApplicationContext("cn.bdqfork.model.configration");
         annotationApplicationContext.start();
-        FactoryBean factoryBean = annotationApplicationContext.getBean("factoryBean");
+        FactoryBean factoryBean = annotationApplicationContext.getBean(FactoryBean.class);
         System.out.println(factoryBean);
         assert factoryBean != null;
         assert factoryBean.getServer() != null;
@@ -239,6 +239,9 @@ public class AnnotationApplicationContextTest {
         for (String name : serverConfig.getNames()) {
             System.out.println(name);
         }
+        assertEquals(serverConfig.getTestPropertiesChar(), 'a');
+        assertEquals(serverConfig.getTestPropertiesLong(), 5);
+        assertEquals(serverConfig.getTestPropertiesDouble(), 1.234, 0.001);
     }
 
     @Test
@@ -299,4 +302,10 @@ public class AnnotationApplicationContextTest {
         annotationApplicationContext.getBean("testBean");
     }
 
+    @Test
+    public void testGetFactoryBeanByMethodName() throws Exception {
+        AnnotationApplicationContext applicationContext = new AnnotationApplicationContext("cn.bdqfork.model.configration");
+        applicationContext.start();
+        assert applicationContext.getBean("getService") != null;
+    }
 }

@@ -21,6 +21,24 @@ public class ServerConfig {
     private int port;
     @Value("names")
     private List<String> names;
+    @Value("int")
+    private long testPropertiesLong;
+    @Value("float")
+    private Double testPropertiesDouble;
+    @Value("char")
+    private char testPropertiesChar;
+
+    public long getTestPropertiesLong() {
+        return testPropertiesLong;
+    }
+
+    public Double getTestPropertiesDouble() {
+        return testPropertiesDouble;
+    }
+
+    public char getTestPropertiesChar() {
+        return testPropertiesChar;
+    }
 
     public String getLocalhost() {
         return localhost;
@@ -30,7 +48,7 @@ public class ServerConfig {
         this.localhost = localhost;
     }
 
-    public int getPort() {
+    public double getPort() {
         return port;
     }
 
