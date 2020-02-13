@@ -68,7 +68,7 @@ public class TestRestfulController {
     }
 
     @PostMapping("/postUser")
-    public Map<String, Object> postObject(User user) {
+    public Map<String, Object> postObject(@RequestBody User user) {
         Map<String, Object> res = new HashMap<>();
         res.put("id", user.getId());
         res.put("name", user.getUsername());

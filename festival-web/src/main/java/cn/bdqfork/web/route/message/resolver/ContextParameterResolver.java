@@ -1,4 +1,4 @@
-package cn.bdqfork.web.route.message;
+package cn.bdqfork.web.route.message.resolver;
 
 import io.vertx.reactivex.core.MultiMap;
 import io.vertx.reactivex.core.http.HttpServerRequest;

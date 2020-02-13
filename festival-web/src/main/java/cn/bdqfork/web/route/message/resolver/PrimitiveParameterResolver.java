@@ -1,4 +1,4 @@
-package cn.bdqfork.web.route.message;
+package cn.bdqfork.web.route.message.resolver;
 
 import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.ReflectUtils;

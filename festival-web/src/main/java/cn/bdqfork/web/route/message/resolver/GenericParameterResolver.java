@@ -1,5 +1,6 @@
-package cn.bdqfork.web.route.message;
+package cn.bdqfork.web.route.message.resolver;
 
+import cn.bdqfork.web.route.message.ParameterResolver;
 import io.vertx.reactivex.ext.web.RoutingContext;
 
 import java.lang.reflect.Parameter;
@@ -12,7 +13,10 @@ public class GenericParameterResolver implements ParameterResolver {
     private AbstractParameterResolver parameterResolver;
 
     public GenericParameterResolver() {
+        JsonBodyParameterResolver jsonBodyParameterResolver = new JsonBodyParameterResolver();
+
         PrimitiveParameterResolver primitiveParameterResolver = new PrimitiveParameterResolver();
+        primitiveParameterResolver.setNext(jsonBodyParameterResolver);
 
         ObjectParameterResolver objectParameterResolver = new ObjectParameterResolver();
         objectParameterResolver.setNext(primitiveParameterResolver);
