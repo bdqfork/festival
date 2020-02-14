@@ -246,7 +246,7 @@ public class ReflectUtils {
      * @return 是否为void
      */
     public static boolean isReturnVoid(Method method) {
-        return method.getReturnType() == Void.class;
+        return method.getReturnType() == Void.TYPE;
     }
 
 }

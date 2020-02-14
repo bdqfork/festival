@@ -2,12 +2,12 @@ package cn.bdqfork.example.domain;
 
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.DisposableBean;
+import cn.bdqfork.web.RouterAware;
 import cn.bdqfork.web.annotation.Auth;
 import cn.bdqfork.web.annotation.PermitAll;
 import cn.bdqfork.web.annotation.PermitAllowed;
 import cn.bdqfork.web.annotation.RolesAllowed;
 import cn.bdqfork.web.constant.LogicType;
-import cn.bdqfork.web.RouterAware;
 import cn.bdqfork.web.route.annotation.GetMapping;
 import cn.bdqfork.web.route.annotation.PostMapping;
 import cn.bdqfork.web.route.annotation.RouteController;
@@ -42,31 +42,34 @@ public class UserController implements DisposableBean, RouterAware {
 
     @PermitAll
     @PostMapping("/file")
-    public void file(RoutingContext routingContext) {
+    public Flowable<Void> file(RoutingContext routingContext) {
         for (FileUpload fileUpload : routingContext.fileUploads()) {
             System.out.println(fileUpload.fileName());
         }
+        return Flowable.empty();
     }
 
     @PermitAll
     @RouteMapping(value = "/hello", method = HttpMethod.GET)
-    public void hello(RoutingContext routingContext) {
-        routingContext.response()
+    public Flowable<Void> hello(RoutingContext routingContext) {
+        return routingContext.response()
                 .putHeader("content-type", "text/plain")
-                .end("Hello World from Vert.x-Web!");
+                .rxEnd("Hello World from Vert.x-Web!")
+                .toFlowable();
     }
 
     @GetMapping("/hello2")
-    public void hello2(RoutingContext routingContext) {
-        routingContext.response()
+    public Flowable<Void> hello2(RoutingContext routingContext) {
+        return routingContext.response()
                 .putHeader("content-type", "text/plain")
-                .end("Hello World from Vert.x-Web 2!");
+                .rxEnd("Hello World from Vert.x-Web 2!")
+                .toFlowable();
     }
 
     @PermitAll
     @GetMapping("/hello3")
-    public String hello3(RoutingContext routingContext) {
-        return "Hello World from Vert.x-Web 3!";
+    public Flowable<String> hello3(RoutingContext routingContext) {
+        return Flowable.just("Hello World from Vert.x-Web 3!");
     }
 
     @PermitAll
@@ -77,12 +80,12 @@ public class UserController implements DisposableBean, RouterAware {
 
     @RolesAllowed(value = {"role:administrator", "role:hispassword"}, logic = LogicType.AND)
     @GetMapping("/service")
-    public void service(RoutingContext routingContext) {
+    public Flowable<?> service(RoutingContext routingContext) {
         Flowable<String> flowable = iService.getUserName("service test");
-        Disposable disposable = flowable.subscribe(msg -> routingContext.response()
+        return flowable.flatMap(msg -> routingContext.response()
                 .putHeader("content-type", "text/plain")
-                .end(msg));
-        compositeDisposable.add(disposable);
+                .rxEnd(msg)
+                .toFlowable());
     }
 
     @PermitAllowed(value = {"play_golf"}, logic = LogicType.AND)

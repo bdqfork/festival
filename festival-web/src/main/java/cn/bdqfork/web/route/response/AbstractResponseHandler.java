@@ -1,6 +1,6 @@
 package cn.bdqfork.web.route.response;
 
-import io.reactivex.Observable;
+import io.reactivex.Flowable;
 import io.vertx.reactivex.core.http.HttpServerResponse;
 
 /**
@@ -14,9 +14,13 @@ public abstract class AbstractResponseHandler implements ResponseHandleStrategy 
         if (result == null) {
             httpServerResponse.end();
         }
-        if (result instanceof Observable) {
-            Observable<?> observable = (Observable<?>) result;
-            observable.subscribe(res -> doHandle(httpServerResponse, contentType, res));
+        if (result instanceof Flowable<?>) {
+            Flowable<?> flowable = (Flowable<?>) result;
+            flowable.subscribe(res -> {
+                if (res != null) {
+                    doHandle(httpServerResponse, contentType, res);
+                }
+            });
         } else {
             doHandle(httpServerResponse, contentType, result);
         }

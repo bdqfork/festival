@@ -2,6 +2,7 @@ package cn.bdqfork.example.domain;
 
 import cn.bdqfork.example.model.User;
 import cn.bdqfork.web.route.annotation.*;
+import io.reactivex.Flowable;
 import io.vertx.core.json.JsonObject;
 import io.vertx.reactivex.core.MultiMap;
 import io.vertx.reactivex.core.http.HttpServerRequest;
@@ -23,15 +24,19 @@ public class TestRestfulController {
     }
 
     @GetMapping("/hello1")
-    public void hello1(RoutingContext routingContext) {
-        routingContext.response()
+    public Flowable<Void> hello1(RoutingContext routingContext) {
+        return routingContext.response()
                 .putHeader("content-type", "text/plain")
-                .end("Hello World from Vert.x-Web!");
+                .rxEnd("Hello World from Vert.x-Web!")
+                .toFlowable();
     }
 
     @GetMapping("/hello2")
-    public void hello2(HttpServerResponse response) {
-        response.putHeader("content-type", "text/plain").end("hello2");
+    public Flowable<Void> hello2(HttpServerResponse response) {
+        return response
+                .putHeader("content-type", "text/plain")
+                .rxEnd("hello2")
+                .toFlowable();
     }
 
     @Produces("application/json")
