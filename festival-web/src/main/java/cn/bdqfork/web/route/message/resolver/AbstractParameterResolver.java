@@ -6,6 +6,7 @@ import io.vertx.reactivex.core.http.HttpServerRequest;
 import io.vertx.reactivex.ext.web.RoutingContext;
 
 import java.lang.reflect.Parameter;
+import java.util.Map;
 
 /**
  * @author bdq
@@ -35,11 +36,12 @@ public abstract class AbstractParameterResolver implements ParameterResolver {
     protected abstract boolean resolvable(Parameter parameter);
 
     protected MultiMap resolveParams(RoutingContext routingContext) {
+        Map<String, String> pathParams = routingContext.pathParams();
         if (routingContext.request().method() == HttpMethod.GET) {
-            return routingContext.queryParams();
+            return routingContext.queryParams().addAll(pathParams);
         } else {
             HttpServerRequest httpServerRequest = routingContext.request();
-            return httpServerRequest.formAttributes();
+            return httpServerRequest.formAttributes().addAll(pathParams);
         }
     }
 }

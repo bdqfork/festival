@@ -89,4 +89,12 @@ public class TestRestfulController {
         user.setCreateDate(date);
         return user;
     }
+
+    @GetMapping("/:id/path")
+    public User testPathParam(@Param("id") int id, @Param("createDate") Date date) {
+        User user = new User();
+        user.setId(id);
+        user.setCreateDate(date);
+        return user;
+    }
 }
