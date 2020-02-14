@@ -78,7 +78,9 @@ public class TestRestfulController {
     }
 
     @GetMapping("/date")
-    public Date testDate(@Param("date") Date date) {
-        return date;
+    public User testDate(@Param("date") Date date) {
+        User user = new User();
+        user.setCreateDate(date);
+        return user;
     }
 }
