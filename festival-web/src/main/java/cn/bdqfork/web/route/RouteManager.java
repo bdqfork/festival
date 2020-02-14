@@ -66,7 +66,8 @@ public class RouteManager {
                 log.info("custom {} mapping path:{}!", httpMethod.name(), path);
             }
 
-            handleCustomMapping(routeAttribute, route);
+            Filter invoker = (routingContext, filterChain) -> routeAttribute.getContextHandler().handle(routingContext);
+            handleMapping(routeAttribute, invoker, route);
         } else {
             if (log.isInfoEnabled()) {
                 log.info("{} mapping path:{} to {}:{}!", httpMethod.name(), path,
@@ -74,7 +75,8 @@ public class RouteManager {
                         ReflectUtils.getSignature(invocation.method));
             }
 
-            handleMapping(routeAttribute, invocation, route);
+            Filter invoker = createInvoke(invocation.bean, invocation.method);
+            handleMapping(routeAttribute, invoker, route);
         }
 
     }
@@ -109,48 +111,36 @@ public class RouteManager {
         }
     }
 
-    private void handleCustomMapping(RouteAttribute routeAttribute, Route route) {
-        Filter invoker = (routingContext, filterChain) -> routeAttribute.getContextHandler().handle(routingContext);
-
-        FilterChain filterChain = filterChainFactory.getFilterChain(invoker);
-
-        doHandler(routeAttribute, route, filterChain);
-    }
-
-    private void handleMapping(RouteAttribute routeAttribute, RouteInvocation invocation, Route route) {
-        Filter invoker = createInvokeHandler(invocation.bean, invocation.method);
-
-        FilterChain filterChain = filterChainFactory.getFilterChain(invoker);
-
-        doHandler(routeAttribute, route, filterChain);
-    }
-
-    private void doHandler(RouteAttribute routeAttribute, Route route, FilterChain filterChain) {
-        route.handler(routingContext -> {
-            routingContext.data().put(ROUTE_ATTRIBETE_KEY, routeAttribute);
-            filterChain.doFilter(routingContext);
-        });
-    }
-
-    private Filter createInvokeHandler(Object routeBean, Method routeMethod) {
+    private Filter createInvoke(Object routeBean, Method routeMethod) {
         return new Filter() {
             @Override
-            public void doFilter(RoutingContext routingContext, FilterChain filterChain) {
-                try {
-                    Object[] args = httpMessageHandler.handle(routingContext, routeMethod.getParameters());
-                    if (ReflectUtils.isReturnVoid(routeMethod)) {
-                        return;
-                    }
-                    Object result = ReflectUtils.invokeMethod(routeBean, routeMethod, args);
-                    String contentType = routingContext.getAcceptableContentType();
-                    HttpServerResponse response = routingContext.response();
-                    responseHandleStrategy.handle(response, contentType, result);
-                } catch (Exception e) {
-                    log.error(e.getMessage(), e);
-                    routingContext.fail(500, e);
+            public void doFilter(RoutingContext routingContext, FilterChain filterChain) throws Exception {
+                Object[] args = httpMessageHandler.handle(routingContext, routeMethod.getParameters());
+                if (ReflectUtils.isReturnVoid(routeMethod)) {
+                    return;
                 }
+                Object result = ReflectUtils.invokeMethod(routeBean, routeMethod, args);
+                String contentType = routingContext.getAcceptableContentType();
+                HttpServerResponse response = routingContext.response();
+                responseHandleStrategy.handle(response, contentType, result);
             }
         };
+    }
+
+
+    private void handleMapping(RouteAttribute routeAttribute, Filter invoker, Route route) {
+
+        route.handler(routingContext -> {
+            routingContext.data().put(ROUTE_ATTRIBETE_KEY, routeAttribute);
+            try {
+                filterChainFactory.getFilterChain(invoker)
+                        .doFilter(routingContext);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                routingContext.fail(500, e);
+            }
+        });
+
     }
 
     public void setHttpMessageHandler(HttpMessageHandler httpMessageHandler) {

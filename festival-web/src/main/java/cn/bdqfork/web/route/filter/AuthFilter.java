@@ -22,7 +22,7 @@ public class AuthFilter implements Filter, OrderAware {
     private Handler<RoutingContext> deniedHandler;
 
     @Override
-    public void doFilter(RoutingContext routingContext, FilterChain filterChain) {
+    public void doFilter(RoutingContext routingContext, FilterChain filterChain) throws Exception {
         RouteAttribute routeAttribute = (RouteAttribute) routingContext.data()
                 .get(RouteManager.ROUTE_ATTRIBETE_KEY);
         if (routeAttribute == null || !routeAttribute.isAuth() || routeAttribute.isPermitAll()) {
