@@ -24,12 +24,12 @@ public class FilterChain implements Filter {
         filters.add(filter);
     }
 
-    public void doFilter(RoutingContext routingContext) {
+    public void doFilter(RoutingContext routingContext) throws Exception {
         doFilter(routingContext, this);
     }
 
     @Override
-    public void doFilter(RoutingContext routingContext, FilterChain filterChain) {
+    public void doFilter(RoutingContext routingContext, FilterChain filterChain) throws Exception {
         if (index == filters.size()) {
             return;
         }

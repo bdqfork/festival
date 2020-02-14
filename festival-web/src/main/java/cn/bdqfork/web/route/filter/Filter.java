@@ -9,6 +9,6 @@ import io.vertx.reactivex.ext.web.RoutingContext;
 @FunctionalInterface
 public interface Filter {
 
-    void doFilter(RoutingContext routingContext, FilterChain filterChain);
+    void doFilter(RoutingContext routingContext, FilterChain filterChain) throws Exception;
 
 }

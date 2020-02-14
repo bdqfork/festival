@@ -1,5 +1,6 @@
 package cn.bdqfork.web.route.message.resolver;
 
+import io.vertx.core.json.JsonObject;
 import io.vertx.reactivex.core.MultiMap;
 import io.vertx.reactivex.core.http.HttpServerRequest;
 import io.vertx.reactivex.core.http.HttpServerResponse;
@@ -30,6 +31,11 @@ public class ContextParameterResolver extends AbstractParameterResolver {
             return resolveParams(routingContext);
         }
 
+        if (parameterType == JsonObject.class) {
+            JsonObject jsonObject = routingContext.getBodyAsJson();
+            return jsonObject == null ? new JsonObject() : jsonObject;
+        }
+
         return null;
     }
 
@@ -39,7 +45,8 @@ public class ContextParameterResolver extends AbstractParameterResolver {
         return parameterType == RoutingContext.class ||
                 parameterType == HttpServerRequest.class ||
                 parameterType == HttpServerResponse.class ||
-                parameterType == MultiMap.class;
+                parameterType == MultiMap.class ||
+                parameterType == JsonObject.class;
 
     }
 

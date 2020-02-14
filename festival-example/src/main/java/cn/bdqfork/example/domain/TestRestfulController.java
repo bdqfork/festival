@@ -2,6 +2,7 @@ package cn.bdqfork.example.domain;
 
 import cn.bdqfork.example.model.User;
 import cn.bdqfork.web.route.annotation.*;
+import io.vertx.core.json.JsonObject;
 import io.vertx.reactivex.core.MultiMap;
 import io.vertx.reactivex.core.http.HttpServerRequest;
 import io.vertx.reactivex.core.http.HttpServerResponse;
@@ -75,6 +76,11 @@ public class TestRestfulController {
         res.put("name", user.getUsername());
         res.put("isActive", user.isActive());
         return res;
+    }
+
+    @PostMapping("/json")
+    public String jsonObject(JsonObject jsonObject) {
+        return jsonObject.toString();
     }
 
     @GetMapping("/date")
