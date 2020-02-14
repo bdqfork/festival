@@ -3,7 +3,6 @@ package cn.bdqfork.web.route;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.AopUtils;
-import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.web.annotation.Auth;
 import cn.bdqfork.web.annotation.PermitAll;
 import cn.bdqfork.web.annotation.PermitAllowed;
@@ -36,12 +35,6 @@ public class RouteResolver {
 
                 if (!AnnotationUtils.isAnnotationPresent(method, RouteMapping.class)) {
                     continue;
-                }
-
-                if (ReflectUtils.isReturnVoid(method)) {
-                    throw new IllegalStateException(String.format("every route method should have return type, but %s.%s is void!",
-                            beanClass.getCanonicalName(),
-                            ReflectUtils.getSignature(method)));
                 }
 
                 RouteMapping routeMapping = AnnotationUtils.getMergedAnnotation(method, RouteMapping.class);

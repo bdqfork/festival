@@ -42,28 +42,27 @@ public class UserController implements DisposableBean, RouterAware {
 
     @PermitAll
     @PostMapping("/file")
-    public Flowable<Void> file(RoutingContext routingContext) {
+    public void file(RoutingContext routingContext) {
         for (FileUpload fileUpload : routingContext.fileUploads()) {
             System.out.println(fileUpload.fileName());
         }
-        return Flowable.empty();
     }
 
     @PermitAll
-    @RouteMapping(value = "/hello", method = HttpMethod.GET)
-    public Flowable<Void> hello(RoutingContext routingContext) {
-        return routingContext.response()
+    @RouteMapping(value = "/hello", method = HttpMethod.GET, timeout = 1000)
+    public void hello(RoutingContext routingContext) {
+        routingContext.response()
                 .putHeader("content-type", "text/plain")
                 .rxEnd("Hello World from Vert.x-Web!")
-                .toFlowable();
+                .subscribe();
     }
 
     @GetMapping("/hello2")
-    public Flowable<Void> hello2(RoutingContext routingContext) {
-        return routingContext.response()
+    public void hello2(RoutingContext routingContext) {
+        routingContext.response()
                 .putHeader("content-type", "text/plain")
                 .rxEnd("Hello World from Vert.x-Web 2!")
-                .toFlowable();
+                .subscribe();
     }
 
     @PermitAll

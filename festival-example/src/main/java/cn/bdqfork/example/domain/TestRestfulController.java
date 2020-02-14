@@ -24,11 +24,11 @@ public class TestRestfulController {
     }
 
     @GetMapping("/hello1")
-    public Flowable<Void> hello1(RoutingContext routingContext) {
-        return routingContext.response()
+    public void hello1(RoutingContext routingContext) {
+        routingContext.response()
                 .putHeader("content-type", "text/plain")
                 .rxEnd("Hello World from Vert.x-Web!")
-                .toFlowable();
+                .subscribe();
     }
 
     @GetMapping("/hello2")

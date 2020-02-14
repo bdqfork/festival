@@ -58,7 +58,9 @@ public class RouteManager {
 
         Route route = router.route(httpMethod, path);
 
-        route.handler(TimeoutHandler.create(routeAttribute.getTimeout()));
+        if (routeAttribute.getTimeout() > 0) {
+            route.handler(TimeoutHandler.create(routeAttribute.getTimeout()));
+        }
 
         checkAndSetContentType(routeAttribute, route);
 
@@ -120,6 +122,9 @@ public class RouteManager {
             public void doFilter(RoutingContext routingContext, FilterChain filterChain) throws Exception {
                 Object[] args = httpMessageHandler.handle(routingContext, routeMethod.getParameters());
                 Object result = ReflectUtils.invokeMethod(routeBean, routeMethod, args);
+                if (ReflectUtils.isReturnVoid(routeMethod)) {
+                    return;
+                }
                 String contentType = routingContext.getAcceptableContentType();
                 HttpServerResponse response = routingContext.response();
                 responseHandleStrategy.handle(response, contentType, result);

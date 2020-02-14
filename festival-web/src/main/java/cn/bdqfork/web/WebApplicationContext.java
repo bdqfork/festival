@@ -46,7 +46,14 @@ public class WebApplicationContext extends AnnotationApplicationContext {
         WebServer webServer = beanFactory.getBean(WebServer.class);
 
         WebVerticle webVerticle = new WebVerticle(webServer);
-        vertx.deployVerticle(webVerticle, options);
+        vertx.deployVerticle(webVerticle, options, res -> {
+            if (res.failed()) {
+                if (log.isErrorEnabled()) {
+                    log.error("failed to deploy web verticle!", res.cause());
+                }
+                vertx.close();
+            }
+        });
     }
 
     private DeploymentOptions getDeploymentOptions(BeanFactory beanFactory) throws BeansException {
