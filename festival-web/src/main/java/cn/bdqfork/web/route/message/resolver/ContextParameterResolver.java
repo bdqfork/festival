@@ -5,6 +5,7 @@ import io.vertx.reactivex.core.MultiMap;
 import io.vertx.reactivex.core.http.HttpServerRequest;
 import io.vertx.reactivex.core.http.HttpServerResponse;
 import io.vertx.reactivex.ext.web.RoutingContext;
+import io.vertx.reactivex.ext.web.Session;
 
 import java.lang.reflect.Parameter;
 
@@ -25,6 +26,10 @@ public class ContextParameterResolver extends AbstractParameterResolver {
         }
         if (parameterType == HttpServerResponse.class) {
             return routingContext.response();
+        }
+
+        if (parameterType == Session.class) {
+            return routingContext.session();
         }
 
         if (parameterType == MultiMap.class) {
