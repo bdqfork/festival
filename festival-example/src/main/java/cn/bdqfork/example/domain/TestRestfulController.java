@@ -8,6 +8,7 @@ import io.vertx.reactivex.core.http.HttpServerResponse;
 import io.vertx.reactivex.ext.web.RoutingContext;
 
 import javax.inject.Singleton;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,5 +75,10 @@ public class TestRestfulController {
         res.put("name", user.getUsername());
         res.put("isActive", user.isActive());
         return res;
+    }
+
+    @GetMapping("/date")
+    public Date testDate(@Param("date") Date date) {
+        return date;
     }
 }

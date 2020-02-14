@@ -12,6 +12,7 @@ ext {
             vertx        : '3.8.4',
             hessian      : '4.0.63',
             beanutils    : '1.9.4',
+            joda         : '2.10.5',
     ]
 }
 

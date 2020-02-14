@@ -2,13 +2,11 @@ package cn.bdqfork.web.route.message.resolver;
 
 import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.core.util.StringUtils;
-import cn.bdqfork.web.route.annotation.RequestBody;
 import io.vertx.reactivex.core.MultiMap;
 import io.vertx.reactivex.ext.web.RoutingContext;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
-import java.util.Date;
 
 /**
  * @author bdq
@@ -27,9 +25,7 @@ public class ObjectParameterResolver extends AbstractParameterResolver {
 
     @Override
     protected boolean resolvable(Parameter parameter) {
-        return !ReflectUtils.isPrimitiveOrWrapper(parameter.getType())
-                && !parameter.isAnnotationPresent(RequestBody.class)
-                && parameter.getType() != Date.class;
+        return !ReflectUtils.isJavaClass(parameter.getType());
     }
 
     private <T> T castToObject(MultiMap params, Class<T> type) {

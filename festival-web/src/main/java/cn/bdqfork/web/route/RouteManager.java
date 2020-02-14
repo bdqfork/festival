@@ -138,6 +138,9 @@ public class RouteManager {
             public void doFilter(RoutingContext routingContext, FilterChain filterChain) {
                 try {
                     Object[] args = httpMessageHandler.handle(routingContext, routeMethod.getParameters());
+                    if (ReflectUtils.isReturnVoid(routeMethod)) {
+                        return;
+                    }
                     Object result = ReflectUtils.invokeMethod(routeBean, routeMethod, args);
                     String contentType = routingContext.getAcceptableContentType();
                     HttpServerResponse response = routingContext.response();

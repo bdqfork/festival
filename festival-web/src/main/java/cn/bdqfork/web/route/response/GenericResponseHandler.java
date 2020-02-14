@@ -26,7 +26,7 @@ public class GenericResponseHandler implements ResponseHandleStrategy {
     @Override
     public void handle(HttpServerResponse httpServerResponse, String contentType, Object result) throws Exception {
         if (result == null) {
-            return;
+            httpServerResponse.end();
         }
 
         if (StringUtils.isEmpty(contentType) || !responseHandlerMap.containsKey(contentType)) {

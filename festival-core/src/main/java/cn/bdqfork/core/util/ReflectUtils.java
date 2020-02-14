@@ -229,4 +229,24 @@ public class ReflectUtils {
         }
     }
 
+    /**
+     * 判断一个类是Java类型还是用户定义类型
+     *
+     * @param clz 类型
+     * @return 是否Java类型
+     */
+    public static boolean isJavaClass(Class<?> clz) {
+        return clz != null && clz.getClassLoader() == null;
+    }
+
+    /**
+     * 判断方法返回值是否为void
+     *
+     * @param method 方法实例
+     * @return 是否为void
+     */
+    public static boolean isReturnVoid(Method method) {
+        return method.getReturnType() == Void.class;
+    }
+
 }

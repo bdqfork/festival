@@ -16,6 +16,7 @@ public class ParameterResolverFactory {
         registerResolver(new PrimitiveParameterResolver());
         registerResolver(new ObjectParameterResolver());
         registerResolver(new JsonBodyParameterResolver());
+        registerResolver(new DateParameterResolver());
     }
 
     public void registerResolver(AbstractParameterResolver parameterResolver) {

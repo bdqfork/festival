@@ -12,13 +12,11 @@ public abstract class AbstractResponseHandler implements ResponseHandleStrategy 
     @Override
     public void handle(HttpServerResponse httpServerResponse, String contentType, Object result) throws Exception {
         if (result == null) {
-            return;
+            httpServerResponse.end();
         }
         if (result instanceof Observable) {
             Observable<?> observable = (Observable<?>) result;
-            observable.subscribe(res -> {
-                doHandle(httpServerResponse, contentType, res);
-            });
+            observable.subscribe(res -> doHandle(httpServerResponse, contentType, res));
         } else {
             doHandle(httpServerResponse, contentType, result);
         }
