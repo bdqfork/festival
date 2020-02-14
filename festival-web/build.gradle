@@ -4,7 +4,7 @@ dependencies {
     implementation "io.vertx:vertx-web:${libs.vertx}"
     implementation "io.vertx:vertx-rx-java2:${libs.vertx}"
     implementation "com.caucho:hessian:${libs.hessian}"
-    implementation "joda-time:joda-time:${libs.joda}"
+    compileOnly "joda-time:joda-time:${libs.joda}"
     api project(':festival-context')
     api project(':festival-aop')
 }

@@ -5,6 +5,7 @@ dependencies {
     implementation "io.vertx:vertx-web:${libs.vertx}"
     implementation "io.vertx:vertx-rx-java2:${libs.vertx}"
     implementation "io.vertx:vertx-auth-shiro:${libs.vertx}"
+    implementation "joda-time:joda-time:${libs.joda}"
 }
 
 tasks.withType(PublishToMavenRepository) {

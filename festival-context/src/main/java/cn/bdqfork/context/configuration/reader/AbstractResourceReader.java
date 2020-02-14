@@ -2,10 +2,8 @@ package cn.bdqfork.context.configuration.reader;
 
 import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.core.util.StringUtils;
-import org.apache.commons.beanutils.BeanUtils;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -44,21 +42,7 @@ public abstract class AbstractResourceReader implements ResourceReader {
             return StringUtils.castToPrimitive(value.toString(), type);
         }
 
-        if (!ReflectUtils.isCollection(type)) {
-            return getInstance(type, value);
-        }
         return value;
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> Object getInstance(Class<T> type, Object value) {
-        try {
-            Object instance = type.newInstance();
-            BeanUtils.populate(instance, (Map<String, ?>) value);
-            return instance;
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalStateException(e);
-        }
     }
 
     @Override
