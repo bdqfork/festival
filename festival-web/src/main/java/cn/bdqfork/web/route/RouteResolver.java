@@ -39,6 +39,7 @@ public class RouteResolver {
                 RouteAttribute attribute = RouteAttribute.builder()
                         .url(baseUrl + routeMapping.value())
                         .httpMethod(routeMapping.method())
+                        .timeout(routeMapping.timeout())
                         .build();
 
                 Produces produces = AnnotationUtils.getMergedAnnotation(method, Produces.class);

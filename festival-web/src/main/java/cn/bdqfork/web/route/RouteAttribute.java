@@ -38,6 +38,11 @@ public class RouteAttribute {
     private String consumes;
 
     /**
+     * timeout
+     */
+    private long timeout;
+
+    /**
      * route handler
      */
     private Handler<RoutingContext> contextHandler;

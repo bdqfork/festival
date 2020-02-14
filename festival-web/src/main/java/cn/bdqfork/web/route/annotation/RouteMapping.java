@@ -1,6 +1,7 @@
 package cn.bdqfork.web.route.annotation;
 
 import io.vertx.core.http.HttpMethod;
+import io.vertx.ext.web.handler.TimeoutHandler;
 
 import java.lang.annotation.*;
 
@@ -17,4 +18,6 @@ public @interface RouteMapping {
     String value() default "";
 
     HttpMethod method() default HttpMethod.OPTIONS;
+
+    long timeout() default TimeoutHandler.DEFAULT_TIMEOUT;
 }

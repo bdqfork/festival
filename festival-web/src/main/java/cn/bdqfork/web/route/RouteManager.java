@@ -14,6 +14,7 @@ import io.vertx.reactivex.ext.web.Route;
 import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.RoutingContext;
 import io.vertx.reactivex.ext.web.handler.AuthHandler;
+import io.vertx.reactivex.ext.web.handler.TimeoutHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
@@ -56,6 +57,8 @@ public class RouteManager {
         checkIfConflict(path, httpMethod);
 
         Route route = router.route(httpMethod, path);
+
+        route.handler(TimeoutHandler.create(routeAttribute.getTimeout()));
 
         checkAndSetContentType(routeAttribute, route);
 

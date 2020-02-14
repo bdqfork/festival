@@ -1,6 +1,7 @@
 package cn.bdqfork.web.route.annotation;
 
 import io.vertx.core.http.HttpMethod;
+import io.vertx.ext.web.handler.TimeoutHandler;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -21,4 +22,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
 public @interface DeleteMapping {
     String value();
+
+    long timeout() default TimeoutHandler.DEFAULT_TIMEOUT;
 }
