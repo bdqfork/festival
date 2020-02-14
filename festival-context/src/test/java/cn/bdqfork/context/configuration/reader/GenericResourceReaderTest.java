@@ -37,6 +37,12 @@ public class GenericResourceReaderTest {
         annotationApplicationContext.start();
         CustomLocationConfig customLocationConfig = annotationApplicationContext.getBean(CustomLocationConfig.class);
         assertEquals(customLocationConfig.getDriver(), "com.mysql.cj.jdbc.driver");
-        assertEquals(customLocationConfig.getPort(), 3306);
+        assertEquals(customLocationConfig.getPropertyInteger(), 5);
+        assertEquals(customLocationConfig.getPropertyDouble(), 2.234, 0.0001);
+        assertTrue(customLocationConfig.isPropertyBoolean());
+        assertEquals(customLocationConfig.getPropertyByte(), 5);
+        assertEquals(customLocationConfig.getPropertyLong(), 5);
+        assertEquals(customLocationConfig.getPropertyChar(), 'q');
+        assertEquals(customLocationConfig.getPropertyString(), "q");
     }
 }
