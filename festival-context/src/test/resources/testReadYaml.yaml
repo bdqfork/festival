@@ -1,0 +1,13 @@
+test:
+  int: 5
+  float: 1.234
+  byte: 1
+  char: a
+  boolean: true
+  double: 2.234
+jdbc:
+  driver: com.mysql.cj.jdbc.driver
+  port: 3306
+server:
+  localhost: 127.0.0.1
+  port: 8080
