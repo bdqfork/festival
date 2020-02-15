@@ -75,7 +75,6 @@ public class RouteManager {
     private void initFilterChainFactory() {
         List<Filter> filters = getFilters();
         filters = BeanUtils.sortByOrder(filters);
-        Collections.reverse(filters);
 
         FilterChainFactory filterChainFactory = new FilterChainFactory();
         filterChainFactory.registerFilters(filters);
