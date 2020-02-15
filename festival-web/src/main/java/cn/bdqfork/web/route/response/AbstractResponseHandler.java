@@ -10,7 +10,7 @@ import io.vertx.reactivex.core.http.HttpServerResponse;
 public abstract class AbstractResponseHandler implements ResponseHandleStrategy {
 
     @Override
-    public void handle(HttpServerResponse httpServerResponse, String contentType, Object result) throws Exception {
+    public void handle(HttpServerResponse httpServerResponse, Object result) throws Exception {
         if (result == null) {
             httpServerResponse.end();
         }
@@ -18,13 +18,13 @@ public abstract class AbstractResponseHandler implements ResponseHandleStrategy 
             Flowable<?> flowable = (Flowable<?>) result;
             flowable.subscribe(res -> {
                 if (res != null) {
-                    doHandle(httpServerResponse, contentType, res);
+                    doHandle(httpServerResponse, res);
                 }
             });
         } else {
-            doHandle(httpServerResponse, contentType, result);
+            doHandle(httpServerResponse, result);
         }
     }
 
-    protected abstract void doHandle(HttpServerResponse httpServerResponse, String contentType, Object result) throws Exception;
+    protected abstract void doHandle(HttpServerResponse httpServerResponse, Object result) throws Exception;
 }

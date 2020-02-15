@@ -7,7 +7,6 @@ import io.vertx.reactivex.core.http.HttpServerResponse;
  * @since 2020/1/30
  */
 public interface ResponseHandleStrategy {
-    String DEFAULT_CONTENT_TYPE = "application/json";
 
-    void handle(HttpServerResponse httpServerResponse, String contentType, Object result) throws Exception;
+    void handle(HttpServerResponse httpServerResponse, Object result) throws Exception;
 }

@@ -1,6 +1,6 @@
 package cn.bdqfork.web.server;
 
-import io.vertx.core.Promise;
+import io.reactivex.Completable;
 import io.vertx.reactivex.core.AbstractVerticle;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,15 +17,13 @@ public class WebVerticle extends AbstractVerticle {
     }
 
     @Override
-    public void start(Promise<Void> startPromise) throws Exception {
-        webServer.start();
-        startPromise.complete();
+    public Completable rxStart() {
+        return Completable.fromAction(() -> webServer.start());
     }
 
     @Override
-    public void stop(Promise<Void> stopPromise) throws Exception {
-        webServer.stop();
-        stopPromise.complete();
+    public Completable rxStop() {
+        return Completable.fromAction(() -> webServer.stop());
     }
 
 }

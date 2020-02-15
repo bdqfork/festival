@@ -1,13 +1,19 @@
 package cn.bdqfork.web.route;
 
+import cn.bdqfork.core.exception.BeansException;
+import cn.bdqfork.core.exception.NoSuchBeanException;
+import cn.bdqfork.core.factory.ConfigurableBeanFactory;
+import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.core.util.StringUtils;
 import cn.bdqfork.web.route.filter.Filter;
 import cn.bdqfork.web.route.filter.FilterChain;
 import cn.bdqfork.web.route.filter.FilterChainFactory;
+import cn.bdqfork.web.route.message.DefaultHttpMessageHandler;
 import cn.bdqfork.web.route.message.HttpMessageHandler;
-import cn.bdqfork.web.route.response.GenericResponseHandler;
-import cn.bdqfork.web.route.response.ResponseHandleStrategy;
+import cn.bdqfork.web.route.message.resolver.AbstractParameterResolver;
+import cn.bdqfork.web.route.message.resolver.ParameterResolverFactory;
+import cn.bdqfork.web.route.response.ResponseHandlerFactory;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.reactivex.core.http.HttpServerResponse;
 import io.vertx.reactivex.ext.web.Route;
@@ -18,8 +24,7 @@ import io.vertx.reactivex.ext.web.handler.TimeoutHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -32,7 +37,9 @@ public class RouteManager {
 
     private final Set<String> registedRoutes = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-    private ResponseHandleStrategy responseHandleStrategy = new GenericResponseHandler();
+    private RouteResolver routeResolver = new RouteResolver();
+
+    private ConfigurableBeanFactory beanFactory;
 
     private Router router;
 
@@ -40,64 +47,96 @@ public class RouteManager {
 
     private FilterChainFactory filterChainFactory;
 
+    private ResponseHandlerFactory responseHandlerFactory;
+
     private AuthHandler authHandler;
 
-    public RouteManager(Router router) {
+    public RouteManager(ConfigurableBeanFactory beanFactory, Router router) {
+        this.beanFactory = beanFactory;
         this.router = router;
+        initAuthHandler();
+        initFilterChainFactory();
+        initHttpMessageHandler();
+        initResponseHandlerFactory();
     }
 
-    public void handle(RouteAttribute routeAttribute) {
+    private void initAuthHandler() {
+        try {
+            authHandler = beanFactory.getBean(AuthHandler.class);
+        } catch (NoSuchBeanException e) {
+            if (log.isDebugEnabled()) {
+                log.debug("no auth handler found!");
+            }
+        } catch (BeansException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private void initFilterChainFactory() {
+        List<Filter> filters = getFilters();
+        filters = BeanUtils.sortByOrder(filters);
+        Collections.reverse(filters);
+
+        FilterChainFactory filterChainFactory = new FilterChainFactory();
+        filterChainFactory.registerFilters(filters);
+        this.filterChainFactory = filterChainFactory;
+    }
+
+    private List<Filter> getFilters() {
+        try {
+            return new ArrayList<>(beanFactory.getBeans(Filter.class).values());
+        } catch (NoSuchBeanException e) {
+            if (log.isDebugEnabled()) {
+                log.debug("no filter found!");
+            }
+            return Collections.emptyList();
+        } catch (BeansException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private void initHttpMessageHandler() {
+        ParameterResolverFactory parameterResolverFactory = new ParameterResolverFactory();
+        Collection<AbstractParameterResolver> parameterResolvers;
+        try {
+            parameterResolvers = beanFactory.getBeans(AbstractParameterResolver.class).values();
+        } catch (BeansException e) {
+            throw new IllegalStateException(e);
+        }
+        parameterResolverFactory.registerResolver(parameterResolvers);
+        httpMessageHandler = new DefaultHttpMessageHandler(parameterResolverFactory);
+    }
+
+    private void initResponseHandlerFactory() {
+        responseHandlerFactory = new ResponseHandlerFactory();
+    }
+
+    public void registerRouteMapping() throws Exception {
+        Collection<RouteAttribute> routes = routeResolver.resovleRoutes(beanFactory);
+        routes.forEach(this::handle);
+    }
+
+    private void handle(RouteAttribute routeAttribute) {
         handle(routeAttribute, null);
     }
 
-    public void handle(RouteAttribute routeAttribute, RouteInvocation invocation) {
-        String path = routeAttribute.getUrl();
-        HttpMethod httpMethod = routeAttribute.getHttpMethod();
+    private void handle(RouteAttribute routeAttribute, RouteInvocation invocation) {
+        checkIfRouteConflict(routeAttribute);
 
-        checkIfConflict(path, httpMethod);
+        Route route = createRoute(routeAttribute);
 
-        Route route = router.route(httpMethod, path);
+        setTimeoutIfNeed(routeAttribute, route);
 
-        if (routeAttribute.getTimeout() > 0) {
-            route.handler(TimeoutHandler.create(routeAttribute.getTimeout()));
-        }
+        setContentTypeIfNeed(routeAttribute, route);
 
-        checkAndSetContentType(routeAttribute, route);
+        setAuthIfNeed(routeAttribute, route);
 
-        checkAndSetAuth(routeAttribute, route);
-
-        if (invocation == null) {
-            if (log.isInfoEnabled()) {
-                log.info("custom {} mapping path:{}!", httpMethod.name(), path);
-            }
-
-            Filter invoker = (routingContext, filterChain) -> routeAttribute.getContextHandler().handle(routingContext);
-            handleMapping(routeAttribute, invoker, route);
-        } else {
-            if (log.isInfoEnabled()) {
-                log.info("{} mapping path:{} to {}:{}!", httpMethod.name(), path,
-                        invocation.method.getDeclaringClass().getCanonicalName(),
-                        ReflectUtils.getSignature(invocation.method));
-            }
-
-            Filter invoker = createInvoke(invocation.bean, invocation.method);
-            handleMapping(routeAttribute, invoker, route);
-        }
+        handleMapping(routeAttribute, route);
 
     }
 
-    private void checkAndSetContentType(RouteAttribute routeAttribute, Route route) {
-        if (!StringUtils.isEmpty(routeAttribute.getConsumes())) {
-            route.consumes(routeAttribute.getConsumes());
-        }
-
-        if (!StringUtils.isEmpty(routeAttribute.getProduces())) {
-            route.produces(routeAttribute.getProduces());
-        }
-    }
-
-    private void checkIfConflict(String path, HttpMethod httpMethod) {
-        String signature = generateRouteSignature(httpMethod, path);
+    private void checkIfRouteConflict(RouteAttribute routeAttribute) {
+        String signature = generateRouteSignature(routeAttribute.getHttpMethod(), routeAttribute.getUrl());
 
         if (registedRoutes.contains(signature)) {
             throw new IllegalStateException(String.format("conflict mapping %s !", signature));
@@ -110,13 +149,58 @@ public class RouteManager {
         return httpMethod.name() + ":" + path;
     }
 
-    private void checkAndSetAuth(RouteAttribute routeAttribute, Route route) {
+    private Route createRoute(RouteAttribute routeAttribute) {
+        return router.route(routeAttribute.getHttpMethod(), routeAttribute.getUrl());
+    }
+
+    private void setTimeoutIfNeed(RouteAttribute routeAttribute, Route route) {
+        if (routeAttribute.getTimeout() > 0) {
+            route.handler(TimeoutHandler.create(routeAttribute.getTimeout()));
+        }
+    }
+
+
+    private void setContentTypeIfNeed(RouteAttribute routeAttribute, Route route) {
+        if (!StringUtils.isEmpty(routeAttribute.getConsumes())) {
+            route.consumes(routeAttribute.getConsumes());
+        }
+
+        if (!StringUtils.isEmpty(routeAttribute.getProduces())) {
+            route.produces(routeAttribute.getProduces());
+        }
+    }
+
+    private void setAuthIfNeed(RouteAttribute routeAttribute, Route route) {
         if (authHandler != null && routeAttribute.isAuth() && !routeAttribute.isPermitAll()) {
             route.handler(authHandler);
         }
     }
 
-    private Filter createInvoke(Object routeBean, Method routeMethod) {
+    private void handleMapping(RouteAttribute routeAttribute, Route route) {
+        Filter invoker;
+
+        RouteInvocation invocation = routeAttribute.getRouteInvocation();
+
+        if (routeAttribute.getRouteInvocation() != null) {
+            if (log.isInfoEnabled()) {
+                log.info("{} mapping path:{} to {}:{}!", routeAttribute.getHttpMethod().name(), routeAttribute.getUrl(),
+                        invocation.method.getDeclaringClass().getCanonicalName(),
+                        ReflectUtils.getSignature(invocation.method));
+            }
+
+            invoker = createInvoker(invocation.bean, invocation.method);
+        } else {
+            if (log.isInfoEnabled()) {
+                log.info("custom {} mapping path:{}!", routeAttribute.getHttpMethod().name(), routeAttribute.getUrl());
+            }
+
+            invoker = (routingContext, filterChain) -> routeAttribute.getContextHandler().handle(routingContext);
+        }
+
+        handleMapping(routeAttribute, invoker, route);
+    }
+
+    private Filter createInvoker(Object routeBean, Method routeMethod) {
         return new Filter() {
             @Override
             public void doFilter(RoutingContext routingContext, FilterChain filterChain) throws Exception {
@@ -127,11 +211,10 @@ public class RouteManager {
                 }
                 String contentType = routingContext.getAcceptableContentType();
                 HttpServerResponse response = routingContext.response();
-                responseHandleStrategy.handle(response, contentType, result);
+                responseHandlerFactory.getResponseHandler(contentType).handle(response, result);
             }
         };
     }
-
 
     private void handleMapping(RouteAttribute routeAttribute, Filter invoker, Route route) {
 
@@ -148,15 +231,4 @@ public class RouteManager {
 
     }
 
-    public void setHttpMessageHandler(HttpMessageHandler httpMessageHandler) {
-        this.httpMessageHandler = httpMessageHandler;
-    }
-
-    public void setFilterChainFactory(FilterChainFactory filterChainFactory) {
-        this.filterChainFactory = filterChainFactory;
-    }
-
-    public void setAuthHandler(AuthHandler authHandler) {
-        this.authHandler = authHandler;
-    }
 }

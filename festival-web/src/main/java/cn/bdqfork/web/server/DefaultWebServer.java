@@ -7,19 +7,10 @@ import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.NoSuchBeanException;
 import cn.bdqfork.core.factory.BeanFactory;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
-import cn.bdqfork.core.factory.definition.BeanDefinition;
-import cn.bdqfork.core.util.AnnotationUtils;
-import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.StringUtils;
 import cn.bdqfork.web.constant.ServerProperty;
-import cn.bdqfork.web.route.*;
-import cn.bdqfork.web.route.annotation.RouteController;
-import cn.bdqfork.web.route.filter.Filter;
-import cn.bdqfork.web.route.filter.FilterChainFactory;
-import cn.bdqfork.web.route.message.DefaultHttpMessageHandler;
-import cn.bdqfork.web.route.message.HttpMessageHandler;
-import cn.bdqfork.web.route.message.resolver.AbstractParameterResolver;
-import cn.bdqfork.web.route.message.resolver.ParameterResolverFactory;
+import cn.bdqfork.web.route.RouteManager;
+import cn.bdqfork.web.route.SessionManager;
 import io.reactivex.disposables.Disposable;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpVersion;
@@ -28,8 +19,6 @@ import io.vertx.reactivex.core.net.SocketAddress;
 import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.handler.*;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.*;
 
 /**
  * @author bdq
@@ -104,73 +93,10 @@ public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAw
 
     @Override
     protected void registerRouteMapping(Router router) throws Exception {
-
-        RouteManager routeManager = new RouteManager(router);
-
-        FilterChainFactory filterChainFactory = new FilterChainFactory();
-        filterChainFactory.registerFilters(getOrderedFilters());
-        routeManager.setFilterChainFactory(filterChainFactory);
-
-        AuthHandler authHandler = getAuthHandler();
-        routeManager.setAuthHandler(authHandler);
-
-        HttpMessageHandler httpMessageHandler = createHttpMessageHandler();
-
-        routeManager.setHttpMessageHandler(httpMessageHandler);
-
-        RouteResolver routeResolver = new RouteResolver();
-        Map<RouteAttribute, RouteInvocation> routes = routeResolver.resovle(getRouteBeans());
-        routes.forEach(routeManager::handle);
-
-        Collection<RouteAttribute> customRoutes = beanFactory.getBeans(RouteAttribute.class).values();
-        customRoutes.forEach(routeManager::handle);
+        RouteManager routeManager = new RouteManager(beanFactory, router);
+        routeManager.registerRouteMapping();
     }
 
-    private HttpMessageHandler createHttpMessageHandler() throws BeansException {
-        ParameterResolverFactory parameterResolverFactory = new ParameterResolverFactory();
-        Collection<AbstractParameterResolver> parameterResolvers = beanFactory.getBeans(AbstractParameterResolver.class)
-                .values();
-        parameterResolverFactory.registerResolver(parameterResolvers);
-        return new DefaultHttpMessageHandler(parameterResolverFactory);
-    }
-
-    private AuthHandler getAuthHandler() throws BeansException {
-        AuthHandler authHandler = null;
-        try {
-            authHandler = beanFactory.getBean(AuthHandler.class);
-        } catch (NoSuchBeanException e) {
-            if (log.isDebugEnabled()) {
-                log.debug("no auth handler found!");
-            }
-        }
-        return authHandler;
-    }
-
-    private List<Filter> getOrderedFilters() throws BeansException {
-        try {
-            Collection<Filter> filters = beanFactory.getBeans(Filter.class).values();
-            List<Filter> orderedfilters = BeanUtils.sortByOrder(filters);
-            Collections.reverse(orderedfilters);
-            return orderedfilters;
-        } catch (NoSuchBeanException e) {
-            if (log.isDebugEnabled()) {
-                log.debug("no filter found!");
-            }
-            return Collections.emptyList();
-        }
-    }
-
-    private List<Object> getRouteBeans() throws BeansException {
-        List<Object> beans = new LinkedList<>();
-        for (BeanDefinition beanDefinition : beanFactory.getBeanDefinitions().values()) {
-            if (AnnotationUtils.isAnnotationPresent(beanDefinition.getBeanClass(), RouteController.class)) {
-                String beanName = beanDefinition.getBeanName();
-                Object bean = beanFactory.getBean(beanName);
-                beans.add(bean);
-            }
-        }
-        return beans;
-    }
 
     @Override
     protected void doStart() throws Exception {

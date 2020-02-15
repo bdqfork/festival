@@ -66,4 +66,6 @@ public class RouteAttribute {
      */
     private boolean permitAll;
 
+    private RouteInvocation routeInvocation;
+
 }

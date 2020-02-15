@@ -1,6 +1,9 @@
 package cn.bdqfork.web.route;
 
 import cn.bdqfork.core.exception.BeansException;
+import cn.bdqfork.core.exception.NoSuchBeanException;
+import cn.bdqfork.core.factory.ConfigurableBeanFactory;
+import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.AopUtils;
 import cn.bdqfork.web.annotation.Auth;
@@ -9,13 +12,11 @@ import cn.bdqfork.web.annotation.PermitAllowed;
 import cn.bdqfork.web.annotation.RolesAllowed;
 import cn.bdqfork.web.route.annotation.Consumes;
 import cn.bdqfork.web.route.annotation.Produces;
+import cn.bdqfork.web.route.annotation.RouteController;
 import cn.bdqfork.web.route.annotation.RouteMapping;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author bdq
@@ -23,56 +24,92 @@ import java.util.Objects;
  */
 public class RouteResolver {
 
-    public Map<RouteAttribute, RouteInvocation> resovle(List<Object> routeBeans) throws BeansException {
-        Map<RouteAttribute, RouteInvocation> routeAttributeMap = new HashMap<>();
+    public Collection<RouteAttribute> resovleRoutes(ConfigurableBeanFactory beanFactory) throws BeansException {
 
-        for (Object routeBean : routeBeans) {
+        List<RouteAttribute> routeAttributes = new LinkedList<>();
 
+        for (Object routeBean : getRouteBeans(beanFactory)) {
             Class<?> beanClass = AopUtils.getTargetClass(routeBean);
             String baseUrl = resolveBaseUrl(beanClass);
-
             for (Method method : beanClass.getDeclaredMethods()) {
-
                 if (!AnnotationUtils.isAnnotationPresent(method, RouteMapping.class)) {
                     continue;
                 }
-
-                RouteMapping routeMapping = AnnotationUtils.getMergedAnnotation(method, RouteMapping.class);
-
-                RouteAttribute attribute = RouteAttribute.builder()
-                        .url(baseUrl + routeMapping.value())
-                        .httpMethod(routeMapping.method())
-                        .timeout(routeMapping.timeout())
-                        .build();
-
-                Produces produces = AnnotationUtils.getMergedAnnotation(method, Produces.class);
-                if (produces != null) {
-                    for (String produce : produces.value()) {
-                        attribute.setProduces(produce);
-                    }
-                }
-
-                Consumes consumes = AnnotationUtils.getMergedAnnotation(method, Consumes.class);
-                if (consumes != null) {
-                    for (String consume : consumes.value()) {
-                        attribute.setConsumes(consume);
-                    }
-                }
-
-                resolveAuthInfo(attribute, beanClass, method);
-
-                routeAttributeMap.put(attribute, new RouteInvocation(routeBean, method));
-
+                RouteAttribute attribute = createRouteAttribute(baseUrl, routeBean, method);
+                setProducesIfNeed(method, attribute);
+                setConsumesIfNeed(method, attribute);
+                setAuthInfoIfNeed(attribute, beanClass, method);
+                routeAttributes.add(attribute);
             }
         }
-
-        return routeAttributeMap;
+        Collection<RouteAttribute> customRoutes = resolveCustomRoutes(beanFactory);
+        routeAttributes.addAll(customRoutes);
+        return routeAttributes;
     }
 
-    private void resolveAuthInfo(RouteAttribute routeAttribute, Class<?> beanClass, Method routeMethod) {
+    private List<Object> getRouteBeans(ConfigurableBeanFactory beanFactory) throws BeansException {
+        List<Object> beans = new LinkedList<>();
+        for (BeanDefinition beanDefinition : beanFactory.getBeanDefinitions().values()) {
+            if (AnnotationUtils.isAnnotationPresent(beanDefinition.getBeanClass(), RouteController.class)) {
+                String beanName = beanDefinition.getBeanName();
+                Object bean = beanFactory.getBean(beanName);
+                beans.add(bean);
+            }
+        }
+        return beans;
+    }
+
+    private String resolveBaseUrl(Class<?> beanClass) {
+        if (AnnotationUtils.isAnnotationPresent(beanClass, RouteMapping.class)) {
+            return Objects.requireNonNull(AnnotationUtils.getMergedAnnotation(beanClass, RouteMapping.class))
+                    .value();
+        }
+        return "";
+    }
+
+    private RouteAttribute createRouteAttribute(String baseUrl, Object bean, Method method) {
+        RouteMapping routeMapping = AnnotationUtils.getMergedAnnotation(method, RouteMapping.class);
+
+        return RouteAttribute.builder()
+                .url(baseUrl + routeMapping.value())
+                .httpMethod(routeMapping.method())
+                .timeout(routeMapping.timeout())
+                .routeInvocation(new RouteInvocation(bean, method))
+                .build();
+    }
+
+    private void setProducesIfNeed(Method method, RouteAttribute attribute) {
+        Produces produces = AnnotationUtils.getMergedAnnotation(method, Produces.class);
+        if (produces != null) {
+            for (String produce : produces.value()) {
+                attribute.setProduces(produce);
+            }
+        }
+    }
+
+    private void setConsumesIfNeed(Method method, RouteAttribute attribute) {
+        Consumes consumes = AnnotationUtils.getMergedAnnotation(method, Consumes.class);
+        if (consumes != null) {
+            for (String consume : consumes.value()) {
+                attribute.setConsumes(consume);
+            }
+        }
+    }
+
+    private void setAuthInfoIfNeed(RouteAttribute routeAttribute, Class<?> beanClass, Method routeMethod) {
         if (!checkIfAuth(beanClass, routeMethod)) {
             return;
         }
+
+        setAuthInfo(routeAttribute, routeMethod);
+
+    }
+
+    private boolean checkIfAuth(Class<?> beanClass, Method routeMethod) {
+        return AnnotationUtils.isAnnotationPresent(beanClass, Auth.class) || AnnotationUtils.isAnnotationPresent(routeMethod, Auth.class);
+    }
+
+    private void setAuthInfo(RouteAttribute routeAttribute, Method routeMethod) {
         routeAttribute.setAuth(true);
 
         boolean permitAll = AnnotationUtils.isAnnotationPresent(routeMethod, PermitAll.class);
@@ -92,18 +129,14 @@ public class RouteResolver {
         if (rolesAllowed != null) {
             routeAttribute.setRolesAllowed(new PermitHolder(rolesAllowed));
         }
-
     }
 
-    private boolean checkIfAuth(Class<?> beanClass, Method routeMethod) {
-        return AnnotationUtils.isAnnotationPresent(beanClass, Auth.class) || AnnotationUtils.isAnnotationPresent(routeMethod, Auth.class);
-    }
-
-    private String resolveBaseUrl(Class<?> beanClass) {
-        if (AnnotationUtils.isAnnotationPresent(beanClass, RouteMapping.class)) {
-            return Objects.requireNonNull(AnnotationUtils.getMergedAnnotation(beanClass, RouteMapping.class))
-                    .value();
+    private Collection<RouteAttribute> resolveCustomRoutes(ConfigurableBeanFactory beanFactory) throws BeansException {
+        try {
+            return beanFactory.getBeans(RouteAttribute.class).values();
+        } catch (NoSuchBeanException e) {
+            return Collections.emptyList();
         }
-        return "";
     }
+
 }
