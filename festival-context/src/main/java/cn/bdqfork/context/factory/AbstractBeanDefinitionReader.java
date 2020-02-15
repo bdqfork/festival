@@ -134,10 +134,10 @@ public abstract class AbstractBeanDefinitionReader {
                 }
 
                 BeanDefinition beanDefinition = BeanDefinition.builder()
-                        .setBeanName(beanName)
-                        .setBeanClass(method.getReturnType())
-                        .setScope(scope)
-                        .setConstructor(method)
+                        .beanName(beanName)
+                        .beanClass(method.getReturnType())
+                        .scope(scope)
+                        .constructor(method)
                         .build();
 
                 if (beanDefinitions.containsKey(beanDefinition.getBeanName())) {

@@ -82,9 +82,9 @@ public class WebApplicationContext extends AnnotationApplicationContext {
     @Override
     protected void registerProxyProcessorBean() throws BeansException {
         BeanDefinition beanDefinition = BeanDefinition.builder()
-                .setBeanName("verticleProxyProcessor")
-                .setBeanClass(VerticleProxyProcessor.class)
-                .setScope(BeanDefinition.SINGLETON)
+                .beanName("verticleProxyProcessor")
+                .beanClass(VerticleProxyProcessor.class)
+                .scope(BeanDefinition.SINGLETON)
                 .build();
         getBeanFactory().registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
     }
@@ -124,9 +124,9 @@ public class WebApplicationContext extends AnnotationApplicationContext {
     private void registerWebServer() throws BeansException {
         BeanDefinitionRegistry registry = getBeanFactory();
         BeanDefinition beanDefinition = BeanDefinition.builder()
-                .setScope(BeanDefinition.SINGLETON)
-                .setBeanClass(DefaultWebServer.class)
-                .setBeanName("webserver")
+                .scope(BeanDefinition.SINGLETON)
+                .beanClass(DefaultWebServer.class)
+                .beanName("webserver")
                 .build();
         registry.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
     }

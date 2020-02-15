@@ -89,9 +89,9 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         }
 
         BeanDefinition beanDefinition = BeanDefinition.builder()
-                .setBeanName("resourceReader")
-                .setBeanClass(GenericResourceReader.class)
-                .setScope(BeanDefinition.SINGLETON)
+                .beanName("resourceReader")
+                .beanClass(GenericResourceReader.class)
+                .scope(BeanDefinition.SINGLETON)
                 .build();
 
         delegateBeanFactory.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
@@ -125,9 +125,9 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         }
 
         BeanDefinition beanDefinition = BeanDefinition.builder()
-                .setBeanName("aopProcessor")
-                .setBeanClass(aopProcessorClass)
-                .setScope(BeanDefinition.SINGLETON)
+                .beanName("aopProcessor")
+                .beanClass(aopProcessorClass)
+                .scope(BeanDefinition.SINGLETON)
                 .build();
         this.delegateBeanFactory.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
     }

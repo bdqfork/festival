@@ -168,10 +168,10 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         if (!containBeanDefinition(beanName)) {
             Class<?> beanClass = AopUtils.getTargetClass(bean);
             BeanDefinition beanDefinition = BeanDefinition.builder()
-                    .setBeanName(beanName)
-                    .setBeanClass(beanClass)
-                    .setScope(BeanDefinition.SINGLETON)
-                    .isResolved(true)
+                    .beanName(beanName)
+                    .beanClass(beanClass)
+                    .scope(BeanDefinition.SINGLETON)
+                    .resolved(true)
                     .build();
             try {
                 registerBeanDefinition(beanName, beanDefinition);

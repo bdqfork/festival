@@ -54,7 +54,7 @@ public class BeanDefinition {
     /**
      * 是否已注册
      */
-    private boolean isResolved;
+    private boolean resolved;
 
     public BeanDefinition(String beanName, Class<?> beanClass) {
         this(beanName, beanClass, PROTOTYPE);
@@ -142,11 +142,11 @@ public class BeanDefinition {
     }
 
     public void setResolved(boolean resolved) {
-        isResolved = resolved;
+        this.resolved = resolved;
     }
 
     public boolean isResolved() {
-        return isResolved;
+        return resolved;
     }
 
     public static BeanDefinitionBuilder builder() {
@@ -162,50 +162,50 @@ public class BeanDefinition {
         private MultInjectedPoint injectedConstructor;
         private Map<String, InjectedPoint> injectedFields = new HashMap<>();
         private Map<String, InjectedPoint> injectedSetters = new HashMap<>();
-        private boolean isResolved;
+        private boolean resolved;
 
-        public BeanDefinitionBuilder setBeanName(String beanName) {
+        public BeanDefinitionBuilder beanName(String beanName) {
             this.beanName = beanName;
             return this;
         }
 
-        public BeanDefinitionBuilder setBeanClass(Class<?> beanClass) {
+        public BeanDefinitionBuilder beanClass(Class<?> beanClass) {
             this.beanClass = beanClass;
             return this;
         }
 
-        public BeanDefinitionBuilder setScope(String scope) {
+        public BeanDefinitionBuilder scope(String scope) {
             this.scope = scope;
             return this;
         }
 
-        public BeanDefinitionBuilder addDependOn(String beanName) {
+        public BeanDefinitionBuilder dependOn(String beanName) {
             this.dependOns.add(beanName);
             return this;
         }
 
-        public BeanDefinitionBuilder setConstructor(Executable constructor) {
+        public BeanDefinitionBuilder constructor(Executable constructor) {
             this.constructor = constructor;
             return this;
         }
 
-        public BeanDefinitionBuilder setInjectedConstructor(MultInjectedPoint injectedConstructor) {
+        public BeanDefinitionBuilder injectedConstructor(MultInjectedPoint injectedConstructor) {
             this.injectedConstructor = injectedConstructor;
             return this;
         }
 
-        public BeanDefinitionBuilder addInjectedField(String fieldName, InjectedPoint injectedPoint) {
+        public BeanDefinitionBuilder injectedField(String fieldName, InjectedPoint injectedPoint) {
             this.injectedFields.put(fieldName, injectedPoint);
             return this;
         }
 
-        public BeanDefinitionBuilder addInjectedSetter(String methodName, InjectedPoint injectedPoint) {
+        public BeanDefinitionBuilder injectedSetter(String methodName, InjectedPoint injectedPoint) {
             this.injectedSetters.put(methodName, injectedPoint);
             return this;
         }
 
-        public BeanDefinitionBuilder isResolved(boolean isResolved) {
-            this.isResolved = isResolved;
+        public BeanDefinitionBuilder resolved(boolean resolved) {
+            this.resolved = resolved;
             return this;
         }
 
@@ -216,7 +216,7 @@ public class BeanDefinition {
             beanDefinition.setInjectedConstructor(injectedConstructor);
             beanDefinition.setInjectedFields(injectedFields);
             beanDefinition.setInjectedSetters(injectedSetters);
-            beanDefinition.setResolved(isResolved);
+            beanDefinition.setResolved(resolved);
             return beanDefinition;
         }
     }
