@@ -12,7 +12,7 @@ public class User {
 
     int id;
     String username;
-    boolean isActive;
+    boolean active;
     @JsonFormat(pattern = "YYYY")
     Date createDate;
 
