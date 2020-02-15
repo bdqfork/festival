@@ -19,7 +19,6 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.reactivex.ext.web.FileUpload;
 import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.RoutingContext;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -30,7 +29,6 @@ import javax.inject.Singleton;
  * @since 2020/1/21
  */
 @Auth
-@Slf4j
 @Singleton
 @RouteController("/users")
 public class UserController implements DisposableBean, RouterAware {

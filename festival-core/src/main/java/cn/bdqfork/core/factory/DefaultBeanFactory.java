@@ -6,7 +6,8 @@ import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.core.util.StringUtils;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Provider;
 import java.lang.reflect.*;
@@ -21,8 +22,9 @@ import java.util.stream.Collectors;
  * @author bdq
  * @since 2019/12/15
  */
-@Slf4j
 public class DefaultBeanFactory extends AbstractAutoInjectedBeanFactory {
+    private static final Logger log = LoggerFactory.getLogger(DefaultBeanFactory.class);
+
     private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
     private BeanFactory parentBeanFactory;
 

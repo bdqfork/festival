@@ -2,7 +2,8 @@ package cn.bdqfork.context.configuration.reader;
 
 import cn.bdqfork.core.util.FileUtils;
 import cn.bdqfork.core.util.StringUtils;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -10,8 +11,9 @@ import java.io.IOException;
  * @author bdq
  * @since 2020/1/9
  */
-@Slf4j
 public class GenericResourceReader implements ResourceReader {
+    private static final Logger log = LoggerFactory.getLogger(GenericResourceReader.class);
+
     private ResourceReader resourceReader;
     private static String defaultPath = ResourceReader.DEFAULT_CONFIG_NAME + ".yaml";
 

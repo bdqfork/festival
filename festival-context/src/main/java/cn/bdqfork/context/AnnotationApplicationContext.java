@@ -17,7 +17,8 @@ import cn.bdqfork.core.factory.processor.BeanFactoryPostProcessor;
 import cn.bdqfork.core.factory.processor.BeanPostProcessor;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import cn.bdqfork.core.util.BeanUtils;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.List;
@@ -28,8 +29,9 @@ import java.util.Map;
  * @author bdq
  * @since 2020/1/8
  */
-@Slf4j
 public class AnnotationApplicationContext extends AbstractApplicationContext {
+    private static final Logger log = LoggerFactory.getLogger(AnnotationApplicationContext.class);
+
     private static final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
     /**
      * 是否启用JSR250

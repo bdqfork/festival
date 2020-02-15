@@ -4,8 +4,9 @@ import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.web.route.annotation.Param;
 import io.vertx.reactivex.core.MultiMap;
 import io.vertx.reactivex.ext.web.RoutingContext;
-import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Parameter;
 import java.util.Date;
@@ -14,8 +15,8 @@ import java.util.Date;
  * @author bdq
  * @since 2020/2/14
  */
-@Slf4j
 public class DateParameterResolver extends AbstractParameterResolver {
+    private static final Logger log = LoggerFactory.getLogger(DateParameterResolver.class);
     private static boolean enable = true;
 
     static {

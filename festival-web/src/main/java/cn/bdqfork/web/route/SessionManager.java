@@ -14,14 +14,15 @@ import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.handler.SessionHandler;
 import io.vertx.reactivex.ext.web.sstore.LocalSessionStore;
 import io.vertx.reactivex.ext.web.sstore.SessionStore;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author bdq
  * @since 2020/2/10
  */
-@Slf4j
 public class SessionManager implements BeanFactoryAware, ResourceReaderAware {
+    private static final Logger log = LoggerFactory.getLogger(SessionManager.class);
     private BeanFactory beanFactory;
     private ResourceReader resourceReader;
     private Router router;

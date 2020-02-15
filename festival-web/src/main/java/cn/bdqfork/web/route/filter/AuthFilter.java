@@ -11,14 +11,15 @@ import io.reactivex.functions.Consumer;
 import io.vertx.core.Handler;
 import io.vertx.reactivex.ext.auth.User;
 import io.vertx.reactivex.ext.web.RoutingContext;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author bdq
  * @since 2020/1/28
  */
-@Slf4j
 public class AuthFilter implements Filter, OrderAware {
+    private static final Logger log = LoggerFactory.getLogger(AuthFilter.class);
     private Handler<RoutingContext> deniedHandler;
 
     @Override

@@ -3,15 +3,16 @@ package cn.bdqfork.core.factory;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.definition.ManagedBeanDefinition;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 抽象jsr250bean工厂
  * @author bdq
  * @since 2019/12/18
  */
-@Slf4j
 public abstract class AbstractJSR250BeanFactory extends DefaultBeanFactory implements JSR250BeanFactory {
+    private static final Logger log = LoggerFactory.getLogger(AbstractJSR250BeanFactory.class);
 
     @Override
     public void executePostConstuct(String beanName, Object bean) throws BeansException {

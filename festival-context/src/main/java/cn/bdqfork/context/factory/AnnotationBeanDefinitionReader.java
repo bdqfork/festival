@@ -12,10 +12,10 @@ import cn.bdqfork.core.factory.MultInjectedPoint;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.definition.ManagedBeanDefinition;
 import cn.bdqfork.core.util.AnnotationUtils;
-import cn.bdqfork.core.util.FileUtils;
 import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.core.util.StringUtils;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -33,8 +33,9 @@ import java.util.Map;
  * @author bdq
  * @since 2020/1/8
  */
-@Slf4j
 public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionReader {
+    private static final Logger log = LoggerFactory.getLogger(AnnotationBeanDefinitionReader.class);
+
     /**
      * 是否启用JSR250
      */

@@ -21,7 +21,8 @@ import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.RoutingContext;
 import io.vertx.reactivex.ext.web.handler.AuthHandler;
 import io.vertx.reactivex.ext.web.handler.TimeoutHandler;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -31,8 +32,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author bdq
  * @since 2020/2/10
  */
-@Slf4j
 public class RouteManager {
+    private static final Logger log = LoggerFactory.getLogger(RouteManager.class);
     public static final String ROUTE_ATTRIBETE_KEY = "routeAttribute";
 
     private final Set<String> registedRoutes = Collections.newSetFromMap(new ConcurrentHashMap<>());

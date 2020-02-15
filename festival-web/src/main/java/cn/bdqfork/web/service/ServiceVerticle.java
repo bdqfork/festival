@@ -8,7 +8,8 @@ import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.vertx.reactivex.core.AbstractVerticle;
 import io.vertx.reactivex.core.eventbus.EventBus;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 
@@ -16,8 +17,8 @@ import java.lang.reflect.Method;
  * @author bdq
  * @since 2020/1/26
  */
-@Slf4j
 public class ServiceVerticle extends AbstractVerticle {
+    private static final Logger log = LoggerFactory.getLogger(ServiceVerticle.class);
     private Object serviceBean;
     private Disposable disposable;
 

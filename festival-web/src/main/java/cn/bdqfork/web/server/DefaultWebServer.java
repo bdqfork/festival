@@ -18,14 +18,15 @@ import io.vertx.core.net.JksOptions;
 import io.vertx.reactivex.core.net.SocketAddress;
 import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.handler.*;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author bdq
  * @since 2020/2/12
  */
-@Slf4j
 public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAware, ResourceReaderAware {
+    private static final Logger log = LoggerFactory.getLogger(DefaultWebServer.class);
     private ConfigurableBeanFactory beanFactory;
     private ResourceReader resourceReader;
     private Disposable disposable;

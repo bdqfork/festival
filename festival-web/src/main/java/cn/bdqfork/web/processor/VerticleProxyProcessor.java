@@ -7,17 +7,18 @@ import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.util.AopUtils;
 import cn.bdqfork.web.VertxAware;
 import cn.bdqfork.web.annotation.VerticleMapping;
-import cn.bdqfork.web.service.ServiceVerticle;
 import cn.bdqfork.web.proxy.VerticleProxyHandler;
+import cn.bdqfork.web.service.ServiceVerticle;
 import io.vertx.reactivex.core.Vertx;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author bdq
  * @since 2020/1/26
  */
-@Slf4j
 public class VerticleProxyProcessor extends AopProxyProcessor implements ClassLoaderAware, VertxAware {
+    private static final Logger log = LoggerFactory.getLogger(VerticleProxyProcessor.class);
     private Vertx vertx;
     private ClassLoader classLoader;
 

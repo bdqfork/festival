@@ -15,7 +15,8 @@ import cn.bdqfork.web.util.VertxUtils;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.reactivex.core.Vertx;
 import io.vertx.reactivex.ext.web.Router;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -23,8 +24,8 @@ import java.util.concurrent.CountDownLatch;
  * @author bdq
  * @since 2020/1/21
  */
-@Slf4j
 public class WebApplicationContext extends AnnotationApplicationContext {
+    private static final Logger log = LoggerFactory.getLogger(WebApplicationContext.class);
     private static final String SERVER_OPTIONS_NAME = "serverOptions";
     private Vertx vertx;
     private Router router;

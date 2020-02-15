@@ -6,7 +6,8 @@ import cn.bdqfork.core.exception.FailedInjectedMethodException;
 import cn.bdqfork.core.exception.UnsatisfiedBeanException;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.processor.BeanPostProcessor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -18,8 +19,9 @@ import java.util.*;
  * @author bdq
  * @since 2019/12/16
  */
-@Slf4j
 public abstract class AbstractAutoInjectedBeanFactory extends AbstractBeanFactory implements AutoInjectedBeanfactory {
+    private static final Logger log = LoggerFactory.getLogger(AbstractAutoInjectedBeanFactory.class);
+
     private List<BeanPostProcessor> beanPostProcessors = new ArrayList<>(16);
 
     @Override

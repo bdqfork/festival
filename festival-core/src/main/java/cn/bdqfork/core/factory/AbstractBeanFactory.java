@@ -9,7 +9,8 @@ import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
 import cn.bdqfork.core.factory.registry.DefaultSingletonBeanRegistry;
 import cn.bdqfork.core.util.AopUtils;
 import cn.bdqfork.core.util.ReflectUtils;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -19,8 +20,8 @@ import java.util.List;
  * @author bdq
  * @since 2019/12/15
  */
-@Slf4j
 public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory, BeanDefinitionRegistry {
+    private static final Logger log = LoggerFactory.getLogger(AbstractBeanFactory.class);
 
     @Override
     public <T> T getBean(String beanName) throws BeansException {
