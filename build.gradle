@@ -63,8 +63,7 @@ subprojects {
                 artifact sourcesJar
                 artifact javadocJar
                 pom {
-                    name = 'festival-parent'
-                    description = 'A responsive web framework with ioc function based on vertx.'
+                    description = project.description
                     url = 'https://github.com/bdqfork/festival'
                     licenses {
                         license {

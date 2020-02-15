@@ -1,3 +1,5 @@
+description = 'Application context.'
+
 def libs = rootProject.ext.libraries
 
 dependencies {

@@ -1,3 +1,5 @@
+description = 'A responsive web framework based on vertx.'
+
 def libs = rootProject.ext.libraries
 
 dependencies {

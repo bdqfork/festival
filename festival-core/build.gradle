@@ -1,3 +1,5 @@
+description = 'IoC factory.'
+
 def libs = rootProject.ext.libraries
 
 dependencies {
