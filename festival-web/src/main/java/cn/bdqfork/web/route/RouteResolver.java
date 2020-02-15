@@ -6,6 +6,7 @@ import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.AopUtils;
+import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.web.annotation.Auth;
 import cn.bdqfork.web.annotation.PermitAll;
 import cn.bdqfork.web.annotation.PermitAllowed;
@@ -14,6 +15,11 @@ import cn.bdqfork.web.route.annotation.Consumes;
 import cn.bdqfork.web.route.annotation.Produces;
 import cn.bdqfork.web.route.annotation.RouteController;
 import cn.bdqfork.web.route.annotation.RouteMapping;
+import cn.bdqfork.web.route.message.HttpMessageHandler;
+import cn.bdqfork.web.route.response.ResponseHandlerFactory;
+import io.vertx.core.Handler;
+import io.vertx.reactivex.core.http.HttpServerResponse;
+import io.vertx.reactivex.ext.web.RoutingContext;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -23,6 +29,13 @@ import java.util.*;
  * @since 2020/2/10
  */
 public class RouteResolver {
+    private HttpMessageHandler httpMessageHandler;
+    private ResponseHandlerFactory responseHandlerFactory;
+
+    public RouteResolver(HttpMessageHandler httpMessageHandler, ResponseHandlerFactory responseHandlerFactory) {
+        this.httpMessageHandler = httpMessageHandler;
+        this.responseHandlerFactory = responseHandlerFactory;
+    }
 
     public Collection<RouteAttribute> resovleRoutes(ConfigurableBeanFactory beanFactory) throws BeansException {
 
@@ -74,7 +87,23 @@ public class RouteResolver {
                 .url(baseUrl + routeMapping.value())
                 .httpMethod(routeMapping.method())
                 .timeout(routeMapping.timeout())
-                .routeInvocation(new RouteInvocation(bean, method))
+                .contextHandler(new Handler<RoutingContext>() {
+                    @Override
+                    public void handle(RoutingContext routingContext) {
+                        try {
+                            Object[] args = httpMessageHandler.handle(routingContext, method.getParameters());
+                            Object result = ReflectUtils.invokeMethod(bean, method, args);
+                            if (ReflectUtils.isReturnVoid(method)) {
+                                return;
+                            }
+                            String contentType = routingContext.getAcceptableContentType();
+                            HttpServerResponse response = routingContext.response();
+                            responseHandlerFactory.getResponseHandler(contentType).handle(response, result);
+                        } catch (Exception e) {
+                            throw new IllegalStateException(e);
+                        }
+                    }
+                })
                 .build();
     }
 

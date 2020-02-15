@@ -58,8 +58,6 @@ public class RouteAttribute {
      */
     private boolean permitAll;
 
-    private RouteInvocation routeInvocation;
-
     public String getUrl() {
         return url;
     }
@@ -140,14 +138,6 @@ public class RouteAttribute {
         this.permitAll = permitAll;
     }
 
-    public RouteInvocation getRouteInvocation() {
-        return routeInvocation;
-    }
-
-    public void setRouteInvocation(RouteInvocation routeInvocation) {
-        this.routeInvocation = routeInvocation;
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -215,11 +205,6 @@ public class RouteAttribute {
             return this;
         }
 
-        public Builder routeInvocation(RouteInvocation routeInvocation) {
-            this.routeInvocation = routeInvocation;
-            return this;
-        }
-
         public RouteAttribute build() {
             RouteAttribute routeAttribute = new RouteAttribute();
             routeAttribute.setUrl(url);
@@ -232,7 +217,6 @@ public class RouteAttribute {
             routeAttribute.setRolesAllowed(rolesAllowed);
             routeAttribute.setAuth(auth);
             routeAttribute.setPermitAll(permitAll);
-            routeAttribute.setRouteInvocation(routeInvocation);
             return routeAttribute;
         }
     }

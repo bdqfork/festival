@@ -4,10 +4,8 @@ import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.NoSuchBeanException;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.util.BeanUtils;
-import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.core.util.StringUtils;
 import cn.bdqfork.web.route.filter.Filter;
-import cn.bdqfork.web.route.filter.FilterChain;
 import cn.bdqfork.web.route.filter.FilterChainFactory;
 import cn.bdqfork.web.route.message.DefaultHttpMessageHandler;
 import cn.bdqfork.web.route.message.HttpMessageHandler;
@@ -15,16 +13,13 @@ import cn.bdqfork.web.route.message.resolver.AbstractParameterResolver;
 import cn.bdqfork.web.route.message.resolver.ParameterResolverFactory;
 import cn.bdqfork.web.route.response.ResponseHandlerFactory;
 import io.vertx.core.http.HttpMethod;
-import io.vertx.reactivex.core.http.HttpServerResponse;
 import io.vertx.reactivex.ext.web.Route;
 import io.vertx.reactivex.ext.web.Router;
-import io.vertx.reactivex.ext.web.RoutingContext;
 import io.vertx.reactivex.ext.web.handler.AuthHandler;
 import io.vertx.reactivex.ext.web.handler.TimeoutHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -38,7 +33,7 @@ public class RouteManager {
 
     private final Set<String> registedRoutes = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-    private RouteResolver routeResolver = new RouteResolver();
+    private RouteResolver routeResolver;
 
     private ConfigurableBeanFactory beanFactory;
 
@@ -59,6 +54,7 @@ public class RouteManager {
         initFilterChainFactory();
         initHttpMessageHandler();
         initResponseHandlerFactory();
+        initRouteResolver();
     }
 
     private void initAuthHandler() {
@@ -109,6 +105,10 @@ public class RouteManager {
 
     private void initResponseHandlerFactory() {
         responseHandlerFactory = new ResponseHandlerFactory();
+    }
+
+    private void initRouteResolver() {
+        routeResolver = new RouteResolver(httpMessageHandler, responseHandlerFactory);
     }
 
     public void registerRouteMapping() throws Exception {
@@ -177,46 +177,12 @@ public class RouteManager {
     }
 
     private void handleMapping(RouteAttribute routeAttribute, Route route) {
-        Filter invoker;
 
-        RouteInvocation invocation = routeAttribute.getRouteInvocation();
-
-        if (routeAttribute.getRouteInvocation() != null) {
-            if (log.isInfoEnabled()) {
-                log.info("{} mapping path:{} to {}:{}!", routeAttribute.getHttpMethod().name(), routeAttribute.getUrl(),
-                        invocation.method.getDeclaringClass().getCanonicalName(),
-                        ReflectUtils.getSignature(invocation.method));
-            }
-
-            invoker = createInvoker(invocation.bean, invocation.method);
-        } else {
-            if (log.isInfoEnabled()) {
-                log.info("custom {} mapping path:{}!", routeAttribute.getHttpMethod().name(), routeAttribute.getUrl());
-            }
-
-            invoker = (routingContext, filterChain) -> routeAttribute.getContextHandler().handle(routingContext);
+        if (log.isInfoEnabled()) {
+            log.info("{} mapping path:{}!", routeAttribute.getHttpMethod().name(), routeAttribute.getUrl());
         }
 
-        handleMapping(routeAttribute, invoker, route);
-    }
-
-    private Filter createInvoker(Object routeBean, Method routeMethod) {
-        return new Filter() {
-            @Override
-            public void doFilter(RoutingContext routingContext, FilterChain filterChain) throws Exception {
-                Object[] args = httpMessageHandler.handle(routingContext, routeMethod.getParameters());
-                Object result = ReflectUtils.invokeMethod(routeBean, routeMethod, args);
-                if (ReflectUtils.isReturnVoid(routeMethod)) {
-                    return;
-                }
-                String contentType = routingContext.getAcceptableContentType();
-                HttpServerResponse response = routingContext.response();
-                responseHandlerFactory.getResponseHandler(contentType).handle(response, result);
-            }
-        };
-    }
-
-    private void handleMapping(RouteAttribute routeAttribute, Filter invoker, Route route) {
+        Filter invoker = (routingContext, filterChain) -> routeAttribute.getContextHandler().handle(routingContext);
 
         route.handler(routingContext -> {
             routingContext.data().put(ROUTE_ATTRIBETE_KEY, routeAttribute);
@@ -228,7 +194,6 @@ public class RouteManager {
                 routingContext.fail(500, e);
             }
         });
-
     }
 
 }
