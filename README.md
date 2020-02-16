@@ -15,7 +15,7 @@ Festvial是一个基于Vertx、Rxjava等开源库，拥有IOC、AOP功能的响�
 * 支持使用Filter来对拦截Http请求。
 
 # 快速使用
-首先引入依赖。
+
 ```
 引入maven依赖
 <dependency>
@@ -28,7 +28,7 @@ Festvial是一个基于Vertx、Rxjava等开源库，拥有IOC、AOP功能的响�
 implementation 'com.github.bdqfork:festival-web:0.4.0'
 ```
 
-```
+```java
 @Singleton
 @Route
 public class UserController {
