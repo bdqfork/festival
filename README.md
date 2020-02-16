@@ -32,17 +32,9 @@ web设计如下：
 2. 重新设计了项目，尽可能的面向接口编程
 
 ##### todolist:
-+ 参数注入 已完成！待测试
-+ timeout 已完成！
-+ luncher封装
 + 缓存
 + 服务监控
 + verticle service group
-+ @produces,@consumer 已完成!
-+ 跨域 已完成!
-+ 自定义配置文件路径 已完成！
-+ resource reader基本类型转换，以及unsupport异常 已完成！
-+ 自定义handler注入 已完成!
-+ 合并@Route和@RouteMapping为@RouteController 已完成!
-+ 支持http2 已完成！
 + xml数据请求和响应
++ websocket
++ kotlin ioc容器
