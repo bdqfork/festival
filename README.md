@@ -14,6 +14,39 @@ Festvial是一个基于Vertx、Rxjava等开源库，拥有IOC、AOP功能的响�
 * 对Vertx的Auth部分做了封装，只需要引入相应的依赖，就可以支持Shiro、JWT等权限管理框架，且支持使用注解来管理权限。
 * 支持使用Filter来对拦截Http请求。
 
+# 快速使用
+首先引入依赖。
+```
+引入maven依赖
+<dependency>
+  <groupId>com.github.bdqfork</groupId>
+  <artifactId>festival-web</artifactId>
+  <version>0.4.0</version>
+</dependency>
+
+或者gradle
+implementation 'com.github.bdqfork:festival-web:0.4.0'
+```
+
+```
+@Singleton
+@Route
+public class UserController {
+
+    @GetMapping("/hello")
+    public String hello() {
+        return "hello festival";
+    }
+    
+    public static void main(String[] args) throws Exception {
+            WebApplicationContext webApplicationContext = new WebApplicationContext("cn.bdqfork.example");
+            webApplicationContext.start();
+    }
+
+}
+```
+访问http://localhost:8080/hello即可看见hello festival。
+
 # 详细功能查看[wiki](https://github.com/bdqfork/festival/wiki)
 
 ##### todolist:
@@ -23,6 +56,7 @@ Festvial是一个基于Vertx、Rxjava等开源库，拥有IOC、AOP功能的响�
 + xml数据请求和响应
 + websocket
 + kotlin ioc容器
++ 配置文件profile
 
 License
 -------

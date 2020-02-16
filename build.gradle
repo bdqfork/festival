@@ -16,7 +16,7 @@ ext {
 
 allprojects {
     group = 'com.github.bdqfork'
-    version = '0.4'
+    version = '0.4.0'
 }
 
 subprojects {
@@ -60,10 +60,12 @@ subprojects {
     publishing {
         publications {
             mavenJava(MavenPublication) {
+                from components.java
                 artifact sourcesJar
                 artifact javadocJar
                 pom {
-                    description = project.description
+                    name = project.name
+                    description = project.name
                     url = 'https://github.com/bdqfork/festival'
                     licenses {
                         license {
@@ -84,9 +86,6 @@ subprojects {
                     }
                 }
 
-            }
-            maven(MavenPublication) {
-                from(components.java)
             }
         }
         repositories {
