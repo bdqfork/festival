@@ -28,11 +28,11 @@ public class VerticleProxyProcessor extends AopProxyProcessor implements ClassLo
         Class<?> targetClass = AopUtils.getTargetClass(bean);
         if (targetClass.isAnnotationPresent(VerticleMapping.class)) {
             ServiceVerticle verticle = new ServiceVerticle(bean);
-            vertx.deployVerticle(verticle,res->{
-                if (res.succeeded()){
-                    if (log.isTraceEnabled()) {
-                        log.trace("deployed service {} of {} by id {}!", beanName, targetClass.getCanonicalName(), res.result());
-                    }else {
+            vertx.deployVerticle(verticle, res -> {
+                if (res.succeeded()) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("deployed service {} of {} by id {}!", beanName, targetClass.getCanonicalName(), res.result());
+                    } else {
                         if (log.isErrorEnabled()) {
                             log.error("failed to deploy service {} of {}!", beanName, targetClass.getCanonicalName(), res.cause());
                         }

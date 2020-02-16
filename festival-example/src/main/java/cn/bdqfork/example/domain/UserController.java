@@ -1,8 +1,6 @@
 package cn.bdqfork.example.domain;
 
-import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.DisposableBean;
-import cn.bdqfork.web.RouterAware;
 import cn.bdqfork.web.annotation.Auth;
 import cn.bdqfork.web.annotation.PermitAll;
 import cn.bdqfork.web.annotation.PermitAllowed;
@@ -17,7 +15,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.FileUpload;
-import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 
 import javax.inject.Inject;
@@ -31,9 +28,8 @@ import javax.inject.Singleton;
 @Auth
 @Singleton
 @RouteController("/users")
-public class UserController implements DisposableBean, RouterAware {
+public class UserController implements DisposableBean {
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
-    private Router router;
     @Named("ServiceImpl1")
     @Inject
     private IService iService;
@@ -73,7 +69,7 @@ public class UserController implements DisposableBean, RouterAware {
         return new String[]{"test1", "test2", "test3"};
     }
 
-    @RolesAllowed(value = {"role:administrator", "role:hispassword"}, logic = LogicType.AND)
+    @RolesAllowed(value = {"role:administrator", "role:hispassword"}, logic = LogicType.OR)
     @GetMapping("/service")
     public void service(RoutingContext routingContext) {
         Flowable<String> flowable = iService.getUserName("service test");
@@ -98,8 +94,4 @@ public class UserController implements DisposableBean, RouterAware {
         compositeDisposable.dispose();
     }
 
-    @Override
-    public void setRouter(Router router) throws BeansException {
-        this.router = router;
-    }
 }
