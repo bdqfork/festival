@@ -9,8 +9,8 @@ import io.reactivex.Observable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import io.vertx.core.Handler;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.reactivex.ext.auth.User;
-import io.vertx.reactivex.ext.web.RoutingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,14 +31,12 @@ public class AuthFilter implements Filter, OrderAware {
             return;
         }
 
-        User user = routingContext.user();
-
         PermitHolder permitAllowed = routeAttribute.getPermitAllowed();
 
         Observable<Boolean> permitObservable = Observable.just(true);
 
         if (permitAllowed != null) {
-            permitObservable = SecurityUtils.isPermited(user, permitAllowed.getPermits(), permitAllowed.getLogicType());
+            permitObservable = SecurityUtils.isPermited(User.newInstance(routingContext.user()), permitAllowed.getPermits(), permitAllowed.getLogicType());
         }
 
         PermitHolder rolesAllowed = routeAttribute.getRolesAllowed();
@@ -46,7 +44,7 @@ public class AuthFilter implements Filter, OrderAware {
         Observable<Boolean> rolesObservable = Observable.just(true);
 
         if (rolesAllowed != null) {
-            rolesObservable = SecurityUtils.isPermited(user, rolesAllowed.getPermits(), rolesAllowed.getLogicType());
+            rolesObservable = SecurityUtils.isPermited(User.newInstance(routingContext.user()), rolesAllowed.getPermits(), rolesAllowed.getLogicType());
         }
 
         Observable.combineLatest(permitObservable, rolesObservable,

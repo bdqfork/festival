@@ -3,8 +3,8 @@ package cn.bdqfork.web.proxy;
 import cn.bdqfork.web.service.HessianMessageCodec;
 import cn.bdqfork.web.service.MethodInvocation;
 import cn.bdqfork.web.util.EventBusUtils;
+import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.DeliveryOptions;
-import io.vertx.reactivex.core.Vertx;
 import io.vertx.reactivex.core.eventbus.EventBus;
 import io.vertx.reactivex.core.eventbus.Message;
 
@@ -30,7 +30,7 @@ public class VerticleProxyHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         MethodInvocation methodInvocation = new MethodInvocation(method, args);
-        EventBus eventBus = vertx.eventBus();
+        EventBus eventBus = EventBus.newInstance(vertx.eventBus());
         String address = EventBusUtils.getAddress(targetClass);
         return eventBus.rxRequest(address, methodInvocation, options)
                 .toFlowable()

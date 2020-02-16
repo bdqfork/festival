@@ -1,7 +1,7 @@
 package cn.bdqfork.web;
 
 import cn.bdqfork.core.exception.BeansException;
-import io.vertx.reactivex.ext.web.Router;
+import io.vertx.ext.web.Router;
 
 /**
  * @author bdq

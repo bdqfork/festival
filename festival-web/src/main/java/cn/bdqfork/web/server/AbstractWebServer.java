@@ -3,8 +3,8 @@ package cn.bdqfork.web.server;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.web.RouterAware;
 import cn.bdqfork.web.VertxAware;
-import io.vertx.reactivex.core.Vertx;
-import io.vertx.reactivex.ext.web.Router;
+import io.vertx.core.Vertx;
+import io.vertx.ext.web.Router;
 
 /**
  * @author bdq

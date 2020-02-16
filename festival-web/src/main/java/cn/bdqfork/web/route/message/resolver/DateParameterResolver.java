@@ -2,8 +2,8 @@ package cn.bdqfork.web.route.message.resolver;
 
 import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.web.route.annotation.Param;
-import io.vertx.reactivex.core.MultiMap;
-import io.vertx.reactivex.ext.web.RoutingContext;
+import io.vertx.core.MultiMap;
+import io.vertx.ext.web.RoutingContext;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

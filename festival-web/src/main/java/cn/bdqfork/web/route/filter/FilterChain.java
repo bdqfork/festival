@@ -1,6 +1,7 @@
 package cn.bdqfork.web.route.filter;
 
-import io.vertx.reactivex.ext.web.RoutingContext;
+
+import io.vertx.ext.web.RoutingContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,6 @@ public class FilterChain implements Filter {
         if (index == filters.size()) {
             return;
         }
-        Filter filter = filters.get(index++);
-        filter.doFilter(routingContext, filterChain);
+        filters.get(index++).doFilter(routingContext, filterChain);
     }
 }

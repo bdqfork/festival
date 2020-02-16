@@ -13,10 +13,10 @@ import cn.bdqfork.web.route.message.resolver.AbstractParameterResolver;
 import cn.bdqfork.web.route.message.resolver.ParameterResolverFactory;
 import cn.bdqfork.web.route.response.ResponseHandlerFactory;
 import io.vertx.core.http.HttpMethod;
-import io.vertx.reactivex.ext.web.Route;
-import io.vertx.reactivex.ext.web.Router;
-import io.vertx.reactivex.ext.web.handler.AuthHandler;
-import io.vertx.reactivex.ext.web.handler.TimeoutHandler;
+import io.vertx.ext.web.Route;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.AuthHandler;
+import io.vertx.ext.web.handler.TimeoutHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,10 +117,6 @@ public class RouteManager {
     }
 
     private void handle(RouteAttribute routeAttribute) {
-        handle(routeAttribute, null);
-    }
-
-    private void handle(RouteAttribute routeAttribute, RouteInvocation invocation) {
         checkIfRouteConflict(routeAttribute);
 
         Route route = createRoute(routeAttribute);

@@ -18,8 +18,8 @@ import cn.bdqfork.web.route.annotation.RouteMapping;
 import cn.bdqfork.web.route.message.HttpMessageHandler;
 import cn.bdqfork.web.route.response.ResponseHandlerFactory;
 import io.vertx.core.Handler;
-import io.vertx.reactivex.core.http.HttpServerResponse;
-import io.vertx.reactivex.ext.web.RoutingContext;
+import io.vertx.core.http.HttpServerResponse;
+import io.vertx.ext.web.RoutingContext;
 
 import java.lang.reflect.Method;
 import java.util.*;

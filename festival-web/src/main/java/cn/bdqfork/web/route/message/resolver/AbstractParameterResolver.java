@@ -1,9 +1,9 @@
 package cn.bdqfork.web.route.message.resolver;
 
+import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpMethod;
-import io.vertx.reactivex.core.MultiMap;
-import io.vertx.reactivex.core.http.HttpServerRequest;
-import io.vertx.reactivex.ext.web.RoutingContext;
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.ext.web.RoutingContext;
 
 import java.lang.reflect.Parameter;
 import java.util.Map;

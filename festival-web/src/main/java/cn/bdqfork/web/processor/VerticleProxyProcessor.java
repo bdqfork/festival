@@ -9,7 +9,7 @@ import cn.bdqfork.web.VertxAware;
 import cn.bdqfork.web.annotation.VerticleMapping;
 import cn.bdqfork.web.proxy.VerticleProxyHandler;
 import cn.bdqfork.web.service.ServiceVerticle;
-import io.vertx.reactivex.core.Vertx;
+import io.vertx.core.Vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,17 +28,18 @@ public class VerticleProxyProcessor extends AopProxyProcessor implements ClassLo
         Class<?> targetClass = AopUtils.getTargetClass(bean);
         if (targetClass.isAnnotationPresent(VerticleMapping.class)) {
             ServiceVerticle verticle = new ServiceVerticle(bean);
-            vertx.rxDeployVerticle(verticle)
-                    .subscribe(id -> {
-                        if (log.isTraceEnabled()) {
-                            log.trace("deployed service {} of {} by id {}!", beanName, targetClass.getCanonicalName(), id);
-                        }
-                    }, e -> {
+            vertx.deployVerticle(verticle,res->{
+                if (res.succeeded()){
+                    if (log.isTraceEnabled()) {
+                        log.trace("deployed service {} of {} by id {}!", beanName, targetClass.getCanonicalName(), res.result());
+                    }else {
                         if (log.isErrorEnabled()) {
-                            log.error("failed to deploy service {} of {}!", beanName, targetClass.getCanonicalName(), e);
+                            log.error("failed to deploy service {} of {}!", beanName, targetClass.getCanonicalName(), res.cause());
                         }
                         vertx.close();
-                    });
+                    }
+                }
+            });
             return Proxy.newProxyInstance(classLoader, targetClass.getInterfaces(), new VerticleProxyHandler(vertx, targetClass));
         }
         return bean;

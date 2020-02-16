@@ -2,7 +2,7 @@ package cn.bdqfork.web.route.message;
 
 import cn.bdqfork.web.route.message.resolver.ParameterResolver;
 import cn.bdqfork.web.route.message.resolver.ParameterResolverFactory;
-import io.vertx.reactivex.ext.web.RoutingContext;
+import io.vertx.ext.web.RoutingContext;
 
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;

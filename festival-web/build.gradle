@@ -3,8 +3,8 @@ description = 'A responsive web framework based on vertx.'
 def libs = rootProject.ext.libraries
 
 dependencies {
-    implementation "io.vertx:vertx-web:${libs.vertx}"
-    implementation "io.vertx:vertx-rx-java2:${libs.vertx}"
+    api "io.vertx:vertx-web:${libs.vertx}"
+    api "io.vertx:vertx-rx-java2:${libs.vertx}"
     implementation "com.caucho:hessian:${libs.hessian}"
     compileOnly "joda-time:joda-time:${libs.joda}"
     api project(':festival-context')

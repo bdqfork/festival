@@ -2,14 +2,14 @@ package cn.bdqfork.example.config;
 
 import cn.bdqfork.context.configuration.Configuration;
 import cn.bdqfork.web.route.filter.AuthFilter;
+import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.auth.AuthProvider;
+import io.vertx.ext.auth.shiro.ShiroAuth;
 import io.vertx.ext.auth.shiro.ShiroAuthOptions;
 import io.vertx.ext.auth.shiro.ShiroAuthRealmType;
-import io.vertx.reactivex.core.Vertx;
-import io.vertx.reactivex.ext.auth.AuthProvider;
-import io.vertx.reactivex.ext.auth.shiro.ShiroAuth;
-import io.vertx.reactivex.ext.web.handler.AuthHandler;
-import io.vertx.reactivex.ext.web.handler.BasicAuthHandler;
+import io.vertx.ext.web.handler.AuthHandler;
+import io.vertx.ext.web.handler.BasicAuthHandler;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

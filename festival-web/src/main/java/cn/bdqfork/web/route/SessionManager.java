@@ -8,12 +8,12 @@ import cn.bdqfork.core.exception.NoSuchBeanException;
 import cn.bdqfork.core.factory.BeanFactory;
 import cn.bdqfork.core.util.StringUtils;
 import cn.bdqfork.web.constant.ServerProperty;
-import io.vertx.reactivex.core.Vertx;
-import io.vertx.reactivex.ext.auth.AuthProvider;
-import io.vertx.reactivex.ext.web.Router;
-import io.vertx.reactivex.ext.web.handler.SessionHandler;
-import io.vertx.reactivex.ext.web.sstore.LocalSessionStore;
-import io.vertx.reactivex.ext.web.sstore.SessionStore;
+import io.vertx.core.Vertx;
+import io.vertx.ext.auth.AuthProvider;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.SessionHandler;
+import io.vertx.ext.web.sstore.LocalSessionStore;
+import io.vertx.ext.web.sstore.SessionStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

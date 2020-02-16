@@ -16,9 +16,9 @@ import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.vertx.core.http.HttpMethod;
-import io.vertx.reactivex.ext.web.FileUpload;
-import io.vertx.reactivex.ext.web.Router;
-import io.vertx.reactivex.ext.web.RoutingContext;
+import io.vertx.ext.web.FileUpload;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -51,16 +51,14 @@ public class UserController implements DisposableBean, RouterAware {
     public void hello(RoutingContext routingContext) {
         routingContext.response()
                 .putHeader("content-type", "text/plain")
-                .rxEnd("Hello World from Vert.x-Web!")
-                .subscribe();
+                .end("Hello World from Vert.x-Web!");
     }
 
     @GetMapping("/hello2")
     public void hello2(RoutingContext routingContext) {
         routingContext.response()
                 .putHeader("content-type", "text/plain")
-                .rxEnd("Hello World from Vert.x-Web 2!")
-                .subscribe();
+                .end("Hello World from Vert.x-Web 2!");
     }
 
     @PermitAll
@@ -77,12 +75,11 @@ public class UserController implements DisposableBean, RouterAware {
 
     @RolesAllowed(value = {"role:administrator", "role:hispassword"}, logic = LogicType.AND)
     @GetMapping("/service")
-    public Flowable<?> service(RoutingContext routingContext) {
+    public void service(RoutingContext routingContext) {
         Flowable<String> flowable = iService.getUserName("service test");
-        return flowable.flatMap(msg -> routingContext.response()
+        flowable.subscribe(msg -> routingContext.response()
                 .putHeader("content-type", "text/plain")
-                .rxEnd(msg)
-                .toFlowable());
+                .end(msg));
     }
 
     @PermitAllowed(value = {"play_golf"}, logic = LogicType.AND)

@@ -1,7 +1,7 @@
 package cn.bdqfork.web.util;
 
 
-import io.vertx.reactivex.core.Vertx;
+import io.vertx.core.Vertx;
 
 /**
  * @author bdq

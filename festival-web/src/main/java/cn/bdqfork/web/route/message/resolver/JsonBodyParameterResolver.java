@@ -6,7 +6,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.reactivex.ext.web.RoutingContext;
+import io.vertx.ext.web.RoutingContext;
 
 import java.lang.reflect.Parameter;
 
@@ -27,7 +27,7 @@ public class JsonBodyParameterResolver extends AbstractParameterResolver {
         if (parameterType == String.class) {
             return routingContext.getBodyAsString();
         }
-        Buffer buffer = routingContext.getBody().getDelegate();
+        Buffer buffer = routingContext.getBody();
         return Json.decodeValue(buffer, parameterType);
     }
 

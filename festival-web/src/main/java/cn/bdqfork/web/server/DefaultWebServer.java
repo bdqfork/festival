@@ -11,13 +11,13 @@ import cn.bdqfork.core.util.StringUtils;
 import cn.bdqfork.web.constant.ServerProperty;
 import cn.bdqfork.web.route.RouteManager;
 import cn.bdqfork.web.route.SessionManager;
-import io.reactivex.disposables.Disposable;
+import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpVersion;
 import io.vertx.core.net.JksOptions;
-import io.vertx.reactivex.core.net.SocketAddress;
-import io.vertx.reactivex.ext.web.Router;
-import io.vertx.reactivex.ext.web.handler.*;
+import io.vertx.core.net.SocketAddress;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAw
     private static final Logger log = LoggerFactory.getLogger(DefaultWebServer.class);
     private ConfigurableBeanFactory beanFactory;
     private ResourceReader resourceReader;
-    private Disposable disposable;
+    private HttpServer httpServer;
 
     @Override
     protected void registerCoreHandler(Router router) throws Exception {
@@ -103,23 +103,21 @@ public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAw
     protected void doStart() throws Exception {
         HttpServerOptions options = resolveHttpServerOptions();
 
-        disposable = vertx.createHttpServer(options)
+        httpServer = vertx.createHttpServer(options)
                 .requestHandler(router)
-                .rxListen()
-                .doOnDispose(() -> {
-                    log.info("closed web server !");
-                })
-                .subscribe(httpServer -> {
-                    if (log.isInfoEnabled()) {
-                        log.info("stated web server at {}:{}!",
-                                options.getHost(), options.getPort());
+                .listen(res -> {
+                    if (res.succeeded()) {
+                        if (log.isInfoEnabled()) {
+                            log.info("stated web server at {}:{}!",
+                                    options.getHost(), options.getPort());
+                        }
+                    } else {
+                        if (log.isErrorEnabled()) {
+                            log.error("failed to start web server at {}:{}!",
+                                    options.getHost(), options.getPort(), res.cause());
+                        }
+                        vertx.close();
                     }
-                }, e -> {
-                    if (log.isErrorEnabled()) {
-                        log.error("failed to start web server at {}:{}!",
-                                options.getHost(), options.getPort(), e);
-                    }
-                    vertx.close();
                 });
     }
 
@@ -169,7 +167,17 @@ public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAw
 
     @Override
     protected void doStop() throws Exception {
-        disposable.dispose();
+        httpServer.close(res -> {
+            if (res.succeeded()) {
+                if (log.isInfoEnabled()) {
+                    log.info("closed server!");
+                }
+            } else {
+                if (log.isErrorEnabled()) {
+                    log.error("failed to close server!", res.cause());
+                }
+            }
+        });
     }
 
     @Override
