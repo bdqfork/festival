@@ -45,7 +45,7 @@ public class UserController {
 
 }
 ```
-访问http://localhost:8080/hello即可看见 hello festival。
+访问http://localhost:8080/hello 即可看见hello festival。
 
 # 详细功能查看[wiki](https://github.com/bdqfork/festival/wiki)
 
