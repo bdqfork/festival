@@ -36,11 +36,14 @@ public class ServiceVerticle extends AbstractVerticle {
                 .toFlowable()
                 .onBackpressureBuffer()
                 .subscribe(msg -> {
-                    MethodInvocation invocation = (MethodInvocation) msg.body();
-                    Method method = serviceBean.getClass().getMethod(invocation.getMethodName(), invocation.getArgumentClasses());
                     try {
-                        Flowable<Object> result = (Flowable<Object>) ReflectUtils.invokeMethod(serviceBean, method, invocation.getArguments());
-                        result.subscribe(msg::reply, e -> msg.fail(500, e.getMessage()));
+                        MethodInvocation invocation = (MethodInvocation) msg.body();
+                        String methodName = invocation.getMethodName();
+                        Class<?>[] argumentClasses = invocation.getArgumentClasses();
+                        Method method = serviceBean.getClass().getMethod(methodName, argumentClasses);
+                        Object result = ReflectUtils.invokeMethod(serviceBean, method, invocation.getArguments());
+                        Flowable<?> flowable = (Flowable<?>) result;
+                        flowable.subscribe(msg::reply, e -> msg.fail(500, e.getMessage()));
                     } catch (Exception e) {
                         msg.fail(500, e.getMessage());
                         if (log.isErrorEnabled()) {
