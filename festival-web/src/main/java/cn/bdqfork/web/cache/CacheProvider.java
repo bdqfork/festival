@@ -22,6 +22,15 @@ public interface CacheProvider {
     Flowable<Void> put(String key, Serializable value);
 
     /**
+     * 添加缓存
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    Flowable<Void> put(String key, Serializable value, long expireTime);
+
+    /**
      * 删除缓存
      *
      * @param key
@@ -37,6 +46,15 @@ public interface CacheProvider {
      * @return
      */
     Flowable<Void> update(String key, Serializable value);
+
+    /**
+     * 更新缓存
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    Flowable<Void> update(String key, Serializable value, long expireTime);
 
     /**
      * 获取缓存
