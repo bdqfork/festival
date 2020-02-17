@@ -1,11 +1,10 @@
 package cn.bdqfork.example;
 
-import cn.bdqfork.web.WebApplicationContext;
+import cn.bdqfork.web.WebApplication;
 
 public class WebApplicationRunnerTest {
 
     public static void main(String[] args) throws Exception {
-        WebApplicationContext webApplicationContext = new WebApplicationContext("cn.bdqfork.example");
-        webApplicationContext.start();
+        new WebApplication().run(WebApplicationRunnerTest.class);
     }
 }
