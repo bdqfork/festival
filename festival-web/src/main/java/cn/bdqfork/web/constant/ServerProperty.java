@@ -22,4 +22,7 @@ public class ServerProperty {
     public static final String SERVER_SSL_PATH = "server.ssl.path";
     public static final String SERVER_SSL_PASSWORD = "server.ssl.password";
     public static final String SERVER_HTTP2_ENABLE = "server.http2.enable";
+
+    public static final String SERVER_TEMPLATE_ENABLE = "server.template.enable";
+    public static final String SERVER_TEMPLATE_TYPE = "server.template.type";
 }
