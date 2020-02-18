@@ -11,3 +11,8 @@ dependencies {
     api project(':festival-context')
     api project(':festival-aop')
 }
+
+compileKotlin {
+    targetCompatibility = 1.8
+    sourceCompatibility = 1.8
+}
