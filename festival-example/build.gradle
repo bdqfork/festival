@@ -6,6 +6,19 @@ dependencies {
     implementation "joda-time:joda-time:${libs.joda}"
 }
 
+subprojects {
+    tasks.withType(PublishToMavenRepository) {
+        onlyIf {
+            false
+        }
+    }
+    tasks.withType(PublishToMavenLocal) {
+        onlyIf {
+            false
+        }
+    }
+}
+
 tasks.withType(PublishToMavenRepository) {
     onlyIf {
         false
