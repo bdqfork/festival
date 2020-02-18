@@ -71,7 +71,7 @@ public class AnnotationUtils {
     }
 
     public static boolean isMetaAnnotation(Class<? extends Annotation> metaAnnotation) {
-        return metaAnnotation.getName().startsWith("java.lang.annotation");
+        return metaAnnotation.getName().startsWith("java.lang.annotation") || metaAnnotation.getName().startsWith("kotlin.Metadata");
     }
 
     private static Map<String, Object> extractValues(List<Annotation> visted, String[] methodNames) {
