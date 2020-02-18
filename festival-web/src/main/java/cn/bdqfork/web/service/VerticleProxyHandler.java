@@ -1,10 +1,10 @@
 package cn.bdqfork.web.service;
 
 import cn.bdqfork.web.util.EventBusUtils;
+import io.reactivex.Flowable;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.reactivex.core.eventbus.EventBus;
-import io.vertx.reactivex.core.eventbus.Message;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -32,6 +32,12 @@ public class VerticleProxyHandler implements InvocationHandler {
         String address = EventBusUtils.getAddress(targetClass);
         return eventBus.rxRequest(address, methodInvocation, options)
                 .toFlowable()
-                .map(Message::body);
+                .flatMap(msg -> {
+                    Object result = msg.body();
+                    if (result instanceof Throwable) {
+                        throw new IllegalStateException((Throwable) result);
+                    }
+                    return (Flowable<?>) result;
+                });
     }
 }
