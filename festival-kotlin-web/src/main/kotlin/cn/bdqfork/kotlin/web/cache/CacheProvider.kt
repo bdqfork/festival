@@ -1,7 +1,6 @@
-package cn.bdqfork.web.cache;
+package cn.bdqfork.web.cache
 
-
-import java.io.Serializable;
+import java.io.Serializable
 
 /**
  * 缓存策略，所有接口均返回Flowable，调用者可通过Flowable坚挺状态。
@@ -9,8 +8,7 @@ import java.io.Serializable;
  * @author bdq
  * @since 2020/2/17
  */
-public interface CacheProvider {
-
+interface CacheProvider {
     /**
      * 添加缓存
      *
@@ -18,7 +16,7 @@ public interface CacheProvider {
      * @param value
      * @return
      */
-    void put(String key, Serializable value);
+    fun put(key: String, value: Serializable?)
 
     /**
      * 删除缓存
@@ -26,7 +24,7 @@ public interface CacheProvider {
      * @param key
      * @return
      */
-    void remove(String key);
+    fun remove(key: String)
 
     /**
      * 更新缓存
@@ -35,7 +33,7 @@ public interface CacheProvider {
      * @param value
      * @return
      */
-    void update(String key, Serializable value);
+    fun update(key: String, value: Serializable?)
 
     /**
      * 获取缓存
@@ -43,13 +41,12 @@ public interface CacheProvider {
      * @param key
      * @return
      */
-    Object get(String key);
+    operator fun get(key: String): Any?
 
     /**
      * 清楚所有缓存
      *
      * @return
      */
-    void clear();
-
+    fun clear()
 }
