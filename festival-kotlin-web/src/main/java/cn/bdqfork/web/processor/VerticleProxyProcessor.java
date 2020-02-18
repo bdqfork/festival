@@ -8,6 +8,8 @@ import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.AopUtils;
 import cn.bdqfork.web.VertxAware;
 import cn.bdqfork.web.annotation.VerticleMapping;
+import cn.bdqfork.web.service.ServiceVerticle;
+import cn.bdqfork.web.service.VerticleProxyHandler;
 import io.vertx.core.Vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

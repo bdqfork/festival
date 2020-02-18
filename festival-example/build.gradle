@@ -1,9 +1,21 @@
 def libs = rootProject.ext.libraries
 
-dependencies {
-    implementation project(':festival-web')
-    implementation "io.vertx:vertx-auth-shiro:${libs.vertx}"
-    implementation "joda-time:joda-time:${libs.joda}"
+subprojects {
+    dependencies {
+        implementation "io.vertx:vertx-auth-shiro:${libs.vertx}"
+        implementation "joda-time:joda-time:${libs.joda}"
+    }
+
+    tasks.withType(PublishToMavenRepository) {
+        onlyIf {
+            false
+        }
+    }
+    tasks.withType(PublishToMavenLocal) {
+        onlyIf {
+            false
+        }
+    }
 }
 
 tasks.withType(PublishToMavenRepository) {

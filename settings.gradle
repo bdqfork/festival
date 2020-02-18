@@ -5,3 +5,8 @@ include(':festival-context')
 include(':festival-example')
 include(':festival-web')
 include(':festival-kotlin-web')
+include 'festival-example:kotlin-web'
+findProject(':festival-example:kotlin-web')?.name = 'kotlin-web'
+include 'festival-example:web'
+findProject(':festival-example:web')?.name = 'web'
+
