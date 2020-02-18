@@ -153,7 +153,6 @@ public class RouteAttribute {
         private PermitHolder rolesAllowed;
         private boolean auth;
         private boolean permitAll;
-        private RouteInvocation routeInvocation;
 
         public Builder url(String url) {
             this.url = url;
