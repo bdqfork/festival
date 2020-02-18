@@ -89,10 +89,7 @@ public class AopProxyProcessor implements BeanPostProcessor, BeanFactoryPostProc
         }
 
         Executable executable = beanDefinition.getConstructor();
-        if (AnnotationUtils.isAnnotationPresent(executable, Optimize.class)) {
-            return true;
-        }
-        return false;
+        return AnnotationUtils.isAnnotationPresent(executable, Optimize.class);
     }
 
     @Override

@@ -11,6 +11,7 @@ import cn.bdqfork.web.annotation.VerticleMapping;
 import cn.bdqfork.web.service.ServiceVerticle;
 import cn.bdqfork.web.service.VerticleProxyHandler;
 import io.vertx.core.Vertx;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,7 @@ public class VerticleProxyProcessor extends AopProxyProcessor implements ClassLo
     }
 
     @Override
-    public void setVertx(Vertx vertx) throws BeansException {
+    public void setVertx(@NotNull Vertx vertx) throws BeansException {
         this.vertx = vertx;
     }
 
