@@ -5,16 +5,6 @@ subprojects {
         implementation "io.vertx:vertx-auth-shiro:${libs.vertx}"
         implementation "joda-time:joda-time:${libs.joda}"
     }
-    tasks.withType(PublishToMavenRepository) {
-        onlyIf {
-            false
-        }
-    }
-    tasks.withType(PublishToMavenLocal) {
-        onlyIf {
-            false
-        }
-    }
 }
 
 tasks.withType(PublishToMavenRepository) {

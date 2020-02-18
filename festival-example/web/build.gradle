@@ -1,3 +1,16 @@
+apply plugin: "com.github.johnrengelman.shadow"
+
 dependencies {
     implementation project(':festival-web')
+}
+
+tasks.withType(PublishToMavenRepository) {
+    onlyIf {
+        false
+    }
+}
+tasks.withType(PublishToMavenLocal) {
+    onlyIf {
+        false
+    }
 }
