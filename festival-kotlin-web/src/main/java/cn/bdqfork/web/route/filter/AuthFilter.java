@@ -5,12 +5,9 @@ import cn.bdqfork.web.route.PermitHolder;
 import cn.bdqfork.web.route.RouteAttribute;
 import cn.bdqfork.web.route.RouteManager;
 import cn.bdqfork.web.util.SecurityUtils;
-import io.reactivex.Observable;
-import io.reactivex.functions.BiFunction;
-import io.reactivex.functions.Consumer;
 import io.vertx.core.Handler;
+import io.vertx.ext.auth.User;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.reactivex.ext.auth.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,55 +28,29 @@ public class AuthFilter implements Filter, OrderAware {
             return;
         }
 
+        User user = routingContext.user();
+        boolean permitResult = true;
         PermitHolder permitAllowed = routeAttribute.getPermitAllowed();
-
-        Observable<Boolean> permitObservable = Observable.just(true);
-
         if (permitAllowed != null) {
-            permitObservable = SecurityUtils.isPermited(User.newInstance(routingContext.user()), permitAllowed.getPermits(), permitAllowed.getLogicType());
+            permitResult = SecurityUtils.isPermited(user, permitAllowed.getPermits(), permitAllowed.getLogicType());
         }
 
+        boolean roleResult = true;
         PermitHolder rolesAllowed = routeAttribute.getRolesAllowed();
-
-        Observable<Boolean> rolesObservable = Observable.just(true);
-
         if (rolesAllowed != null) {
-            rolesObservable = SecurityUtils.isPermited(User.newInstance(routingContext.user()), rolesAllowed.getPermits(), rolesAllowed.getLogicType());
+            roleResult = SecurityUtils.isPermited(user, rolesAllowed.getPermits(), rolesAllowed.getLogicType());
         }
 
-        Observable.combineLatest(permitObservable, rolesObservable,
-                new BiFunction<Boolean, Boolean, Boolean>() {
-                    @Override
-                    public Boolean apply(Boolean res1, Boolean res2) throws Exception {
-                        return res1 && res2;
-                    }
-                })
-                .subscribe(new Consumer<Boolean>() {
-                               @Override
-                               public void accept(Boolean res) throws Exception {
-                                   if (res) {
-                                       filterChain.doFilter(routingContext);
-                                       return;
-                                   }
-                                   if (deniedHandler != null) {
-                                       deniedHandler.handle(routingContext);
-                                   } else {
-                                       if (log.isTraceEnabled()) {
-                                           log.trace("do default permit denied handler!");
-                                       }
-                                       routingContext.response().setStatusCode(403).end("permisson denied!");
-                                   }
-                               }
-                           },
-                        new Consumer<Throwable>() {
-                            @Override
-                            public void accept(Throwable e) throws Exception {
-                                if (log.isErrorEnabled()) {
-                                    log.error(e.getMessage(), e);
-                                }
-                                routingContext.fail(500, e);
-                            }
-                        });
+        if (permitResult && roleResult) {
+            filterChain.doFilter(routingContext);
+        } else if (deniedHandler != null) {
+            deniedHandler.handle(routingContext);
+        } else {
+            if (log.isTraceEnabled()) {
+                log.trace("do default permit denied handler!");
+            }
+            routingContext.response().setStatusCode(403).end("permisson denied!");
+        }
     }
 
     public void setDeniedHandler(Handler<RoutingContext> deniedHandler) {
