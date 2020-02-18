@@ -1,4 +1,4 @@
-package cn.bdqfork.web.route
+package cn.bdqfork.kotlin.web.route
 
 import io.vertx.core.Handler
 import io.vertx.core.http.HttpMethod

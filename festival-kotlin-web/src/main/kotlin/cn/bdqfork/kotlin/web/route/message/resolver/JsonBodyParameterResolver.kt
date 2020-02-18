@@ -1,7 +1,7 @@
-package cn.bdqfork.web.route.message.resolver
+package cn.bdqfork.kotlin.web.route.message.resolver
 
 import cn.bdqfork.core.util.AnnotationUtils
-import cn.bdqfork.web.route.annotation.RequestBody
+import cn.bdqfork.kotlin.web.route.annotation.RequestBody
 import io.vertx.core.json.Json
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject

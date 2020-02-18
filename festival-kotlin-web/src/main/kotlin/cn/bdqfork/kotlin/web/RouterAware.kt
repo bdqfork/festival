@@ -1,4 +1,4 @@
-package cn.bdqfork.web
+package cn.bdqfork.kotlin.web
 
 import cn.bdqfork.core.exception.BeansException
 import io.vertx.ext.web.Router

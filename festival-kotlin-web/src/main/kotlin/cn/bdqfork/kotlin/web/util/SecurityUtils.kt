@@ -1,6 +1,6 @@
-package cn.bdqfork.web.util
+package cn.bdqfork.kotlin.web.util
 
-import cn.bdqfork.web.constant.LogicType
+import cn.bdqfork.kotlin.web.constant.LogicType
 import io.vertx.ext.auth.User
 import io.vertx.kotlin.coroutines.awaitResult
 import kotlinx.coroutines.GlobalScope

@@ -1,4 +1,4 @@
-package cn.bdqfork.web.service
+package cn.bdqfork.kotlin.web.service
 
 import java.io.Serializable
 import java.lang.reflect.Method

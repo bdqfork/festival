@@ -1,6 +1,6 @@
-package cn.bdqfork.web.annotation
+package cn.bdqfork.kotlin.web.annotation
 
-import cn.bdqfork.web.constant.LogicType
+import cn.bdqfork.kotlin.web.constant.LogicType
 
 /**
  * 表示哪些权限可以访问api

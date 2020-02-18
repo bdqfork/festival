@@ -1,7 +1,7 @@
-package cn.bdqfork.web.route.message.resolver
+package cn.bdqfork.kotlin.web.route.message.resolver
 
 import cn.bdqfork.core.util.AnnotationUtils
-import cn.bdqfork.web.route.annotation.Param
+import cn.bdqfork.kotlin.web.route.annotation.Param
 import io.vertx.ext.web.RoutingContext
 import org.joda.time.DateTime
 import org.slf4j.LoggerFactory

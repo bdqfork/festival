@@ -1,4 +1,4 @@
-package cn.bdqfork.web.annotation
+package cn.bdqfork.kotlin.web.annotation
 
 /**
  * @author bdq

@@ -1,4 +1,4 @@
-package cn.bdqfork.web.annotation
+package cn.bdqfork.kotlin.web.annotation
 
 /**
  * 该注解应使用在Route上，表示该Route需要进行验证

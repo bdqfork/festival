@@ -1,8 +1,8 @@
-package cn.bdqfork.web.route
+package cn.bdqfork.kotlin.web.route
 
-import cn.bdqfork.web.annotation.PermitAllowed
-import cn.bdqfork.web.annotation.RolesAllowed
-import cn.bdqfork.web.constant.LogicType
+import cn.bdqfork.kotlin.web.annotation.PermitAllowed
+import cn.bdqfork.kotlin.web.annotation.RolesAllowed
+import cn.bdqfork.kotlin.web.constant.LogicType
 
 /**
  * @author bdq

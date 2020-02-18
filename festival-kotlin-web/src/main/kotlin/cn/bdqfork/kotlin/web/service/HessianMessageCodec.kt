@@ -1,4 +1,4 @@
-package cn.bdqfork.web.service
+package cn.bdqfork.kotlin.web.service
 
 import com.caucho.hessian.io.Hessian2Input
 import com.caucho.hessian.io.Hessian2Output

@@ -4,6 +4,8 @@ import cn.bdqfork.context.configuration.Configuration;
 import cn.bdqfork.web.constant.LogicType;
 import cn.bdqfork.web.route.PermitHolder;
 import cn.bdqfork.web.route.RouteAttribute;
+import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.handler.CorsHandler;
 import io.vertx.ext.web.handler.LoggerHandler;
@@ -18,6 +20,14 @@ import javax.inject.Singleton;
 @Singleton
 @Configuration
 public class ServerConfig {
+
+    @Singleton
+    @Named
+    public Vertx vertx() {
+        return Vertx.vertx(new VertxOptions()
+                .setEventLoopPoolSize(20)
+                .setWorkerPoolSize(50));
+    }
 
     @Singleton
     @Named

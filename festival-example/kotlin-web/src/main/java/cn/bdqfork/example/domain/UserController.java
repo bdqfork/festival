@@ -1,14 +1,14 @@
 package cn.bdqfork.example.domain;
 
-import cn.bdqfork.web.annotation.Auth;
-import cn.bdqfork.web.annotation.PermitAll;
-import cn.bdqfork.web.annotation.PermitAllowed;
-import cn.bdqfork.web.annotation.RolesAllowed;
-import cn.bdqfork.web.constant.LogicType;
-import cn.bdqfork.web.route.annotation.GetMapping;
-import cn.bdqfork.web.route.annotation.PostMapping;
-import cn.bdqfork.web.route.annotation.RouteController;
-import cn.bdqfork.web.route.annotation.RouteMapping;
+import cn.bdqfork.kotlin.web.annotation.Auth;
+import cn.bdqfork.kotlin.web.annotation.PermitAll;
+import cn.bdqfork.kotlin.web.annotation.PermitAllowed;
+import cn.bdqfork.kotlin.web.annotation.RolesAllowed;
+import cn.bdqfork.kotlin.web.constant.LogicType;
+import cn.bdqfork.kotlin.web.route.annotation.GetMapping;
+import cn.bdqfork.kotlin.web.route.annotation.PostMapping;
+import cn.bdqfork.kotlin.web.route.annotation.RouteController;
+import cn.bdqfork.kotlin.web.route.annotation.RouteMapping;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.FileUpload;
 import io.vertx.ext.web.RoutingContext;

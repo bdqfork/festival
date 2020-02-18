@@ -1,8 +1,8 @@
-package cn.bdqfork.web.service
+package cn.bdqfork.kotlin.web.service
 
 import cn.bdqfork.core.util.AopUtils
 import cn.bdqfork.core.util.ReflectUtils
-import cn.bdqfork.web.util.EventBusUtils
+import cn.bdqfork.kotlin.web.util.EventBusUtils
 import io.vertx.core.eventbus.DeliveryOptions
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import org.slf4j.LoggerFactory

@@ -1,4 +1,4 @@
-package cn.bdqfork.web.route.annotation
+package cn.bdqfork.kotlin.web.route.annotation
 
 /**
  * 指定路由的consumes

@@ -1,7 +1,7 @@
-package cn.bdqfork.web.route.response
+package cn.bdqfork.kotlin.web.route.response
 
 import cn.bdqfork.core.util.StringUtils
-import cn.bdqfork.web.constant.ContentType
+import cn.bdqfork.kotlin.web.constant.ContentType
 import java.util.concurrent.ConcurrentHashMap
 
 /**

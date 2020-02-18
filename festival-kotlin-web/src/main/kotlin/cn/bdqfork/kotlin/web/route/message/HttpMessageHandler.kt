@@ -1,4 +1,4 @@
-package cn.bdqfork.web.route.message
+package cn.bdqfork.kotlin.web.route.message
 
 import io.vertx.ext.web.RoutingContext
 import java.lang.reflect.Parameter

@@ -1,4 +1,4 @@
-package cn.bdqfork.web.route.message.resolver
+package cn.bdqfork.kotlin.web.route.message.resolver
 
 import io.vertx.core.MultiMap
 import io.vertx.core.http.HttpServerRequest

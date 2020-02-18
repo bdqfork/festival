@@ -1,6 +1,6 @@
-package cn.bdqfork.web.service
+package cn.bdqfork.kotlin.web.service
 
-import cn.bdqfork.web.util.EventBusUtils
+import cn.bdqfork.kotlin.web.util.EventBusUtils
 import io.vertx.core.Vertx
 import io.vertx.core.eventbus.DeliveryOptions
 import io.vertx.core.eventbus.Message

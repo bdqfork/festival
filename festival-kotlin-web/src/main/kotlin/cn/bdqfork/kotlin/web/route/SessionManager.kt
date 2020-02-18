@@ -1,4 +1,4 @@
-package cn.bdqfork.web.route
+package cn.bdqfork.kotlin.web.route
 
 import cn.bdqfork.context.aware.BeanFactoryAware
 import cn.bdqfork.context.aware.ResourceReaderAware
@@ -7,7 +7,7 @@ import cn.bdqfork.core.exception.BeansException
 import cn.bdqfork.core.exception.NoSuchBeanException
 import cn.bdqfork.core.factory.BeanFactory
 import cn.bdqfork.core.util.StringUtils
-import cn.bdqfork.web.constant.ServerProperty
+import cn.bdqfork.kotlin.web.constant.ServerProperty
 import io.vertx.core.Vertx
 import io.vertx.ext.auth.AuthProvider
 import io.vertx.ext.web.Router

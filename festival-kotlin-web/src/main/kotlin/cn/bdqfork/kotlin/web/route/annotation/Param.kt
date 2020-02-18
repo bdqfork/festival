@@ -1,4 +1,4 @@
-package cn.bdqfork.web.route.annotation
+package cn.bdqfork.kotlin.web.route.annotation
 
 /**
  * 该注解用于方法参数，该注解修饰的参数表示需要注入的参数
