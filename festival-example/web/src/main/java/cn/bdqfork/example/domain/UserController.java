@@ -86,7 +86,7 @@ public class UserController implements DisposableBean {
                 .putHeader("content-type", "text/plain")
                 .end(), e -> routingContext.response()
                 .putHeader("content-type", "text/plain")
-                .end("error"));
+                .end(e.getMessage()));
         compositeDisposable.add(disposable);
     }
 
