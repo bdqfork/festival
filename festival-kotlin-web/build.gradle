@@ -4,7 +4,6 @@ def libs = rootProject.ext.libraries
 
 dependencies {
     api "io.vertx:vertx-web:${libs.vertx}"
-    api "io.vertx:vertx-rx-java2:${libs.vertx}"
     implementation "io.vertx:vertx-lang-kotlin-coroutines:${libs.vertx}"
     implementation "com.caucho:hessian:${libs.hessian}"
     compileOnly "joda-time:joda-time:${libs.joda}"

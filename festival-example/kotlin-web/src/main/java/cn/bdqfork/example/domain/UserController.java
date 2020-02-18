@@ -1,6 +1,5 @@
 package cn.bdqfork.example.domain;
 
-import cn.bdqfork.core.factory.DisposableBean;
 import cn.bdqfork.web.annotation.Auth;
 import cn.bdqfork.web.annotation.PermitAll;
 import cn.bdqfork.web.annotation.PermitAllowed;
@@ -10,9 +9,6 @@ import cn.bdqfork.web.route.annotation.GetMapping;
 import cn.bdqfork.web.route.annotation.PostMapping;
 import cn.bdqfork.web.route.annotation.RouteController;
 import cn.bdqfork.web.route.annotation.RouteMapping;
-import io.reactivex.Flowable;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.FileUpload;
 import io.vertx.ext.web.RoutingContext;
@@ -28,8 +24,7 @@ import javax.inject.Singleton;
 @Auth
 @Singleton
 @RouteController("/users")
-public class UserController implements DisposableBean {
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+public class UserController {
     @Named("ServiceImpl1")
     @Inject
     private IService iService;
@@ -59,8 +54,8 @@ public class UserController implements DisposableBean {
 
     @PermitAll
     @GetMapping("/hello3")
-    public Flowable<String> hello3(RoutingContext routingContext) {
-        return Flowable.just("Hello World from Vert.x-Web 3!");
+    public String hello3(RoutingContext routingContext) {
+        return "Hello World from Vert.x-Web 3!";
     }
 
     @PermitAll
@@ -72,26 +67,22 @@ public class UserController implements DisposableBean {
     @RolesAllowed(value = {"role:administrator", "role:hispassword"}, logic = LogicType.OR)
     @GetMapping("/service")
     public void service(RoutingContext routingContext) {
-        Flowable<String> flowable = iService.getUserName("service test");
-        flowable.subscribe(msg -> routingContext.response()
+        String msg = iService.getUserName("service test");
+        routingContext.response()
                 .putHeader("content-type", "text/plain")
-                .end(msg));
+                .end(msg);
     }
 
     @PermitAllowed(value = {"play_golf"}, logic = LogicType.AND)
     @GetMapping("/error")
     public void error(RoutingContext routingContext) {
-        Flowable<Void> flowable = iService.testError("service test");
-        Disposable disposable = flowable.subscribe(msg -> routingContext.response()
-                .putHeader("content-type", "text/plain")
-                .end(), e -> routingContext.response()
-                .putHeader("content-type", "text/plain")
-                .end("error"));
-        compositeDisposable.add(disposable);
-    }
-
-    public void destroy() throws Exception {
-        compositeDisposable.dispose();
+        try {
+            iService.testError("service test");
+        } catch (Exception e) {
+            routingContext.response()
+                    .putHeader("content-type", "text/plain")
+                    .end(e.getMessage());
+        }
     }
 
 }

@@ -1,7 +1,6 @@
 package cn.bdqfork.example.domain;
 
 import cn.bdqfork.web.annotation.VerticleMapping;
-import io.reactivex.Flowable;
 
 import javax.inject.Singleton;
 
@@ -13,13 +12,12 @@ import javax.inject.Singleton;
 @VerticleMapping("ServiceImpl1")
 public class ServiceImpl implements IService {
     @Override
-    public Flowable<String> getUserName(String username) {
-        return Flowable.just(username);
+    public String getUserName(String username) {
+        return username;
     }
 
     @Override
-    public Flowable<Void> testError(String username) {
-        return Flowable.just(username)
-                .map(s -> 1 / 0).map(i -> null);
+    public void testError(String username) {
+        System.out.println( 1 / 0);
     }
 }

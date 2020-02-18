@@ -1,6 +1,5 @@
 package cn.bdqfork.web.cache;
 
-import io.reactivex.Flowable;
 
 import java.io.Serializable;
 
@@ -19,7 +18,7 @@ public interface CacheProvider {
      * @param value
      * @return
      */
-    Flowable<Void> put(String key, Serializable value);
+    void put(String key, Serializable value);
 
     /**
      * 删除缓存
@@ -27,7 +26,7 @@ public interface CacheProvider {
      * @param key
      * @return
      */
-    Flowable<Void> remove(String key);
+    void remove(String key);
 
     /**
      * 更新缓存
@@ -36,7 +35,7 @@ public interface CacheProvider {
      * @param value
      * @return
      */
-    Flowable<Void> update(String key, Serializable value);
+    void update(String key, Serializable value);
 
     /**
      * 获取缓存
@@ -44,13 +43,13 @@ public interface CacheProvider {
      * @param key
      * @return
      */
-    Flowable<Serializable> get(String key);
+    Object get(String key);
 
     /**
      * 清楚所有缓存
      *
      * @return
      */
-    Flowable<Void> clear();
+    void clear();
 
 }
