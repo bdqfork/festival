@@ -49,7 +49,7 @@ abstract class AbstractWebServer : WebServer, RouterAware, VertxAware {
     protected abstract fun doStop()
 
     @Throws(BeansException::class)
-    override fun setRouter(router: Router?) {
+    override fun setRouter(router: Router) {
         this.router = router
     }
 

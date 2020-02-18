@@ -9,5 +9,5 @@ import io.vertx.ext.web.Router
  */
 interface RouterAware {
     @Throws(BeansException::class)
-    fun setRouter(router: Router?)
+    fun setRouter(router: Router)
 }

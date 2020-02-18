@@ -13,7 +13,7 @@ import kotlinx.coroutines.runBlocking
  */
 object SecurityUtils {
     @JvmStatic
-    fun isPermited(user: User, permits: Array<String>, logicType: LogicType): Boolean = runBlocking {
+    fun isPermited(user: User, permits: Array<out String>, logicType: LogicType): Boolean = runBlocking {
         return@runBlocking GlobalScope.async {
             var finalResult = awaitResult<Boolean> { h -> user.isAuthorized(permits[0], h) }
             for (i in 1 until permits.size) {

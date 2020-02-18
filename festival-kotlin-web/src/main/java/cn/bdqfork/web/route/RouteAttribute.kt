@@ -12,11 +12,11 @@ open class RouteAttribute {
     /**
      * url
      */
-    open var url: String? = null
+    open lateinit var url: String
     /**
      * http method
      */
-    open var httpMethod: HttpMethod? = null
+    open lateinit var httpMethod: HttpMethod
     /**
      * produces
      */
@@ -32,7 +32,7 @@ open class RouteAttribute {
     /**
      * route handler
      */
-    open var contextHandler: Handler<RoutingContext>? = null
+    open lateinit var contextHandler: Handler<RoutingContext>
     /**
      * 访问权限
      */

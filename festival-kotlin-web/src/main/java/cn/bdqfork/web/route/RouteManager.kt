@@ -44,7 +44,7 @@ class RouteManager(private val beanFactory: ConfigurableBeanFactory, private val
 
         routes.forEach(Consumer { routeAttribute: RouteAttribute ->
 
-            val signature = generateRouteSignature(routeAttribute.httpMethod!!, routeAttribute.url!!)
+            val signature = generateRouteSignature(routeAttribute.httpMethod, routeAttribute.url)
 
             check(!registedRoutes.contains(signature)) { String.format("conflict mapping %s !", signature) }
             registedRoutes.add(signature)
@@ -88,10 +88,12 @@ class RouteManager(private val beanFactory: ConfigurableBeanFactory, private val
 
     private fun handleMapping(routeAttribute: RouteAttribute, route: Route) {
         if (log.isInfoEnabled) {
-            log.info("{} mapping path:{}!", routeAttribute.httpMethod!!.name, routeAttribute.url)
+            log.info("{} mapping path:{}!", routeAttribute.httpMethod.name, routeAttribute.url)
         }
-        val invoker = Filter { routingContext: RoutingContext, _: FilterChain ->
-            routeAttribute.contextHandler!!.handle(routingContext)
+        val invoker = object : Filter {
+            override fun doFilter(routingContext: RoutingContext, filterChain: FilterChain) {
+                routeAttribute.contextHandler.handle(routingContext)
+            }
         }
         route.handler { routingContext: RoutingContext ->
             GlobalScope.launch {
