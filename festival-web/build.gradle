@@ -1,3 +1,5 @@
+apply plugin: 'kotlin'
+
 def libs = rootProject.ext.libraries
 
 dependencies {
