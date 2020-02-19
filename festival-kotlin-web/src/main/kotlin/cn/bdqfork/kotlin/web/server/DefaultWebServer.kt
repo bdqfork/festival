@@ -107,8 +107,10 @@ class DefaultWebServer : WebServer, RouterAware, VertxAware, BeanFactoryAware, R
 
     @Throws(Exception::class)
     fun doStart() {
+        val webSocketRouter = WebSocketRouter(beanFactory)
         val options = resolveHttpServerOptions()
         httpServer = vertx.createHttpServer(options)
+                .websocketHandler(webSocketRouter::accept)
                 .requestHandler(router)
                 .listen { res: AsyncResult<HttpServer?> ->
                     if (res.succeeded()) {

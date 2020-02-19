@@ -86,6 +86,7 @@ public class WebSocketRouter implements BeanFactoryAware {
 
         if (!webSocketRouteMap.containsKey(path)) {
             serverWebSocket.reject();
+            return;
         }
 
         WebSocketRoute webSocketRoute = webSocketRouteMap.get(path);
@@ -127,7 +128,7 @@ public class WebSocketRouter implements BeanFactoryAware {
         }
 
         public void doActive(WebSocketFrame frame) {
-            if (open == null) {
+            if (active == null) {
                 return;
             }
             try {
@@ -138,7 +139,7 @@ public class WebSocketRouter implements BeanFactoryAware {
         }
 
         public void doClose() {
-            if (open == null) {
+            if (close == null) {
                 return;
             }
             try {
