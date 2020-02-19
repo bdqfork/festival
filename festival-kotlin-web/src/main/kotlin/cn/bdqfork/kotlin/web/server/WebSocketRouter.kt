@@ -71,8 +71,8 @@ class WebSocketRouter(private var beanFactory: BeanFactory) : BeanFactoryAware {
         }
         val webSocketRoute = webSocketRouteMap[path]!!
         webSocketRoute.doOpen(serverWebSocket)
-        serverWebSocket.frameHandler { frame: WebSocketFrame -> webSocketRoute.doActive(frame) }
-        serverWebSocket.closeHandler { webSocketRoute.doClose() }
+        serverWebSocket.frameHandler { frame: WebSocketFrame -> webSocketRoute.doActive(serverWebSocket, frame) }
+        serverWebSocket.closeHandler { webSocketRoute.doClose(serverWebSocket) }
     }
 
     @Throws(BeansException::class)
@@ -92,23 +92,23 @@ class WebSocketRouter(private var beanFactory: BeanFactory) : BeanFactoryAware {
             }
         }
 
-        fun doActive(frame: WebSocketFrame) {
+        fun doActive(serverWebSocket: ServerWebSocket, frame: WebSocketFrame) {
             if (active == null) {
                 return
             }
             try {
-                ReflectUtils.invokeMethod(bean, active, frame)
+                ReflectUtils.invokeMethod(bean, active, serverWebSocket, frame)
             } catch (e: InvocationTargetException) {
                 throw IllegalStateException(e.cause)
             }
         }
 
-        fun doClose() {
+        fun doClose(serverWebSocket: ServerWebSocket) {
             if (close == null) {
                 return
             }
             try {
-                ReflectUtils.invokeMethod(bean, close)
+                ReflectUtils.invokeMethod(bean, close, serverWebSocket)
             } catch (e: InvocationTargetException) {
                 throw IllegalStateException(e.cause)
             }

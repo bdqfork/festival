@@ -24,17 +24,18 @@ public class WebSocketTestController {
 
     @OnOpen
     public void open(ServerWebSocket serverWebSocket) {
-        serverWebSocketMap.putIfAbsent("1", serverWebSocket);
         log.info("websocket open with id {}.", serverWebSocket.binaryHandlerID());
+        serverWebSocketMap.putIfAbsent("1", serverWebSocket);
     }
 
     @OnActive
-    public void active(WebSocketFrame webSocketFrame) {
+    public void active(ServerWebSocket serverWebSocket, WebSocketFrame webSocketFrame) {
         log.info("active......");
+        serverWebSocket.writeTextMessage("hi");
     }
 
     @OnClose
-    public void close() {
+    public void close(ServerWebSocket serverWebSocket) {
         log.info("close websocket!");
     }
 

@@ -93,9 +93,9 @@ public class WebSocketRouter implements BeanFactoryAware {
 
         webSocketRoute.doOpen(serverWebSocket);
 
-        serverWebSocket.frameHandler(webSocketRoute::doActive);
+        serverWebSocket.frameHandler(frame -> webSocketRoute.doActive(serverWebSocket, frame));
 
-        serverWebSocket.closeHandler((Void) -> webSocketRoute.doClose());
+        serverWebSocket.closeHandler((Void) -> webSocketRoute.doClose(serverWebSocket));
     }
 
     @Override
@@ -127,23 +127,23 @@ public class WebSocketRouter implements BeanFactoryAware {
             }
         }
 
-        public void doActive(WebSocketFrame frame) {
+        public void doActive(ServerWebSocket serverWebSocket, WebSocketFrame frame) {
             if (active == null) {
                 return;
             }
             try {
-                ReflectUtils.invokeMethod(bean, active, frame);
+                ReflectUtils.invokeMethod(bean, active, serverWebSocket, frame);
             } catch (InvocationTargetException e) {
                 throw new IllegalStateException(e.getCause());
             }
         }
 
-        public void doClose() {
+        public void doClose(ServerWebSocket serverWebSocket) {
             if (close == null) {
                 return;
             }
             try {
-                ReflectUtils.invokeMethod(bean, close);
+                ReflectUtils.invokeMethod(bean, close, serverWebSocket);
             } catch (InvocationTargetException e) {
                 throw new IllegalStateException(e.getCause());
             }
