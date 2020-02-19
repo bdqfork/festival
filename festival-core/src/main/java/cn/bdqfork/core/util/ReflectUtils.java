@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 /**
  * @author bdq
@@ -250,13 +251,28 @@ public class ReflectUtils {
         return method.getReturnType() == Void.TYPE;
     }
 
+    /**
+     * 根据注解获取方法
+     *
+     * @param beanClass  类
+     * @param annotation 注解
+     * @return 注解的方法，或者null
+     * @throws IllegalStateException 如果注解的方法超过一个，抛出异常
+     */
     public static Method getMethodByAnnotation(Class<?> beanClass, Class<? extends Annotation> annotation) {
-        for (Method method : beanClass.getDeclaredMethods()) {
-            if (AnnotationUtils.isAnnotationPresent(method, annotation)) {
-                return method;
-            }
+        List<Method> methods = Arrays.stream(beanClass.getDeclaredMethods())
+                .filter(method -> AnnotationUtils.isAnnotationPresent(method, annotation))
+                .collect(Collectors.toList());
+
+        if (methods.size() > 1) {
+            throw new IllegalStateException("");
         }
-        return null;
+
+        if (methods.size() == 0) {
+            return null;
+        }
+
+        return methods.get(0);
     }
 
 }
