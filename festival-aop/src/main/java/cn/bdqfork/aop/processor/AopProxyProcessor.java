@@ -1,7 +1,7 @@
 package cn.bdqfork.aop.processor;
 
 import cn.bdqfork.aop.advice.Advisor;
-import cn.bdqfork.aop.annotation.Optimize;
+import cn.bdqfork.core.annotation.Optimize;
 import cn.bdqfork.aop.factory.AopProxyBeanFactory;
 import cn.bdqfork.aop.factory.DefaultAopProxyBeanFactory;
 import cn.bdqfork.aop.proxy.AopProxySupport;

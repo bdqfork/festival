@@ -2,4 +2,5 @@ def libs = rootProject.ext.libraries
 
 dependencies {
     api "javax.inject:javax.inject:${libs.jsr330}"
+    implementation "org.javassist:javassist:${libs.javassist}"
 }

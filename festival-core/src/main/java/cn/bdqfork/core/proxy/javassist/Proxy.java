@@ -1,12 +1,12 @@
-package cn.bdqfork.aop.proxy.javassist;
+package cn.bdqfork.core.proxy.javassist;
 
 import cn.bdqfork.core.util.ReflectUtils;
-import javassist.Modifier;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -69,7 +69,7 @@ public abstract class Proxy implements Serializable {
         //扫描接口，获取所有的接口方法，并通过方法签名进行去重
         Set<String> worked = new HashSet<>();
         List<Method> methods = new ArrayList<>();
-        for (Class interfaceClass : interfaces) {
+        for (Class<?> interfaceClass : interfaces) {
             for (Method method : interfaceClass.getMethods()) {
                 if (worked.contains(ReflectUtils.getSignature(method))) {
                     continue;

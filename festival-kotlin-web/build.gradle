@@ -8,7 +8,6 @@ dependencies {
     implementation "com.caucho:hessian:${libs.hessian}"
     compileOnly "joda-time:joda-time:${libs.joda}"
     api project(':festival-context')
-    api project(':festival-aop')
 }
 
 compileKotlin {

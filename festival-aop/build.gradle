@@ -1,7 +1,6 @@
 def libs = rootProject.ext.libraries
 
 dependencies {
-    implementation "org.javassist:javassist:${libs.javassist}"
     implementation "cglib:cglib:${libs.cglib}"
     implementation "org.objenesis:objenesis:${libs.objenesis}"
     api "org.aspectj:aspectjweaver:${libs.aspectjweaver}"

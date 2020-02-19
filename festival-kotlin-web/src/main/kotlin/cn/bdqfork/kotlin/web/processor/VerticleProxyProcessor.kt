@@ -1,9 +1,10 @@
 package cn.bdqfork.kotlin.web.processor
 
-import cn.bdqfork.aop.processor.AopProxyProcessor
-import cn.bdqfork.aop.proxy.javassist.Proxy
 import cn.bdqfork.context.aware.ClassLoaderAware
 import cn.bdqfork.core.exception.BeansException
+import cn.bdqfork.core.factory.processor.BeanPostProcessor
+import cn.bdqfork.core.factory.processor.OrderAware
+import cn.bdqfork.core.proxy.javassist.Proxy
 import cn.bdqfork.core.util.AnnotationUtils
 import cn.bdqfork.core.util.AopUtils
 import cn.bdqfork.kotlin.web.VertxAware
@@ -18,15 +19,19 @@ import org.slf4j.LoggerFactory
  * @author bdq
  * @since 2020/1/26
  */
-class VerticleProxyProcessor : AopProxyProcessor(), ClassLoaderAware, VertxAware {
+class VerticleProxyProcessor : BeanPostProcessor, ClassLoaderAware, VertxAware, OrderAware {
     private lateinit var vertx: Vertx
     private lateinit var classLoader: ClassLoader
+
+    override fun postProcessBeforeInitializtion(beanName: String, bean: Any): Any {
+        return bean
+    }
+
     @Throws(BeansException::class)
     override fun postProcessAfterInitializtion(beanName: String, bean: Any): Any {
-        val processed = super.postProcessAfterInitializtion(beanName, bean)
-        val targetClass = AopUtils.getTargetClass(processed)
+        val targetClass = AopUtils.getTargetClass(bean)
         if (AnnotationUtils.isAnnotationPresent(targetClass, VerticleMapping::class.java)) {
-            val verticle = ServiceVerticle(processed)
+            val verticle = ServiceVerticle(bean)
             vertx.deployVerticle(verticle) { res: AsyncResult<String?> ->
                 if (res.succeeded()) {
                     if (log.isDebugEnabled) {
@@ -41,7 +46,7 @@ class VerticleProxyProcessor : AopProxyProcessor(), ClassLoaderAware, VertxAware
             }
             return Proxy.newProxyInstance(classLoader, targetClass.interfaces, VerticleProxyHandler(vertx!!, targetClass))
         }
-        return processed
+        return bean
     }
 
     @Throws(BeansException::class)
@@ -56,5 +61,9 @@ class VerticleProxyProcessor : AopProxyProcessor(), ClassLoaderAware, VertxAware
 
     companion object {
         private val log = LoggerFactory.getLogger(VerticleProxyProcessor::class.java)
+    }
+
+    override fun getOrder(): Int {
+        return 1
     }
 }

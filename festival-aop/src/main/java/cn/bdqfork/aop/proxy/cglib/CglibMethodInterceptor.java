@@ -2,7 +2,8 @@ package cn.bdqfork.aop.proxy.cglib;
 
 import cn.bdqfork.aop.proxy.AopProxySupport;
 import cn.bdqfork.aop.proxy.DefaultProxyInvocationHandler;
-import net.sf.cglib.proxy.*;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.Method;
 

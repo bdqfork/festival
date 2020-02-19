@@ -81,6 +81,7 @@ public class WebApplicationContext extends AnnotationApplicationContext {
 
     @Override
     protected void registerProxyProcessorBean() throws BeansException {
+        super.registerProxyProcessorBean();
         BeanDefinition beanDefinition = BeanDefinition.builder()
                 .beanName("verticleProxyProcessor")
                 .beanClass(VerticleProxyProcessor.class)

@@ -18,14 +18,14 @@ import java.lang.reflect.Method
 class VerticleProxyHandler(private val vertx: Vertx, private val targetClass: Class<*>) : InvocationHandler {
     private val options: DeliveryOptions = DeliveryOptions()
     @Throws(Throwable::class)
-    override fun invoke(proxy: Any, method: Method, args: Array<Any>): Any = runBlocking {
-        val methodInvocation = MethodInvocation(method, args)
+    override fun invoke(proxy: Any, method: Method, args: Array<Any?>?): Any? = runBlocking {
+        val methodInvocation = MethodInvocation(method, args ?: emptyArray())
         val address = EventBusUtils.getAddress(targetClass)
         return@runBlocking GlobalScope.async {
             val message = awaitResult<Message<Any>> { h -> vertx.eventBus().request(address, methodInvocation, options, h) }
             val result = message.body()
             if (result is Throwable) {
-                throw result.cause!!
+                throw result
             }
             return@async result
         }.await()
