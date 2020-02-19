@@ -88,7 +88,7 @@ class RouteManager(private val beanFactory: ConfigurableBeanFactory, private val
 
     private fun handleMapping(routeAttribute: RouteAttribute, route: Route) {
         if (log.isInfoEnabled) {
-            log.info("{} mapping path:{}!", routeAttribute.httpMethod.name, routeAttribute.url)
+            log.info("register {} mapping path:{}!", routeAttribute.httpMethod.name, routeAttribute.url)
         }
         val invoker = object : Filter {
             override fun doFilter(routingContext: RoutingContext, filterChain: FilterChain) {

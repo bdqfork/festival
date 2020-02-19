@@ -175,7 +175,7 @@ public class RouteManager {
     private void handleMapping(RouteAttribute routeAttribute, Route route) {
 
         if (log.isInfoEnabled()) {
-            log.info("{} mapping path:{}!", routeAttribute.getHttpMethod().name(), routeAttribute.getUrl());
+            log.info("register {} mapping path:{}!", routeAttribute.getHttpMethod().name(), routeAttribute.getUrl());
         }
 
         Filter invoker = (routingContext, filterChain) -> routeAttribute.getContextHandler().handle(routingContext);

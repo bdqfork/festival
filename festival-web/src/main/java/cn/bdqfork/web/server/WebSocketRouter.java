@@ -13,6 +13,8 @@ import cn.bdqfork.web.route.annotation.OnOpen;
 import cn.bdqfork.web.route.annotation.ServerEndpoint;
 import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.http.WebSocketFrame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
  * @since 2020/2/19
  */
 public class WebSocketRouter implements BeanFactoryAware {
+    private static final Logger log = LoggerFactory.getLogger(WebSocketRouter.class);
     private Map<String, WebSocketRoute> webSocketRouteMap = new ConcurrentHashMap<>();
     private BeanFactory beanFactory;
 
@@ -69,6 +72,12 @@ public class WebSocketRouter implements BeanFactoryAware {
     }
 
     private void registerWebSocketRoute(String path, WebSocketRoute webSocketRoute) {
+        if (webSocketRouteMap.containsKey(path)) {
+            throw new IllegalStateException(String.format("conflict websocket point %s!", path));
+        }
+        if (log.isInfoEnabled()) {
+            log.info("register websocket point {}!", path);
+        }
         webSocketRouteMap.put(path, webSocketRoute);
     }
 
@@ -81,11 +90,11 @@ public class WebSocketRouter implements BeanFactoryAware {
 
         WebSocketRoute webSocketRoute = webSocketRouteMap.get(path);
 
-        webSocketRoute.doOpen(serverWebSocket, webSocketRoute);
+        webSocketRoute.doOpen(serverWebSocket);
 
-        serverWebSocket.frameHandler(frame -> webSocketRoute.doActive(webSocketRoute, frame));
+        serverWebSocket.frameHandler(webSocketRoute::doActive);
 
-        serverWebSocket.closeHandler((Void) -> webSocketRoute.doClose(webSocketRoute));
+        serverWebSocket.closeHandler((Void) -> webSocketRoute.doClose());
     }
 
     @Override
@@ -106,25 +115,34 @@ public class WebSocketRouter implements BeanFactoryAware {
             this.close = close;
         }
 
-        public void doOpen(ServerWebSocket serverWebSocket, WebSocketRoute webSocketRoute) {
+        public void doOpen(ServerWebSocket serverWebSocket) {
+            if (open == null) {
+                return;
+            }
             try {
-                ReflectUtils.invokeMethod(webSocketRoute.bean, webSocketRoute.open, serverWebSocket);
+                ReflectUtils.invokeMethod(bean, open, serverWebSocket);
             } catch (InvocationTargetException e) {
                 throw new IllegalStateException(e.getCause());
             }
         }
 
-        public void doActive(WebSocketRoute webSocketRoute, WebSocketFrame frame) {
+        public void doActive(WebSocketFrame frame) {
+            if (open == null) {
+                return;
+            }
             try {
-                ReflectUtils.invokeMethod(webSocketRoute.bean, webSocketRoute.active, frame);
+                ReflectUtils.invokeMethod(bean, active, frame);
             } catch (InvocationTargetException e) {
                 throw new IllegalStateException(e.getCause());
             }
         }
 
-        public void doClose(WebSocketRoute webSocketRoute) {
+        public void doClose() {
+            if (open == null) {
+                return;
+            }
             try {
-                ReflectUtils.invokeMethod(webSocketRoute.bean, webSocketRoute.close);
+                ReflectUtils.invokeMethod(bean, close);
             } catch (InvocationTargetException e) {
                 throw new IllegalStateException(e.getCause());
             }
