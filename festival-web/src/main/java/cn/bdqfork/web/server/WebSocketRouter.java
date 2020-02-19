@@ -14,7 +14,6 @@ import cn.bdqfork.web.route.annotation.ServerEndpoint;
 import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.http.WebSocketFrame;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -37,23 +36,36 @@ public class WebSocketRouter implements BeanFactoryAware {
 
     private void refrash() throws BeansException {
         ConfigurableBeanFactory beanFactory = (ConfigurableBeanFactory) this.beanFactory;
+
         List<BeanDefinition> beanDefinitions = beanFactory.getBeanDefinitions().values()
                 .stream()
-                .filter(beanDefinition -> AnnotationUtils.isAnnotationPresent(beanDefinition.getBeanClass(), ServerEndpoint.class))
+                .filter(this::checkIfServerEndpoint)
                 .collect(Collectors.toList());
+
         for (BeanDefinition beanDefinition : beanDefinitions) {
-            Class<?> beanClass = beanDefinition.getBeanClass();
 
-            Method open = getMethod(beanClass, OnOpen.class);
-            Method active = getMethod(beanClass, OnActive.class);
-            Method close = getMethod(beanClass, OnClose.class);
-            Object bean = beanFactory.getBean(beanDefinition.getBeanName());
+            WebSocketRoute webSocketRoute = resolveWebSocketRoute(beanFactory, beanDefinition);
 
-            WebSocketRoute webSocketRoute = new WebSocketRoute(bean, open, active, close);
-            String path = AnnotationUtils.getMergedAnnotation(beanClass, ServerEndpoint.class).value();
+            String path = AnnotationUtils.getMergedAnnotation(beanDefinition.getBeanClass(), ServerEndpoint.class).value();
 
             registerWebSocketRoute(path, webSocketRoute);
         }
+    }
+
+    private boolean checkIfServerEndpoint(BeanDefinition beanDefinition) {
+        return AnnotationUtils.isAnnotationPresent(beanDefinition.getBeanClass(), ServerEndpoint.class);
+    }
+
+    private WebSocketRoute resolveWebSocketRoute(ConfigurableBeanFactory beanFactory, BeanDefinition beanDefinition) throws BeansException {
+        Class<?> beanClass = beanDefinition.getBeanClass();
+
+        Method open = ReflectUtils.getMethodByAnnotation(beanClass, OnOpen.class);
+        Method active = ReflectUtils.getMethodByAnnotation(beanClass, OnActive.class);
+        Method close = ReflectUtils.getMethodByAnnotation(beanClass, OnClose.class);
+
+        Object bean = beanFactory.getBean(beanDefinition.getBeanName());
+
+        return new WebSocketRoute(bean, open, active, close);
     }
 
     private void registerWebSocketRoute(String path, WebSocketRoute webSocketRoute) {
@@ -69,49 +81,16 @@ public class WebSocketRouter implements BeanFactoryAware {
 
         WebSocketRoute webSocketRoute = webSocketRouteMap.get(path);
 
-        doOpen(serverWebSocket, webSocketRoute);
+        webSocketRoute.doOpen(serverWebSocket, webSocketRoute);
 
-        serverWebSocket.frameHandler(frame -> doActive(webSocketRoute, frame));
+        serverWebSocket.frameHandler(frame -> webSocketRoute.doActive(webSocketRoute, frame));
 
-        serverWebSocket.closeHandler((Void) -> doClose(webSocketRoute));
-    }
-
-    private void doOpen(ServerWebSocket serverWebSocket, WebSocketRoute webSocketRoute) {
-        try {
-            ReflectUtils.invokeMethod(webSocketRoute.bean, webSocketRoute.open, serverWebSocket);
-        } catch (InvocationTargetException e) {
-            throw new IllegalStateException(e.getCause());
-        }
-    }
-
-    private void doActive(WebSocketRoute webSocketRoute, WebSocketFrame frame) {
-        try {
-            ReflectUtils.invokeMethod(webSocketRoute.bean, webSocketRoute.active, frame);
-        } catch (InvocationTargetException e) {
-            throw new IllegalStateException(e.getCause());
-        }
-    }
-
-    private void doClose(WebSocketRoute webSocketRoute) {
-        try {
-            ReflectUtils.invokeMethod(webSocketRoute.bean, webSocketRoute.close);
-        } catch (InvocationTargetException e) {
-            throw new IllegalStateException(e.getCause());
-        }
+        serverWebSocket.closeHandler((Void) -> webSocketRoute.doClose(webSocketRoute));
     }
 
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
         this.beanFactory = beanFactory;
-    }
-
-    private Method getMethod(Class<?> beanClass, Class<? extends Annotation> annotation) {
-        for (Method method : beanClass.getDeclaredMethods()) {
-            if (AnnotationUtils.isAnnotationPresent(method, annotation)) {
-                return method;
-            }
-        }
-        return null;
     }
 
     private static class WebSocketRoute {
@@ -125,6 +104,30 @@ public class WebSocketRouter implements BeanFactoryAware {
             this.open = open;
             this.active = active;
             this.close = close;
+        }
+
+        public void doOpen(ServerWebSocket serverWebSocket, WebSocketRoute webSocketRoute) {
+            try {
+                ReflectUtils.invokeMethod(webSocketRoute.bean, webSocketRoute.open, serverWebSocket);
+            } catch (InvocationTargetException e) {
+                throw new IllegalStateException(e.getCause());
+            }
+        }
+
+        public void doActive(WebSocketRoute webSocketRoute, WebSocketFrame frame) {
+            try {
+                ReflectUtils.invokeMethod(webSocketRoute.bean, webSocketRoute.active, frame);
+            } catch (InvocationTargetException e) {
+                throw new IllegalStateException(e.getCause());
+            }
+        }
+
+        public void doClose(WebSocketRoute webSocketRoute) {
+            try {
+                ReflectUtils.invokeMethod(webSocketRoute.bean, webSocketRoute.close);
+            } catch (InvocationTargetException e) {
+                throw new IllegalStateException(e.getCause());
+            }
         }
     }
 }

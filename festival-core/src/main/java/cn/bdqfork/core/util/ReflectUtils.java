@@ -2,6 +2,7 @@ package cn.bdqfork.core.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.net.JarURLConnection;
 import java.net.URL;
@@ -247,6 +248,15 @@ public class ReflectUtils {
      */
     public static boolean isReturnVoid(Method method) {
         return method.getReturnType() == Void.TYPE;
+    }
+
+    public static Method getMethodByAnnotation(Class<?> beanClass, Class<? extends Annotation> annotation) {
+        for (Method method : beanClass.getDeclaredMethods()) {
+            if (AnnotationUtils.isAnnotationPresent(method, annotation)) {
+                return method;
+            }
+        }
+        return null;
     }
 
 }
