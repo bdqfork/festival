@@ -101,9 +101,11 @@ public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAw
 
     @Override
     protected void doStart() throws Exception {
-        HttpServerOptions options = resolveHttpServerOptions();
+        WebSocketRouter webSocketRouter = new WebSocketRouter(beanFactory);
 
+        HttpServerOptions options = resolveHttpServerOptions();
         httpServer = vertx.createHttpServer(options)
+                .websocketHandler(webSocketRouter::accept)
                 .requestHandler(router)
                 .listen(res -> {
                     if (res.succeeded()) {

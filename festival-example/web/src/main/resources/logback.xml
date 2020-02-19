@@ -8,7 +8,11 @@
             <pattern>[ %-5level] [%date{yyyy-MM-dd HH:mm:ss.SSS}] %logger{96} [%line] [%thread]- %msg%n</pattern>
         </encoder>
     </appender>
-    <root level="DEBUG">
+<!--    <root level="DEBUG">-->
+<!--        <appender-ref ref="STDOUT"/>-->
+<!--    </root>-->
+
+    <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>
 

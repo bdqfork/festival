@@ -38,12 +38,12 @@ public class VerticleProxyProcessor implements ClassLoaderAware, VertxAware, Bea
                 if (res.succeeded()) {
                     if (log.isDebugEnabled()) {
                         log.debug("deployed service {} of {} by id {}!", beanName, targetClass.getCanonicalName(), res.result());
-                    } else {
-                        if (log.isErrorEnabled()) {
-                            log.error("failed to deploy service {} of {}!", beanName, targetClass.getCanonicalName(), res.cause());
-                        }
-                        vertx.close();
                     }
+                } else {
+                    if (log.isErrorEnabled()) {
+                        log.error("failed to deploy service {} of {}!", beanName, targetClass.getCanonicalName(), res.cause());
+                    }
+                    vertx.close();
                 }
             });
             return Proxy.newProxyInstance(classLoader, targetClass.getInterfaces(), new VerticleProxyHandler(vertx, targetClass));

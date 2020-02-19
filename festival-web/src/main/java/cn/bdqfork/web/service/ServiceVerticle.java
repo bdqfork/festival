@@ -33,10 +33,7 @@ public class ServiceVerticle extends AbstractVerticle {
             EventBus eventBus = vertx.eventBus();
             Class<?> targetClass = AopUtils.getTargetClass(serviceBean);
             String address = EventBusUtils.getAddress(targetClass);
-            eventBus.consumer(address)
-                    .toFlowable()
-                    .onBackpressureBuffer()
-                    .subscribe(msg -> {
+            eventBus.consumer(address).handler(msg -> {
                         try {
                             MethodInvocation invocation = (MethodInvocation) msg.body();
                             String methodName = invocation.getMethodName();
@@ -48,9 +45,6 @@ public class ServiceVerticle extends AbstractVerticle {
                             msg.reply(e.getCause(), options);
                         }
                     });
-            if (log.isInfoEnabled()) {
-                log.info("deploy verticle service {}!", targetClass.getCanonicalName());
-            }
         });
     }
 
