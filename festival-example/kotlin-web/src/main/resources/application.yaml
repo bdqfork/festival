@@ -11,3 +11,5 @@ server:
     limit: 2147483648
   static:
     enable: true
+    cache:
+      enable: true

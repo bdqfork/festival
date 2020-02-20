@@ -29,6 +29,9 @@ public class ServerProperty {
     public static final String SERVER_STATIC_ENABLE = "server.static.enable";
     public static final String SERVER_STATIC_PATH = "server.static.path";
     public static final String SERVER_STATIC_ROOT = "server.static.root";
+    public static final String SERVER_STATIC_CACHE_ENABLE = "server.static.cache.enable";
+    public static final String SERVER_STATIC_CACHE_SIZE = "server.static.cache.size";
+    public static final String SERVER_STATIC_CACHE_AGE = "server.static.cache.age";
 
     public static final String SERVER_TEMPLATE_ENABLE = "server.template.enable";
     public static final String SERVER_TEMPLATE_TYPE = "server.template.type";

@@ -100,6 +100,18 @@ public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAw
                     ServerProperty.DEFAULT_STATIC_ROOT);
             StaticHandler staticHandler = StaticHandler.create(webRoot);
 
+            boolean cacheEnable = resourceReader.readProperty(ServerProperty.SERVER_STATIC_CACHE_ENABLE, Boolean.class,
+                    StaticHandler.DEFAULT_CACHING_ENABLED);
+            staticHandler.setCachingEnabled(cacheEnable);
+
+            Integer size = resourceReader.readProperty(ServerProperty.SERVER_STATIC_CACHE_SIZE, Integer.class,
+                    StaticHandler.DEFAULT_MAX_CACHE_SIZE);
+            staticHandler.setMaxCacheSize(size);
+
+            Long age = resourceReader.readProperty(ServerProperty.SERVER_STATIC_CACHE_AGE, Long.class,
+                    StaticHandler.DEFAULT_CACHE_ENTRY_TIMEOUT);
+            staticHandler.setCacheEntryTimeout(age);
+
             String staticPath = resourceReader.readProperty(ServerProperty.SERVER_STATIC_PATH, String.class,
                     ServerProperty.DEFAULT_STATIC_PATH);
             router.route(staticPath).handler(staticHandler);

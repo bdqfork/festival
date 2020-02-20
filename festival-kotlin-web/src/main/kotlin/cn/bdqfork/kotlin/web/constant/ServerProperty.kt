@@ -32,6 +32,9 @@ object ServerProperty {
     const val SERVER_STATIC_ENABLE = "server.static.enable"
     const val SERVER_STATIC_PATH = "server.static.path"
     const val SERVER_STATIC_ROOT = "server.static.root"
+    const val SERVER_STATIC_CACHE_ENABLE = "server.static.cache.enable"
+    const val SERVER_STATIC_CACHE_SIZE = "server.static.cache.size"
+    const val SERVER_STATIC_CACHE_AGE = "server.static.cache.age"
 
     const val SERVER_TEMPLATE_ENABLE = "server.template.enable"
     const val SERVER_TEMPLATE_TYPE = "server.template.type"

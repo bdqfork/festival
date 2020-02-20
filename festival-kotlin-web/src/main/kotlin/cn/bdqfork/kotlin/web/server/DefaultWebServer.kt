@@ -104,6 +104,18 @@ class DefaultWebServer : WebServer, RouterAware, VertxAware, BeanFactoryAware, R
                     ServerProperty.DEFAULT_STATIC_ROOT)
             val staticHandler = StaticHandler.create(webRoot)
 
+            val cacheEnable = resourceReader.readProperty(ServerProperty.SERVER_STATIC_CACHE_ENABLE, Boolean::class.java,
+                    StaticHandler.DEFAULT_CACHING_ENABLED)
+            staticHandler.setCachingEnabled(cacheEnable)
+
+            val size = resourceReader.readProperty(ServerProperty.SERVER_STATIC_CACHE_SIZE, Int::class.java,
+                    StaticHandler.DEFAULT_MAX_CACHE_SIZE)
+            staticHandler.setMaxCacheSize(size)
+
+            val age = resourceReader.readProperty(ServerProperty.SERVER_STATIC_CACHE_AGE, Long::class.java,
+                    StaticHandler.DEFAULT_CACHE_ENTRY_TIMEOUT)
+            staticHandler.setCacheEntryTimeout(age)
+
             val staticPath = resourceReader.readProperty(ServerProperty.SERVER_STATIC_PATH, String::class.java,
                     ServerProperty.DEFAULT_STATIC_PATH)
             router.route(staticPath).handler(staticHandler)
