@@ -18,18 +18,21 @@ Festvial是一个基于Vertx、Rxjava等开源库，拥有IOC、AOP功能的响�
 
 # 快速使用
 
-```
 引入maven依赖
+```xml
 <dependency>
   <groupId>com.github.bdqfork</groupId>
   <artifactId>festival-web</artifactId>
   <version>0.4.0</version>
 </dependency>
+```
 
-或者gradle
+或者gradle依赖
+```
 implementation 'com.github.bdqfork:festival-web:0.4.0'
 ```
 
+然后编写路由，运行WebApplicationContext。
 ```java
 @Singleton
 @RouteController
