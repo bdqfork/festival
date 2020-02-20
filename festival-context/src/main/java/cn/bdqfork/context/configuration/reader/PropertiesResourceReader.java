@@ -20,8 +20,8 @@ public class PropertiesResourceReader extends AbstractResourceReader {
     }
 
     @Override
-    protected void load() throws IOException {
-        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(getResourcePath());
+    protected void load(String resourcePath) throws IOException {
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
         properties = new Properties();
         if (inputStream != null) {
             properties.load(inputStream);

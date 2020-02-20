@@ -23,9 +23,9 @@ public class YamlResourceReader extends AbstractResourceReader {
     }
 
     @Override
-    protected void load() throws IOException {
+    protected void load(String resourcePath) throws IOException {
         Yaml yaml = new Yaml();
-        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(getResourcePath());
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
         if (inputStream != null) {
             properties = yaml.load(inputStream);
         } else {

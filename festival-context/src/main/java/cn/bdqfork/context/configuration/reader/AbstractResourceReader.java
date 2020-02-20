@@ -2,6 +2,8 @@ package cn.bdqfork.context.configuration.reader;
 
 import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.core.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -13,15 +15,28 @@ import java.util.WeakHashMap;
  * @since 2020/1/9
  */
 public abstract class AbstractResourceReader implements ResourceReader {
+    private static final Logger log = LoggerFactory.getLogger(AbstractResourceReader.class);
+    public static final String PROFILE = "profile";
     private final Map<String, Object> cache = Collections.synchronizedMap(new WeakHashMap<>());
     private String resourcePath;
 
     public AbstractResourceReader(String resourcePath) throws IOException {
+        load(resourcePath);
+        String profile = readProperty(PROFILE, String.class, "");
+        if (!StringUtils.isEmpty(profile)) {
+            cache.clear();
+            String fileName = resourcePath.substring(0, resourcePath.lastIndexOf("."));
+            String suffix = resourcePath.substring(resourcePath.lastIndexOf("."));
+            resourcePath = fileName + '-' + profile + suffix;
+            if (log.isInfoEnabled()) {
+                log.info("active profile {}, load properties from {}!", profile, resourcePath);
+            }
+            load(resourcePath);
+        }
         this.resourcePath = resourcePath;
-        load();
     }
 
-    protected abstract void load() throws IOException;
+    protected abstract void load(String resourcePath) throws IOException;
 
     @SuppressWarnings("unchecked")
     @Override

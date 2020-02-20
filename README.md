@@ -56,10 +56,11 @@ public class UserController {
 + xml数据请求和响应 已完成！
 + websocket 已完成！
 + kotlin ioc容器
-+ 配置文件profile
++ 配置文件profile 已完成！
 + 模版引擎
 + 解耦aop模块 已完成！
 + static文件处理 已完成！
++ verticle service多实例
 
 License
 -------
