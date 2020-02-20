@@ -97,6 +97,17 @@ class DefaultWebServer : WebServer, RouterAware, VertxAware, BeanFactoryAware, R
                 log.debug("no cors handler registed!")
             }
         }
+        val staticEnable = resourceReader.readProperty(ServerProperty.SERVER_STATIC_ENABLE, Boolean::class.java,
+                false)
+        if (staticEnable) {
+            val webRoot = resourceReader.readProperty(ServerProperty.SERVER_STATIC_ROOT, String::class.java,
+                    ServerProperty.DEFAULT_STATIC_ROOT)
+            val staticHandler = StaticHandler.create(webRoot)
+
+            val staticPath = resourceReader.readProperty(ServerProperty.SERVER_STATIC_PATH, String::class.java,
+                    ServerProperty.DEFAULT_STATIC_PATH)
+            router.route(staticPath).handler(staticHandler)
+        }
     }
 
     @Throws(Exception::class)

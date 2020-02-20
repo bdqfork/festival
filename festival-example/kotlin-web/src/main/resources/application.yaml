@@ -9,3 +9,5 @@ server:
     password: '123456'
   uploads:
     limit: 2147483648
+  static:
+    enable: true

@@ -90,6 +90,20 @@ public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAw
                 log.debug("no cors handler registed!");
             }
         }
+
+        boolean staticEnable = resourceReader.readProperty(ServerProperty.SERVER_STATIC_ENABLE, Boolean.class,
+                false);
+
+        if (staticEnable) {
+
+            String webRoot = resourceReader.readProperty(ServerProperty.SERVER_STATIC_ROOT, String.class,
+                    ServerProperty.DEFAULT_STATIC_ROOT);
+            StaticHandler staticHandler = StaticHandler.create(webRoot);
+
+            String staticPath = resourceReader.readProperty(ServerProperty.SERVER_STATIC_PATH, String.class,
+                    ServerProperty.DEFAULT_STATIC_PATH);
+            router.route(staticPath).handler(staticHandler);
+        }
     }
 
     @Override
