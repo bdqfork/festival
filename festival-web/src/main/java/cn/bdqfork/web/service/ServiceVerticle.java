@@ -24,7 +24,7 @@ public class ServiceVerticle extends AbstractVerticle {
     public ServiceVerticle(Object serviceBean) {
         this.serviceBean = serviceBean;
         this.options = new DeliveryOptions();
-        this.options.setCodecName(HessianMessageCodec.NAME);
+        this.options.setCodecName(JsonMessageCodec.NAME);
     }
 
     @Override

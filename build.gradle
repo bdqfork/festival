@@ -11,7 +11,7 @@ ext {
             vertx        : '3.8.4',
             hessian      : '4.0.63',
             joda         : '2.10.5',
-            jackson:'2.10.2'
+            jackson      : '2.10.2'
     ]
 }
 

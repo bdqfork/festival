@@ -32,6 +32,6 @@ class VerticleProxyHandler(private val vertx: Vertx, private val targetClass: Cl
     }
 
     init {
-        options.codecName = HessianMessageCodec.NAME
+        options.codecName = JsonMessageCodec.NAME
     }
 }

@@ -10,7 +10,7 @@ import cn.bdqfork.kotlin.web.processor.VerticleProxyProcessor
 import cn.bdqfork.kotlin.web.server.DefaultWebServer
 import cn.bdqfork.kotlin.web.server.WebServer
 import cn.bdqfork.kotlin.web.server.WebVerticle
-import cn.bdqfork.kotlin.web.service.HessianMessageCodec
+import cn.bdqfork.kotlin.web.service.JsonMessageCodec
 import cn.bdqfork.kotlin.web.util.VertxUtils
 import io.vertx.core.AsyncResult
 import io.vertx.core.DeploymentOptions
@@ -31,7 +31,7 @@ class WebApplicationContext(vararg scanPaths: String) : AnnotationApplicationCon
     override fun start() {
         super.start()
         val beanFactory: BeanFactory = beanFactory
-        vertx.eventBus().registerCodec(HessianMessageCodec())
+        vertx.eventBus().registerCodec(JsonMessageCodec())
         val options = getDeploymentOptions(beanFactory)
         val webServer = beanFactory.getBean(WebServer::class.java)
         val webVerticle = WebVerticle(webServer)

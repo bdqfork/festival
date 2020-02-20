@@ -10,7 +10,7 @@ import cn.bdqfork.web.processor.VerticleProxyProcessor;
 import cn.bdqfork.web.server.DefaultWebServer;
 import cn.bdqfork.web.server.WebServer;
 import cn.bdqfork.web.server.WebVerticle;
-import cn.bdqfork.web.service.HessianMessageCodec;
+import cn.bdqfork.web.service.JsonMessageCodec;
 import cn.bdqfork.web.util.VertxUtils;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
@@ -40,7 +40,7 @@ public class WebApplicationContext extends AnnotationApplicationContext {
 
         BeanFactory beanFactory = getBeanFactory();
 
-        vertx.eventBus().registerCodec(new HessianMessageCodec());
+        vertx.eventBus().registerCodec(new JsonMessageCodec());
 
         DeploymentOptions options = getDeploymentOptions(beanFactory);
 

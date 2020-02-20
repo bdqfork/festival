@@ -35,7 +35,7 @@ class ServiceVerticle(private val serviceBean: Any) : CoroutineVerticle() {
     }
 
     init {
-        options.codecName = HessianMessageCodec.NAME
+        options.codecName = JsonMessageCodec.NAME
     }
 
     companion object {
