@@ -24,5 +24,6 @@ class ResponseHandlerFactory {
     init {
         registerResponseHandler(ContentType.PLAIN, TextPlainResponseHandler())
         registerResponseHandler(ContentType.JSON, JsonResponseHandler())
+        registerResponseHandler(ContentType.XML,XmlResponseHandler())
     }
 }

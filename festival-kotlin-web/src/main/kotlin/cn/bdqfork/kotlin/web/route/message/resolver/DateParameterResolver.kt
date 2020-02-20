@@ -29,6 +29,7 @@ class DateParameterResolver : AbstractParameterResolver() {
         }
     }
 
+    @Throws(Exception::class)
     override fun doResolve(parameter: Parameter, routingContext: RoutingContext): Any? {
         val param = AnnotationUtils.getMergedAnnotation(parameter, Param::class.java)
         if (param != null) {
@@ -41,7 +42,8 @@ class DateParameterResolver : AbstractParameterResolver() {
         return null
     }
 
-    override fun resolvable(parameter: Parameter): Boolean {
+    override fun resolvable(parameter: Parameter, routingContext: RoutingContext): Boolean {
         return enable && parameter.isAnnotationPresent(Param::class.java) && parameter.type == Date::class.java
     }
+
 }

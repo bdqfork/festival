@@ -1,6 +1,9 @@
 apply plugin: "com.github.johnrengelman.shadow"
 
+def libs = rootProject.ext.libraries
+
 dependencies {
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${libs.jackson}"
     implementation project(':festival-web')
     implementation project(':festival-aop')
 }

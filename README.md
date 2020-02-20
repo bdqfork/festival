@@ -53,7 +53,7 @@ public class UserController {
 + 缓存
 + 服务监控
 + verticle service group
-+ xml数据请求和响应
++ xml数据请求和响应 已完成！
 + websocket 已完成！
 + kotlin ioc容器
 + 配置文件profile

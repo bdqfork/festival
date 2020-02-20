@@ -13,6 +13,8 @@ import java.util.*
  * @since 2020/2/11
  */
 class PrimitiveParameterResolver : AbstractParameterResolver() {
+
+    @Throws(Exception::class)
     override fun doResolve(parameter: Parameter, routingContext: RoutingContext): Any? {
         if (!AnnotationUtils.isAnnotationPresent(parameter, Param::class.java)) {
             return null
@@ -34,7 +36,8 @@ class PrimitiveParameterResolver : AbstractParameterResolver() {
         } else StringUtils.castToPrimitive(param.defaultValue, parameterType)
     }
 
-    override fun resolvable(parameter: Parameter): Boolean {
+    override fun resolvable(parameter: Parameter, routingContext: RoutingContext): Boolean {
         return ReflectUtils.isPrimitiveOrWrapper(parameter.type)
     }
+
 }

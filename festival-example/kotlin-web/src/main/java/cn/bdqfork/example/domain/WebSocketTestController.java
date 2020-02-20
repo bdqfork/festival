@@ -4,6 +4,7 @@ import cn.bdqfork.kotlin.web.route.annotation.*;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.http.WebSocketFrame;
+import io.vertx.core.json.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,10 @@ public class WebSocketTestController {
     @OnActive
     public void active(ServerWebSocket serverWebSocket, WebSocketFrame webSocketFrame) {
         log.info("active......");
-        serverWebSocket.writeTextMessage("hi");
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.put("type", 1);
+        jsonObject.put("data", "hello");
+        serverWebSocket.writeTextMessage(jsonObject.encodePrettily());
     }
 
     @OnClose

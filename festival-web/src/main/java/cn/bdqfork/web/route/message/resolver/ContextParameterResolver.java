@@ -45,14 +45,13 @@ public class ContextParameterResolver extends AbstractParameterResolver {
     }
 
     @Override
-    protected boolean resolvable(Parameter parameter) {
+    protected boolean resolvable(Parameter parameter, RoutingContext routingContext) {
         Class<?> parameterType = parameter.getType();
         return parameterType == RoutingContext.class ||
                 parameterType == HttpServerRequest.class ||
                 parameterType == HttpServerResponse.class ||
                 parameterType == MultiMap.class ||
                 parameterType == JsonObject.class;
-
     }
 
 }

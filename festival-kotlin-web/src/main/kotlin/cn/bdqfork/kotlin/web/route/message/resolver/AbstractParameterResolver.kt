@@ -16,8 +16,9 @@ abstract class AbstractParameterResolver : ParameterResolver {
         this.next = next
     }
 
+    @Throws(Exception::class)
     override fun resolve(parameter: Parameter, routingContext: RoutingContext): Any? {
-        if (resolvable(parameter)) {
+        if (resolvable(parameter,routingContext)) {
             return doResolve(parameter, routingContext)
         }
         return if (next != null) {
@@ -25,8 +26,9 @@ abstract class AbstractParameterResolver : ParameterResolver {
         } else null
     }
 
+    @Throws(Exception::class)
     protected abstract fun doResolve(parameter: Parameter, routingContext: RoutingContext): Any?
-    protected abstract fun resolvable(parameter: Parameter): Boolean
+    protected abstract fun resolvable(parameter: Parameter,routingContext: RoutingContext): Boolean
 
     protected fun resolveParams(routingContext: RoutingContext): MultiMap {
         val pathParams = routingContext.pathParams()

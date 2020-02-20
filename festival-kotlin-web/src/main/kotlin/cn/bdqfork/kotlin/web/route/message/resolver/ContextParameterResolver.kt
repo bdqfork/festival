@@ -13,6 +13,8 @@ import java.lang.reflect.Parameter
  * @since 2020/2/11
  */
 class ContextParameterResolver : AbstractParameterResolver() {
+
+    @Throws(Exception::class)
     override fun doResolve(parameter: Parameter, routingContext: RoutingContext): Any? {
         val parameterType = parameter.type
         if (parameterType == RoutingContext::class.java) {
@@ -37,7 +39,7 @@ class ContextParameterResolver : AbstractParameterResolver() {
         return null
     }
 
-    override fun resolvable(parameter: Parameter): Boolean {
+    override fun resolvable(parameter: Parameter, routingContext: RoutingContext): Boolean {
         val parameterType = parameter.type
         return parameterType == RoutingContext::class.java ||
                 parameterType == HttpServerRequest::class.java ||
@@ -45,4 +47,5 @@ class ContextParameterResolver : AbstractParameterResolver() {
                 parameterType == MultiMap::class.java ||
                 parameterType == JsonObject::class.java
     }
+
 }

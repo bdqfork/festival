@@ -8,5 +8,6 @@ import java.lang.reflect.Parameter
  * @since 2020/2/11
  */
 interface ParameterResolver {
+    @Throws(Exception::class)
     fun resolve(parameter: Parameter, routingContext: RoutingContext): Any?
 }

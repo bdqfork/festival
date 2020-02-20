@@ -12,7 +12,7 @@ import java.lang.reflect.Parameter;
  */
 public abstract class AbstractHttpMessageHandler implements HttpMessageHandler {
     @Override
-    public Object[] handle(RoutingContext routingContext, Parameter[] parameters) {
+    public Object[] handle(RoutingContext routingContext, Parameter[] parameters) throws Exception {
         HttpServerRequest httpServerRequest = routingContext.request();
         HttpMethod httpMethod = httpServerRequest.method();
         if (httpMethod == HttpMethod.GET || httpMethod == HttpMethod.POST
@@ -22,6 +22,6 @@ public abstract class AbstractHttpMessageHandler implements HttpMessageHandler {
         return new Object[0];
     }
 
-    protected abstract Object[] doHandle(RoutingContext routingContext, Parameter[] parameters);
+    protected abstract Object[] doHandle(RoutingContext routingContext, Parameter[] parameters) throws Exception;
 
 }

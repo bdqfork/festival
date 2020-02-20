@@ -110,7 +110,7 @@ public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAw
                 .listen(res -> {
                     if (res.succeeded()) {
                         if (log.isInfoEnabled()) {
-                            log.info("stated web server at {}:{}!",
+                            log.info("started web server at {}:{}!",
                                     options.getHost(), options.getPort());
                         }
                     } else {

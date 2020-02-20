@@ -6,6 +6,7 @@ dependencies {
     api "io.vertx:vertx-web:${libs.vertx}"
     implementation "io.vertx:vertx-lang-kotlin-coroutines:${libs.vertx}"
     implementation "com.caucho:hessian:${libs.hessian}"
+    compileOnly "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${libs.jackson}"
     compileOnly "joda-time:joda-time:${libs.joda}"
     api project(':festival-context')
 }

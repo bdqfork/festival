@@ -29,6 +29,7 @@ class ParameterResolverFactory {
         registerResolver(ContextParameterResolver())
         registerResolver(PrimitiveParameterResolver())
         registerResolver(JsonBodyParameterResolver())
+        registerResolver(XmlBodyParameterResolver())
         registerResolver(DateParameterResolver())
     }
 }

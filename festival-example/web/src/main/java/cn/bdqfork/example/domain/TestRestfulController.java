@@ -98,4 +98,11 @@ public class TestRestfulController {
         user.setCreateDate(date);
         return user;
     }
+
+    @Produces("application/xml")
+    @Consumes("application/xml")
+    @PostMapping("/xml")
+    public User testXml(@RequestBody User user) {
+        return user;
+    }
 }

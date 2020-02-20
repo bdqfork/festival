@@ -48,7 +48,7 @@ public class PrimitiveParameterResolver extends AbstractParameterResolver {
     }
 
     @Override
-    protected boolean resolvable(Parameter parameter) {
+    protected boolean resolvable(Parameter parameter, RoutingContext routingContext) {
         return ReflectUtils.isPrimitiveOrWrapper(parameter.getType());
     }
 

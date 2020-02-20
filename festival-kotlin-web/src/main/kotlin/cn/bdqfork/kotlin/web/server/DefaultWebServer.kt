@@ -115,7 +115,7 @@ class DefaultWebServer : WebServer, RouterAware, VertxAware, BeanFactoryAware, R
                 .listen { res: AsyncResult<HttpServer?> ->
                     if (res.succeeded()) {
                         if (log.isInfoEnabled) {
-                            log.info("stated web server at {}:{}!",
+                            log.info("started web server at {}:{}!",
                                     options.host, options.port)
                         }
                     } else {
@@ -130,7 +130,7 @@ class DefaultWebServer : WebServer, RouterAware, VertxAware, BeanFactoryAware, R
 
     @Throws(BeansException::class)
     private fun resolveHttpServerOptions(): HttpServerOptions {
-        var options = try {
+        val options = try {
             val options = beanFactory.getBean(HttpServerOptions::class.java)
             HttpServerOptions(options)
         } catch (e: NoSuchBeanException) {
