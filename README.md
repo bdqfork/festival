@@ -66,6 +66,7 @@ public class UserController {
 + 解耦aop模块 已完成！
 + static文件处理 已完成！
 + verticle service多实例
++ 支持rpc调用
 
 License
 -------
