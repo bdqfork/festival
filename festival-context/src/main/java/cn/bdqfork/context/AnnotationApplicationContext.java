@@ -176,6 +176,9 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         for (Map.Entry<String, BeanDefinition> entry : beanDefinitionReader.getBeanDefinitions().entrySet()) {
             BeanDefinitionRegistry registry = delegateBeanFactory;
             String beanName = entry.getKey();
+            if (log.isDebugEnabled()) {
+                log.debug("register bean {}!", beanName);
+            }
             BeanDefinition beanDefinition = entry.getValue();
             if (registry.containBeanDefinition(beanName)) {
                 if (log.isTraceEnabled()) {

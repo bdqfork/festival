@@ -1,6 +1,7 @@
 package cn.bdqfork.web.route.annotation;
 
-import cn.bdqfork.aop.annotation.Optimize;
+
+import cn.bdqfork.core.annotation.Optimize;
 
 import javax.inject.Named;
 import java.lang.annotation.*;

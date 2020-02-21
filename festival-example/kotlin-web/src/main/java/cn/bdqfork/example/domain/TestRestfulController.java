@@ -1,7 +1,7 @@
 package cn.bdqfork.example.domain;
 
 import cn.bdqfork.example.model.User;
-import cn.bdqfork.web.route.annotation.*;
+import cn.bdqfork.kotlin.web.route.annotation.*;
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
@@ -96,6 +96,13 @@ public class TestRestfulController {
         User user = new User();
         user.setId(id);
         user.setCreateDate(date);
+        return user;
+    }
+
+    @Produces("application/xml")
+    @Consumes("application/xml")
+    @PostMapping("/xml")
+    public User testXml(@RequestBody User user) {
         return user;
     }
 }

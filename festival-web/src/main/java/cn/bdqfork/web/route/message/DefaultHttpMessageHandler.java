@@ -20,7 +20,7 @@ public class DefaultHttpMessageHandler extends AbstractHttpMessageHandler {
     }
 
     @Override
-    protected Object[] doHandle(RoutingContext routingContext, Parameter[] parameters) {
+    protected Object[] doHandle(RoutingContext routingContext, Parameter[] parameters) throws Exception {
 
         List<Object> args = new ArrayList<>(parameters.length);
 

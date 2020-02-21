@@ -22,7 +22,7 @@ public class VerticleProxyHandler implements InvocationHandler {
         this.vertx = vertx;
         this.targetClass = targetClass;
         this.options = new DeliveryOptions();
-        this.options.setCodecName(HessianMessageCodec.NAME);
+        this.options.setCodecName(JsonMessageCodec.NAME);
     }
 
     @Override

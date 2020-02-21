@@ -10,7 +10,7 @@ import cn.bdqfork.web.processor.VerticleProxyProcessor;
 import cn.bdqfork.web.server.DefaultWebServer;
 import cn.bdqfork.web.server.WebServer;
 import cn.bdqfork.web.server.WebVerticle;
-import cn.bdqfork.web.service.HessianMessageCodec;
+import cn.bdqfork.web.service.JsonMessageCodec;
 import cn.bdqfork.web.util.VertxUtils;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
@@ -25,8 +25,8 @@ import java.util.concurrent.CountDownLatch;
  * @since 2020/1/21
  */
 public class WebApplicationContext extends AnnotationApplicationContext {
+    public static final String SERVER_OPTIONS_NAME = "serverOptions";
     private static final Logger log = LoggerFactory.getLogger(WebApplicationContext.class);
-    private static final String SERVER_OPTIONS_NAME = "serverOptions";
     private Vertx vertx;
     private Router router;
 
@@ -40,7 +40,7 @@ public class WebApplicationContext extends AnnotationApplicationContext {
 
         BeanFactory beanFactory = getBeanFactory();
 
-        vertx.eventBus().registerCodec(new HessianMessageCodec());
+        vertx.eventBus().registerCodec(new JsonMessageCodec());
 
         DeploymentOptions options = getDeploymentOptions(beanFactory);
 
@@ -81,6 +81,7 @@ public class WebApplicationContext extends AnnotationApplicationContext {
 
     @Override
     protected void registerProxyProcessorBean() throws BeansException {
+        super.registerProxyProcessorBean();
         BeanDefinition beanDefinition = BeanDefinition.builder()
                 .beanName("verticleProxyProcessor")
                 .beanClass(VerticleProxyProcessor.class)

@@ -16,6 +16,7 @@ public class ResponseHandlerFactory {
     public ResponseHandlerFactory() {
         registerResponseHandler(ContentType.PLAIN, new TextPlainResponseHandler());
         registerResponseHandler(ContentType.JSON, new JsonResponseHandler());
+        registerResponseHandler(ContentType.XML, new XmlResponseHandler());
     }
 
     public void registerResponseHandler(String contentType, ResponseHandleStrategy responseHandleStrategy) {

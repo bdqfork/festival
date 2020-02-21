@@ -8,6 +8,9 @@ public class ServerProperty {
     public static final String DEFAULT_HOST = "localhost";
     public static final Integer DEFAULT_PORT = 8080;
 
+    public static final String DEFAULT_STATIC_PATH = "/";
+    public static final String DEFAULT_STATIC_ROOT = "static";
+
     public static final String SERVER_HOST = "server.host";
     public static final String SERVER_PORT = "server.port";
     public static final String SERVER_UPLOAD_DERICTORY = "server.uploads.directory";
@@ -22,6 +25,13 @@ public class ServerProperty {
     public static final String SERVER_SSL_PATH = "server.ssl.path";
     public static final String SERVER_SSL_PASSWORD = "server.ssl.password";
     public static final String SERVER_HTTP2_ENABLE = "server.http2.enable";
+
+    public static final String SERVER_STATIC_ENABLE = "server.static.enable";
+    public static final String SERVER_STATIC_PATH = "server.static.path";
+    public static final String SERVER_STATIC_ROOT = "server.static.root";
+    public static final String SERVER_STATIC_CACHE_ENABLE = "server.static.cache.enable";
+    public static final String SERVER_STATIC_CACHE_SIZE = "server.static.cache.size";
+    public static final String SERVER_STATIC_CACHE_AGE = "server.static.cache.age";
 
     public static final String SERVER_TEMPLATE_ENABLE = "server.template.enable";
     public static final String SERVER_TEMPLATE_TYPE = "server.template.type";

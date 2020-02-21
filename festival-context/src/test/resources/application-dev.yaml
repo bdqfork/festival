@@ -1,0 +1,6 @@
+server:
+  localhost: 127.0.0.1
+  port: 80
+  names:
+    - name1
+    - name2

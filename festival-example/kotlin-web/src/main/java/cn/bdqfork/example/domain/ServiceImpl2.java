@@ -1,6 +1,6 @@
 package cn.bdqfork.example.domain;
 
-import cn.bdqfork.web.annotation.VerticleMapping;
+import cn.bdqfork.kotlin.web.annotation.VerticleMapping;
 
 import javax.inject.Singleton;
 

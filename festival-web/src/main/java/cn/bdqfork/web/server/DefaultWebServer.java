@@ -90,6 +90,32 @@ public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAw
                 log.debug("no cors handler registed!");
             }
         }
+
+        boolean staticEnable = resourceReader.readProperty(ServerProperty.SERVER_STATIC_ENABLE, Boolean.class,
+                false);
+
+        if (staticEnable) {
+
+            String webRoot = resourceReader.readProperty(ServerProperty.SERVER_STATIC_ROOT, String.class,
+                    ServerProperty.DEFAULT_STATIC_ROOT);
+            StaticHandler staticHandler = StaticHandler.create(webRoot);
+
+            boolean cacheEnable = resourceReader.readProperty(ServerProperty.SERVER_STATIC_CACHE_ENABLE, Boolean.class,
+                    StaticHandler.DEFAULT_CACHING_ENABLED);
+            staticHandler.setCachingEnabled(cacheEnable);
+
+            Integer size = resourceReader.readProperty(ServerProperty.SERVER_STATIC_CACHE_SIZE, Integer.class,
+                    StaticHandler.DEFAULT_MAX_CACHE_SIZE);
+            staticHandler.setMaxCacheSize(size);
+
+            Long age = resourceReader.readProperty(ServerProperty.SERVER_STATIC_CACHE_AGE, Long.class,
+                    StaticHandler.DEFAULT_CACHE_ENTRY_TIMEOUT);
+            staticHandler.setCacheEntryTimeout(age);
+
+            String staticPath = resourceReader.readProperty(ServerProperty.SERVER_STATIC_PATH, String.class,
+                    ServerProperty.DEFAULT_STATIC_PATH);
+            router.route(staticPath).handler(staticHandler);
+        }
     }
 
     @Override
@@ -101,14 +127,16 @@ public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAw
 
     @Override
     protected void doStart() throws Exception {
-        HttpServerOptions options = resolveHttpServerOptions();
+        WebSocketRouter webSocketRouter = new WebSocketRouter(beanFactory);
 
+        HttpServerOptions options = resolveHttpServerOptions();
         httpServer = vertx.createHttpServer(options)
+                .websocketHandler(webSocketRouter::accept)
                 .requestHandler(router)
                 .listen(res -> {
                     if (res.succeeded()) {
                         if (log.isInfoEnabled()) {
-                            log.info("stated web server at {}:{}!",
+                            log.info("started web server at {}:{}!",
                                     options.getHost(), options.getPort());
                         }
                     } else {

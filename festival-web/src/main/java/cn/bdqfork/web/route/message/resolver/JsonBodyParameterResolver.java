@@ -1,6 +1,7 @@
 package cn.bdqfork.web.route.message.resolver;
 
 import cn.bdqfork.core.util.AnnotationUtils;
+import cn.bdqfork.web.constant.ContentType;
 import cn.bdqfork.web.route.annotation.RequestBody;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.Json;
@@ -15,6 +16,7 @@ import java.lang.reflect.Parameter;
  * @since 2020/2/13
  */
 public class JsonBodyParameterResolver extends AbstractParameterResolver {
+
     @Override
     protected Object doResolve(Parameter parameter, RoutingContext routingContext) {
         Class<?> parameterType = parameter.getType();
@@ -32,7 +34,8 @@ public class JsonBodyParameterResolver extends AbstractParameterResolver {
     }
 
     @Override
-    protected boolean resolvable(Parameter parameter) {
-        return AnnotationUtils.isAnnotationPresent(parameter, RequestBody.class);
+    protected boolean resolvable(Parameter parameter, RoutingContext routingContext) {
+        String contentType = routingContext.request().getHeader(ContentType.CONTENT_TYPE);
+        return AnnotationUtils.isAnnotationPresent(parameter, RequestBody.class) && ContentType.JSON.equals(contentType);
     }
 }

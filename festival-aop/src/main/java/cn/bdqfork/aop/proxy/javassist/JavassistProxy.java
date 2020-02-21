@@ -4,6 +4,7 @@ import cn.bdqfork.aop.proxy.AopProxy;
 import cn.bdqfork.aop.proxy.AopProxySupport;
 import cn.bdqfork.core.proxy.FestivalProxy;
 import cn.bdqfork.core.proxy.TargetClassAware;
+import cn.bdqfork.core.proxy.javassist.Proxy;
 
 import java.util.List;
 

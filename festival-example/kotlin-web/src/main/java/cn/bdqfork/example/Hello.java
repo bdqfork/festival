@@ -1,8 +1,8 @@
 package cn.bdqfork.example;
 
-import cn.bdqfork.web.WebApplication;
-import cn.bdqfork.web.route.annotation.GetMapping;
-import cn.bdqfork.web.route.annotation.RouteController;
+import cn.bdqfork.kotlin.web.WebApplication;
+import cn.bdqfork.kotlin.web.route.annotation.GetMapping;
+import cn.bdqfork.kotlin.web.route.annotation.RouteController;
 
 import javax.inject.Singleton;
 

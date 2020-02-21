@@ -1,7 +1,7 @@
 package cn.bdqfork.example.config;
 
 import cn.bdqfork.context.configuration.Configuration;
-import cn.bdqfork.web.route.filter.AuthFilter;
+import cn.bdqfork.kotlin.web.route.filter.AuthFilter;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.AuthProvider;

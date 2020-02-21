@@ -9,5 +9,5 @@ import java.lang.reflect.Parameter;
  * @since 2020/2/11
  */
 public interface ParameterResolver {
-    Object resolve(Parameter parameter, RoutingContext routingContext);
+    Object resolve(Parameter parameter, RoutingContext routingContext) throws Exception;
 }

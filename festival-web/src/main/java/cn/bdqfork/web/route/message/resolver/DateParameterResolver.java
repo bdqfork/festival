@@ -44,7 +44,8 @@ public class DateParameterResolver extends AbstractParameterResolver {
     }
 
     @Override
-    protected boolean resolvable(Parameter parameter) {
+    protected boolean resolvable(Parameter parameter, RoutingContext routingContext) {
         return enable && parameter.isAnnotationPresent(Param.class) && parameter.getType() == Date.class;
     }
+
 }

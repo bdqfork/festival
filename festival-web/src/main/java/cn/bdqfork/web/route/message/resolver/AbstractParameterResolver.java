@@ -21,8 +21,8 @@ public abstract class AbstractParameterResolver implements ParameterResolver {
     }
 
     @Override
-    public Object resolve(Parameter parameter, RoutingContext routingContext) {
-        if (resolvable(parameter)) {
+    public Object resolve(Parameter parameter, RoutingContext routingContext) throws Exception {
+        if (resolvable(parameter,routingContext)) {
             return doResolve(parameter, routingContext);
         }
         if (next != null) {
@@ -31,9 +31,9 @@ public abstract class AbstractParameterResolver implements ParameterResolver {
         return null;
     }
 
-    protected abstract Object doResolve(Parameter parameter, RoutingContext routingContext);
+    protected abstract Object doResolve(Parameter parameter, RoutingContext routingContext) throws Exception;
 
-    protected abstract boolean resolvable(Parameter parameter);
+    protected abstract boolean resolvable(Parameter parameter,RoutingContext routingContext);
 
     protected MultiMap resolveParams(RoutingContext routingContext) {
         Map<String, String> pathParams = routingContext.pathParams();
