@@ -1,6 +1,7 @@
 package cn.bdqfork.web.route;
 
 import cn.bdqfork.core.util.ReflectUtils;
+import cn.bdqfork.web.constant.ContentType;
 import cn.bdqfork.web.route.message.HttpMessageHandler;
 import cn.bdqfork.web.route.response.ResponseHandlerFactory;
 import io.vertx.core.Handler;
@@ -34,6 +35,9 @@ public class RouteHandler implements Handler<RoutingContext> {
                 return;
             }
             String contentType = routingContext.getAcceptableContentType();
+            if (result instanceof ModelAndView) {
+                contentType = ContentType.HTML;
+            }
             responseHandlerFactory.getResponseHandler(contentType).handle(routingContext, result);
         } catch (Exception e) {
             throw new IllegalStateException(e);

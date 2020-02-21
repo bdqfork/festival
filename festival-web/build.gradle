@@ -1,9 +1,12 @@
 def libs = rootProject.ext.libraries
 
 dependencies {
+
     compileOnly "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${libs.jackson}"
-    compileOnly "joda-time:joda-time:${libs.joda}"
     compileOnly "io.vertx:vertx-web-templ-freemarker:${libs.vertx}"
+    compileOnly "io.vertx:vertx-web-templ-thymeleaf:${libs.vertx}"
+    compileOnly "io.vertx:vertx-web-templ-jade:${libs.vertx}"
+    compileOnly "joda-time:joda-time:${libs.joda}"
 
     api "io.vertx:vertx-web:${libs.vertx}"
     api "io.vertx:vertx-rx-java2:${libs.vertx}"
