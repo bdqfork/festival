@@ -1,7 +1,7 @@
 package cn.bdqfork.web.route.response;
 
-import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.Json;
+import io.vertx.ext.web.RoutingContext;
 
 /**
  * @author bdq
@@ -10,7 +10,7 @@ import io.vertx.core.json.Json;
 public class JsonResponseHandler extends AbstractResponseHandler {
 
     @Override
-    protected void doHandle(HttpServerResponse response, Object result) throws Exception {
-        response.end(Json.encodePrettily(result));
+    protected void doHandle(RoutingContext routingContext, Object result) throws Exception {
+        routingContext.response().end(Json.encodePrettily(result));
     }
 }

@@ -1,20 +1,25 @@
 package cn.bdqfork.web.route;
 
+import cn.bdqfork.context.configuration.reader.ResourceReader;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.NoSuchBeanException;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.StringUtils;
+import cn.bdqfork.web.constant.ContentType;
+import cn.bdqfork.web.constant.ServerProperty;
 import cn.bdqfork.web.route.filter.Filter;
 import cn.bdqfork.web.route.filter.FilterChainFactory;
 import cn.bdqfork.web.route.message.DefaultHttpMessageHandler;
 import cn.bdqfork.web.route.message.HttpMessageHandler;
 import cn.bdqfork.web.route.message.resolver.AbstractParameterResolver;
 import cn.bdqfork.web.route.message.resolver.ParameterResolverFactory;
+import cn.bdqfork.web.route.response.HtmlResponseHandler;
 import cn.bdqfork.web.route.response.ResponseHandlerFactory;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.common.template.TemplateEngine;
 import io.vertx.ext.web.handler.AuthHandler;
 import io.vertx.ext.web.handler.TimeoutHandler;
 import org.slf4j.Logger;
@@ -105,6 +110,25 @@ public class RouteManager {
 
     private void initResponseHandlerFactory() {
         responseHandlerFactory = new ResponseHandlerFactory();
+
+        ResourceReader resourceReader;
+        try {
+            resourceReader = beanFactory.getBean(ResourceReader.DEFAULT_CONFIG_NAME);
+        } catch (BeansException e) {
+            throw new IllegalStateException(e);
+        }
+
+        Boolean enableTemplate = resourceReader.readProperty(ServerProperty.SERVER_TEMPLATE_ENABLE, Boolean.class, false);
+        if (!enableTemplate) {
+            return;
+        }
+
+        TemplateEngine templateEngine = null;
+        //todo:根据templateType创建TemplateEngine
+        HtmlResponseHandler handler = (HtmlResponseHandler) responseHandlerFactory.getResponseHandler(ContentType.HTML);
+        TemplateManager templateManager = new TemplateManager(enableTemplate);
+        //todo:设置其他属性
+        handler.setTemplateManager(templateManager);
     }
 
     private void initRouteResolver() {
