@@ -5,7 +5,7 @@ package cn.bdqfork.web;
  * @since 2020/2/17
  */
 public class WebApplication {
-    public void run(Class<?> clazz) {
+    public static void run(Class<?> clazz) {
         String scanPath = clazz.getPackage().getName();
         try {
             new WebApplicationContext(scanPath).start();

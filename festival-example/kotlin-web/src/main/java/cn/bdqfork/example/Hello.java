@@ -20,7 +20,7 @@ public class Hello {
     }
 
     public static void main(String[] args) throws Exception {
-        new WebApplication().run(Hello.class);
+        WebApplication.Companion.run(Hello.class);
     }
 
 }
