@@ -1,6 +1,9 @@
 package cn.bdqfork.web;
 
+import cn.bdqfork.cache.constant.CacheProperty;
+import cn.bdqfork.cache.processor.CacheSupportProcessor;
 import cn.bdqfork.context.AnnotationApplicationContext;
+import cn.bdqfork.context.configuration.reader.ResourceReader;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.NoSuchBeanException;
 import cn.bdqfork.core.factory.BeanFactory;
@@ -77,6 +80,35 @@ public class WebApplicationContext extends AnnotationApplicationContext {
 
         }
         return options;
+    }
+
+    @Override
+    protected void registerProcessor() throws BeansException {
+        super.registerProcessor();
+        try {
+            ClassLoader.getSystemClassLoader().loadClass("cn.bdqfork.cache.processor.CacheSupportProcessor");
+            if (log.isInfoEnabled()) {
+                log.info("cache support!");
+            }
+        } catch (ClassNotFoundException e) {
+            if (log.isDebugEnabled()) {
+                log.debug("no cache support!");
+            }
+            return;
+        }
+        ResourceReader resourceReader = getBean(ResourceReader.class);
+        boolean cacheEnable = resourceReader.readProperty(CacheProperty.CACHE_ENABLE, Boolean.class, false);
+        if (cacheEnable) {
+            if (log.isInfoEnabled()) {
+                log.info("enable cache!");
+            }
+            BeanDefinition beanDefinition = BeanDefinition.builder()
+                    .beanName("cacheSupportProcessor")
+                    .beanClass(CacheSupportProcessor.class)
+                    .scope(BeanDefinition.SINGLETON)
+                    .build();
+            getBeanFactory().registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
+        }
     }
 
     @Override

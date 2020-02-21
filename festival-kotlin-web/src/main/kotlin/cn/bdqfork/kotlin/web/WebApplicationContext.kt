@@ -1,6 +1,9 @@
 package cn.bdqfork.kotlin.web
 
+import cn.bdqfork.cache.constant.CacheProperty
+import cn.bdqfork.cache.processor.CacheSupportProcessor
 import cn.bdqfork.context.AnnotationApplicationContext
+import cn.bdqfork.context.configuration.reader.ResourceReader
 import cn.bdqfork.core.exception.BeansException
 import cn.bdqfork.core.exception.NoSuchBeanException
 import cn.bdqfork.core.factory.BeanFactory
@@ -61,6 +64,35 @@ class WebApplicationContext(vararg scanPaths: String) : AnnotationApplicationCon
             options = DeploymentOptions()
         }
         return options
+    }
+
+    @Throws(BeansException::class)
+    override fun registerProcessor() {
+        super.registerProcessor()
+        try {
+            ClassLoader.getSystemClassLoader().loadClass("cn.bdqfork.cache.processor.CacheSupportProcessor")
+            if (log.isInfoEnabled) {
+                log.info("cache support!")
+            }
+        } catch (e: ClassNotFoundException) {
+            if (log.isDebugEnabled) {
+                log.debug("no cache support!")
+            }
+            return
+        }
+        val resourceReader = getBean(ResourceReader::class.java)
+        val cacheEnable = resourceReader.readProperty(CacheProperty.CACHE_ENABLE, Boolean::class.java, false)
+        if (cacheEnable) {
+            if (log.isInfoEnabled) {
+                log.info("enable cache!")
+            }
+            val beanDefinition = BeanDefinition.builder()
+                    .beanName("cacheSupportProcessor")
+                    .beanClass(CacheSupportProcessor::class.java)
+                    .scope(BeanDefinition.SINGLETON)
+                    .build()
+            beanFactory.registerBeanDefinition(beanDefinition.beanName, beanDefinition)
+        }
     }
 
     @Throws(BeansException::class)

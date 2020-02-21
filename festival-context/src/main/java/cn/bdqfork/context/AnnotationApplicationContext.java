@@ -165,7 +165,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
 
         processBeanFactory();
 
-        registerBeanPostProcessor();
+        processBeanPostProcessor();
     }
 
     protected void registerBean() throws BeansException {
@@ -203,7 +203,7 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         }
     }
 
-    protected void registerBeanPostProcessor() throws BeansException {
+    protected void processBeanPostProcessor() throws BeansException {
         if (log.isTraceEnabled()) {
             log.trace("register bean processor !");
         }

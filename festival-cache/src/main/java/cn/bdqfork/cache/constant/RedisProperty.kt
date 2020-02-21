@@ -1,4 +1,4 @@
-package cn.bdqfork.kotlin.web.constant
+package cn.bdqfork.cache.constant
 
 /**
  * @author bdq
