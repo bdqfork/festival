@@ -3,10 +3,11 @@ apply plugin: 'kotlin'
 def libs = rootProject.ext.libraries
 
 dependencies {
-    api "io.vertx:vertx-web:${libs.vertx}"
     implementation "io.vertx:vertx-lang-kotlin-coroutines:${libs.vertx}"
     compileOnly "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${libs.jackson}"
     compileOnly "joda-time:joda-time:${libs.joda}"
+
+    api "io.vertx:vertx-web:${libs.vertx}"
     api project(':festival-context')
 }
 
