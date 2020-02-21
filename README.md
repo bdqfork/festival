@@ -67,6 +67,7 @@ public class UserController {
 + static文件处理 已完成！
 + verticle service多实例
 + 支持rpc调用
++ cache key支持spel表达式
 
 License
 -------
