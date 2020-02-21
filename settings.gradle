@@ -9,4 +9,5 @@ include 'festival-example:kotlin-web'
 findProject(':festival-example:kotlin-web')?.name = 'kotlin-web'
 include 'festival-example:web'
 findProject(':festival-example:web')?.name = 'web'
+include 'festival-cache'
 

@@ -1,4 +1,4 @@
-package cn.bdqfork.web.cache.annotation;
+package cn.bdqfork.cache.annotation;
 
 import java.lang.annotation.*;
 
