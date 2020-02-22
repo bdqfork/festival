@@ -104,17 +104,17 @@ public class TemplateManager {
         }
 
         TemplateEngine templateEngine;
-        if (templateType.equals("freemarker")) {
+        if ("freemarker".equals(templateType)) {
             templateEngine = FreeMarkerTemplateEngine.create(vertx);
             return templateEngine;
         }
 
-        if (templateType.equals("jade")) {
+        if ("jade".equals(templateType)) {
             templateEngine = JadeTemplateEngine.create(vertx);
             return templateEngine;
         }
 
-        if (templateType.equals("thymeleaf")) {
+        if ("thymeleaf".equals(templateType)) {
             templateEngine = ThymeleafTemplateEngine.create(vertx);
             return templateEngine;
         }
