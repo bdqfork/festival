@@ -19,19 +19,15 @@ public class HtmlResponseHandler extends AbstractResponseHandler {
     @Override
     protected void doHandle(RoutingContext routingContext, Object result) throws Exception {
         HttpServerResponse response = routingContext.response();
-        if (templateManager.isEnable()) {
-            ModelAndView modelAndView = (ModelAndView) result;
-            String template = templateManager.getTemplatePath() + "/" + modelAndView.getView() + templateManager.getSuffix();
-            templateManager.getTemplateEngine().render(modelAndView.getModel(), template, res -> {
-                if (res.succeeded()) {
-                    response.end(res.result());
-                } else {
-                    routingContext.fail(500, res.cause());
-                }
-            });
-        } else {
-            routingContext.fail(500, new IllegalStateException("template is not enabled!"));
-        }
+        ModelAndView modelAndView = (ModelAndView) result;
+        String template = templateManager.getTemplatePath() + "/" + modelAndView.getView() + templateManager.getSuffix();
+        templateManager.getTemplateEngine().render(modelAndView.getModel(), template, res -> {
+            if (res.succeeded()) {
+                response.end(res.result());
+            } else {
+                routingContext.fail(500, res.cause());
+            }
+        });
     }
 
 }

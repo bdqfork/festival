@@ -11,6 +11,7 @@ import cn.bdqfork.core.util.StringUtils;
 import cn.bdqfork.web.constant.ServerProperty;
 import cn.bdqfork.web.route.RouteManager;
 import cn.bdqfork.web.route.SessionManager;
+import cn.bdqfork.web.route.TemplateManager;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpVersion;
@@ -123,15 +124,17 @@ public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAw
 
     @Override
     protected void registerRouteMapping(Router router) throws Exception {
-        RouteManager routeManager = new RouteManager(beanFactory, vertx, router);
+        RouteManager routeManager = new RouteManager(beanFactory);
         routeManager.registerRouteMapping();
     }
 
 
     @Override
     protected void doStart() throws Exception {
-        WebSocketRouter webSocketRouter = new WebSocketRouter(beanFactory);
+        TemplateManager templateManager = new TemplateManager(beanFactory);
+        templateManager.init();
 
+        WebSocketRouter webSocketRouter = new WebSocketRouter(beanFactory);
         HttpServerOptions options = resolveHttpServerOptions();
         httpServer = vertx.createHttpServer(options)
                 .websocketHandler(webSocketRouter::accept)

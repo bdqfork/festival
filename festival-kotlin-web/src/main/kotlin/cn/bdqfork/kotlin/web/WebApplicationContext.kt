@@ -5,6 +5,7 @@ import cn.bdqfork.core.exception.BeansException
 import cn.bdqfork.core.exception.NoSuchBeanException
 import cn.bdqfork.core.factory.definition.BeanDefinition
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry
+import cn.bdqfork.kotlin.web.route.response.ResponseHandlerFactory
 import cn.bdqfork.kotlin.web.server.DefaultWebServer
 import cn.bdqfork.kotlin.web.util.VertxUtils
 import io.vertx.core.Vertx
@@ -25,6 +26,7 @@ class WebApplicationContext(vararg scanPaths: String) : AnnotationApplicationCon
         registerVertx()
         registerRouter()
         registerWebServer()
+        registerResponseHandlerFactory()
     }
 
     @Throws(BeansException::class)
@@ -60,6 +62,17 @@ class WebApplicationContext(vararg scanPaths: String) : AnnotationApplicationCon
                 .scope(BeanDefinition.SINGLETON)
                 .beanClass(DefaultWebServer::class.java)
                 .beanName("webserver")
+                .build()
+        registry.registerBeanDefinition(beanDefinition.beanName, beanDefinition)
+    }
+
+    @Throws(BeansException::class)
+    private fun registerResponseHandlerFactory() {
+        val registry: BeanDefinitionRegistry = beanFactory
+        val beanDefinition = BeanDefinition.builder()
+                .scope(BeanDefinition.SINGLETON)
+                .beanClass(ResponseHandlerFactory::class.java)
+                .beanName("responseHandlerFactory")
                 .build()
         registry.registerBeanDefinition(beanDefinition.beanName, beanDefinition)
     }

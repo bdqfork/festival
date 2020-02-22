@@ -5,6 +5,7 @@ import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.NoSuchBeanException;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.registry.BeanDefinitionRegistry;
+import cn.bdqfork.web.route.response.ResponseHandlerFactory;
 import cn.bdqfork.web.server.DefaultWebServer;
 import cn.bdqfork.web.util.VertxUtils;
 import io.vertx.core.Vertx;
@@ -31,6 +32,7 @@ public class WebApplicationContext extends AnnotationApplicationContext {
         registerVertx();
         registerRouter();
         registerWebServer();
+        registerResponseHandlerFactory();
     }
 
     private void registerVertx() throws BeansException {
@@ -63,6 +65,16 @@ public class WebApplicationContext extends AnnotationApplicationContext {
                 .scope(BeanDefinition.SINGLETON)
                 .beanClass(DefaultWebServer.class)
                 .beanName("webserver")
+                .build();
+        registry.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
+    }
+
+    private void registerResponseHandlerFactory() throws BeansException {
+        BeanDefinitionRegistry registry = getBeanFactory();
+        BeanDefinition beanDefinition = BeanDefinition.builder()
+                .scope(BeanDefinition.SINGLETON)
+                .beanClass(ResponseHandlerFactory.class)
+                .beanName("responseHandlerFactory")
                 .build();
         registry.registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
     }

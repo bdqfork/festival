@@ -101,7 +101,10 @@ public class AopProxyProcessor extends AbstractLifeCycleProcessor implements Bea
         }
 
         Executable executable = beanDefinition.getConstructor();
-        return AnnotationUtils.isAnnotationPresent(executable, Optimize.class);
+        if (executable != null) {
+            return AnnotationUtils.isAnnotationPresent(executable, Optimize.class);
+        }
+        return false;
     }
 
     @Override
