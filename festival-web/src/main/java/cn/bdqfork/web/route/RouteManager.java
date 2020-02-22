@@ -16,12 +16,16 @@ import cn.bdqfork.web.route.message.resolver.AbstractParameterResolver;
 import cn.bdqfork.web.route.message.resolver.ParameterResolverFactory;
 import cn.bdqfork.web.route.response.HtmlResponseHandler;
 import cn.bdqfork.web.route.response.ResponseHandlerFactory;
+import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.common.template.TemplateEngine;
 import io.vertx.ext.web.handler.AuthHandler;
 import io.vertx.ext.web.handler.TimeoutHandler;
+import io.vertx.ext.web.templ.freemarker.FreeMarkerTemplateEngine;
+import io.vertx.ext.web.templ.jade.JadeTemplateEngine;
+import io.vertx.ext.web.templ.thymeleaf.ThymeleafTemplateEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +56,7 @@ public class RouteManager {
 
     private AuthHandler authHandler;
 
-    public RouteManager(ConfigurableBeanFactory beanFactory, Router router) {
+    public RouteManager(ConfigurableBeanFactory beanFactory, Router router) throws BeansException, IllegalAccessException {
         this.beanFactory = beanFactory;
         this.router = router;
         initAuthHandler();
@@ -108,12 +112,12 @@ public class RouteManager {
         httpMessageHandler = new DefaultHttpMessageHandler(parameterResolverFactory);
     }
 
-    private void initResponseHandlerFactory() {
+    private void initResponseHandlerFactory() throws BeansException, IllegalAccessException {
         responseHandlerFactory = new ResponseHandlerFactory();
 
         ResourceReader resourceReader;
         try {
-            resourceReader = beanFactory.getBean(ResourceReader.DEFAULT_CONFIG_NAME);
+            resourceReader = beanFactory.getBean(ResourceReader.class);
         } catch (BeansException e) {
             throw new IllegalStateException(e);
         }
@@ -125,9 +129,58 @@ public class RouteManager {
 
         TemplateEngine templateEngine = null;
         //todo:根据templateType创建TemplateEngine
+        //读取模板类型
+        String templateType = resourceReader.readProperty(ServerProperty.SERVER_TEMPLATE_TYPE, String.class);
+        Vertx vertx = beanFactory.getBean("vertx");
+        if (!StringUtils.isEmpty(templateType)){
+
+            switch (templateType) {
+
+                case "freemarker":
+                    templateEngine = FreeMarkerTemplateEngine.create(vertx);
+                    break;
+
+                case "thymeleaf":
+                    templateEngine = ThymeleafTemplateEngine.create(vertx);
+                    break;
+
+                case "jade":
+                    templateEngine = JadeTemplateEngine.create(vertx);
+                    break;
+
+                default:
+                    throw new IllegalAccessException(String.format("unsupported type of template %s!", templateType));
+            }
+
+        } else {
+            throw new IllegalAccessException("Template Type not set!");
+        }
+
         HtmlResponseHandler handler = (HtmlResponseHandler) responseHandlerFactory.getResponseHandler(ContentType.HTML);
         TemplateManager templateManager = new TemplateManager(enableTemplate);
         //todo:设置其他属性
+        //设置模板类型和模板引擎
+        templateManager.setTemplateType(templateType);
+        templateManager.setTemplateEngine(templateEngine);
+        //设置是否启用缓存
+        Boolean cacheEnable = resourceReader.readProperty(ServerProperty.SERVER_TEMPLATE_CACHE_ENABLE, Boolean.class);
+        if (cacheEnable == null) {
+            cacheEnable = true;
+        }
+        System.setProperty("io.vertx.ext.web.common.template.TemplateEngine.disableCache", cacheEnable.toString());
+        //设置文件后缀名
+        String suffix = resourceReader.readProperty(ServerProperty.SERVER_TEMPLATE_SUFFIX, String.class);
+        if (!StringUtils.isEmpty(suffix)) {
+            templateManager.setSuffix(suffix);
+        } else {
+            throw new IllegalAccessException("Template suffix not set!");
+        }
+        //设置文件路径
+        String templatePath = resourceReader.readProperty(ServerProperty.SERVER_TEMPLATE_PATH, String.class);
+        if (!StringUtils.isEmpty(templatePath)){
+            templateManager.setTemplatePath(templatePath);
+        }
+
         handler.setTemplateManager(templateManager);
     }
 

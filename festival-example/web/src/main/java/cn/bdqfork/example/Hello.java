@@ -3,6 +3,7 @@ package cn.bdqfork.example;
 import cn.bdqfork.web.WebApplication;
 import cn.bdqfork.web.route.annotation.GetMapping;
 import cn.bdqfork.web.route.annotation.RouteController;
+import io.vertx.ext.web.RoutingContext;
 
 import javax.inject.Singleton;
 
