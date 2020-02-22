@@ -44,8 +44,7 @@ public class UserController {
     }
     
     public static void main(String[] args) throws Exception {
-            WebApplicationContext webApplicationContext = new WebApplicationContext("cn.bdqfork.kotlin.example");
-            webApplicationContext.start();
+            WebApplication.run(UserController.class);
     }
 
 }
