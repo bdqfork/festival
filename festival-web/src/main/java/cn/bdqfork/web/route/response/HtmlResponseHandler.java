@@ -13,10 +13,14 @@ import io.vertx.ext.web.RoutingContext;
 public class HtmlResponseHandler extends AbstractResponseHandler {
     private TemplateManager templateManager;
 
+    public HtmlResponseHandler(TemplateManager templateManager) {
+        this.templateManager = templateManager;
+    }
+
     @Override
     protected void doHandle(RoutingContext routingContext, Object result) throws Exception {
         HttpServerResponse response = routingContext.response();
-        if (result instanceof ModelAndView && templateManager != null && templateManager.isEnable()) {
+        if (templateManager.isEnable()) {
             ModelAndView modelAndView = (ModelAndView) result;
             String template = templateManager.getTemplatePath() + "/" + modelAndView.getView() + templateManager.getSuffix();
             templateManager.getTemplateEngine().render(new JsonObject(modelAndView.getModel()), template, res -> {
@@ -27,11 +31,8 @@ public class HtmlResponseHandler extends AbstractResponseHandler {
                 }
             });
         } else {
-            response.end(result.toString());
+            routingContext.fail(500, new IllegalStateException("template is not enabled!"));
         }
     }
 
-    public void setTemplateManager(TemplateManager templateManager) {
-        this.templateManager = templateManager;
-    }
 }

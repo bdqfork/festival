@@ -46,6 +46,8 @@ public class RouteManager {
 
     private ConfigurableBeanFactory beanFactory;
 
+    private Vertx vertx;
+
     private Router router;
 
     private HttpMessageHandler httpMessageHandler;
@@ -56,8 +58,9 @@ public class RouteManager {
 
     private AuthHandler authHandler;
 
-    public RouteManager(ConfigurableBeanFactory beanFactory, Router router) throws BeansException, IllegalAccessException {
+    public RouteManager(ConfigurableBeanFactory beanFactory, Vertx vertx, Router router) {
         this.beanFactory = beanFactory;
+        this.vertx = vertx;
         this.router = router;
         initAuthHandler();
         initFilterChainFactory();
@@ -112,7 +115,7 @@ public class RouteManager {
         httpMessageHandler = new DefaultHttpMessageHandler(parameterResolverFactory);
     }
 
-    private void initResponseHandlerFactory() throws BeansException, IllegalAccessException {
+    private void initResponseHandlerFactory() {
         responseHandlerFactory = new ResponseHandlerFactory();
 
         ResourceReader resourceReader;
@@ -127,61 +130,64 @@ public class RouteManager {
             return;
         }
 
-        TemplateEngine templateEngine = null;
-        //todo:根据templateType创建TemplateEngine
-        //读取模板类型
-        String templateType = resourceReader.readProperty(ServerProperty.SERVER_TEMPLATE_TYPE, String.class);
-        Vertx vertx = beanFactory.getBean("vertx");
-        if (!StringUtils.isEmpty(templateType)){
+        configTemplateEngine(resourceReader, enableTemplate);
+    }
 
-            switch (templateType) {
-
-                case "freemarker":
-                    templateEngine = FreeMarkerTemplateEngine.create(vertx);
-                    break;
-
-                case "thymeleaf":
-                    templateEngine = ThymeleafTemplateEngine.create(vertx);
-                    break;
-
-                case "jade":
-                    templateEngine = JadeTemplateEngine.create(vertx);
-                    break;
-
-                default:
-                    throw new IllegalAccessException(String.format("unsupported type of template %s!", templateType));
-            }
-
-        } else {
-            throw new IllegalAccessException("Template Type not set!");
+    private void configTemplateEngine(ResourceReader resourceReader, Boolean enableTemplate) {
+        if (log.isInfoEnabled()) {
+            log.info("template enabled!");
         }
 
-        HtmlResponseHandler handler = (HtmlResponseHandler) responseHandlerFactory.getResponseHandler(ContentType.HTML);
+        String templateType = resourceReader.readProperty(ServerProperty.SERVER_TEMPLATE_TYPE, String.class);
+        if (StringUtils.isEmpty(templateType)) {
+            throw new IllegalStateException("template type not set!");
+        }
+
+        TemplateEngine templateEngine = createTemplateEngine(templateType);
+
         TemplateManager templateManager = new TemplateManager(enableTemplate);
-        //todo:设置其他属性
-        //设置模板类型和模板引擎
         templateManager.setTemplateType(templateType);
         templateManager.setTemplateEngine(templateEngine);
-        //设置是否启用缓存
-        Boolean cacheEnable = resourceReader.readProperty(ServerProperty.SERVER_TEMPLATE_CACHE_ENABLE, Boolean.class);
-        if (cacheEnable == null) {
-            cacheEnable = true;
-        }
-        System.setProperty("io.vertx.ext.web.common.template.TemplateEngine.disableCache", cacheEnable.toString());
-        //设置文件后缀名
+
+        Boolean cacheEnable = resourceReader.readProperty(ServerProperty.SERVER_TEMPLATE_CACHE_ENABLE, Boolean.class, true);
+
+        System.setProperty("io.vertx.ext.web.common.template.TemplateEngine.disableCache", String.valueOf((!cacheEnable)));
+
         String suffix = resourceReader.readProperty(ServerProperty.SERVER_TEMPLATE_SUFFIX, String.class);
         if (!StringUtils.isEmpty(suffix)) {
             templateManager.setSuffix(suffix);
         } else {
-            throw new IllegalAccessException("Template suffix not set!");
+            throw new IllegalStateException("template suffix not set!");
         }
-        //设置文件路径
+
         String templatePath = resourceReader.readProperty(ServerProperty.SERVER_TEMPLATE_PATH, String.class);
-        if (!StringUtils.isEmpty(templatePath)){
+        if (!StringUtils.isEmpty(templatePath)) {
             templateManager.setTemplatePath(templatePath);
         }
 
-        handler.setTemplateManager(templateManager);
+        responseHandlerFactory.registerResponseHandler(ContentType.HTML, new HtmlResponseHandler(templateManager));
+    }
+
+    private TemplateEngine createTemplateEngine(String templateType) {
+        TemplateEngine templateEngine;//todo:把switch换成if
+        switch (templateType) {
+
+            case "freemarker":
+                templateEngine = FreeMarkerTemplateEngine.create(vertx);
+                break;
+
+            case "thymeleaf":
+                templateEngine = ThymeleafTemplateEngine.create(vertx);
+                break;
+
+            case "jade":
+                templateEngine = JadeTemplateEngine.create(vertx);
+                break;
+
+            default:
+                throw new IllegalStateException(String.format("unsupported type of template %s!", templateType));
+        }
+        return templateEngine;
     }
 
     private void initRouteResolver() {

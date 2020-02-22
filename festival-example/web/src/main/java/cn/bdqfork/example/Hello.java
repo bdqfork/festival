@@ -1,9 +1,9 @@
 package cn.bdqfork.example;
 
 import cn.bdqfork.web.WebApplication;
+import cn.bdqfork.web.route.ModelAndView;
 import cn.bdqfork.web.route.annotation.GetMapping;
 import cn.bdqfork.web.route.annotation.RouteController;
-import io.vertx.ext.web.RoutingContext;
 
 import javax.inject.Singleton;
 
@@ -20,8 +20,15 @@ public class Hello {
         return "hello festival";
     }
 
+    @GetMapping("/template")
+    public ModelAndView template() {
+        ModelAndView modelAndView = new ModelAndView("index");
+        modelAndView.add("test", "hello template");
+        return modelAndView;
+    }
+
     public static void main(String[] args) throws Exception {
-        new WebApplication().run(Hello.class);
+        WebApplication.run(Hello.class);
     }
 
 }
