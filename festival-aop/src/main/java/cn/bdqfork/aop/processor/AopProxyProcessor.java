@@ -4,7 +4,7 @@ import cn.bdqfork.aop.advice.Advisor;
 import cn.bdqfork.aop.factory.AopProxyBeanFactory;
 import cn.bdqfork.aop.factory.DefaultAopProxyBeanFactory;
 import cn.bdqfork.aop.proxy.AopProxySupport;
-import cn.bdqfork.context.AbstractLifeCycleProcessor;
+import cn.bdqfork.context.processor.AbstractLifeCycleProcessor;
 import cn.bdqfork.context.ApplicationContext;
 import cn.bdqfork.core.annotation.Optimize;
 import cn.bdqfork.core.exception.BeansException;

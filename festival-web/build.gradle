@@ -10,5 +10,4 @@ dependencies {
     api "io.vertx:vertx-web:${libs.vertx}"
     api "io.vertx:vertx-rx-java2:${libs.vertx}"
     api project(':festival-context')
-    compileOnly project(':festival-cache')
 }

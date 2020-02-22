@@ -4,7 +4,7 @@ import cn.bdqfork.cache.constant.CacheProperty;
 import cn.bdqfork.cache.provider.CacheProvider;
 import cn.bdqfork.cache.provider.RedisCacheProvider;
 import cn.bdqfork.cache.proxy.CacheInvocationHandler;
-import cn.bdqfork.context.AbstractLifeCycleProcessor;
+import cn.bdqfork.context.processor.AbstractLifeCycleProcessor;
 import cn.bdqfork.context.ApplicationContext;
 import cn.bdqfork.context.aware.ClassLoaderAware;
 import cn.bdqfork.context.configuration.reader.ResourceReader;

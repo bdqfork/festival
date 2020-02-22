@@ -1,6 +1,6 @@
 package cn.bdqfork.web.processor;
 
-import cn.bdqfork.context.AbstractLifeCycleProcessor;
+import cn.bdqfork.context.processor.AbstractLifeCycleProcessor;
 import cn.bdqfork.context.ApplicationContext;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.NoSuchBeanException;

@@ -1,5 +1,6 @@
 package cn.bdqfork.context;
 
+import cn.bdqfork.context.processor.LifeCycleProcessor;
 import cn.bdqfork.core.exception.BeansException;
 
 import java.util.Map;

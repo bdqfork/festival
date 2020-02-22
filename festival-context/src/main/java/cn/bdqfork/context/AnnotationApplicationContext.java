@@ -6,6 +6,7 @@ import cn.bdqfork.context.aware.ResourceReaderAware;
 import cn.bdqfork.context.configuration.reader.GenericResourceReader;
 import cn.bdqfork.context.configuration.reader.ResourceReader;
 import cn.bdqfork.context.factory.AnnotationBeanDefinitionReader;
+import cn.bdqfork.context.processor.LifeCycleProcessor;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.NoSuchBeanException;
 import cn.bdqfork.core.extension.ExtensionLoader;
@@ -43,6 +44,9 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
      * bean描述信息读取器
      */
     private AnnotationBeanDefinitionReader beanDefinitionReader;
+    /**
+     * 资源读取器
+     */
     private ResourceReader resourceReader;
 
     static {
