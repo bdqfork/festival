@@ -1,10 +1,13 @@
 package cn.bdqfork.kotlin.web.route
 
+import cn.bdqfork.context.configuration.reader.ResourceReader
 import cn.bdqfork.core.exception.BeansException
 import cn.bdqfork.core.exception.NoSuchBeanException
 import cn.bdqfork.core.factory.ConfigurableBeanFactory
 import cn.bdqfork.core.util.BeanUtils
 import cn.bdqfork.core.util.StringUtils
+import cn.bdqfork.kotlin.web.constant.ContentType
+import cn.bdqfork.kotlin.web.constant.ServerProperty
 import cn.bdqfork.kotlin.web.route.filter.Filter
 import cn.bdqfork.kotlin.web.route.filter.FilterChain
 import cn.bdqfork.kotlin.web.route.filter.FilterChainFactory
@@ -12,13 +15,19 @@ import cn.bdqfork.kotlin.web.route.message.DefaultHttpMessageHandler
 import cn.bdqfork.kotlin.web.route.message.HttpMessageHandler
 import cn.bdqfork.kotlin.web.route.message.resolver.AbstractParameterResolver
 import cn.bdqfork.kotlin.web.route.message.resolver.ParameterResolverFactory
+import cn.bdqfork.kotlin.web.route.response.HtmlResponseHandler
 import cn.bdqfork.kotlin.web.route.response.ResponseHandlerFactory
+import io.vertx.core.Vertx
 import io.vertx.core.http.HttpMethod
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
+import io.vertx.ext.web.common.template.TemplateEngine
 import io.vertx.ext.web.handler.AuthHandler
 import io.vertx.ext.web.handler.TimeoutHandler
+import io.vertx.ext.web.templ.freemarker.FreeMarkerTemplateEngine
+import io.vertx.ext.web.templ.jade.JadeTemplateEngine
+import io.vertx.ext.web.templ.thymeleaf.ThymeleafTemplateEngine
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
@@ -30,7 +39,7 @@ import java.util.function.Consumer
  * @author bdq
  * @since 2020/2/10
  */
-class RouteManager(private val beanFactory: ConfigurableBeanFactory, private val router: Router) {
+class RouteManager(private val beanFactory: ConfigurableBeanFactory, private val vertx: Vertx, private val router: Router) {
     private val registedRoutes = Collections.newSetFromMap(ConcurrentHashMap<String, Boolean>())
     private lateinit var routeResolver: RouteResolver
     private lateinit var httpMessageHandler: HttpMessageHandler
@@ -108,11 +117,6 @@ class RouteManager(private val beanFactory: ConfigurableBeanFactory, private val
         }
     }
 
-    companion object {
-        private val log = LoggerFactory.getLogger(RouteManager::class.java)
-        const val ROUTE_ATTRIBETE_KEY = "routeAttribute"
-    }
-
     init {
         initAuthHandler()
         initFilterChainFactory()
@@ -176,9 +180,67 @@ class RouteManager(private val beanFactory: ConfigurableBeanFactory, private val
 
     private fun initResponseHandlerFactory() {
         responseHandlerFactory = ResponseHandlerFactory()
+        val resourceReader: ResourceReader
+        resourceReader = try {
+            beanFactory.getBean(ResourceReader::class.java)
+        } catch (e: BeansException) {
+            throw IllegalStateException(e)
+        }
+
+        val enableTemplate = resourceReader.readProperty(ServerProperty.SERVER_TEMPLATE_ENABLE, Boolean::class.java, false)
+        if (!enableTemplate) {
+            return
+        }
+
+        configTemplateEngine(resourceReader, enableTemplate)
+    }
+
+    private fun configTemplateEngine(resourceReader: ResourceReader, enableTemplate: Boolean) {
+        if (log.isInfoEnabled) {
+            log.info("template enabled!")
+        }
+
+        val templateType = resourceReader.readProperty(ServerProperty.SERVER_TEMPLATE_TYPE, String::class.java)
+        check(!StringUtils.isEmpty(templateType)) { "template type not set!" }
+
+        val templateEngine = createTemplateEngine(templateType)
+        val templateManager = TemplateManager(enableTemplate)
+        templateManager.templateType = templateType
+        templateManager.templateEngine = templateEngine
+
+        val cacheEnable = resourceReader.readProperty(ServerProperty.SERVER_TEMPLATE_CACHE_ENABLE, Boolean::class.java, true)
+        System.setProperty("io.vertx.ext.web.common.template.TemplateEngine.disableCache", (!cacheEnable).toString())
+
+        val suffix = resourceReader.readProperty(ServerProperty.SERVER_TEMPLATE_SUFFIX, String::class.java)
+        if (!StringUtils.isEmpty(suffix)) {
+            templateManager.suffix = suffix
+        } else {
+            throw IllegalStateException("template suffix not set!")
+        }
+
+        val templatePath = resourceReader.readProperty(ServerProperty.SERVER_TEMPLATE_PATH, String::class.java)
+        if (!StringUtils.isEmpty(templatePath)) {
+            templateManager.templatePath = templatePath
+        }
+
+        responseHandlerFactory.registerResponseHandler(ContentType.HTML, HtmlResponseHandler(templateManager))
+    }
+
+    private fun createTemplateEngine(templateType: String): TemplateEngine {
+        return when (templateType) {
+            "freemarker" -> FreeMarkerTemplateEngine.create(vertx)
+            "thymeleaf" -> ThymeleafTemplateEngine.create(vertx)
+            "jade" -> JadeTemplateEngine.create(vertx)
+            else -> throw IllegalStateException(String.format("unsupported type of template %s!", templateType))
+        }
     }
 
     private fun initRouteResolver() {
         routeResolver = RouteResolver(httpMessageHandler, responseHandlerFactory)
+    }
+
+    companion object {
+        private val log = LoggerFactory.getLogger(RouteManager::class.java)
+        const val ROUTE_ATTRIBETE_KEY = "routeAttribute"
     }
 }

@@ -1,7 +1,7 @@
 package cn.bdqfork.kotlin.web.route.response
 
-import io.vertx.core.http.HttpServerResponse
 import io.vertx.core.json.Json
+import io.vertx.ext.web.RoutingContext
 
 /**
  * @author bdq
@@ -9,7 +9,7 @@ import io.vertx.core.json.Json
  */
 class JsonResponseHandler : AbstractResponseHandler() {
     @Throws(Exception::class)
-    override fun doHandle(httpServerResponse: HttpServerResponse, result: Any) {
-        httpServerResponse.end(Json.encodePrettily(result))
+    override fun doHandle(routingContext: RoutingContext, result: Any) {
+        routingContext.response().end(Json.encodePrettily(result))
     }
 }

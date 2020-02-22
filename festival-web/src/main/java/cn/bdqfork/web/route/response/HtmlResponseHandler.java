@@ -3,7 +3,6 @@ package cn.bdqfork.web.route.response;
 import cn.bdqfork.web.route.ModelAndView;
 import cn.bdqfork.web.route.TemplateManager;
 import io.vertx.core.http.HttpServerResponse;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
 /**
@@ -23,7 +22,7 @@ public class HtmlResponseHandler extends AbstractResponseHandler {
         if (templateManager.isEnable()) {
             ModelAndView modelAndView = (ModelAndView) result;
             String template = templateManager.getTemplatePath() + "/" + modelAndView.getView() + templateManager.getSuffix();
-            templateManager.getTemplateEngine().render(new JsonObject(modelAndView.getModel()), template, res -> {
+            templateManager.getTemplateEngine().render(modelAndView.getModel(), template, res -> {
                 if (res.succeeded()) {
                     response.end(res.result());
                 } else {

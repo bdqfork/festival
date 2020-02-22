@@ -1,6 +1,6 @@
 package cn.bdqfork.kotlin.web.route.response
 
-import io.vertx.core.http.HttpServerResponse
+import io.vertx.ext.web.RoutingContext
 
 /**
  * @author bdq
@@ -8,7 +8,7 @@ import io.vertx.core.http.HttpServerResponse
  */
 class TextPlainResponseHandler : AbstractResponseHandler() {
     @Throws(Exception::class)
-    override fun doHandle(httpServerResponse: HttpServerResponse, result: Any) {
-        httpServerResponse.end(result.toString())
+    override fun doHandle(routingContext: RoutingContext, result: Any) {
+        routingContext.response().end(result.toString())
     }
 }

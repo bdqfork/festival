@@ -10,7 +10,8 @@ import java.util.concurrent.ConcurrentHashMap
  */
 class ResponseHandlerFactory {
     private val responseHandlerMap: MutableMap<String, ResponseHandleStrategy?> = ConcurrentHashMap(16)
-    private fun registerResponseHandler(contentType: String, responseHandleStrategy: ResponseHandleStrategy?) {
+
+    fun registerResponseHandler(contentType: String, responseHandleStrategy: ResponseHandleStrategy?) {
         responseHandlerMap[contentType] = responseHandleStrategy
     }
 
