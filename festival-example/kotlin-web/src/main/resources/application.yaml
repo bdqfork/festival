@@ -13,3 +13,7 @@ server:
     enable: true
     cache:
       enable: true
+  template:
+    enable: true
+    type: thymeleaf
+    suffix: ".html"

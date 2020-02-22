@@ -38,4 +38,7 @@ object ServerProperty {
 
     const val SERVER_TEMPLATE_ENABLE = "server.template.enable"
     const val SERVER_TEMPLATE_TYPE = "server.template.type"
+    const val SERVER_TEMPLATE_CACHE_ENABLE = "server.template.cache.enable"
+    const val SERVER_TEMPLATE_PATH = "server.template.path"
+    const val SERVER_TEMPLATE_SUFFIX = "server.template.suffix"
 }

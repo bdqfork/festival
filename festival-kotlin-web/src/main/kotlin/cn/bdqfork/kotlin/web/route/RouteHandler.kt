@@ -1,6 +1,7 @@
 package cn.bdqfork.kotlin.web.route
 
 import cn.bdqfork.core.util.ReflectUtils
+import cn.bdqfork.kotlin.web.constant.ContentType
 import cn.bdqfork.kotlin.web.route.message.HttpMessageHandler
 import cn.bdqfork.kotlin.web.route.response.ResponseHandlerFactory
 import io.vertx.core.Handler
@@ -19,9 +20,11 @@ class RouteHandler(private val httpMessageHandler: HttpMessageHandler, private v
             if (ReflectUtils.isReturnVoid(method)) {
                 return
             }
-            val contentType = routingContext.acceptableContentType
-            val response = routingContext.response()
-            responseHandlerFactory.getResponseHandler(contentType).handle(response, result)
+            var contentType = routingContext.acceptableContentType
+            if (result is ModelAndView) {
+                contentType = ContentType.HTML
+            }
+            responseHandlerFactory.getResponseHandler(contentType).handle(routingContext, result)
         } catch (e: Exception) {
             throw IllegalStateException(e)
         }

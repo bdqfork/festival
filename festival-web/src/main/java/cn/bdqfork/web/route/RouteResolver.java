@@ -6,7 +6,6 @@ import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.util.AnnotationUtils;
 import cn.bdqfork.core.util.AopUtils;
-import cn.bdqfork.core.util.ReflectUtils;
 import cn.bdqfork.web.annotation.Auth;
 import cn.bdqfork.web.annotation.PermitAll;
 import cn.bdqfork.web.annotation.PermitAllowed;
@@ -17,9 +16,6 @@ import cn.bdqfork.web.route.annotation.RouteController;
 import cn.bdqfork.web.route.annotation.RouteMapping;
 import cn.bdqfork.web.route.message.HttpMessageHandler;
 import cn.bdqfork.web.route.response.ResponseHandlerFactory;
-import io.vertx.core.Handler;
-import io.vertx.core.http.HttpServerResponse;
-import io.vertx.ext.web.RoutingContext;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -87,23 +83,7 @@ public class RouteResolver {
                 .url(baseUrl + routeMapping.value())
                 .httpMethod(routeMapping.method())
                 .timeout(routeMapping.timeout())
-                .contextHandler(new Handler<RoutingContext>() {
-                    @Override
-                    public void handle(RoutingContext routingContext) {
-                        try {
-                            Object[] args = httpMessageHandler.handle(routingContext, method.getParameters());
-                            Object result = ReflectUtils.invokeMethod(bean, method, args);
-                            if (ReflectUtils.isReturnVoid(method)) {
-                                return;
-                            }
-                            String contentType = routingContext.getAcceptableContentType();
-                            HttpServerResponse response = routingContext.response();
-                            responseHandlerFactory.getResponseHandler(contentType).handle(response, result);
-                        } catch (Exception e) {
-                            throw new IllegalStateException(e);
-                        }
-                    }
-                })
+                .contextHandler(new RouteHandler(httpMessageHandler, responseHandlerFactory, method, bean))
                 .build();
     }
 

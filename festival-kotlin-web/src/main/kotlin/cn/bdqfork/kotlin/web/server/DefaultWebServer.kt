@@ -124,7 +124,7 @@ class DefaultWebServer : WebServer, RouterAware, VertxAware, BeanFactoryAware, R
 
     @Throws(Exception::class)
     fun registerRouteMapping() {
-        val routeManager = RouteManager(beanFactory, router)
+        val routeManager = RouteManager(beanFactory, vertx, router)
         routeManager.registerRouteMapping()
     }
 

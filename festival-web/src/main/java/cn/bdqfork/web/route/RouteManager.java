@@ -1,22 +1,31 @@
 package cn.bdqfork.web.route;
 
+import cn.bdqfork.context.configuration.reader.ResourceReader;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.NoSuchBeanException;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.util.BeanUtils;
 import cn.bdqfork.core.util.StringUtils;
+import cn.bdqfork.web.constant.ContentType;
+import cn.bdqfork.web.constant.ServerProperty;
 import cn.bdqfork.web.route.filter.Filter;
 import cn.bdqfork.web.route.filter.FilterChainFactory;
 import cn.bdqfork.web.route.message.DefaultHttpMessageHandler;
 import cn.bdqfork.web.route.message.HttpMessageHandler;
 import cn.bdqfork.web.route.message.resolver.AbstractParameterResolver;
 import cn.bdqfork.web.route.message.resolver.ParameterResolverFactory;
+import cn.bdqfork.web.route.response.HtmlResponseHandler;
 import cn.bdqfork.web.route.response.ResponseHandlerFactory;
+import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.common.template.TemplateEngine;
 import io.vertx.ext.web.handler.AuthHandler;
 import io.vertx.ext.web.handler.TimeoutHandler;
+import io.vertx.ext.web.templ.freemarker.FreeMarkerTemplateEngine;
+import io.vertx.ext.web.templ.jade.JadeTemplateEngine;
+import io.vertx.ext.web.templ.thymeleaf.ThymeleafTemplateEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +46,8 @@ public class RouteManager {
 
     private ConfigurableBeanFactory beanFactory;
 
+    private Vertx vertx;
+
     private Router router;
 
     private HttpMessageHandler httpMessageHandler;
@@ -47,8 +58,9 @@ public class RouteManager {
 
     private AuthHandler authHandler;
 
-    public RouteManager(ConfigurableBeanFactory beanFactory, Router router) {
+    public RouteManager(ConfigurableBeanFactory beanFactory, Vertx vertx, Router router) {
         this.beanFactory = beanFactory;
+        this.vertx = vertx;
         this.router = router;
         initAuthHandler();
         initFilterChainFactory();
@@ -105,6 +117,77 @@ public class RouteManager {
 
     private void initResponseHandlerFactory() {
         responseHandlerFactory = new ResponseHandlerFactory();
+
+        ResourceReader resourceReader;
+        try {
+            resourceReader = beanFactory.getBean(ResourceReader.class);
+        } catch (BeansException e) {
+            throw new IllegalStateException(e);
+        }
+
+        Boolean enableTemplate = resourceReader.readProperty(ServerProperty.SERVER_TEMPLATE_ENABLE, Boolean.class, false);
+        if (!enableTemplate) {
+            return;
+        }
+
+        configTemplateEngine(resourceReader, enableTemplate);
+    }
+
+    private void configTemplateEngine(ResourceReader resourceReader, Boolean enableTemplate) {
+        if (log.isInfoEnabled()) {
+            log.info("template enabled!");
+        }
+
+        String templateType = resourceReader.readProperty(ServerProperty.SERVER_TEMPLATE_TYPE, String.class);
+        if (StringUtils.isEmpty(templateType)) {
+            throw new IllegalStateException("template type not set!");
+        }
+
+        TemplateEngine templateEngine = createTemplateEngine(templateType);
+
+        TemplateManager templateManager = new TemplateManager(enableTemplate);
+        templateManager.setTemplateType(templateType);
+        templateManager.setTemplateEngine(templateEngine);
+
+        Boolean cacheEnable = resourceReader.readProperty(ServerProperty.SERVER_TEMPLATE_CACHE_ENABLE, Boolean.class, true);
+
+        System.setProperty("io.vertx.ext.web.common.template.TemplateEngine.disableCache", String.valueOf((!cacheEnable)));
+
+        String suffix = resourceReader.readProperty(ServerProperty.SERVER_TEMPLATE_SUFFIX, String.class);
+        if (!StringUtils.isEmpty(suffix)) {
+            templateManager.setSuffix(suffix);
+        } else {
+            throw new IllegalStateException("template suffix not set!");
+        }
+
+        String templatePath = resourceReader.readProperty(ServerProperty.SERVER_TEMPLATE_PATH, String.class);
+        if (!StringUtils.isEmpty(templatePath)) {
+            templateManager.setTemplatePath(templatePath);
+        }
+
+        responseHandlerFactory.registerResponseHandler(ContentType.HTML, new HtmlResponseHandler(templateManager));
+    }
+
+    private TemplateEngine createTemplateEngine(String templateType) {
+        TemplateEngine templateEngine;//todo:把switch换成if
+        switch (templateType) {
+
+            case "freemarker":
+                templateEngine = FreeMarkerTemplateEngine.create(vertx);
+                break;
+
+            case "thymeleaf":
+                templateEngine = ThymeleafTemplateEngine.create(vertx);
+                break;
+
+            case "jade":
+                templateEngine = JadeTemplateEngine.create(vertx);
+                break;
+
+            default:
+                throw new IllegalStateException(String.format("unsupported type of template %s!", templateType));
+        }
+        return templateEngine;
     }
 
     private void initRouteResolver() {
