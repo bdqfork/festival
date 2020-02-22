@@ -20,10 +20,24 @@ public class Hello {
         return "hello festival";
     }
 
-    @GetMapping("/template")
-    public ModelAndView template() {
-        ModelAndView modelAndView = new ModelAndView("index");
-        modelAndView.add("test", "hello template");
+    @GetMapping("/thymeleaf")
+    public ModelAndView testThymeleaf() {
+        ModelAndView modelAndView = new ModelAndView("thymeleaf");
+        modelAndView.add("hello", "hello thymeleaf");
+        return modelAndView;
+    }
+
+    @GetMapping("/jade")
+    public ModelAndView testJade() {
+        ModelAndView modelAndView = new ModelAndView("jade");
+        modelAndView.add("hello", "hello jade");
+        return modelAndView;
+    }
+
+    @GetMapping("/freemarker")
+    public ModelAndView testFreeMarker() {
+        ModelAndView modelAndView = new ModelAndView("freemarker");
+        modelAndView.add("test", "hello freemarker");
         return modelAndView;
     }
 

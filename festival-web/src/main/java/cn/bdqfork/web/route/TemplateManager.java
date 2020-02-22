@@ -103,25 +103,23 @@ public class TemplateManager {
             throw new IllegalStateException(e);
         }
 
-        TemplateEngine templateEngine;//todo:把switch换成if
-        switch (templateType) {
-
-            case "freemarker":
-                templateEngine = FreeMarkerTemplateEngine.create(vertx);
-                break;
-
-            case "thymeleaf":
-                templateEngine = ThymeleafTemplateEngine.create(vertx);
-                break;
-
-            case "jade":
-                templateEngine = JadeTemplateEngine.create(vertx);
-                break;
-
-            default:
-                throw new IllegalStateException(String.format("unsupported type of template %s!", templateType));
+        TemplateEngine templateEngine;
+        if (templateType.equals("freemarker")) {
+            templateEngine = FreeMarkerTemplateEngine.create(vertx);
+            return templateEngine;
         }
-        return templateEngine;
+
+        if (templateType.equals("jade")) {
+            templateEngine = JadeTemplateEngine.create(vertx);
+            return templateEngine;
+        }
+
+        if (templateType.equals("thymeleaf")) {
+            templateEngine = ThymeleafTemplateEngine.create(vertx);
+            return templateEngine;
+        }
+
+        throw new IllegalStateException(String.format("unsupported type of template %s!", templateType));
     }
 
     public TemplateEngine getTemplateEngine() {
