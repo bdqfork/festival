@@ -6,4 +6,5 @@ dependencies {
 
     api project(':festival-core')
     testImplementation project(':festival-aop')
+    testImplementation project(':festival-cache')
 }

@@ -4,5 +4,5 @@ dependencies {
     implementation "cglib:cglib:${libs.cglib}"
     implementation "org.objenesis:objenesis:${libs.objenesis}"
     api "org.aspectj:aspectjweaver:${libs.aspectjweaver}"
-    implementation project(':festival-core')
+    implementation project(':festival-context')
 }
