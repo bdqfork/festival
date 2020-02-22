@@ -11,3 +11,13 @@ dependencies {
     api "io.vertx:vertx-rx-java2:${libs.vertx}"
     api project(':festival-context')
 }
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                description = 'A web framework based vertx!'
+            }
+        }
+    }
+}
