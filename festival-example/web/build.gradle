@@ -6,6 +6,7 @@ dependencies {
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${libs.jackson}"
     implementation project(':festival-web')
     implementation project(':festival-aop')
+    implementation project(':festival-cache')
 }
 
 tasks.withType(PublishToMavenRepository) {

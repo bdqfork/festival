@@ -13,3 +13,6 @@ server:
     enable: true
     cache:
       enable: true
+cache:
+  enable: true
+  type: redis

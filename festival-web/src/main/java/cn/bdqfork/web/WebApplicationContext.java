@@ -2,6 +2,7 @@ package cn.bdqfork.web;
 
 import cn.bdqfork.cache.constant.CacheProperty;
 import cn.bdqfork.cache.processor.CacheSupportProcessor;
+import cn.bdqfork.cache.provider.RedisCacheProvider;
 import cn.bdqfork.context.AnnotationApplicationContext;
 import cn.bdqfork.context.configuration.reader.ResourceReader;
 import cn.bdqfork.core.exception.BeansException;
@@ -107,7 +108,16 @@ public class WebApplicationContext extends AnnotationApplicationContext {
                     .beanClass(CacheSupportProcessor.class)
                     .scope(BeanDefinition.SINGLETON)
                     .build();
+
             getBeanFactory().registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
+
+            BeanDefinition redisProviderBeanDefinition = BeanDefinition.builder()
+                    .beanName("RedisProvider")
+                    .beanClass(RedisCacheProvider.class)
+                    .scope(BeanDefinition.SINGLETON)
+                    .build();
+
+            getBeanFactory().registerBeanDefinition(redisProviderBeanDefinition.getBeanName(), redisProviderBeanDefinition);
         }
     }
 
