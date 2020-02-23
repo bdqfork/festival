@@ -29,7 +29,7 @@ Festvial是一个基于Vertx、Rxjava等开源库，拥有IOC、AOP功能的响�
 
 或者gradle依赖
 ```
-implementation 'com.github.bdqfork:festival-web:0.4.0'
+implementation 'com.github.bdqfork:festival-web:0.5.0'
 ```
 
 然后编写路由，运行WebApplicationContext。
