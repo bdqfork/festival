@@ -60,6 +60,7 @@ public class UserController {
 + verticle service多实例
 + 支持rpc调用
 + cache key支持spel表达式
++ 对象参数注入
 
 License
 -------
