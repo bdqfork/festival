@@ -1,7 +1,7 @@
 package cn.bdqfork.web.route.response;
 
 
-import io.vertx.core.http.HttpServerResponse;
+import io.vertx.ext.web.RoutingContext;
 
 /**
  * @author bdq
@@ -9,5 +9,5 @@ import io.vertx.core.http.HttpServerResponse;
  */
 public interface ResponseHandleStrategy {
 
-    void handle(HttpServerResponse httpServerResponse, Object result) throws Exception;
+    void handle(RoutingContext routingContext, Object result) throws Exception;
 }

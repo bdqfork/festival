@@ -11,6 +11,7 @@ import cn.bdqfork.core.util.StringUtils;
 import cn.bdqfork.web.constant.ServerProperty;
 import cn.bdqfork.web.route.RouteManager;
 import cn.bdqfork.web.route.SessionManager;
+import cn.bdqfork.web.route.TemplateManager;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpVersion;
@@ -91,44 +92,49 @@ public class DefaultWebServer extends AbstractWebServer implements BeanFactoryAw
             }
         }
 
-        boolean staticEnable = resourceReader.readProperty(ServerProperty.SERVER_STATIC_ENABLE, Boolean.class,
-                false);
+        boolean staticEnable = resourceReader.readProperty(ServerProperty.SERVER_STATIC_ENABLE, Boolean.class, false);
 
         if (staticEnable) {
 
-            String webRoot = resourceReader.readProperty(ServerProperty.SERVER_STATIC_ROOT, String.class,
-                    ServerProperty.DEFAULT_STATIC_ROOT);
-            StaticHandler staticHandler = StaticHandler.create(webRoot);
-
-            boolean cacheEnable = resourceReader.readProperty(ServerProperty.SERVER_STATIC_CACHE_ENABLE, Boolean.class,
-                    StaticHandler.DEFAULT_CACHING_ENABLED);
-            staticHandler.setCachingEnabled(cacheEnable);
-
-            Integer size = resourceReader.readProperty(ServerProperty.SERVER_STATIC_CACHE_SIZE, Integer.class,
-                    StaticHandler.DEFAULT_MAX_CACHE_SIZE);
-            staticHandler.setMaxCacheSize(size);
-
-            Long age = resourceReader.readProperty(ServerProperty.SERVER_STATIC_CACHE_AGE, Long.class,
-                    StaticHandler.DEFAULT_CACHE_ENTRY_TIMEOUT);
-            staticHandler.setCacheEntryTimeout(age);
-
-            String staticPath = resourceReader.readProperty(ServerProperty.SERVER_STATIC_PATH, String.class,
-                    ServerProperty.DEFAULT_STATIC_PATH);
-            router.route(staticPath).handler(staticHandler);
+            configStaticHandler(router);
         }
+    }
+
+    private void configStaticHandler(Router router) {
+        String webRoot = resourceReader.readProperty(ServerProperty.SERVER_STATIC_ROOT, String.class,
+                ServerProperty.DEFAULT_STATIC_ROOT);
+        StaticHandler staticHandler = StaticHandler.create(webRoot);
+
+        boolean cacheEnable = resourceReader.readProperty(ServerProperty.SERVER_STATIC_CACHE_ENABLE, Boolean.class,
+                StaticHandler.DEFAULT_CACHING_ENABLED);
+        staticHandler.setCachingEnabled(cacheEnable);
+
+        Integer size = resourceReader.readProperty(ServerProperty.SERVER_STATIC_CACHE_SIZE, Integer.class,
+                StaticHandler.DEFAULT_MAX_CACHE_SIZE);
+        staticHandler.setMaxCacheSize(size);
+
+        Long age = resourceReader.readProperty(ServerProperty.SERVER_STATIC_CACHE_AGE, Long.class,
+                StaticHandler.DEFAULT_CACHE_ENTRY_TIMEOUT);
+        staticHandler.setCacheEntryTimeout(age);
+
+        String staticPath = resourceReader.readProperty(ServerProperty.SERVER_STATIC_PATH, String.class,
+                ServerProperty.DEFAULT_STATIC_PATH);
+        router.route(staticPath).handler(staticHandler);
     }
 
     @Override
     protected void registerRouteMapping(Router router) throws Exception {
-        RouteManager routeManager = new RouteManager(beanFactory, router);
+        RouteManager routeManager = new RouteManager(beanFactory);
         routeManager.registerRouteMapping();
     }
 
 
     @Override
     protected void doStart() throws Exception {
-        WebSocketRouter webSocketRouter = new WebSocketRouter(beanFactory);
+        TemplateManager templateManager = new TemplateManager(beanFactory);
+        templateManager.init();
 
+        WebSocketRouter webSocketRouter = new WebSocketRouter(beanFactory);
         HttpServerOptions options = resolveHttpServerOptions();
         httpServer = vertx.createHttpServer(options)
                 .websocketHandler(webSocketRouter::accept)

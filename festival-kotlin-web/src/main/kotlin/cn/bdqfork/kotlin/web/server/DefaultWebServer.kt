@@ -13,6 +13,7 @@ import cn.bdqfork.kotlin.web.VertxAware
 import cn.bdqfork.kotlin.web.constant.ServerProperty
 import cn.bdqfork.kotlin.web.route.RouteManager
 import cn.bdqfork.kotlin.web.route.SessionManager
+import cn.bdqfork.kotlin.web.route.TemplateManager
 import io.vertx.core.AsyncResult
 import io.vertx.core.Vertx
 import io.vertx.core.http.HttpServer
@@ -124,16 +125,17 @@ class DefaultWebServer : WebServer, RouterAware, VertxAware, BeanFactoryAware, R
 
     @Throws(Exception::class)
     fun registerRouteMapping() {
-        val routeManager = RouteManager(beanFactory, router)
+        val routeManager = RouteManager(beanFactory)
         routeManager.registerRouteMapping()
     }
 
     @Throws(Exception::class)
     fun doStart() {
-        val webSocketRouter = WebSocketRouter(beanFactory)
+        TemplateManager(beanFactory)
+
         val options = resolveHttpServerOptions()
         httpServer = vertx.createHttpServer(options)
-                .websocketHandler(webSocketRouter::accept)
+                .websocketHandler(WebSocketRouter(beanFactory)::accept)
                 .requestHandler(router)
                 .listen { res: AsyncResult<HttpServer?> ->
                     if (res.succeeded()) {

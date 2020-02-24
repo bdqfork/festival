@@ -1,7 +1,7 @@
 package cn.bdqfork.kotlin.web.route.response
 
 import cn.bdqfork.kotlin.web.util.XmlUtils
-import io.vertx.core.http.HttpServerResponse
+import io.vertx.ext.web.RoutingContext
 
 /**
  * @author bdq
@@ -9,7 +9,7 @@ import io.vertx.core.http.HttpServerResponse
  */
 class XmlResponseHandler : AbstractResponseHandler() {
     @Throws(Exception::class)
-    override fun doHandle(httpServerResponse: HttpServerResponse, result: Any) {
-        httpServerResponse.end(XmlUtils.toXml(result))
+    override fun doHandle(routingContext: RoutingContext, result: Any) {
+        routingContext.response().end(XmlUtils.toXml(result))
     }
 }

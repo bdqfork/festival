@@ -1,5 +1,6 @@
 package cn.bdqfork.context;
 
+import cn.bdqfork.context.processor.LifeCycleProcessor;
 import cn.bdqfork.core.exception.BeansException;
 
 import java.util.Map;
@@ -14,26 +15,33 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
 
     public AbstractApplicationContext(String... scanPaths) throws BeansException {
         this.scanPaths = scanPaths;
-    }
-
-    @Override
-    public void start() throws Exception {
         createBeanFactory();
-
-        registerResourceReader();
-
-        registerProcessor();
-
-        scan(scanPaths);
-
-        registerShutdownHook();
+        registerLifeCycleProcessor();
     }
 
     protected abstract void createBeanFactory();
 
+    @Override
+    public void start() throws Exception {
+        for (LifeCycleProcessor lifeCycleProcessor : getBeans(LifeCycleProcessor.class).values()) {
+            lifeCycleProcessor.beforeStart(this);
+        }
+
+        registerResourceReader();
+
+        scan(scanPaths);
+
+        registerShutdownHook();
+
+        for (LifeCycleProcessor lifeCycleProcessor : getBeans(LifeCycleProcessor.class).values()) {
+            lifeCycleProcessor.afterStart(this);
+        }
+
+    }
+
     protected abstract void registerResourceReader() throws BeansException;
 
-    protected abstract void registerProcessor() throws BeansException;
+    protected abstract void registerLifeCycleProcessor() throws BeansException;
 
     protected abstract void registerShutdownHook();
 
@@ -82,4 +90,13 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
         return closed;
     }
 
+    @Override
+    public void close() throws Exception {
+        for (LifeCycleProcessor lifeCycleProcessor : getBeanFactory().getBeans(LifeCycleProcessor.class).values()) {
+            lifeCycleProcessor.beforeStop(this);
+        }
+        doClose();
+    }
+
+    protected abstract void doClose() throws Exception;
 }

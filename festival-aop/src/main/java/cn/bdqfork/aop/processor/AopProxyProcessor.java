@@ -1,10 +1,12 @@
 package cn.bdqfork.aop.processor;
 
 import cn.bdqfork.aop.advice.Advisor;
-import cn.bdqfork.core.annotation.Optimize;
 import cn.bdqfork.aop.factory.AopProxyBeanFactory;
 import cn.bdqfork.aop.factory.DefaultAopProxyBeanFactory;
 import cn.bdqfork.aop.proxy.AopProxySupport;
+import cn.bdqfork.context.processor.AbstractLifeCycleProcessor;
+import cn.bdqfork.context.ApplicationContext;
+import cn.bdqfork.core.annotation.Optimize;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.factory.ConfigurableBeanFactory;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
@@ -14,6 +16,8 @@ import cn.bdqfork.core.factory.processor.BeanPostProcessor;
 import cn.bdqfork.core.factory.processor.OrderAware;
 import cn.bdqfork.core.util.AnnotationUtils;
 import org.aspectj.lang.annotation.Aspect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Executable;
 import java.util.Arrays;
@@ -27,19 +31,27 @@ import java.util.stream.Collectors;
  * @author bdq
  * @since 2020/1/14
  */
-public class AopProxyProcessor implements BeanPostProcessor, BeanFactoryPostProcessor, OrderAware {
+public class AopProxyProcessor extends AbstractLifeCycleProcessor implements BeanPostProcessor, BeanFactoryPostProcessor, OrderAware {
+    private static final Logger log = LoggerFactory.getLogger(AopProxyProcessor.class);
     private Set<Advisor> advisors = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private AspectResolver aspectResolver = new AspectResolver();
     private AopProxyBeanFactory aopProxyBeanFactory = new DefaultAopProxyBeanFactory();
-    private ConfigurableBeanFactory configurableBeanFactory;
+    private ApplicationContext applicationContext;
+
+    @Override
+    public void beforeStart(ApplicationContext applicationContext) throws Exception {
+        super.beforeStart(applicationContext);
+        if (log.isInfoEnabled()) {
+            log.info("aop enabled!");
+        }
+        this.applicationContext = applicationContext;
+    }
 
     @Override
     public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
-        configurableBeanFactory = beanFactory;
-
-        List<BeanDefinition> beanDefinitions = configurableBeanFactory.getBeanDefinitions().values()
+        List<BeanDefinition> beanDefinitions = beanFactory.getBeanDefinitions().values()
                 .stream()
-                .filter(this::checkIfNeedRegister)
+                .filter(beanDefinition -> checkIfNeedRegister(beanFactory, beanDefinition))
                 .collect(Collectors.toList());
 
         for (BeanDefinition beanDefinition : beanDefinitions) {
@@ -48,8 +60,8 @@ public class AopProxyProcessor implements BeanPostProcessor, BeanFactoryPostProc
         }
     }
 
-    private boolean checkIfNeedRegister(BeanDefinition beanDefinition) {
-        return beanDefinition.getBeanClass().isAnnotationPresent(Aspect.class) && !configurableBeanFactory.containSingleton(beanDefinition.getBeanName());
+    private boolean checkIfNeedRegister(ConfigurableBeanFactory beanFactory, BeanDefinition beanDefinition) {
+        return beanDefinition.getBeanClass().isAnnotationPresent(Aspect.class) && !beanFactory.containSingleton(beanDefinition.getBeanName());
     }
 
     @Override
@@ -63,7 +75,7 @@ public class AopProxyProcessor implements BeanPostProcessor, BeanFactoryPostProc
         config.addAdvisors(advisors);
         config.setBean(bean);
 
-        BeanDefinition beanDefinition = configurableBeanFactory.getBeanDefinition(beanName);
+        BeanDefinition beanDefinition = applicationContext.getBeanFactory().getBeanDefinition(beanName);
         Class<?> beanClass = beanDefinition.getBeanClass();
         config.setBeanClass(beanClass);
 
@@ -89,7 +101,10 @@ public class AopProxyProcessor implements BeanPostProcessor, BeanFactoryPostProc
         }
 
         Executable executable = beanDefinition.getConstructor();
-        return AnnotationUtils.isAnnotationPresent(executable, Optimize.class);
+        if (executable != null) {
+            return AnnotationUtils.isAnnotationPresent(executable, Optimize.class);
+        }
+        return false;
     }
 
     @Override

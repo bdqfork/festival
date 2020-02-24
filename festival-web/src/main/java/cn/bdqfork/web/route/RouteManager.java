@@ -43,18 +43,23 @@ public class RouteManager {
 
     private FilterChainFactory filterChainFactory;
 
-    private ResponseHandlerFactory responseHandlerFactory;
-
     private AuthHandler authHandler;
 
-    public RouteManager(ConfigurableBeanFactory beanFactory, Router router) {
+    public RouteManager(ConfigurableBeanFactory beanFactory) {
         this.beanFactory = beanFactory;
-        this.router = router;
+        initRouter(beanFactory);
         initAuthHandler();
         initFilterChainFactory();
         initHttpMessageHandler();
-        initResponseHandlerFactory();
         initRouteResolver();
+    }
+
+    private void initRouter(ConfigurableBeanFactory beanFactory) {
+        try {
+            this.router = beanFactory.getBean(Router.class);
+        } catch (BeansException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private void initAuthHandler() {
@@ -103,11 +108,13 @@ public class RouteManager {
         httpMessageHandler = new DefaultHttpMessageHandler(parameterResolverFactory);
     }
 
-    private void initResponseHandlerFactory() {
-        responseHandlerFactory = new ResponseHandlerFactory();
-    }
-
     private void initRouteResolver() {
+        ResponseHandlerFactory responseHandlerFactory;
+        try {
+            responseHandlerFactory = beanFactory.getBean(ResponseHandlerFactory.class);
+        } catch (BeansException e) {
+            throw new IllegalStateException(e);
+        }
         routeResolver = new RouteResolver(httpMessageHandler, responseHandlerFactory);
     }
 

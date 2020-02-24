@@ -7,3 +7,13 @@ dependencies {
     api project(':festival-core')
     testImplementation project(':festival-aop')
 }
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                description = 'Application context based on festival core!'
+            }
+        }
+    }
+}

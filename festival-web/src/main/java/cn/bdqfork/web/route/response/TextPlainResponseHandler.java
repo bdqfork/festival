@@ -1,7 +1,7 @@
 package cn.bdqfork.web.route.response;
 
 
-import io.vertx.core.http.HttpServerResponse;
+import io.vertx.ext.web.RoutingContext;
 
 /**
  * @author bdq
@@ -10,7 +10,8 @@ import io.vertx.core.http.HttpServerResponse;
 public class TextPlainResponseHandler extends AbstractResponseHandler {
 
     @Override
-    protected void doHandle(HttpServerResponse response, Object result) throws Exception {
-        response.end(result.toString());
+    protected void doHandle(RoutingContext routingContext, Object result) throws Exception {
+        routingContext.response().end(result.toString());
     }
+
 }

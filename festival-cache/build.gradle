@@ -1,5 +1,3 @@
-apply plugin: 'kotlin'
-
 def libs = rootProject.ext.libraries
 
 dependencies {
@@ -8,9 +6,23 @@ dependencies {
     implementation project(':festival-context')
 }
 
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+tasks.withType(PublishToMavenRepository) {
+    onlyIf {
+        false
+    }
 }
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+tasks.withType(PublishToMavenLocal) {
+    onlyIf {
+        false
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                description = 'Cache extension for festival context!'
+            }
+        }
+    }
 }

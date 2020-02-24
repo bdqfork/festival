@@ -1,20 +1,24 @@
-apply plugin: 'kotlin'
-
 def libs = rootProject.ext.libraries
 
 dependencies {
-    implementation "io.vertx:vertx-lang-kotlin-coroutines:${libs.vertx}"
-    compileOnly "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${libs.jackson}"
-    compileOnly "joda-time:joda-time:${libs.joda}"
-    compileOnly project(':festival-cache')
-
     api "io.vertx:vertx-web:${libs.vertx}"
+    implementation "io.vertx:vertx-lang-kotlin-coroutines:${libs.vertx}"
+
+    compileOnly "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${libs.jackson}"
+    compileOnly "io.vertx:vertx-web-templ-freemarker:${libs.vertx}"
+    compileOnly "io.vertx:vertx-web-templ-thymeleaf:${libs.vertx}"
+    compileOnly "io.vertx:vertx-web-templ-jade:${libs.vertx}"
+    compileOnly "joda-time:joda-time:${libs.joda}"
+
     api project(':festival-context')
 }
 
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                description = 'A kotlin web framework based vertx!'
+            }
+        }
+    }
 }

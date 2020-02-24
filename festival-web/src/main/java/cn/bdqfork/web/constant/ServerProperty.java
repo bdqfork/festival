@@ -35,4 +35,7 @@ public class ServerProperty {
 
     public static final String SERVER_TEMPLATE_ENABLE = "server.template.enable";
     public static final String SERVER_TEMPLATE_TYPE = "server.template.type";
+    public static final String SERVER_TEMPLATE_CACHE_ENABLE = "server.template.cache.enable";
+    public static final String SERVER_TEMPLATE_PATH = "server.template.path";
+    public static final String SERVER_TEMPLATE_SUFFIX = "server.template.suffix";
 }

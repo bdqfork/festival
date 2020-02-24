@@ -18,33 +18,42 @@ ext {
 buildscript {
     ext.kotlin_version = '1.3.61'
     ext.shadow_version = '5.2.0'
+    ext.dokka_version = '0.10.1'
     repositories {
-        mavenCentral()
         maven {
-            url "https://plugins.gradle.org/m2/"
+            url 'http://maven.aliyun.com/nexus/content/groups/public/'
+        }
+        maven {
+            url 'http://maven.aliyun.com/nexus/content/repositories/jcenter'
         }
     }
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "com.github.jengelman.gradle.plugins:shadow:$shadow_version"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokka_version"
     }
 }
 
 allprojects {
     group = 'com.github.bdqfork'
-    version = '0.4.0'
+    version = '0.5.0'
 }
 
 subprojects {
+    apply plugin: 'kotlin'
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
+    apply plugin: 'org.jetbrains.dokka'
 
     repositories {
         mavenLocal()
         maven {
-            url = 'http://repo.maven.apache.org/maven2'
+            url 'http://maven.aliyun.com/nexus/content/groups/public/'
+        }
+        maven {
+            url 'http://maven.aliyun.com/nexus/content/repositories/jcenter'
         }
     }
 
@@ -58,31 +67,38 @@ subprojects {
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
 
-    task sourcesJar(type: Jar) {
-        from sourceSets.main.allJava
+    compileKotlin {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+    compileTestKotlin {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+
+    task generateSourcesJar(type: Jar) {
+        group = 'jar'
+        from sourceSets.main.java.srcDirs
         classifier = 'sources'
     }
 
-    task javadocJar(type: Jar) {
-        from javadoc
-        classifier = 'javadoc'
+    task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
+        outputFormat = "javadoc"
+        outputDirectory = javadoc.destinationDir
     }
 
-    tasks.withType(Javadoc) {
-        options.addStringOption('Xdoclint:none', '-quiet')
-        options.addStringOption('encoding', 'UTF-8')
-        options.addStringOption('charSet', 'UTF-8')
+    task generateJavadoc(type: Jar, dependsOn: dokkaJavadoc) {
+        group = 'jar'
+        classifier = 'javadoc'
+        from javadoc.destinationDir
     }
 
     publishing {
         publications {
             mavenJava(MavenPublication) {
                 from components.java
-                artifact sourcesJar
-                artifact javadocJar
+                artifact generateSourcesJar
+                artifact generateJavadoc
                 pom {
                     name = project.name
-                    description = project.name
                     url = 'https://github.com/bdqfork/festival'
                     licenses {
                         license {

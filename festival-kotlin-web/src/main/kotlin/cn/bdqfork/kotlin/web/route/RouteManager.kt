@@ -30,8 +30,9 @@ import java.util.function.Consumer
  * @author bdq
  * @since 2020/2/10
  */
-class RouteManager(private val beanFactory: ConfigurableBeanFactory, private val router: Router) {
+class RouteManager(private val beanFactory: ConfigurableBeanFactory) {
     private val registedRoutes = Collections.newSetFromMap(ConcurrentHashMap<String, Boolean>())
+    private lateinit var router: Router
     private lateinit var routeResolver: RouteResolver
     private lateinit var httpMessageHandler: HttpMessageHandler
     private lateinit var filterChainFactory: FilterChainFactory
@@ -108,17 +109,17 @@ class RouteManager(private val beanFactory: ConfigurableBeanFactory, private val
         }
     }
 
-    companion object {
-        private val log = LoggerFactory.getLogger(RouteManager::class.java)
-        const val ROUTE_ATTRIBETE_KEY = "routeAttribute"
-    }
-
     init {
+        initRouter()
         initAuthHandler()
         initFilterChainFactory()
         initHttpMessageHandler()
         initResponseHandlerFactory()
         initRouteResolver()
+    }
+
+    private fun initRouter() {
+        this.router = beanFactory.getBean(Router::class.java)
     }
 
     private fun initAuthHandler() {
@@ -128,18 +129,13 @@ class RouteManager(private val beanFactory: ConfigurableBeanFactory, private val
             if (log.isDebugEnabled) {
                 log.debug("no auth handler found!")
             }
-        } catch (e: BeansException) {
-            throw IllegalStateException(e)
         }
     }
 
     private fun initFilterChainFactory() {
         var filters: List<Filter> = getFilters()
-
         filters = BeanUtils.sortByOrder(filters)
-
         this.filterChainFactory = FilterChainFactory()
-
         filterChainFactory.registerFilters(filters)
     }
 
@@ -151,8 +147,6 @@ class RouteManager(private val beanFactory: ConfigurableBeanFactory, private val
                 log.debug("no filter found!")
             }
             emptyList()
-        } catch (e: BeansException) {
-            throw IllegalStateException(e)
         }
     }
 
@@ -175,10 +169,15 @@ class RouteManager(private val beanFactory: ConfigurableBeanFactory, private val
     }
 
     private fun initResponseHandlerFactory() {
-        responseHandlerFactory = ResponseHandlerFactory()
+        responseHandlerFactory = beanFactory.getBean(ResponseHandlerFactory::class.java)
     }
 
     private fun initRouteResolver() {
         routeResolver = RouteResolver(httpMessageHandler, responseHandlerFactory)
+    }
+
+    companion object {
+        private val log = LoggerFactory.getLogger(RouteManager::class.java)
+        const val ROUTE_ATTRIBETE_KEY = "routeAttribute"
     }
 }

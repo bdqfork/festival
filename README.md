@@ -23,13 +23,13 @@ Festvial是一个基于Vertx、Rxjava等开源库，拥有IOC、AOP功能的响�
 <dependency>
   <groupId>com.github.bdqfork</groupId>
   <artifactId>festival-web</artifactId>
-  <version>0.4.0</version>
+  <version>0.5.0</version>
 </dependency>
 ```
 
 或者gradle依赖
 ```
-implementation 'com.github.bdqfork:festival-web:0.4.0'
+implementation 'com.github.bdqfork:festival-web:0.5.0'
 ```
 
 然后编写路由，运行WebApplicationContext。
@@ -44,8 +44,7 @@ public class UserController {
     }
     
     public static void main(String[] args) throws Exception {
-            WebApplicationContext webApplicationContext = new WebApplicationContext("cn.bdqfork.example");
-            webApplicationContext.start();
+            WebApplication.run(UserController.class);
     }
 
 }
@@ -58,15 +57,10 @@ public class UserController {
 + 缓存
 + 服务监控
 + verticle service group
-+ xml数据请求和响应 已完成！
-+ websocket 已完成！
-+ kotlin ioc容器
-+ 配置文件profile 已完成！
-+ 模版引擎
-+ 解耦aop模块 已完成！
-+ static文件处理 已完成！
 + verticle service多实例
 + 支持rpc调用
++ cache key支持spel表达式
++ 对象参数注入
 
 License
 -------

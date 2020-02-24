@@ -1,7 +1,6 @@
 package cn.bdqfork.aop.proxy;
 
 import cn.bdqfork.aop.MethodInvocation;
-import cn.bdqfork.aop.MethodSignature;
 import cn.bdqfork.aop.advice.*;
 import cn.bdqfork.core.util.ReflectUtils;
 
@@ -33,7 +32,12 @@ public class DefaultProxyInvocationHandler implements ProxyInvocationHandler {
         Object target = support.getBean();
         Object result = invokeObjectMethod(target, method, args);
         if (result == null) {
-            result = invokeWithAdvice(target, method, args);
+            try {
+                result = invokeWithAdvice(target, method, args);
+            } catch (Exception e) {
+                throw e.getCause();
+            }
+
         }
         return result;
     }

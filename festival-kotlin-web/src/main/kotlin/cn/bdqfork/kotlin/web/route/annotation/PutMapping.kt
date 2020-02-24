@@ -12,5 +12,5 @@ import io.vertx.ext.web.handler.TimeoutHandler
 @RouteMapping(method = HttpMethod.PUT)
 @MustBeDocumented
 @kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.FUNCTION)
 annotation class PutMapping(val value: String, val timeout: Long = TimeoutHandler.DEFAULT_TIMEOUT)

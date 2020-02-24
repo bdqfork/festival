@@ -3,8 +3,9 @@ def libs = rootProject.ext.libraries
 
 dependencies {
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${libs.jackson}"
+    implementation "io.vertx:vertx-web-templ-thymeleaf:${libs.vertx}"
     implementation project(':festival-kotlin-web')
-    implementation project(':festival-aop')
+//    implementation project(':festival-aop')
 }
 
 tasks.withType(PublishToMavenRepository) {
