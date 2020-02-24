@@ -99,7 +99,7 @@ public class ExtensionLoader<T> {
     }
 
     private void getExtensionClasses() {
-        if (classNames.size() > 0 && classNames.size() > 0) {
+        if (classNames.size() > 0) {
             return;
         }
         try {
