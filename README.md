@@ -61,6 +61,7 @@ public class UserController {
 + 支持rpc调用
 + cache key支持spel表达式
 + 对象参数注入
++ 分离confguration
 
 License
 -------

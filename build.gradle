@@ -127,9 +127,11 @@ subprojects {
                 def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
                 url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
 
-                credentials {
-                    username ossrh_key
-                    password ossrh_pass
+                if (hasProperty("ossrh_key") && hasProperty("ossrh_pass")) {
+                    credentials {
+                        username ossrh_key
+                        password ossrh_pass
+                    }
                 }
             }
         }
