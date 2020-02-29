@@ -1,6 +1,7 @@
 def libs = rootProject.ext.libraries
 
 dependencies {
+    implementation "cglib:cglib:${libs.cglib}"
     implementation "io.vertx:vertx-redis-client:${libs.vertx}"
     implementation "io.vertx:vertx-lang-kotlin-coroutines:${libs.vertx}"
     implementation project(':festival-context')

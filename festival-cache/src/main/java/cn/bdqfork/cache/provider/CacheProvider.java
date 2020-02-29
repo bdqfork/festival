@@ -1,6 +1,8 @@
 package cn.bdqfork.cache.provider;
 
 
+import cn.bdqfork.context.configuration.reader.ResourceReader;
+
 import java.io.Serializable;
 
 /**

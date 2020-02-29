@@ -4,16 +4,17 @@ import cn.bdqfork.cache.provider.CacheProvider;
 import cn.bdqfork.cache.annotation.Cache;
 import cn.bdqfork.cache.annotation.Evict;
 import cn.bdqfork.core.util.AnnotationUtils;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 /**
  * @author bdq
  * @since 2020/2/21
  */
-public class CacheInvocationHandler implements InvocationHandler {
+public class CacheInvocationHandler implements MethodInterceptor {
     private Object target;
     private CacheProvider cacheProvider;
 
@@ -23,7 +24,7 @@ public class CacheInvocationHandler implements InvocationHandler {
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
 
         if (AnnotationUtils.isAnnotationPresent(method, Cache.class)) {
             Cache cache = AnnotationUtils.getMergedAnnotation(method, Cache.class);

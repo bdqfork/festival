@@ -4,14 +4,17 @@ import cn.bdqfork.cache.constant.CacheProperty;
 import cn.bdqfork.cache.provider.CacheProvider;
 import cn.bdqfork.cache.provider.RedisCacheProvider;
 import cn.bdqfork.cache.proxy.CacheInvocationHandler;
+import cn.bdqfork.cache.util.ProxyUtil;
 import cn.bdqfork.context.processor.AbstractLifeCycleProcessor;
 import cn.bdqfork.context.ApplicationContext;
 import cn.bdqfork.context.aware.ClassLoaderAware;
 import cn.bdqfork.context.configuration.reader.ResourceReader;
 import cn.bdqfork.core.exception.BeansException;
 import cn.bdqfork.core.exception.NoSuchBeanException;
+import cn.bdqfork.core.factory.InjectedPoint;
+import cn.bdqfork.core.factory.MultInjectedPoint;
+import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.processor.BeanPostProcessor;
-import cn.bdqfork.core.proxy.javassist.Proxy;
 import cn.bdqfork.core.util.AopUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +32,13 @@ public class CacheSupportProcessor extends AbstractLifeCycleProcessor implements
     @Override
     public void beforeStart(ApplicationContext applicationContext) throws Exception {
         super.beforeStart(applicationContext);
+        BeanDefinition beanDefinition = BeanDefinition.builder()
+                .beanName("redisCacheProvider")
+                .beanClass(RedisCacheProvider.class)
+                .scope(BeanDefinition.SINGLETON)
+                .build();
+        applicationContext.getBeanFactory().registerBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
+
         if (log.isInfoEnabled()) {
             log.info("cache supported!");
         }
@@ -43,7 +53,9 @@ public class CacheSupportProcessor extends AbstractLifeCycleProcessor implements
         String cacheType = resourceReader.readProperty(CacheProperty.CACHE_TYPE, String.class, "");
         if (cacheType.equals(CacheProperty.REDIS_CACHE_TYPE)) {
             try {
-                cacheProvider = applicationContext.getBean(RedisCacheProvider.class);
+                RedisCacheProvider redisCacheProvider = applicationContext.getBean(RedisCacheProvider.class);
+                redisCacheProvider.connect(resourceReader);
+                cacheProvider = redisCacheProvider;
             } catch (NoSuchBeanException e) {
                 throw new IllegalStateException(String.format("no cache provider of %s found!", cacheType), e);
             }
@@ -63,7 +75,12 @@ public class CacheSupportProcessor extends AbstractLifeCycleProcessor implements
             return bean;
         }
         Class<?> targetClass = AopUtils.getTargetClass(bean);
-        return Proxy.newProxyInstance(classLoader, targetClass.getInterfaces(), new CacheInvocationHandler(bean, cacheProvider));
+        return ProxyUtil.createProxyBean(classLoader, targetClass, new CacheInvocationHandler(bean, cacheProvider));
+//        Class<?>[] interfaces = targetClass.getInterfaces();
+//        if (interfaces.length == 0) {
+//            interfaces = new Class[]{targetClass};
+//        }
+//        return Proxy.newProxyInstance(classLoader, interfaces, new CacheInvocationHandler(bean, cacheProvider));
     }
 
     @Override
