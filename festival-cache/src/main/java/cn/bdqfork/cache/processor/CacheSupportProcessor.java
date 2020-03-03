@@ -16,6 +16,7 @@ import cn.bdqfork.core.factory.MultInjectedPoint;
 import cn.bdqfork.core.factory.definition.BeanDefinition;
 import cn.bdqfork.core.factory.processor.BeanPostProcessor;
 import cn.bdqfork.core.util.AopUtils;
+import io.vertx.core.Vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,13 +49,14 @@ public class CacheSupportProcessor extends AbstractLifeCycleProcessor implements
     public void afterStart(ApplicationContext applicationContext) throws Exception {
         super.afterStart(applicationContext);
         ResourceReader resourceReader = applicationContext.getBean(ResourceReader.class);
+        Vertx vertx = applicationContext.getBean("vertx");
         enable = resourceReader.readProperty(CacheProperty.CACHE_ENABLE, Boolean.class, false);
 
         String cacheType = resourceReader.readProperty(CacheProperty.CACHE_TYPE, String.class, "");
         if (cacheType.equals(CacheProperty.REDIS_CACHE_TYPE)) {
             try {
                 RedisCacheProvider redisCacheProvider = applicationContext.getBean(RedisCacheProvider.class);
-                redisCacheProvider.connect(resourceReader);
+                redisCacheProvider.connect(resourceReader, vertx);
                 cacheProvider = redisCacheProvider;
             } catch (NoSuchBeanException e) {
                 throw new IllegalStateException(String.format("no cache provider of %s found!", cacheType), e);

@@ -2,8 +2,8 @@ package cn.bdqfork.cache.provider;
 
 import cn.bdqfork.cache.constant.RedisProperty;
 import cn.bdqfork.cache.util.SerializeUtil;
-import cn.bdqfork.cache.util.VertxUtils;
 import cn.bdqfork.context.configuration.reader.ResourceReader;
+import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 
 import io.vertx.redis.RedisClient;
@@ -25,7 +25,7 @@ public class RedisCacheProvider extends AbstractCacheProvider {
     private ResourceReader resourceReader;
     private RedisClient redisClient;
 
-    public void connect(ResourceReader resourceReader) {
+    public void connect(ResourceReader resourceReader, Vertx vertx) {
         this.resourceReader = resourceReader;
         host = resourceReader.readProperty(RedisProperty.REDIS_HOST, String.class, "localhost:6379");
         password = resourceReader.readProperty(RedisProperty.REDIS_PASSWORD, String.class);
@@ -41,7 +41,7 @@ public class RedisCacheProvider extends AbstractCacheProvider {
         if (password != null) {
             config.setAuth(password);
         }
-        redisClient = RedisClient.create(VertxUtils.getVertx(), config);
+        redisClient = RedisClient.create(vertx, config);
     }
 
 
