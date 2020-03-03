@@ -12,11 +12,16 @@ import java.io.ObjectOutputStream;
  * @since 2020/2/22
  */
 public class SerializeUtil {
+
+    /**
+     * 序列化
+     * @param object 待序列化对象
+     * @return 序列化完成的bytes
+     */
     public static byte[] serialize(Object object) {
         ObjectOutputStream oos = null;
         ByteArrayOutputStream baos = null;
         try {
-//序列化
             baos = new ByteArrayOutputStream();
             oos = new ObjectOutputStream(baos);
             oos.writeObject(object);
@@ -27,10 +32,14 @@ public class SerializeUtil {
         return null;
     }
 
+    /**
+     * 反序列化
+     * @param bytes
+     * @return 反序列化后生成的对象
+     */
     public static Object unserialize(byte[] bytes) {
-        ByteArrayInputStream bais = null;
+        ByteArrayInputStream bais;
         try {
-//反序列化
             bais = new ByteArrayInputStream(bytes);
             ObjectInputStream ois = new ObjectInputStream(bais);
             return ois.readObject();

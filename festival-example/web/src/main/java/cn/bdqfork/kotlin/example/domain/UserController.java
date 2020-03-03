@@ -6,10 +6,7 @@ import cn.bdqfork.web.annotation.PermitAll;
 import cn.bdqfork.web.annotation.PermitAllowed;
 import cn.bdqfork.web.annotation.RolesAllowed;
 import cn.bdqfork.web.constant.LogicType;
-import cn.bdqfork.web.route.annotation.GetMapping;
-import cn.bdqfork.web.route.annotation.PostMapping;
-import cn.bdqfork.web.route.annotation.RouteController;
-import cn.bdqfork.web.route.annotation.RouteMapping;
+import cn.bdqfork.web.route.annotation.*;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -40,6 +37,23 @@ public class UserController implements DisposableBean {
         for (FileUpload fileUpload : routingContext.fileUploads()) {
             System.out.println(fileUpload.fileName());
         }
+    }
+
+    @PermitAll
+    @GetMapping("/cache")
+    public void getCache(RoutingContext routingContext) {
+        Flowable<String> flowable = iService.testCache();
+        flowable.subscribe(msg -> routingContext.response()
+                .putHeader("content-type", "text/plain")
+                .end(msg));
+    }
+    @PermitAll
+    @PostMapping("/cache")
+    public void setCache(RoutingContext routingContext, @Param("data") String data) {
+        Flowable<String> flowable = iService.testCasheEvict(data);
+        flowable.subscribe(msg -> routingContext.response()
+                .putHeader("content-type", "text/plain")
+                .end(msg));
     }
 
     @PermitAll

@@ -10,4 +10,8 @@ public interface IService {
     Flowable<String> getUserName(String username);
 
     Flowable<Void> testError(String username);
+
+    Flowable<String> testCache();
+
+    Flowable<String> testCasheEvict(String data);
 }

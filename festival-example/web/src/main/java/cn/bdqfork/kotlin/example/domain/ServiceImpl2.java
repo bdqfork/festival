@@ -21,4 +21,14 @@ public class ServiceImpl2 implements IService {
     public Flowable<Void> testError(String username) {
         return null;
     }
+
+    @Override
+    public Flowable<String> testCache() {
+        return null;
+    }
+
+    @Override
+    public Flowable<String> testCasheEvict(String data) {
+        return null;
+    }
 }

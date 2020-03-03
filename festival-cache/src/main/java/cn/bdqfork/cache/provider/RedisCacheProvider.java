@@ -3,9 +3,7 @@ package cn.bdqfork.cache.provider;
 import cn.bdqfork.cache.constant.RedisProperty;
 import cn.bdqfork.cache.util.SerializeUtil;
 import cn.bdqfork.cache.util.VertxUtils;
-import cn.bdqfork.context.aware.ResourceReaderAware;
 import cn.bdqfork.context.configuration.reader.ResourceReader;
-import cn.bdqfork.core.exception.BeansException;
 import io.vertx.core.buffer.Buffer;
 
 import io.vertx.redis.RedisClient;
